@@ -1,209 +1,449 @@
-<!doctype html>
-<html lang="en-US">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Carlos Ebrahim Vendrell</title>
-  <meta name="description" content="Travel • Photography • Technology" />
-  
-  <!-- Favicons -->
-  <link rel="icon" type="image/x-icon" media="(prefers-color-scheme: light)" href="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/50958259-304f-425c-945d-5896639b681d/favicon.ico?format=100w"/>
-  <link rel="icon" type="image/x-icon" media="(prefers-color-scheme: dark)" href="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/e884bb55-1107-4fb5-9a48-b1036646f416/favicon.ico?format=100w"/>
-  
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,500;0,700;1,300;1,500;1,700">
-  
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css">
-  
-  <style>
-    :root {
-      --bg: #f7efe9;
-      --accent: #21655f;
-      --text: #1e2b28;
-      --surface: #ffffff;
-      --border: #e0d5cc;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carlos Ebrahim Vendrell</title>
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,500;0,700;1,300;1,500;1,700">
+<style>
+:root {
+  --bg: #0a0f0e;
+  --bg2: #0f1a18;
+  --accent: #21655f;
+  --accent-bright: #2dd4bf;
+  --accent-glow: rgba(45,212,191,0.18);
+  --text: #e8f5f3;
+  --text-muted: #7ab5ae;
+  --surface: #121e1c;
+  --border: rgba(45,212,191,0.15);
+  --border-hover: rgba(45,212,191,0.5);
+  --particle: rgba(45,212,191,0.6);
+}
+body.light {
+  --bg: #f0f7f6;
+  --bg2: #e4f0ef;
+  --accent: #21655f;
+  --accent-bright: #0f6e56;
+  --accent-glow: rgba(15,110,86,0.12);
+  --text: #0d2420;
+  --text-muted: #3d7a73;
+  --surface: #ffffff;
+  --border: rgba(15,110,86,0.2);
+  --border-hover: rgba(15,110,86,0.6);
+  --particle: rgba(15,110,86,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Poppins',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background 0.4s,color 0.4s;
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+canvas#particles{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;
+}
 
-    body {
-      font-family: 'Poppins', system-ui, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
+.theme-toggle{
+  position:fixed;top:1.2rem;right:1.5rem;z-index:200;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text);
+  width:42px;height:42px;border-radius:50%;
+  cursor:pointer;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s;
+  box-shadow:0 0 12px var(--accent-glow);
+}
+.theme-toggle:hover{border-color:var(--border-hover);transform:scale(1.1)}
 
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 2rem 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:1rem 2rem;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(10,15,14,0.7);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  transition:background 0.4s;
+}
+body.light header{background:rgba(240,247,246,0.75)}
+.logo{
+  font-size:1.1rem;font-weight:700;
+  color:var(--accent-bright);
+  text-decoration:none;
+  letter-spacing:0.04em;
+  text-shadow:0 0 18px var(--accent-glow);
+}
+nav{display:flex;gap:2rem}
+nav a{
+  color:var(--text-muted);text-decoration:none;
+  font-weight:500;font-size:0.9rem;letter-spacing:0.06em;
+  text-transform:uppercase;
+  transition:color 0.2s,text-shadow 0.2s;
+}
+nav a:hover{color:var(--accent-bright);text-shadow:0 0 10px var(--accent-glow)}
 
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.hero{
+  position:relative;z-index:10;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:6rem 2rem 4rem;
+}
+.hero-eyebrow{
+  font-size:0.8rem;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--accent-bright);margin-bottom:1.5rem;
+  opacity:0;animation:fadeUp 0.8s 0.3s forwards;
+}
+.hero h1{
+  font-size:clamp(2.8rem,8vw,6rem);
+  font-weight:700;line-height:1.05;
+  margin-bottom:1.2rem;
+  opacity:0;animation:fadeUp 0.8s 0.5s forwards;
+}
+.hero h1 span{
+  color:var(--accent-bright);
+  text-shadow:0 0 40px var(--accent-glow),0 0 80px var(--accent-glow);
+}
+.hero-sub{
+  font-size:1.1rem;color:var(--text-muted);
+  margin-bottom:3rem;letter-spacing:0.1em;
+  opacity:0;animation:fadeUp 0.8s 0.7s forwards;
+}
+.hero-cta{
+  display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
+  opacity:0;animation:fadeUp 0.8s 0.9s forwards;
+}
+.btn{
+  padding:0.75rem 2rem;border-radius:3px;font-family:'Poppins',sans-serif;
+  font-weight:600;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;
+  text-decoration:none;cursor:pointer;border:none;transition:all 0.3s;
+}
+.btn-primary{
+  background:var(--accent-bright);color:#0a0f0e;
+  box-shadow:0 0 20px var(--accent-glow);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px var(--accent-glow)}
+.btn-outline{
+  background:transparent;color:var(--accent-bright);
+  border:1px solid var(--border-hover);
+}
+.btn-outline:hover{background:var(--accent-glow);transform:translateY(-2px)}
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      text-decoration: none;
-    }
+.scroll-hint{
+  position:absolute;bottom:2rem;
+  display:flex;flex-direction:column;align-items:center;gap:0.5rem;
+  color:var(--text-muted);font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;
+  opacity:0;animation:fadeUp 1s 1.4s forwards;
+}
+.scroll-line{
+  width:1px;height:50px;background:linear-gradient(to bottom,var(--accent-bright),transparent);
+  animation:scrollPulse 2s infinite;
+}
 
-    nav a {
-      margin-left: 2rem;
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
+.sections-wrap{
+  position:relative;z-index:10;
+  padding:6rem 2rem;
+  max-width:1200px;margin:0 auto;
+}
+.sections-title{
+  text-align:center;margin-bottom:4rem;
+  font-size:0.8rem;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--accent-bright);
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1.5rem;
+}
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:2rem;
+  text-decoration:none;
+  color:var(--text);
+  position:relative;overflow:hidden;
+  transition:all 0.4s;
+  opacity:0;transform:translateY(30px);
+}
+.card.visible{opacity:1;transform:translateY(0)}
+.card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--accent-glow),transparent);
+  opacity:0;transition:opacity 0.4s;
+}
+.card:hover{
+  border-color:var(--border-hover);
+  transform:translateY(-6px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.3),0 0 30px var(--accent-glow);
+}
+.card:hover::before{opacity:1}
+.card-icon{
+  font-size:2rem;margin-bottom:1.2rem;
+  display:block;
+}
+.card-num{
+  position:absolute;top:1.5rem;right:1.5rem;
+  font-size:0.7rem;letter-spacing:0.15em;
+  color:var(--accent-bright);opacity:0.5;
+}
+.card h2{
+  font-size:1.3rem;font-weight:700;
+  color:var(--accent-bright);
+  margin-bottom:0.5rem;
+  letter-spacing:0.04em;
+}
+.card p{font-size:0.9rem;color:var(--text-muted);line-height:1.6}
+.card-arrow{
+  display:inline-block;margin-top:1.2rem;
+  font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--accent-bright);opacity:0;
+  transition:opacity 0.3s,transform 0.3s;
+}
+.card:hover .card-arrow{opacity:1;transform:translateX(4px)}
 
-    nav a:hover {
-      color: var(--accent);
-    }
+.about-strip{
+  position:relative;z-index:10;
+  padding:6rem 2rem;
+  max-width:800px;margin:0 auto;
+  text-align:center;
+}
+.about-strip h2{
+  font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:700;margin-bottom:1.5rem;
+  opacity:0;transition:all 0.8s;
+}
+.about-strip h2.visible{opacity:1}
+.about-strip p{
+  color:var(--text-muted);font-size:1rem;line-height:1.8;
+  margin-bottom:1rem;
+  opacity:0;transition:all 0.8s 0.2s;
+}
+.about-strip p.visible{opacity:1}
+.tags{
+  display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-top:2rem;
+  opacity:0;transition:all 0.8s 0.4s;
+}
+.tags.visible{opacity:1}
+.tag{
+  padding:0.4rem 1rem;
+  border:1px solid var(--border);border-radius:2px;
+  font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-muted);
+  transition:all 0.3s;
+}
+.tag:hover{border-color:var(--border-hover);color:var(--accent-bright)}
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
+.line-divider{
+  position:relative;z-index:10;
+  height:1px;background:var(--border);
+  max-width:1200px;margin:0 auto;
+}
 
-    .hero {
-      padding: 5rem 2rem;
-      text-align: center;
-    }
+footer{
+  position:relative;z-index:10;
+  padding:2.5rem 2rem;
+  text-align:center;
+  border-top:1px solid var(--border);
+  font-size:0.85rem;color:var(--text-muted);
+  letter-spacing:0.05em;
+}
+footer a{color:var(--accent-bright);text-decoration:none}
+footer a:hover{text-shadow:0 0 8px var(--accent-glow)}
 
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 4rem);
-      margin-bottom: 1rem;
-    }
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes scrollPulse{
+  0%,100%{opacity:0.3;transform:scaleY(1)}
+  50%{opacity:1;transform:scaleY(1.15)}
+}
 
-    .hero p {
-      font-size: 1.25rem;
-      color: var(--text);
-      opacity: 0.8;
-    }
-
-    .sections {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      padding: 4rem 2rem;
-    }
-
-    .section-card {
-      background: var(--surface);
-      padding: 2rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      text-decoration: none;
-      color: var(--text);
-      transition: all 0.3s;
-    }
-
-    .section-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      transform: translateY(-2px);
-    }
-
-    .section-card h2 {
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-
-    .section-card p {
-      opacity: 0.7;
-      font-size: 0.95rem;
-    }
-
-    footer {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      padding: 2rem;
-      text-align: center;
-      font-size: 0.9rem;
-      opacity: 0.7;
-    }
-
-    @media (max-width: 768px) {
-      .header-content {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      nav a {
-        margin-left: 1rem;
-      }
-
-      .hero {
-        padding: 3rem 0;
-      }
-
-      .sections {
-        padding: 2rem 0;
-      }
-    }
-  </style>
+@media(max-width:768px){
+  nav{gap:1.2rem}
+  nav a{font-size:0.8rem}
+  .hero h1{font-size:2.5rem}
+  .grid{grid-template-columns:1fr}
+}
+</style>
 </head>
-
 <body>
-  <header>
-    <div class="header-content">
-      <a href="/" class="logo">Carlos Ebrahim Vendrell</a>
-      <nav>
-        <a href="#travel">Travel</a>
-        <a href="#work">Work</a>
-        <a href="#about">About</a>
-      </nav>
-    </div>
-  </header>
 
-  <div class="container">
-    <section class="hero">
-      <h1>Exploring the World</h1>
-      <p>Travel • Photography • Technology</p>
-    </section>
+<canvas id="particles"></canvas>
 
-    <section class="sections">
-      <a href="pages/travel/travel-map.html" class="section-card" id="travel">
-        <h2>Travel</h2>
-        <p>Map, flights, dives, and adventures around the globe</p>
-      </a>
+<button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">🌙</button>
 
-      <a href="pages/work/ai-projects.html" class="section-card" id="work">
-        <h2>Work</h2>
-        <p>AI projects, XR videos, and reality capture work</p>
-      </a>
+<header>
+  <a href="/" class="logo">CEV</a>
+  <nav>
+    <a href="pages/travel/travel-map.html">Travel</a>
+    <a href="pages/work/ai-projects.html">Work</a>
+    <a href="pages/media/gallery.html">Gallery</a>
+    <a href="pages/about/contact.html">Contact</a>
+  </nav>
+</header>
 
-      <a href="pages/about/contact.html" class="section-card" id="about">
-        <h2>About</h2>
-        <p>Get in touch, volunteering, and photography</p>
-      </a>
-
-      <a href="pages/media/gallery.html" class="section-card">
-        <h2>Gallery</h2>
-        <p>Photography and visual collections</p>
-      </a>
-    </section>
+<section class="hero">
+  <p class="hero-eyebrow">Barcelona · Copenhagen · Everywhere</p>
+  <h1>Hey, I'm <span>Carlos.</span></h1>
+  <p class="hero-sub">Travel &nbsp;·&nbsp; Photography &nbsp;·&nbsp; Technology</p>
+  <div class="hero-cta">
+    <a href="pages/travel/travel-map.html" class="btn btn-primary">Explore my world</a>
+    <a href="pages/about/contact.html" class="btn btn-outline">Get in touch</a>
   </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
 
-  <footer>
-    <p>&copy; 2026 Carlos Ebrahim Vendrell. Built with clean, simple code.</p>
-  </footer>
+<section class="sections-wrap">
+  <p class="sections-title">What you'll find here</p>
+  <div class="grid">
+    <a href="pages/travel/travel-map.html" class="card" style="transition-delay:0.05s">
+      <span class="card-num">01</span>
+      <span class="card-icon">🌍</span>
+      <h2>Travel</h2>
+      <p>Interactive maps, flight logs, dive logs, and volunteering adventures across the globe.</p>
+      <span class="card-arrow">Explore →</span>
+    </a>
+    <a href="pages/media/gallery.html" class="card" style="transition-delay:0.15s">
+      <span class="card-num">02</span>
+      <span class="card-icon">📷</span>
+      <h2>Photography</h2>
+      <p>Gallery, northern lights captures, and visual stories from around the world.</p>
+      <span class="card-arrow">View gallery →</span>
+    </a>
+    <a href="pages/work/ai-projects.html" class="card" style="transition-delay:0.25s">
+      <span class="card-num">03</span>
+      <span class="card-icon">🤖</span>
+      <h2>Tech</h2>
+      <p>AI projects, XR videos, and reality capture work from my career at Grundfos.</p>
+      <span class="card-arrow">See projects →</span>
+    </a>
+    <a href="pages/about/contact.html" class="card" style="transition-delay:0.35s">
+      <span class="card-num">04</span>
+      <span class="card-icon">👤</span>
+      <h2>About</h2>
+      <p>Senior AI Project Manager, engineer, traveller. Born in Barcelona, based in Denmark.</p>
+      <span class="card-arrow">Learn more →</span>
+    </a>
+  </div>
+</section>
+
+<div class="line-divider"></div>
+
+<section class="about-strip">
+  <h2>Unapologetically <span style="color:var(--accent-bright)">diverse.</span></h2>
+  <p>I'm from Barcelona, living in Denmark for 7+ years. Currently Senior AI Project Manager at Grundfos — exploring emerging XR and AI technologies within a well-established enterprise.</p>
+  <p>When I'm not working, I'm travelling, diving, cycling, running, chasing northern lights, or falling down entirely new rabbit holes.</p>
+  <div class="tags">
+    <span class="tag">Aviation</span>
+    <span class="tag">Formula 1</span>
+    <span class="tag">Astronomy</span>
+    <span class="tag">Scuba diving</span>
+    <span class="tag">Running</span>
+    <span class="tag">Investing</span>
+    <span class="tag">XR & AI</span>
+    <span class="tag">Photography</span>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Carlos Ebrahim Vendrell &nbsp;·&nbsp;
+    <a href="https://instagram.com/carlosevendrell" target="_blank">Instagram</a> &nbsp;·&nbsp;
+    <a href="https://linkedin.com/in/carlosevendrell" target="_blank">LinkedIn</a> &nbsp;·&nbsp;
+    <a href="https://www.strava.com/athletes/22414565" target="_blank">Strava</a>
+  </p>
+</footer>
+
+<script>
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+const isDark = () => !document.body.classList.contains('light');
+
+function resize(){
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function mkParticle(){
+  return {
+    x: Math.random()*W,
+    y: Math.random()*H,
+    r: Math.random()*1.5+0.3,
+    vx:(Math.random()-0.5)*0.3,
+    vy:(Math.random()-0.5)*0.3,
+    alpha:Math.random()*0.6+0.1,
+    pulse: Math.random()*Math.PI*2
+  };
+}
+for(let i=0;i<120;i++) particles.push(mkParticle());
+
+let mouse = {x:-999,y:-999};
+window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const color = isDark() ? '45,212,191' : '15,110,86';
+  particles.forEach(p=>{
+    p.pulse += 0.01;
+    p.x += p.vx; p.y += p.vy;
+    if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+    if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    const dx=p.x-mouse.x, dy=p.y-mouse.y;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<120){
+      p.x+=dx/dist*1.2;
+      p.y+=dy/dist*1.2;
+    }
+    const a = p.alpha*(0.7+0.3*Math.sin(p.pulse));
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${color},${a})`;
+    ctx.fill();
+  });
+  particles.forEach((p,i)=>{
+    for(let j=i+1;j<particles.length;j++){
+      const q=particles[j];
+      const dx=p.x-q.x,dy=p.y-q.y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){
+        ctx.beginPath();
+        ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);
+        ctx.strokeStyle=`rgba(${color},${0.12*(1-d/100)})`;
+        ctx.lineWidth=0.5;
+        ctx.stroke();
+      }
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.addEventListener('click',()=>{
+  document.body.classList.toggle('light');
+  themeBtn.textContent = document.body.classList.contains('light') ? '🌙' : '☀️';
+});
+
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+},{threshold:0.15});
+document.querySelectorAll('.card,.about-strip h2,.about-strip p,.tags').forEach(el=>observer.observe(el));
+</script>
 </body>
 </html>
