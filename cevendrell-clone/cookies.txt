@@ -1,4 +1,0 @@
-# HTTrack Website Copier Cookie File
-# This file format is compatible with Netscape cookies
-cevendrell.com	TRUE	/	FALSE	1999999999	crumb	BWaXOnA3ql8PNzdlYjY0NDU4YjA2MjE0Y2E3YTYyMDJjYTIyOWE1
-
