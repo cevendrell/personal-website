@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About - Carlos Ebrahim Vendrell</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,500;0,700;1,300;1,500;1,700">
+  <style>
+    :root {
+      --bg: #0a0f0e;
+      --accent: #21655f;
+      --accent-bright: #2dd4bf;
+      --text: #e8f5f3;
+      --text-muted: #7ab5ae;
+      --surface: #121e1c;
+      --border: rgba(45,212,191,0.15);
+    }
+    body.light {
+      --bg: #f0f7f6;
+      --accent: #21655f;
+      --accent-bright: #0f6e56;
+      --text: #0d2420;
+      --text-muted: #3d7a73;
+      --surface: #ffffff;
+      --border: rgba(15,110,86,0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.4s, color 0.4s;
+    }
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(10,15,14,0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.4s;
+    }
+    body.light header { background: rgba(240,247,246,0.75); }
+    .logo { font-size: 1.1rem; font-weight: 700; color: var(--accent-bright); text-decoration: none; }
+    nav { display: flex; gap: 2rem; }
+    nav a { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: color 0.2s; }
+    nav a:hover { color: var(--accent-bright); }
+    
+    .container { max-width: 800px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+    h1 { font-size: 3rem; margin-bottom: 2rem; color: var(--accent-bright); }
+    h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--accent-bright); }
+    p { font-size: 1rem; line-height: 1.8; margin-bottom: 1.5rem; color: var(--text-muted); }
+    a { color: var(--accent-bright); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    
+    footer {
+      padding: 2.5rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <a href="/" class="logo">CEV</a>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/pages/about/about.html">About</a>
+    <a href="/pages/about/contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h1>About Me</h1>
+  
+  <p>I'm Carlos Ebrahim Vendrell—a Barcelona-born, Denmark-based Senior AI Project Manager at Grundfos. I've spent the last 7+ years in Copenhagen exploring the intersection of innovation, technology, and adventure.</p>
+  
+  <h2>Career & Background</h2>
+  <p>At Grundfos, I lead AI and XR initiatives, helping establish enterprise applications of emerging technologies. My background spans engineering, project management, and technical strategy. I'm passionate about turning complex technical challenges into tangible business outcomes.</p>
+  
+  <h2>Beyond Work</h2>
+  <p>When I'm not building AI solutions, you'll find me:</p>
+  <ul style="margin-left: 2rem; margin-bottom: 1.5rem;">
+    <li>Travelling the world and documenting adventures</li>
+    <li>Chasing the Northern Lights in Arctic regions</li>
+    <li>Diving in some of the world's most pristine waters</li>
+    <li>Flying light aircraft and exploring aviation</li>
+    <li>Running marathons and staying active</li>
+    <li>Following Formula 1 and investing in growth</li>
+    <li>Photographing moments that matter</li>
+  </ul>
+  
+  <h2>Philosophy</h2>
+  <p>I believe in being unapologetically diverse—refusing to stay in a single lane professionally or personally. The same curiosity that drives AI research also fuels my passion for exploration. I apply engineering rigor to every venture and try to leave things better than I found them.</p>
+  
+  <h2>Get in Touch</h2>
+  <p>Want to connect? Reach out via <a href="https://instagram.com/carlosevendrell" target="_blank">Instagram</a>, <a href="https://linkedin.com/in/carlosevendrell" target="_blank">LinkedIn</a>, or the <a href="/pages/about/contact.html">contact page</a>.</p>
+</div>
+
+<footer>
+  <p>© 2026 Carlos Ebrahim Vendrell</p>
+</footer>
+
+<script>
+  // Light/dark theme toggle
+  document.addEventListener('DOMContentLoaded', () => {
+    const theme = localStorage.getItem('theme') || 'dark';
+    if (theme === 'light') document.body.classList.add('light');
+  });
+</script>
+</body>
+</html>
