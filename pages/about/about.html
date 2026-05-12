@@ -5,142 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About - Carlos Ebrahim Vendrell</title>
   <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,500;0,700;1,300;1,500;1,700">
-  <style>
-    :root {
-      --bg: #0a0f0e;
-      --accent: #21655f;
-      --accent-bright: #2dd4bf;
-      --text: #e8f5f3;
-      --text-muted: #7ab5ae;
-      --surface: #121e1c;
-      --border: rgba(45,212,191,0.15);
-    }
-    body.light {
-      --bg: #f0f7f6;
-      --accent: #21655f;
-      --accent-bright: #0f6e56;
-      --text: #0d2420;
-      --text-muted: #3d7a73;
-      --surface: #ffffff;
-      --border: rgba(15,110,86,0.2);
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Poppins', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      transition: background 0.4s, color 0.4s;
-    }
-    header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 1rem 2rem;
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(10,15,14,0.7);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      transition: background 0.4s;
-    }
-    body.light header { background: rgba(240,247,246,0.75); }
-    .logo { font-size: 1.1rem; font-weight: 700; color: var(--accent-bright); text-decoration: none; }
-    nav { display: flex; gap: 2rem; }
-    nav a { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: color 0.2s; }
-    nav a:hover { color: var(--accent-bright); }
-    
-    .container { max-width: 800px; margin: 0 auto; padding: 8rem 2rem 4rem; }
-    h1 { font-size: 3rem; margin-bottom: 2rem; color: var(--accent-bright); }
-    h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--accent-bright); }
-    p { font-size: 1rem; line-height: 1.8; margin-bottom: 1.5rem; color: var(--text-muted); }
-    a { color: var(--accent-bright); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    
-    footer {
-      padding: 2.5rem 2rem;
-      text-align: center;
-      border-top: 1px solid var(--border);
-      font-size: 0.85rem; color: var(--text-muted);
-    }
-  </style>
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-.custom-site-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 2rem;
-  background: rgba(0, 0, 0, 0.94);
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.custom-site-nav .nav-brand {
-  color: #f7f2e9;
-  font-family: 'Playfair Display', serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-}
-.custom-site-nav .nav-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.custom-site-nav .nav-items a {
-  color: #d9d8d4;
-  text-decoration: none;
-  font-size: 0.82rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  transition: color 0.2s ease;
-}
-.custom-site-nav .nav-items a:hover {
-  color: #fff;
-}
-.custom-site-nav-spacer {
-  height: 72px;
-}
-header#header, #header, .header-title-nav-wrapper, .header-nav, .header-menu {
-  display: none !important;
-}
-body {
-  padding-top: 72px !important;
-}
+  :root {
+    --bg: #05070f;
+    --surface: rgba(13,17,30,.82);
+    --surface-soft: rgba(25,32,52,.82);
+    --text: #f4f1e8;
+    --muted: #9ea4b2;
+    --cyan: #e0d5b8;
+    --gold: #f4e0b5;
+    --orange: #f5c66a;
+    --border: rgba(255,255,255,.08);
+    --shadow: 0 30px 90px rgba(0,0,0,.25);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; font-size:16px; }
+  body {
+    font-family:'Inter', system-ui, sans-serif;
+    min-height:100vh;
+    background:radial-gradient(circle at top, rgba(224,213,184,.08), transparent 24%),
+               linear-gradient(180deg, #05070f 0%, #070a16 38%, #020205 100%);
+    color:var(--text);
+    overflow-x:hidden;
+    line-height:1.75;
+  }
+  body::before {
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+    background-size:220px;
+  }
+  h1,h2,h3 { font-family:'Inter',sans-serif; letter-spacing:-.02em; }
+  a { color:var(--cyan); text-decoration:none; transition:color .25s; }
+  a:hover { color:var(--gold); }
+  ul { list-style:disc inside; margin-bottom:1.5rem; }
+  li { margin-bottom:.9rem; color:var(--muted); }
+  nav { position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:rgba(6,8,14,.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.08); }
+  .nav-logo { font-weight:800; letter-spacing:.04em; color:var(--text); }
+  .nav-logo span { color:var(--cyan); }
+  .nav-links { display:flex; gap:1.4rem; align-items:center; }
+  .nav-links a { font-size:.82rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+  .nav-links a:hover { color:var(--cyan); }
+  .nav-cta { font-size:.72rem; text-transform:uppercase; letter-spacing:.14em; padding:.75rem 1.4rem; border:1px solid rgba(224,213,184,.24); border-radius:999px; background:rgba(224,213,184,.08); color:var(--cyan); }
+  .nav-cta:hover { background:rgba(224,213,184,.14); }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; }
+  .container { max-width:920px; margin:0 auto; padding:9rem 2rem 4rem; position:relative; z-index:1; }
+  h1 { font-size:3.6rem; margin-bottom:1.6rem; }
+  h2 { font-size:1.8rem; margin:2rem 0 1rem; color:var(--text); }
+  p { color:var(--muted); font-size:1rem; line-height:1.9; margin-bottom:1.4rem; }
+  .section-surface { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:2rem; box-shadow:var(--shadow); padding:2.5rem; margin-bottom:2rem; }
+  footer { padding:3rem 2rem; border-top:1px solid rgba(255,255,255,.08); text-align:center; color:var(--muted); font-size:.9rem; }
+  @media(max-width:900px){ .nav-links{display:none;} .container{padding:10rem 1.5rem 4rem;} }
+  @media(max-width:640px){ h1{font-size:2.8rem;} .container{padding:9rem 1.25rem 3rem;} }
 </style>
-
 </head>
 <body>
 
-<div class="custom-site-nav">
-  <a class="nav-brand" href="/index.html">CEV</a>
-  <ul class="nav-items">
-    <li><a href="/index.html">Home</a></li>
-    <li><a href="/pages/about/about.html">About</a></li>
-    <li><a href="/pages/travel/travel-map.html">Travel</a></li>
-    <li><a href="/pages/photography/gallery.html">Photography</a></li>
-    <li><a href="/pages/tech/ai-projects.html">Tech</a></li>
-    <li><a href="/pages/about/contact.html">Contact</a></li>
+<nav id="navbar">
+  <div class="nav-logo">Carlos <span>Ebrahim</span> Vendrell</div>
+  <ul class="nav-links">
+    <li><a href="../../index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="../travel/travel-map.html">Travel</a></li>
+    <li><a href="../photography/gallery.html">Photography</a></li>
+    <li><a href="../tech/ai-projects.html">Tech</a></li>
+    <li><a href="contact.html">Contact</a></li>
   </ul>
-</div>
-
-<header style="display:none !important;">
-  <a href="/" class="logo">CEV</a>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/pages/about/about.html">About</a>
-    <a href="/pages/about/contact.html">Contact</a>
-  </nav>
-</header>
+  <a href="contact.html" class="btn nav-cta">Contact</a>
+</nav>
 
 <div class="container">
   <h1>About Me</h1>
@@ -166,7 +98,7 @@ body {
   <p>I believe in being unapologetically diverse—refusing to stay in a single lane professionally or personally. The same curiosity that drives AI research also fuels my passion for exploration. I apply engineering rigor to every venture and try to leave things better than I found them.</p>
   
   <h2>Get in Touch</h2>
-  <p>Want to connect? Reach out via <a href="https://instagram.com/carlosevendrell" target="_blank">Instagram</a>, <a href="https://linkedin.com/in/carlosevendrell" target="_blank">LinkedIn</a>, or the <a href="/pages/about/contact.html">contact page</a>.</p>
+  <p>Want to connect? Reach out via <a href="https://instagram.com/carlosevendrell" target="_blank">Instagram</a>, <a href="https://linkedin.com/in/carlosevendrell" target="_blank">LinkedIn</a>, or the <a href="contact.html">contact page</a>.</p>
 </div>
 
 <footer>
