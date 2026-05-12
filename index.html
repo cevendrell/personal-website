@@ -522,16 +522,41 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 .career-section .section-label::after{flex:1;max-width:40px}
 .career-header h2{
   font-size:clamp(2.2rem,5vw,3.5rem);
-  font-weight:700;margin-bottom:1rem;
+  font-weight:700;margin-bottom:1.2rem;
 }
 .career-header blockquote{
   font-family:'Playfair Display',serif;
   font-size:1.2rem;font-style:italic;color:var(--muted);
   border-left:2px solid var(--cyan);
-  padding-left:1.5rem;margin:1.8rem 0 3rem;
+  padding-left:1.5rem;margin:1.8rem 0 2rem;
   line-height:1.7;
 }
-.timeline{position:relative;padding-left:1.5rem}
+.career-list{
+  margin:0 0 1.6rem 0;
+  padding-left:1.3rem;
+  color:var(--text);
+}
+.career-list li{
+  margin-bottom:.8rem;
+  line-height:1.9;
+  list-style-type:disc;
+}
+.career-logo-row{
+  display:flex;flex-wrap:wrap;align-items:center;gap:1rem;
+  justify-content:center;
+  margin-top:3rem;
+}
+.career-logo{
+  font-size:1.3rem;
+  font-weight:800;
+  letter-spacing:.14em;
+  color:var(--text);
+}
+.career-tenure{
+  font-size:.95rem;
+  color:var(--muted);
+}
+.timeline{display:none;position:relative;padding-left:1.5rem}
 .timeline::before{
   content:'';position:absolute;left:0;top:0;bottom:0;
   width:1px;background:linear-gradient(to bottom,var(--cyan),var(--purple),transparent);
@@ -782,7 +807,7 @@ footer{
     </div>
   </div>
   <div class="hero-headshot">
-    <img src="images/headshot.jpg" alt="Personal headshot" class="hero-headshot-img" onerror="this.style.display='none';" />
+    <img src="images/headshot.png" alt="Personal headshot" class="hero-headshot-img" onerror="this.style.display='none';" />
   </div>
   <div class="scroll-cue">
     <span class="scroll-cue-label">Scroll</span>
@@ -863,56 +888,21 @@ footer{
       <blockquote class="reveal reveal-delay-2">
         Balancing the exploration and implementation of emerging XR and AI technologies within a well-established, water-focused global enterprise.
       </blockquote>
+      <p class="reveal reveal-delay-3">I have over 6 years of diverse industry experience gained through a rotation-based Graduate Program at Grundfos, which allowed me to explore topics like:</p>
+      <ul class="career-list reveal reveal-delay-4">
+        <li>Additive Manufacturing</li>
+        <li>Product Management</li>
+        <li>Sales Development</li>
+        <li>XR and AI for Industry</li>
+      </ul>
+      <p class="reveal reveal-delay-5">I eventually chose the rapidly growing world of XR and AI for industry applications to continue my career.</p>
+      <div class="career-logo-row reveal reveal-delay-6">
+        <span class="career-logo">Grundfos</span>
+        <span class="career-tenure">August 2019 – Present</span>
+      </div>
     </div>
     <div class="career-image reveal reveal-delay-3">
       <img src="images/career.jpg" alt="Career overview illustration" />
-    </div>
-  </div>
-
-  <div class="timeline">
-    <div class="tl-item">
-      <span class="tl-dot"></span>
-      <span class="tl-date">August 2019 – Present</span>
-      <h3 class="tl-title">Senior AI Project Manager</h3>
-      <p class="tl-co">Grundfos · Bjerringbro & Aarhus, Denmark</p>
-      <p class="tl-desc">Leading the exploration and implementation of AI and XR technologies across a global organisation. Joined through a rotation-based Graduate Program, spending time in Additive Manufacturing, Product Management, Sales Development, and XR &amp; AI — before choosing to grow the latter into a full career track.</p>
-      <div class="tl-chips">
-        <span class="chip">Artificial Intelligence</span>
-        <span class="chip">Extended Reality</span>
-        <span class="chip">3D Printing</span>
-        <span class="chip">Product Management</span>
-        <span class="chip">Innovation</span>
-      </div>
-    </div>
-    <div class="tl-item">
-      <span class="tl-dot" style="border-color:var(--purple);box-shadow:0 0 8px rgba(167,139,250,.3)"></span>
-      <span class="tl-date" style="color:var(--purple)">MSc. Mechanical Engineering</span>
-      <h3 class="tl-title">Aarhus University</h3>
-      <p class="tl-co">Aarhus, Denmark</p>
-      <p class="tl-desc">Graduate studies in mechanical engineering with a focus on systems design and manufacturing technologies.</p>
-    </div>
-    <div class="tl-item">
-      <span class="tl-dot" style="border-color:var(--gold);box-shadow:0 0 8px var(--gold-dim)"></span>
-      <span class="tl-date" style="color:var(--gold)">BSc. Industrial Technology Engineering</span>
-      <h3 class="tl-title">Polytechnic University of Catalonia</h3>
-      <p class="tl-co">Barcelona, Spain · Exchange: UK, Finland, Portugal</p>
-      <p class="tl-desc">Studied in Barcelona with exchange semesters across Europe. Built a multidisciplinary engineering foundation across five countries.</p>
-    </div>
-  </div>
-
-  <div class="edu-section">
-    <h3>Education</h3>
-    <div class="edu-grid">
-      <div class="edu-card reveal">
-        <span class="deg">MSc. Mechanical Engineering</span>
-        <span class="sch">Aarhus University</span>
-        <span class="loc">Aarhus · Denmark</span>
-      </div>
-      <div class="edu-card reveal reveal-delay-1">
-        <span class="deg">BSc. Industrial Technology Engineering</span>
-        <span class="sch">Polytechnic University of Catalonia</span>
-        <span class="loc">Barcelona · Spain</span>
-      </div>
     </div>
   </div>
 </section>
