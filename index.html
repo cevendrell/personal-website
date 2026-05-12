@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Carlos Ebrahim Vendrell</title>
-<meta name="description" content="Senior AI Project Manager · Traveller · Photographer · Based in Aarhus">
+<meta name="description" content="A portfolio for a curious AI project manager exploring travel, photography, and technology.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 
 <style>
 /* ─── TOKENS ───────────────────────────────────────── */
@@ -41,14 +41,14 @@ button{background:none;border:none;cursor:pointer;color:inherit;font:inherit}
 
 /* ─── BASE ───────────────────────────────────────────── */
 body{
-  font-family:'Outfit',sans-serif;
+  font-family:'Inter',sans-serif;
   background:var(--bg);
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
   line-height:1.6;
 }
-h1,h2,h3{font-family:'Playfair Display',Georgia,serif;line-height:1.1}
+h1,h2,h3{font-family:'Inter',sans-serif;line-height:1.05;letter-spacing:-.02em}
 code,kbd,.mono{font-family:'JetBrains Mono',monospace}
 
 /* ─── CANVAS ─────────────────────────────────────────── */
@@ -82,7 +82,7 @@ nav{
 }
 nav.scrolled{padding:.75rem 3rem}
 .nav-logo{
-  font-family:'Playfair Display',serif;
+  font-family:'Inter',sans-serif;
   font-size:1.1rem;font-weight:700;
   color:var(--text);letter-spacing:.03em;
   display:flex;align-items:center;gap:.5rem;
@@ -141,27 +141,6 @@ nav.scrolled{padding:.75rem 3rem}
 .hamburger{display:none;flex-direction:column;gap:5px;padding:4px}
 .hamburger span{display:block;width:22px;height:1.5px;background:var(--muted);transition:all .3s}
 
-.hero-headshot{
-  margin:0 auto 2.5rem;
-  display:flex;align-items:center;justify-content:center;
-  width:min(280px,100%);
-  min-height:280px;
-  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:1.25rem;
-  padding:1rem;
-}
-.hero-headshot-box{
-  width:100%;max-width:220px;text-align:center;
-}
-.hero-headshot-img{
-  width:100%;height:auto;display:block;border-radius:50%;
-  border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 60px rgba(0,0,0,.28);
-}
-.hero-headshot-fallback{
-  margin-top:1rem;color:var(--muted);font-size:.92rem;line-height:1.6;
-}
-.hero-headshot-fallback strong{display:block;color:var(--text);margin-top:.35rem;}
 
 /* ─── SECTION WRAPPER ────────────────────────────────── */
 .section{position:relative;z-index:10}
@@ -169,73 +148,78 @@ nav.scrolled{padding:.75rem 3rem}
 /* ─── HERO ───────────────────────────────────────────── */
 .hero{
   min-height:100vh;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  text-align:center;
-  padding:7rem 2rem 5rem;
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(280px,0.8fr);
+  align-items:center;
+  text-align:left;
+  padding:8rem 3rem 5rem;
   position:relative;z-index:10;
+  gap:3rem;
 }
-.hero-eyebrow{
-  display:flex;align-items:center;gap:.8rem;
-  margin-bottom:2.5rem;
-  opacity:0;animation:fadeUp .9s .3s forwards;
+.hero-copy{
+  max-width:760px;
 }
-.hero-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 8px var(--green);
-  animation:pulse 2.5s infinite;
-}
-@keyframes pulse{0%,100%{box-shadow:0 0 8px var(--green)}50%{box-shadow:0 0 18px var(--green),0 0 28px rgba(52,211,153,.3)}}
-.hero-eyebrow-text{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
-}
-
 .hero-name{
-  font-size:clamp(4rem,12vw,9rem);
-  font-weight:700;letter-spacing:-.03em;
-  line-height:.95;
-  margin-bottom:1.2rem;
+  font-size:clamp(3.4rem,8vw,5.8rem);
+  font-weight:800;letter-spacing:-.04em;
+  line-height:1.02;
+  margin-bottom:1.6rem;
   opacity:0;animation:fadeUp .9s .5s forwards;
 }
-.hero-name .line-1{display:block;color:var(--text)}
+.hero-name span{display:block}
+.hero-name .line-1{
+  font-size:1rem;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:.9rem;
+}
 .hero-name .line-2{
-  display:block;
-  font-style:italic;
-  background:linear-gradient(135deg,var(--cyan) 0%,var(--purple) 50%,var(--orange) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  color:var(--text);
 }
-
-.hero-descriptor{
-  display:flex;align-items:center;justify-content:center;gap:1rem;
-  font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:3.5rem;
-  opacity:0;animation:fadeUp .9s .7s forwards;
+.hero-name .line-3{
+  color:var(--text);
 }
-.hero-sep{width:24px;height:1px;background:var(--dim)}
-
 .hero-tagline{
-  max-width:560px;
-  font-family:'Playfair Display',serif;
-  font-size:clamp(1.1rem,2.2vw,1.55rem);
-  font-weight:400;font-style:italic;
+  max-width:620px;
+  font-size:clamp(1.05rem,2vw,1.4rem);
+  font-weight:500;
   color:var(--muted);
-  line-height:1.6;
+  line-height:1.8;
   margin-bottom:3rem;
   opacity:0;animation:fadeUp .9s .85s forwards;
 }
-
+.hero-headshot{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:auto;
+  padding:1rem;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:1.75rem;
+  box-shadow:0 30px 90px rgba(0,0,0,.35);
+  opacity:0;animation:fadeUp .9s 1s forwards;
+}
+.hero-headshot-box{
+  width:100%;max-width:320px;
+}
+.hero-headshot-img{
+  width:100%;height:auto;display:block;
+  border-radius:1.5rem;
+  border:1px solid rgba(255,255,255,.12);
+}
+.hero-headshot-fallback{
+  margin-top:1rem;color:var(--muted);font-size:.92rem;line-height:1.6;
+}
+.hero-headshot-fallback strong{display:block;color:var(--text);margin-top:.35rem;}
 .hero-actions{
-  display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
+  display:flex;gap:1rem;flex-wrap:wrap;justify-content:flex-start;
   opacity:0;animation:fadeUp .9s 1s forwards;
 }
 .btn{
   display:inline-flex;align-items:center;gap:.55rem;
-  padding:.8rem 2rem;
-  font-family:'Outfit',sans-serif;
-  font-size:.75rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  padding:.85rem 1.8rem;
+  font-family:'Inter',sans-serif;
+  font-size:.8rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
   transition:all .35s;
   position:relative;overflow:hidden;
 }
@@ -299,32 +283,10 @@ nav.scrolled{padding:.75rem 3rem}
   font-size:clamp(2.2rem,4.5vw,3.6rem);
   font-weight:400;margin-bottom:1.8rem;
 }
-.about-left h2 em{color:var(--gold);font-style:italic}
 .about-left p{
   color:var(--muted);font-size:1rem;line-height:1.9;
   margin-bottom:1.1rem;
 }
-.about-stats{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:1px;margin-top:3rem;
-  border:1px solid var(--border);
-  background:var(--border);
-}
-.stat-block{
-  background:var(--surface);
-  padding:1.4rem 1.2rem;
-  text-align:center;
-  transition:background .3s;
-}
-.stat-block:hover{background:var(--s2)}
-.stat-num{
-  font-family:'Playfair Display',serif;
-  font-size:2.4rem;font-weight:700;
-  color:var(--cyan);
-  display:block;line-height:1;margin-bottom:.35rem;
-}
-.stat-label{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-
 .about-right{
   position:relative;
 }
@@ -483,32 +445,6 @@ nav.scrolled{padding:.75rem 3rem}
 .card-photo{--card-color:var(--orange);--card-glow:rgba(240,112,64,.1)}
 .card-tech{--card-color:var(--purple);--card-glow:rgba(167,139,250,.1)}
 .card-about{--card-color:var(--gold);--card-glow:rgba(212,168,83,.1)}
-
-/* ─── STATS STRIP ────────────────────────────────────── */
-.stats-strip{
-  position:relative;z-index:10;
-  padding:3.5rem 2rem;
-  background:linear-gradient(90deg,rgba(56,196,238,.04),rgba(167,139,250,.04),rgba(240,112,64,.04));
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-}
-.stats-inner{
-  max-width:900px;margin:0 auto;
-  display:flex;justify-content:space-around;
-  flex-wrap:wrap;gap:2rem;
-}
-.stat-item{text-align:center}
-.stat-item .num{
-  font-family:'Playfair Display',serif;
-  font-size:3rem;font-weight:700;
-  background:linear-gradient(135deg,var(--cyan),var(--purple));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  display:block;line-height:1;
-}
-.stat-item .lbl{
-  font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--dim);margin-top:.5rem;display:block;
-}
 
 /* ─── CAREER TIMELINE ────────────────────────────────── */
 .career-section{
@@ -700,7 +636,6 @@ footer{
   .hero-descriptor{flex-wrap:wrap;gap:.6rem}
   .hero-sep{display:none}
   .hero-actions{flex-direction:column;align-items:center}
-  .about-stats{grid-template-columns:1fr 1fr}
   .stats-inner{gap:1.5rem}
   footer{flex-direction:column;align-items:flex-start;padding:2rem 1.5rem}
 }
@@ -759,30 +694,20 @@ footer{
 
 <!-- ── HERO ── -->
 <section class="section hero" id="top">
-  <div class="hero-eyebrow">
-    <span class="hero-dot"></span>
-    <span class="hero-eyebrow-text">Barcelona · Aarhus · Everywhere</span>
-  </div>
-  <h1 class="hero-name">
-    <span class="line-1">Hey, I'm</span>
-    <span class="line-2">Carlos.</span>
-  </h1>
-  <div class="hero-descriptor">
-    <span>Senior AI PM</span>
-    <span class="hero-sep"></span>
-    <span>Traveller</span>
-    <span class="hero-sep"></span>
-    <span>Photographer</span>
-    <span class="hero-sep"></span>
-    <span>Engineer</span>
-  </div>
-  <p class="hero-tagline">Welcome to my unapologetically diverse corner of the internet — where AI meets aviation, and code meets wanderlust.</p>
-  <div class="hero-actions">
-    <a href="pages/travel/travel-map.html" class="btn btn-primary">
-      <span>Explore my world</span>
-      <span>↗</span>
-    </a>
-    <a href="pages/about/contact.html" class="btn btn-ghost">Get in touch</a>
+  <div class="hero-copy">
+    <h1 class="hero-name">
+      <span class="line-1">Welcome to my</span>
+      <span class="line-2">unapologetically diverse</span>
+      <span class="line-3">site.</span>
+    </h1>
+    <p class="hero-tagline">I’m from Barcelona, but I’ve been living in Denmark for the past 7 years. Currently, I’m a Senior AI Project Manager at Grundfos and when possible I love to travel as much as I can and document everything with a worryingly amount of detail.</p>
+    <div class="hero-actions">
+      <a href="pages/travel/travel-map.html" class="btn btn-primary">
+        <span>Explore my world</span>
+        <span>↗</span>
+      </a>
+      <a href="pages/about/contact.html" class="btn btn-ghost">Get in touch</a>
+    </div>
   </div>
   <div class="hero-headshot">
     <div class="hero-headshot-box">
@@ -804,23 +729,9 @@ footer{
 <section class="section about" id="about">
   <div class="about-left">
     <p class="eyebrow">About me</p>
-    <h2 class="reveal">From <em>Barcelona</em>,<br>rooted in Denmark.</h2>
-    <p class="reveal reveal-delay-1">I've called Aarhus home for the past 7 years. By day, I'm a Senior AI Project Manager at Grundfos, balancing the exploration and implementation of XR and AI technologies within a well-established global enterprise.</p>
-    <p class="reveal reveal-delay-2">By every other moment, I'm chasing the next adventure — whether that means a long-haul flight to somewhere I've never been, a camera in hand at golden hour, or deep in a rabbit hole about the latest breakthrough in machine learning.</p>
-    <div class="about-stats reveal reveal-delay-3">
-      <div class="stat-block">
-        <span class="stat-num counter" data-target="6">0</span>
-        <span class="stat-label">Years at Grundfos</span>
-      </div>
-      <div class="stat-block">
-        <span class="stat-num counter" data-target="40">0</span>
-        <span class="stat-label">Countries visited</span>
-      </div>
-      <div class="stat-block">
-        <span class="stat-num counter" data-target="5">0</span>
-        <span class="stat-label">Study countries</span>
-      </div>
-    </div>
+    <h2 class="reveal">I’m from Barcelona, but I’ve been living in Denmark for the past 7 years.</h2>
+    <p class="reveal reveal-delay-1">Currently, I’m a Senior AI Project Manager at Grundfos and when possible I love to travel as much as I can and document everything with a worryingly amount of detail.</p>
+    <p class="reveal reveal-delay-2">The world visual here is part of the same explorative mindset that shapes everything I share on this site.</p>
   </div>
   <div class="about-right reveal reveal-delay-2">
     <div class="about-visual">
@@ -844,35 +755,16 @@ footer{
   </div>
 </section>
 
-<!-- ── STATS STRIP ── -->
-<div class="stats-strip section">
-  <div class="stats-inner">
-    <div class="stat-item reveal">
-      <span class="num counter" data-target="280" data-suffix="+">0</span>
-      <span class="lbl">Flights logged</span>
-    </div>
-    <div class="stat-item reveal reveal-delay-1">
-      <span class="num counter" data-target="7" data-suffix=" yrs">0</span>
-      <span class="lbl">In Denmark</span>
-    </div>
-    <div class="stat-item reveal reveal-delay-2">
-      <span class="num counter" data-target="40" data-suffix="+">0</span>
-      <span class="lbl">Countries explored</span>
-    </div>
-    <div class="stat-item reveal reveal-delay-3">
-      <span class="num counter" data-target="3">0</span>
-      <span class="lbl">Active passions</span>
-    </div>
-  </div>
-</div>
-
 <!-- ── INTERESTS ── -->
 <div class="rule"></div>
 <section class="section interests-section" id="interests">
   <div class="interests-header">
-    <p class="section-label reveal">What I'm passionate about</p>
-    <h2 class="reveal reveal-delay-1">Three worlds.<br>One obsessive curiosity.</h2>
-    <p class="reveal reveal-delay-2">My interests are diverse and have evolved over time — I tend to dive head-first into a new topic and emerge months later, fluent. But these three have kept me hooked for years.</p>
+    <p class="section-label reveal">What I’m passionate about</p>
+    <h2 class="reveal reveal-delay-1">For better or worse, my interests are incredibly diverse and have evolved considerably over time.</h2>
+    <p class="reveal reveal-delay-2">I’m someone who can become captivated by a completely new random topic and suddenly find myself immersed in videos about it around the clock - the rabbit hole is my friend :)</p>
+    <p class="reveal reveal-delay-3">Despite this curiosity, there are three areas that I’ve been passionate about for a longer time.</p>
+    <p class="reveal reveal-delay-4">Travel - Photography - Tech</p>
+    <p class="reveal reveal-delay-5">I’ve centred this site around these three topics.</p>
   </div>
   <div class="cards-grid">
 
