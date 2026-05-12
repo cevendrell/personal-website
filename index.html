@@ -143,7 +143,13 @@ nav.scrolled{padding:.75rem 3rem}
 
 
 /* ─── SECTION WRAPPER ────────────────────────────────── */
-.section{position:relative;z-index:10}
+.section{position:relative;z-index:10;background:rgba(3,4,7,.92);backdrop-filter:blur(20px);}
+.hero{background:radial-gradient(circle at 18% 22%, rgba(224,213,184,.12), transparent 28%), linear-gradient(180deg, rgba(3,4,8,.95), rgba(2,2,4,.98));}
+.about{background:linear-gradient(180deg, rgba(6,8,11,.97), rgba(4,5,8,.95));}
+.interests-section{background:linear-gradient(180deg, rgba(7,9,13,.96), rgba(3,4,7,.98));}
+.career-section{background:linear-gradient(180deg, rgba(8,10,14,.96), rgba(2,2,4,.99));}
+.hobbies-section{background:linear-gradient(180deg, rgba(4,5,8,.95), rgba(1,1,2,.99));}
+footer{background:rgba(3,4,8,.95);}
 
 /* ─── HERO ───────────────────────────────────────────── */
 .hero{
@@ -160,57 +166,45 @@ nav.scrolled{padding:.75rem 3rem}
   max-width:760px;
 }
 .hero-name{
-  font-size:clamp(3.4rem,8vw,5.8rem);
-  font-weight:800;letter-spacing:-.04em;
+  font-size:clamp(4rem,9vw,7rem);
+  font-weight:800;letter-spacing:-.05em;
   line-height:1.02;
   margin-bottom:1.6rem;
   opacity:0;animation:fadeUp .9s .5s forwards;
 }
-.hero-name span{display:block}
-.hero-name .line-1{
-  font-size:1rem;
-  letter-spacing:.28em;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:.9rem;
-}
-.hero-name .line-2{
+.hero-highlight{color:var(--cyan);}
+.hero-subtitle{
+  max-width:620px;
+  font-size:clamp(1.4rem,2.5vw,1.8rem);
+  font-weight:600;
   color:var(--text);
-}
-.hero-name .line-3{
-  color:var(--text);
+  line-height:1.45;
+  margin-bottom:1.2rem;
+  opacity:0;animation:fadeUp .9s .7s forwards;
 }
 .hero-tagline{
   max-width:620px;
-  font-size:clamp(1.05rem,2vw,1.4rem);
-  font-weight:500;
+  font-size:1rem;
   color:var(--muted);
-  line-height:1.8;
+  line-height:1.85;
   margin-bottom:3rem;
   opacity:0;animation:fadeUp .9s .85s forwards;
 }
 .hero-headshot{
   display:flex;align-items:center;justify-content:center;
   width:100%;height:auto;
-  padding:1rem;
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:1.75rem;
-  box-shadow:0 30px 90px rgba(0,0,0,.35);
+  padding:0;
+  background:none;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
   opacity:0;animation:fadeUp .9s 1s forwards;
-}
-.hero-headshot-box{
-  width:100%;max-width:320px;
 }
 .hero-headshot-img{
   width:100%;height:auto;display:block;
   border-radius:1.5rem;
-  border:1px solid rgba(255,255,255,.12);
+  border:none;
 }
-.hero-headshot-fallback{
-  margin-top:1rem;color:var(--muted);font-size:.92rem;line-height:1.6;
-}
-.hero-headshot-fallback strong{display:block;color:var(--text);margin-top:.35rem;}
 .hero-actions{
   display:flex;gap:1rem;flex-wrap:wrap;justify-content:flex-start;
   opacity:0;animation:fadeUp .9s 1s forwards;
@@ -242,6 +236,31 @@ nav.scrolled{padding:.75rem 3rem}
   border:1px solid rgba(110,141,171,.25);
 }
 .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-3px)}
+
+.hobby-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1rem;
+  margin-top:2rem;
+}
+.hob-card{
+  display:flex;align-items:center;gap:.9rem;
+  padding:1.35rem 1.5rem;
+  border:1px solid rgba(110,141,171,.14);
+  border-radius:1.5rem;
+  color:var(--text);
+  background:rgba(255,255,255,.02);
+  text-decoration:none;
+  transition:transform .25s, border-color .25s, background .25s;
+}
+.hob-card:hover{
+  transform:translateY(-2px);
+  border-color:var(--cyan);
+  background:rgba(56,196,238,.08);
+}
+.hob-card span{
+  font-size:1.2rem;
+}
 
 .scroll-cue{
   position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
@@ -359,7 +378,7 @@ nav.scrolled{padding:.75rem 3rem}
 }
 .section-label{
   font-family:'JetBrains Mono',monospace;
-  font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+  font-size:1rem;letter-spacing:.28em;text-transform:uppercase;
   color:var(--cyan);
   display:flex;align-items:center;justify-content:center;gap:.8rem;
   margin-bottom:1.5rem;
@@ -633,9 +652,11 @@ footer{
   .career-section{padding:5rem 1.5rem}
 }
 @media(max-width:640px){
-  .hero-descriptor{flex-wrap:wrap;gap:.6rem}
-  .hero-sep{display:none}
   .hero-actions{flex-direction:column;align-items:center}
+  .hobby-grid{grid-template-columns:1fr}
+  .hero-name{font-size:clamp(3rem,12vw,5rem)}
+  .hero-subtitle{font-size:1.25rem}
+  .hero-tagline{font-size:.95rem}
   .stats-inner{gap:1.5rem}
   footer{flex-direction:column;align-items:flex-start;padding:2rem 1.5rem}
 }
@@ -695,11 +716,8 @@ footer{
 <!-- ── HERO ── -->
 <section class="section hero" id="top">
   <div class="hero-copy">
-    <h1 class="hero-name">
-      <span class="line-1">Welcome to my</span>
-      <span class="line-2">unapologetically diverse</span>
-      <span class="line-3">site.</span>
-    </h1>
+    <h1 class="hero-name">Hey, I'm <span class="hero-highlight">Carlos</span></h1>
+    <p class="hero-subtitle">Welcome to my unapologetically diverse site.</p>
     <p class="hero-tagline">I’m from Barcelona, but I’ve been living in Denmark for the past 7 years. Currently, I’m a Senior AI Project Manager at Grundfos and when possible I love to travel as much as I can and document everything with a worryingly amount of detail.</p>
     <div class="hero-actions">
       <a href="pages/travel/travel-map.html" class="btn btn-primary">
@@ -710,13 +728,7 @@ footer{
     </div>
   </div>
   <div class="hero-headshot">
-    <div class="hero-headshot-box">
-      <img src="images/headshot.jpg" alt="Personal headshot" class="hero-headshot-img" onerror="this.style.display='none';" />
-      <div class="hero-headshot-fallback">
-        <span>Personal headshot</span>
-        <strong>Drop <code>images/headshot.jpg</code> here</strong>
-      </div>
-    </div>
+    <img src="images/headshot.jpg" alt="Personal headshot" class="hero-headshot-img" onerror="this.style.display='none';" />
   </div>
   <div class="scroll-cue">
     <span class="scroll-cue-label">Scroll</span>
@@ -729,9 +741,9 @@ footer{
 <section class="section about" id="about">
   <div class="about-left">
     <p class="eyebrow">About me</p>
-    <h2 class="reveal">I’m from Barcelona, but I’ve been living in Denmark for the past 7 years.</h2>
-    <p class="reveal reveal-delay-1">Currently, I’m a Senior AI Project Manager at Grundfos and when possible I love to travel as much as I can and document everything with a worryingly amount of detail.</p>
-    <p class="reveal reveal-delay-2">The world visual here is part of the same explorative mindset that shapes everything I share on this site.</p>
+    <h2 class="reveal">A career shaped by curiosity and craft.</h2>
+    <p class="reveal reveal-delay-1">Based in Denmark, I build AI and XR projects at Grundfos while keeping the rest of life open to unexpected learning and travel.</p>
+    <p class="reveal reveal-delay-2">This site is a compact map of what I care about most — work, storytelling, and the places that keep me curious.</p>
   </div>
   <div class="about-right reveal reveal-delay-2">
     <div class="about-visual">
@@ -862,22 +874,16 @@ footer{
 <section class="section hobbies-section">
   <p class="section-label reveal">Outside the office</p>
   <h2 class="reveal reveal-delay-1">Other stuff I love</h2>
-  <p class="reveal reveal-delay-2">Commercial aviation, Formula 1, astronomy, personal finance, running, cycling, scuba diving — and finding ways to weave my main passions through all of the above.</p>
-  <div class="tag-cloud reveal reveal-delay-3">
-    <span class="hob-tag"><span>✈ Aviation</span></span>
-    <span class="hob-tag"><span>🏎 Formula 1</span></span>
-    <span class="hob-tag"><span>🔭 Astronomy</span></span>
-    <span class="hob-tag"><span>🤿 Scuba Diving</span></span>
-    <span class="hob-tag"><span>🏃 Running</span></span>
-    <span class="hob-tag"><span>🚴 Cycling</span></span>
-    <span class="hob-tag"><span>📈 Investing</span></span>
-    <span class="hob-tag"><span>🖨 3D Printing</span></span>
-    <span class="hob-tag"><span>🤖 AI & ML</span></span>
-    <span class="hob-tag"><span>🌌 Space</span></span>
+  <div class="hobby-grid reveal reveal-delay-2">
+    <a href="#" class="hob-card"><span>✈</span> Aviation</a>
+    <a href="#" class="hob-card"><span>🏎</span> Formula 1</a>
+    <a href="#" class="hob-card"><span>🔭</span> Astronomy</a>
+    <a href="#" class="hob-card"><span>🤿</span> Scuba Diving</a>
+    <a href="#" class="hob-card"><span>📈</span> Investing</a>
+    <a href="#" class="hob-card"><span>🖨</span> 3D Printing</a>
+    <a href="#" class="hob-card"><span>🤖</span> AI & ML</a>
+    <a href="#" class="hob-card"><span>🌌</span> Space</a>
   </div>
-  <p class="strava-cta reveal reveal-delay-4">
-    ✦ &nbsp; Follow my runs and rides on <a href="https://www.strava.com/athletes/22414565" target="_blank">Strava</a>
-  </p>
 </section>
 
 <!-- ── FOOTER ── -->
@@ -904,6 +910,12 @@ const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 60);
 });
+
+function resetScrollToTop() {
+  if (!window.location.hash) window.scrollTo(0, 0);
+}
+window.addEventListener('DOMContentLoaded', resetScrollToTop);
+window.addEventListener('pageshow', resetScrollToTop);
 
 /* ── STARFIELD ── */
 const canvas = document.getElementById('cosmos');
