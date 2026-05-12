@@ -43,8 +43,8 @@ button{background:none;border:none;cursor:pointer;color:inherit;font:inherit}
 /* ─── BASE ───────────────────────────────────────────── */
 body{
   font-family:'Inter',sans-serif;
-  background:radial-gradient(circle at top, rgba(224,213,184,.08), transparent 26%),
-              linear-gradient(180deg, #05070d 0%, #060813 28%, #020205 100%);
+  background:radial-gradient(circle at bottom, rgba(224,213,184,.08), transparent 40%),
+              linear-gradient(180deg, #020205 0%, #060813 42%, #080b12 100%);
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
@@ -64,7 +64,7 @@ body::before{
 }
 body::after{
   content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(circle at top center, rgba(224,213,184,.08), transparent 28%);
+  background:radial-gradient(circle at bottom center, rgba(224,213,184,.08), transparent 28%);
 }
 
 /* ─── SCROLL PROGRESS ────────────────────────────────── */
@@ -187,12 +187,15 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 .hero-highlight{color:var(--cyan);}
 .hero-subtitle{
   max-width:620px;
-  font-size:clamp(1.35rem,2.2vw,1.8rem);
+  font-size:clamp(1.1rem,2vw,1.4rem);
   font-weight:600;
   color:var(--text);
-  line-height:1.45;
+  line-height:1.4;
   margin-bottom:1.3rem;
   opacity:0;animation:fadeUp .9s .7s forwards;
+}
+.hero-subtitle strong{
+  font-weight:800;
 }
 .hero-tagline{
   max-width:620px;
@@ -407,12 +410,20 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 .section-label::before,.section-label::after{
   content:'';width:28px;height:1px;background:var(--cyan);display:block;
 }
-.interests-header h2{
-  font-size:clamp(2.2rem,4.5vw,3.6rem);
-  font-weight:700;margin-bottom:1rem;
+.section-title{
+  font-size:clamp(2.6rem,5vw,4.4rem);
+  font-weight:800;
+  margin-bottom:1.2rem;
 }
 .interests-header p{
   color:var(--muted);max-width:600px;margin:0 auto;font-size:1rem;line-height:1.9;
+}
+.interests-highlight{
+  font-size:clamp(2rem,4vw,3.6rem);
+  font-weight:800;
+  color:var(--cyan);
+  margin:1.2rem 0 0;
+  line-height:1.05;
 }
 .cards-grid{
   display:grid;
@@ -488,6 +499,10 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 .career-section{
   padding:8rem 2rem;
   max-width:1000px;margin:0 auto;
+  background:rgba(7,10,17,.9);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:2rem;
+  box-shadow:0 35px 90px rgba(0,0,0,.22);
 }
 .career-top{
   display:grid;
@@ -756,7 +771,7 @@ footer{
 <section class="section hero" id="top">
   <div class="hero-copy">
     <h1 class="hero-name">Hey, I'm <span class="hero-highlight">Carlos</span></h1>
-    <p class="hero-subtitle">Welcome to my unapologetically diverse site.</p>
+    <p class="hero-subtitle">Welcome to my <strong>unapologetically diverse</strong> site.</p>
     <p class="hero-tagline">I’m from Barcelona, but I’ve been living in Denmark for the past 7 years. Currently, I’m a Senior AI Project Manager at Grundfos and when possible I love to travel as much as I can and document everything with a worryingly amount of detail.</p>
     <div class="hero-actions">
       <a href="pages/travel/travel-map.html" class="btn btn-primary">
@@ -804,12 +819,12 @@ footer{
 <div class="rule"></div>
 <section class="section interests-section" id="interests">
   <div class="interests-header">
-    <p class="section-label reveal">What I’m passionate about</p>
-    <h2 class="reveal reveal-delay-1">For better or worse, my interests are incredibly diverse and have evolved considerably over time.</h2>
+    <h1 class="section-title reveal">What I’m passionate about</h1>
+    <p class="reveal reveal-delay-1">For better or worse, my interests are incredibly diverse and have evolved considerably over time.</p>
     <p class="reveal reveal-delay-2">I’m someone who can become captivated by a completely new random topic and suddenly find myself immersed in videos about it around the clock - the rabbit hole is my friend :)</p>
     <p class="reveal reveal-delay-3">Despite this curiosity, there are three areas that I’ve been passionate about for a longer time.</p>
-    <p class="reveal reveal-delay-4">Travel - Photography - Tech</p>
-    <p class="reveal reveal-delay-5">I’ve centred this site around these three topics.</p>
+    <p class="reveal reveal-delay-4 interests-highlight">Travel - Photography - Tech</p>
+    <p class="reveal reveal-delay-5">I’ve centred this site around<br>these three topics.</p>
   </div>
   <div class="cards-grid">
 
@@ -841,11 +856,9 @@ footer{
 </section>
 
 <!-- ── CAREER ── -->
-<div class="rule"></div>
 <section class="section career-section" id="career">
   <div class="career-top">
     <div class="career-header">
-      <p class="section-label reveal">Experience</p>
       <h2 class="reveal reveal-delay-1">Career</h2>
       <blockquote class="reveal reveal-delay-2">
         Balancing the exploration and implementation of emerging XR and AI technologies within a well-established, water-focused global enterprise.
