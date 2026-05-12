@@ -150,19 +150,19 @@ nav.scrolled{padding:.75rem 3rem;background:rgba(4,6,12,.88)}
 /* ─── SECTION WRAPPER ────────────────────────────────── */
 .section{
   position:relative;z-index:10;
-  background:rgba(11,15,28,.74);
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:2rem;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(24px);
+  background:transparent;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+  backdrop-filter:none;
   padding:5rem 3rem;
-  margin:0 auto 3rem;
+  margin:0;
 }
-.hero{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));}
-.about{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));}
-.interests-section{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));}
-.career-section{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));}
-.hobbies-section{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));}
+.hero{background:transparent;}
+.about{background:transparent;}
+.interests-section{background:transparent;}
+.career-section{background:transparent;}
+.hobbies-section{background:transparent;}
 footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 
 /* ─── HERO ───────────────────────────────────────────── */
@@ -204,17 +204,17 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 }
 .hero-headshot{
   display:flex;align-items:center;justify-content:center;
-  width:100%;height:auto;
-  padding:1.2rem;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:2rem;
-  box-shadow:0 35px 100px rgba(0,0,0,.24);
+  width:100%;max-width:260px;height:auto;
+  padding:0;
+  background:transparent;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
   opacity:0;animation:fadeUp .9s 1s forwards;
 }
 .hero-headshot-img{
   width:100%;height:auto;display:block;
-  border-radius:1.8rem;
+  border-radius:1.5rem;
   border:none;
 }
 .hero-actions{
@@ -254,27 +254,30 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 
 .hobby-grid{
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:1rem;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:.9rem;
   margin-top:2rem;
 }
 .hob-card{
-  display:flex;align-items:center;gap:.9rem;
-  padding:1.35rem 1.5rem;
-  border:1px solid rgba(110,141,171,.14);
-  border-radius:1.5rem;
+  display:flex;align-items:center;gap:.75rem;
+  padding:.95rem 1rem;
+  border:1px solid rgba(110,141,171,.1);
+  border-radius:1.4rem;
   color:var(--text);
   background:rgba(255,255,255,.02);
   text-decoration:none;
-  transition:transform .25s, border-color .25s, background .25s;
+  font-size:.93rem;
+  justify-content:flex-start;
+  transition:transform .25s, border-color .25s, background .25s, color .25s;
 }
 .hob-card:hover{
   transform:translateY(-2px);
-  border-color:var(--cyan);
+  border-color:rgba(56,196,238,.35);
   background:rgba(56,196,238,.08);
+  color:#fff;
 }
 .hob-card span{
-  font-size:1.2rem;
+  font-size:1.05rem;
 }
 
 .scroll-cue{
@@ -327,11 +330,11 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 .about-visual{
   position:relative;
   width:100%;padding-top:100%;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
+  background:transparent;
+  border:none;
   overflow:hidden;
   border-radius:2rem;
-  box-shadow:0 35px 90px rgba(0,0,0,.22);
+  box-shadow:0 35px 90px rgba(0,0,0,.18);
 }
 .about-visual-inner{
   position:absolute;inset:0;
@@ -422,19 +425,39 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
   background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.08);
   border-radius:1.8rem;
-  padding:2.8rem 2.2rem;
+  padding:2.6rem 2rem;
   cursor:pointer;
-  transition:transform .4s,box-shadow .4s,background .4s;
+  transition:transform .4s,box-shadow .4s,background .4s,border-color .4s;
 }
-.card:hover{transform:translateY(-6px);box-shadow:0 30px 80px rgba(0,0,0,.18);background:rgba(255,255,255,.08);}
+.card::before{
+  content:'';
+  position:absolute;
+  inset:0 auto auto 0;
+  height:4px;
+  width:100%;
+  background:transparent;
+  transition:background .35s;
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 30px 80px rgba(0,0,0,.18);background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18);}
+.card:hover::before{background:var(--card-color);}
 .card-num{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--dim);margin-bottom:1.8rem;display:block;
+  display:none;
 }
 .card-icon{
-  font-size:2.5rem;margin-bottom:1.4rem;display:block;
+  width:3.2rem;
+  height:3.2rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:1.4rem;
+  font-size:1.35rem;
+  border-radius:1rem;
+  border:1px solid rgba(255,255,255,.12);
+  color:var(--card-color);
+  background:rgba(255,255,255,.06);
+  transition:transform .35s,background .35s,border-color .35s,color .35s;
 }
+.card:hover .card-icon{background:rgba(255,255,255,.16);border-color:var(--card-color);}
 .card h3{
   font-family:'Inter',sans-serif;
   font-size:1.8rem;font-weight:700;
@@ -464,14 +487,27 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 /* ─── CAREER TIMELINE ────────────────────────────────── */
 .career-section{
   padding:8rem 2rem;
-  max-width:900px;margin:0 auto;
+  max-width:1000px;margin:0 auto;
+}
+.career-top{
+  display:grid;
+  grid-template-columns:1.1fr minmax(280px,0.9fr);
+  gap:2rem;
+  align-items:center;
+  margin-bottom:3rem;
+}
+.career-image img{
+  width:100%;height:auto;
+  border-radius:1.75rem;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 30px 80px rgba(0,0,0,.18);
 }
 .career-section .section-label{justify-content:flex-start}
 .career-section .section-label::before{display:none}
 .career-section .section-label::after{flex:1;max-width:40px}
 .career-header h2{
   font-size:clamp(2.2rem,5vw,3.5rem);
-  font-weight:400;margin-bottom:1rem;
+  font-weight:700;margin-bottom:1rem;
 }
 .career-header blockquote{
   font-family:'Playfair Display',serif;
@@ -601,20 +637,21 @@ footer{background:transparent;border:none;padding:3rem 3rem 4rem;}
 /* ─── FOOTER ─────────────────────────────────────────── */
 footer{
   position:relative;z-index:10;
-  border-top:1px solid var(--border);
+  background:#020203;
+  border:none;
   padding:2.5rem 3rem;
   display:flex;justify-content:space-between;align-items:center;
   flex-wrap:wrap;gap:1rem;
 }
 .footer-copy{
-  font-size:.75rem;color:var(--dim);letter-spacing:.06em;
+  font-size:.75rem;color:rgba(255,255,255,.65);letter-spacing:.06em;
 }
 .footer-links{
   display:flex;gap:1.5rem;
 }
 .footer-links a{
   font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);transition:color .2s;
+  color:rgba(255,255,255,.85);transition:color .2s;
 }
 .footer-links a:hover{color:var(--cyan)}
 
@@ -646,6 +683,7 @@ footer{
   .cards-grid{grid-template-columns:1fr}
   .edu-grid{grid-template-columns:1fr}
   .career-section{padding:5rem 1.5rem}
+  .career-top{grid-template-columns:1fr;}
   .hobby-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 @media(max-width:640px){
@@ -757,12 +795,6 @@ footer{
           <strong>Aarhus, Denmark</strong>
           56°N · 10°E · UTC+1
         </div>
-        <div class="av-tags">
-          <span class="av-tag">Grundfos</span>
-          <span class="av-tag">AI/ML</span>
-          <span class="av-tag">XR</span>
-          <span class="av-tag">3D Print</span>
-        </div>
       </div>
     </div>
   </div>
@@ -782,8 +814,7 @@ footer{
   <div class="cards-grid">
 
     <a href="pages/travel/travel-map.html" class="card card-travel reveal" data-delay="0">
-      <span class="card-num">01 / Travel</span>
-      <span class="card-icon">✈</span>
+      <span class="card-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5l19-7-6-1.5L2.5 19.5z"/><path d="M8 7l3 12 2-5 5-5-4-1.5-3 4-3-4z"/></svg></span>
       <h3>Travel</h3>
       <p>Interactive maps, flight logs, dive logs, and volunteering adventures across the globe. I document everything — obsessively.</p>
       <span class="card-cta">Explore the map <span class="card-arrow">→</span></span>
@@ -791,8 +822,7 @@ footer{
     </a>
 
     <a href="pages/photography/gallery.html" class="card card-photo reveal reveal-delay-1" data-delay="1">
-      <span class="card-num">02 / Photography</span>
-      <span class="card-icon">📷</span>
+      <span class="card-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M8 5.5l1.5-2h5l1.5 2"/><circle cx="12" cy="12" r="3"/></svg></span>
       <h3>Photography</h3>
       <p>Gallery, northern lights captures, and visual stories from around the world. Light, composition, and a bit of luck.</p>
       <span class="card-cta">View gallery <span class="card-arrow">→</span></span>
@@ -800,8 +830,7 @@ footer{
     </a>
 
     <a href="pages/tech/ai-projects.html" class="card card-tech reveal reveal-delay-2" data-delay="2">
-      <span class="card-num">03 / Tech & AI</span>
-      <span class="card-icon">🤖</span>
+      <span class="card-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="3"/><path d="M8 9h.01M12 9h.01M16 9h.01"/><path d="M8 15h8"/></svg></span>
       <h3>Tech & AI</h3>
       <p>AI tools, XR experiences, 3D printing, and reality capture work from my career at Grundfos. The future, built today.</p>
       <span class="card-cta">See projects <span class="card-arrow">→</span></span>
@@ -814,12 +843,17 @@ footer{
 <!-- ── CAREER ── -->
 <div class="rule"></div>
 <section class="section career-section" id="career">
-  <div class="career-header">
-    <p class="section-label reveal">Experience</p>
-    <h2 class="reveal reveal-delay-1">Career</h2>
-    <blockquote class="reveal reveal-delay-2">
-      Balancing the exploration and implementation of emerging XR and AI technologies within a well-established, water-focused global enterprise.
-    </blockquote>
+  <div class="career-top">
+    <div class="career-header">
+      <p class="section-label reveal">Experience</p>
+      <h2 class="reveal reveal-delay-1">Career</h2>
+      <blockquote class="reveal reveal-delay-2">
+        Balancing the exploration and implementation of emerging XR and AI technologies within a well-established, water-focused global enterprise.
+      </blockquote>
+    </div>
+    <div class="career-image reveal reveal-delay-3">
+      <img src="images/career.jpg" alt="Career overview illustration" />
+    </div>
   </div>
 
   <div class="timeline">
