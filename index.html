@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Carlos Ebrahim Vendrell</title>
-<meta name="description" content="Senior AI Project Manager · Traveller · Photographer · Based in Copenhagen">
+<meta name="description" content="Senior AI Project Manager · Traveller · Photographer · Based in Aarhus">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -105,20 +105,48 @@ nav.scrolled{padding:.75rem 3rem}
   display:flex;align-items:center;gap:.5rem;
 }
 .nav-logo span{color:var(--cyan);font-style:italic}
-.nav-links{display:flex;gap:2.5rem;list-style:none}
-.nav-links a{
+.nav-links{display:flex;gap:1.7rem;list-style:none;align-items:center}
+.nav-item{position:relative}
+.nav-links a,
+.nav-links button{
   font-size:.75rem;font-weight:500;letter-spacing:.16em;
   text-transform:uppercase;color:var(--muted);
   position:relative;transition:color .25s;
-  padding-bottom:4px;
+  padding:0 0 4px;
+  display:inline-flex;align-items:center;gap:.2rem;
+  background:none;border:none;
 }
-.nav-links a::after{
+.nav-links a::after,
+.nav-links button::after{
   content:'';position:absolute;bottom:0;left:0;
   height:1px;width:0;background:var(--cyan);
   transition:width .3s ease;
 }
-.nav-links a:hover{color:var(--cyan)}
-.nav-links a:hover::after{width:100%}
+.nav-links a:hover,
+.nav-links button:hover{color:var(--cyan)}
+.nav-links a:hover::after,
+.nav-links button:hover::after{width:100%}
+.dropdown-menu{
+  position:absolute;top:calc(100% + .6rem);left:0;
+  min-width:210px;
+  background:rgba(3,5,13,.98);
+  border:1px solid var(--border);
+  border-radius:.85rem;
+  box-shadow:0 30px 80px rgba(0,0,0,.32);
+  opacity:0;visibility:hidden;
+  transform:translateY(10px);
+  transition:opacity .25s,transform .25s,visibility .25s;
+  z-index:250;
+  padding:.6rem 0;
+}
+.dropdown-menu li{margin:0}
+.dropdown-menu a{
+  display:block;padding:.85rem 1.1rem;
+  color:var(--text);font-size:.82rem;font-weight:500;
+  letter-spacing:.08em;text-transform:none;
+}
+.dropdown-menu a:hover{color:var(--cyan);background:rgba(56,196,238,.08)}
+.nav-item:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0)}
 .nav-cta{
   font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
   padding:.45rem 1.1rem;
@@ -689,11 +717,38 @@ footer{
 <nav id="navbar">
   <div class="nav-logo">Carlos <span>Ebrahim</span> Vendrell</div>
   <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#interests">Interests</a></li>
-    <li><a href="#career">Career</a></li>
-    <li><a href="pages/travel/travel-map.html">Travel</a></li>
-    <li><a href="pages/photography/gallery.html">Photography</a></li>
+    <li class="nav-item">
+      <a href="pages/about/about.html">About Me</a>
+      <ul class="dropdown-menu">
+        <li><a href="pages/about/about.html">Career</a></li>
+        <li><a href="pages/about/contact.html">Contact</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="pages/travel/travel-map.html">Travel</a>
+      <ul class="dropdown-menu">
+        <li><a href="pages/travel/travel-map.html">Travel Map</a></li>
+        <li><a href="pages/travel/volunteering.html">Volunteering</a></li>
+        <li><a href="pages/travel/flight-log.html">Flight Log</a></li>
+        <li><a href="pages/travel/dive-log.html">Dive Log</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="pages/photography/gallery.html">Photography</a>
+      <ul class="dropdown-menu">
+        <li><a href="pages/photography/gallery.html">Gallery</a></li>
+        <li><a href="pages/photography/northern-lights.html">Northern Lights</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="pages/tech/ai-projects.html">Tech</a>
+      <ul class="dropdown-menu">
+        <li><a href="pages/tech/xr-videos.html">XR Videos</a></li>
+        <li><a href="pages/tech/reality-capture.html">Reality Capture</a></li>
+        <li><a href="pages/tech/ai-projects.html">AI tools</a></li>
+        <li><a href="pages/tech/3d-printing.html">3D Printing</a></li>
+      </ul>
+    </li>
   </ul>
   <a href="pages/about/contact.html" class="btn nav-cta">Get in touch</a>
   <button class="hamburger" aria-label="Menu">
@@ -705,7 +760,7 @@ footer{
 <section class="section hero" id="top">
   <div class="hero-eyebrow">
     <span class="hero-dot"></span>
-    <span class="hero-eyebrow-text">Barcelona · Copenhagen · Everywhere</span>
+    <span class="hero-eyebrow-text">Barcelona · Aarhus · Everywhere</span>
   </div>
   <h1 class="hero-name">
     <span class="line-1">Hey, I'm</span>
@@ -728,6 +783,12 @@ footer{
     </a>
     <a href="pages/about/contact.html" class="btn btn-ghost">Get in touch</a>
   </div>
+  <div class="hero-headshot">
+    <div class="hero-headshot-box">
+      <span>Headshot placeholder</span>
+      <strong>images/headshot.jpg</strong>
+    </div>
+  </div>
   <div class="scroll-cue">
     <span class="scroll-cue-label">Scroll</span>
     <div class="scroll-cue-line"></div>
@@ -740,7 +801,7 @@ footer{
   <div class="about-left">
     <p class="eyebrow">About me</p>
     <h2 class="reveal">From <em>Barcelona</em>,<br>rooted in Denmark.</h2>
-    <p class="reveal reveal-delay-1">I've called Copenhagen home for the past 7 years. By day, I'm a Senior AI Project Manager at Grundfos, balancing the exploration and implementation of XR and AI technologies within a well-established global enterprise.</p>
+    <p class="reveal reveal-delay-1">I've called Aarhus home for the past 7 years. By day, I'm a Senior AI Project Manager at Grundfos, balancing the exploration and implementation of XR and AI technologies within a well-established global enterprise.</p>
     <p class="reveal reveal-delay-2">By every other moment, I'm chasing the next adventure — whether that means a long-haul flight to somewhere I've never been, a camera in hand at golden hour, or deep in a rabbit hole about the latest breakthrough in machine learning.</p>
     <div class="about-stats reveal reveal-delay-3">
       <div class="stat-block">
@@ -765,8 +826,8 @@ footer{
           <div class="av-orbit"><span class="av-orbit-dot"></span></div>
         </div>
         <div class="av-location">
-          <strong>Copenhagen, Denmark</strong>
-          55°N · 12°E · UTC+1
+          <strong>Aarhus, Denmark</strong>
+          56°N · 10°E · UTC+1
         </div>
         <div class="av-tags">
           <span class="av-tag">Grundfos</span>
@@ -838,15 +899,6 @@ footer{
       <span class="card-bg-num">03</span>
     </a>
 
-    <a href="pages/about/about.html" class="card card-about reveal reveal-delay-3" data-delay="3">
-      <span class="card-num">04 / About</span>
-      <span class="card-icon">👤</span>
-      <h3>About</h3>
-      <p>Engineer turned AI PM. Born in Barcelona, studied across five countries, based in Denmark. Full story inside.</p>
-      <span class="card-cta">Learn more <span class="card-arrow">→</span></span>
-      <span class="card-bg-num">04</span>
-    </a>
-
   </div>
 </section>
 
@@ -866,7 +918,7 @@ footer{
       <span class="tl-dot"></span>
       <span class="tl-date">August 2019 – Present</span>
       <h3 class="tl-title">Senior AI Project Manager</h3>
-      <p class="tl-co">Grundfos · Bjerringbro & Copenhagen, Denmark</p>
+      <p class="tl-co">Grundfos · Bjerringbro & Aarhus, Denmark</p>
       <p class="tl-desc">Leading the exploration and implementation of AI and XR technologies across a global organisation. Joined through a rotation-based Graduate Program, spending time in Additive Manufacturing, Product Management, Sales Development, and XR &amp; AI — before choosing to grow the latter into a full career track.</p>
       <div class="tl-chips">
         <span class="chip">Artificial Intelligence</span>
