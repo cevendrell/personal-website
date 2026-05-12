@@ -12,24 +12,24 @@
 <style>
 /* ─── TOKENS ───────────────────────────────────────── */
 :root {
-  --bg:        #03050d;
-  --bg2:       #060918;
-  --surface:   #090e1e;
-  --s2:        #0d1428;
-  --s3:        #121b35;
-  --cyan:      #38c4ee;
-  --cyan-dim:  rgba(56,196,238,.1);
-  --cyan-glow: rgba(56,196,238,.18);
-  --orange:    #f07040;
-  --gold:      #d4a853;
-  --gold-dim:  rgba(212,168,83,.12);
-  --green:     #34d399;
-  --purple:    #a78bfa;
-  --text:      #ecf1fa;
-  --muted:     #6e8dab;
-  --dim:       #334d68;
-  --border:    rgba(56,196,238,.1);
-  --bh:        rgba(56,196,238,.32);
+  --bg:        #020202;
+  --bg2:       #070707;
+  --surface:   #0b0b0f;
+  --s2:        #101019;
+  --s3:        #15161f;
+  --cyan:      #e0d5b8;
+  --cyan-dim:  rgba(224,213,184,.1);
+  --cyan-glow: rgba(224,213,184,.16);
+  --orange:    #f2bd64;
+  --gold:      #c9a56f;
+  --gold-dim:  rgba(201,165,111,.12);
+  --green:     #73d3ac;
+  --purple:    #9e84ff;
+  --text:      #f4f1ea;
+  --muted:     #a9a29f;
+  --dim:       #4f585f;
+  --border:    rgba(255,255,255,.08);
+  --bh:        rgba(255,255,255,.12);
   --r:         .75rem;
 }
 /* ─── RESET ─────────────────────────────────────────── */
@@ -50,23 +50,6 @@ body{
 }
 h1,h2,h3{font-family:'Playfair Display',Georgia,serif;line-height:1.1}
 code,kbd,.mono{font-family:'JetBrains Mono',monospace}
-
-/* ─── CUSTOM CURSOR ─────────────────────────────────── */
-.cursor-dot{
-  position:fixed;width:7px;height:7px;border-radius:50%;
-  background:var(--cyan);pointer-events:none;z-index:9999;
-  transform:translate(-50%,-50%);transition:transform .1s;
-  mix-blend-mode:screen;
-}
-.cursor-ring{
-  position:fixed;width:32px;height:32px;border-radius:50%;
-  border:1.5px solid rgba(56,196,238,.5);pointer-events:none;z-index:9998;
-  transform:translate(-50%,-50%);
-  transition:width .3s,height .3s,border-color .3s,opacity .3s;
-}
-body:has(a:hover,.btn:hover,.card:hover) .cursor-ring{
-  width:48px;height:48px;border-color:var(--cyan);
-}
 
 /* ─── CANVAS ─────────────────────────────────────────── */
 #cosmos{position:fixed;inset:0;z-index:0;pointer-events:none}
@@ -91,7 +74,7 @@ nav{
   position:fixed;top:0;left:0;right:0;z-index:200;
   padding:1rem 3rem;
   display:flex;justify-content:space-between;align-items:center;
-  background:rgba(3,5,13,.55);
+  background:rgba(0,0,0,.80);
   backdrop-filter:blur(24px) saturate(140%);
   -webkit-backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border);
@@ -157,6 +140,28 @@ nav.scrolled{padding:.75rem 3rem}
 .nav-cta:hover{background:var(--cyan-dim);transform:translateY(-1px)}
 .hamburger{display:none;flex-direction:column;gap:5px;padding:4px}
 .hamburger span{display:block;width:22px;height:1.5px;background:var(--muted);transition:all .3s}
+
+.hero-headshot{
+  margin:0 auto 2.5rem;
+  display:flex;align-items:center;justify-content:center;
+  width:min(280px,100%);
+  min-height:280px;
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:1.25rem;
+  padding:1rem;
+}
+.hero-headshot-box{
+  width:100%;max-width:220px;text-align:center;
+}
+.hero-headshot-img{
+  width:100%;height:auto;display:block;border-radius:50%;
+  border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 60px rgba(0,0,0,.28);
+}
+.hero-headshot-fallback{
+  margin-top:1rem;color:var(--muted);font-size:.92rem;line-height:1.6;
+}
+.hero-headshot-fallback strong{display:block;color:var(--text);margin-top:.35rem;}
 
 /* ─── SECTION WRAPPER ────────────────────────────────── */
 .section{position:relative;z-index:10}
@@ -409,7 +414,7 @@ nav.scrolled{padding:.75rem 3rem}
 }
 .cards-grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:repeat(3,minmax(260px,1fr));
   gap:1px;
   background:var(--border);
   border:1px solid var(--border);
@@ -706,10 +711,6 @@ footer{
 <!-- Scroll progress -->
 <div id="progress"></div>
 
-<!-- Custom cursor -->
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-
 <!-- Starfield -->
 <canvas id="cosmos"></canvas>
 
@@ -785,8 +786,11 @@ footer{
   </div>
   <div class="hero-headshot">
     <div class="hero-headshot-box">
-      <span>Headshot placeholder</span>
-      <strong>images/headshot.jpg</strong>
+      <img src="images/headshot.jpg" alt="Personal headshot" class="hero-headshot-img" onerror="this.style.display='none';" />
+      <div class="hero-headshot-fallback">
+        <span>Personal headshot</span>
+        <strong>Drop <code>images/headshot.jpg</code> here</strong>
+      </div>
     </div>
   </div>
   <div class="scroll-cue">
@@ -996,21 +1000,6 @@ footer{
 
 <!-- ─────────────────────── JS ─────────────────────── -->
 <script>
-/* ── CURSOR ── */
-const dot = document.getElementById('cursorDot');
-const ring = document.getElementById('cursorRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-(function animCursor() {
-  rx += (mx - rx) * 0.14;
-  ry += (my - ry) * 0.14;
-  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
-  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-  requestAnimationFrame(animCursor);
-})();
-document.addEventListener('mouseleave', () => { dot.style.opacity = 0; ring.style.opacity = 0; });
-document.addEventListener('mouseenter', () => { dot.style.opacity = 1; ring.style.opacity = 1; });
-
 /* ── SCROLL PROGRESS ── */
 const progress = document.getElementById('progress');
 window.addEventListener('scroll', () => {

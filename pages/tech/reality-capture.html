@@ -47,7 +47,63 @@
 <!-- End of Squarespace Headers -->
     
     
-  </head>
+  
+<style>
+.custom-site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.94);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.custom-site-nav .nav-brand {
+  color: #f7f2e9;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+.custom-site-nav .nav-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.custom-site-nav .nav-items a {
+  color: #d9d8d4;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  transition: color 0.2s ease;
+}
+.custom-site-nav .nav-items a:hover {
+  color: #fff;
+}
+.custom-site-nav-spacer {
+  height: 72px;
+}
+header#header, #header, .header-title-nav-wrapper, .header-nav, .header-menu {
+  display: none !important;
+}
+body {
+  padding-top: 72px !important;
+}
+</style>
+
+</head>
 
   <body
     id="collection-6586f73fea3bb57319817a5c"
@@ -61,6 +117,19 @@
     "
     tabindex="-1"
   >
+
+<div class="custom-site-nav">
+  <a class="nav-brand" href="/index.html">CEV</a>
+  <ul class="nav-items">
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/pages/about/about.html">About</a></li>
+    <li><a href="/pages/travel/travel-map.html">Travel</a></li>
+    <li><a href="/pages/photography/gallery.html">Photography</a></li>
+    <li><a href="/pages/tech/ai-projects.html">Tech</a></li>
+    <li><a href="/pages/about/contact.html">Contact</a></li>
+  </ul>
+</div>
+
     <div
       id="siteWrapper"
       class="clearfix site-wrapper"

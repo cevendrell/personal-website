@@ -33,8 +33,77 @@
 <script crossorigin="anonymous" src="//assets.squarespace.com/universal/scripts-compressed/slides-685aea39541f033d-min.en-US.js" ></script><script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].css = ["//assets.squarespace.com/universal/styles-compressed/slides-bd97de6bd5f5ff9b-min.en-US.css"]; })(SQUARESPACE_ROLLUPS, 'squarespace-slides');</script>
 <link rel="stylesheet" type="text/css" href="//assets.squarespace.com/universal/styles-compressed/slides-bd97de6bd5f5ff9b-min.en-US.css"><script>Squarespace.load(window);</script>
 <!-- End of Squarespace Headers -->
-  </head>
+  
+<style>
+.custom-site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.94);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.custom-site-nav .nav-brand {
+  color: #f7f2e9;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+.custom-site-nav .nav-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.custom-site-nav .nav-items a {
+  color: #d9d8d4;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  transition: color 0.2s ease;
+}
+.custom-site-nav .nav-items a:hover {
+  color: #fff;
+}
+.custom-site-nav-spacer {
+  height: 72px;
+}
+header#header, #header, .header-title-nav-wrapper, .header-nav, .header-menu {
+  display: none !important;
+}
+body {
+  padding-top: 72px !important;
+}
+</style>
+
+</head>
   <body id="collection-657ddcc92b4fca7f6ff2a8c6">
+
+<div class="custom-site-nav">
+  <a class="nav-brand" href="/index.html">CEV</a>
+  <ul class="nav-items">
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/pages/about/about.html">About</a></li>
+    <li><a href="/pages/travel/travel-map.html">Travel</a></li>
+    <li><a href="/pages/photography/gallery.html">Photography</a></li>
+    <li><a href="/pages/tech/ai-projects.html">Tech</a></li>
+    <li><a href="/pages/about/contact.html">Contact</a></li>
+  </ul>
+</div>
+
     <squarespace:escape><div class="sqs-slide-wrapper" data-slide-id="6765bc546bf3c21982cc02a2" data-slide-type="lock-screen">
 	<div class="sqs-slide-container countdown-numeric-label-font-size-medium  page-border-size-medium auto-overlay auto-image-background-color video-overlay-color-blend-mode-normal button-layout-style-inline-auto button-style-outline button-shape-rectangle social-icons-size-small social-icons-style-knockout social-icons-shape-circle  audio-player-icons-size-small audio-player-icons-style-border audio-player-icons-shape-circle  video-icon-size-large video-icon-style-knockout video-icon-shape-circle map-style-minimal-light lock-size-small lock-style-border lock-shape-circle password-style-rectangle newsletter-layout-style-inline newsletter-style-rectangle overlay-close-button-style-icon overlay-close-button-location-inside overlay-load-animation-fade-in overlay-advanced-layout-styles-disabled overlay-alignment-center  overlay-mobile-styles-enabled sso-button-style-outline sso-button-shape-rectangle" data-slide-id="6765bc546bf3c21982cc02a2" data-slide-type="lock-screen">
 
