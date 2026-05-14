@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="About Carlos Ebrahim Vendrell — XR and AI professional, traveller, and photographer based in Aarhus, Denmark.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cevendrell.github.io/personal-website/pages/about/about-2.html">
+  <meta property="og:title" content="About — Carlos Ebrahim Vendrell">
+  <meta property="og:description" content="Career, background, and story of Carlos Ebrahim Vendrell — XR professional, traveller, and photographer.">
+  <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>About — Carlos Ebrahim Vendrell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #0a0b10;
+      --bg-alt:       #0e0f16;
+      --bg-elevated:  #11131a;
+      --surface:      rgba(255,255,255,0.03);
+      --surface-hi:   rgba(255,255,255,0.055);
+      --text:         #ececea;
+      --text-dim:     #a8a9af;
+      --text-mute:    #6b6d75;
+      --accent:       #e8dcc4;
+      --c-travel:     #7dd3c0;
+      --c-photo:      #f0b86e;
+      --c-tech:       #a98cff;
+      --line:         rgba(255,255,255,0.07);
+      --line-strong:  rgba(255,255,255,0.14);
+      --radius:       16px;
+      --radius-lg:    24px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body { font-family: 'Inter', -apple-system, sans-serif; color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    ::selection { background: var(--accent); color: #111; }
+
+    .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; }
+
+    /* ── PRELOADER ── */
+    .preloader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    .preloader.done { opacity: 0; visibility: hidden; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--line-strong);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── NAV ── */
+    nav#navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 1.25rem 2.5rem; display: flex; align-items: center;
+      justify-content: space-between;
+      background: rgba(10,11,16,0.6);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+    nav#navbar.scrolled { padding: 0.85rem 2.5rem; background: rgba(10,11,16,0.88); border-bottom-color: var(--line); }
+    .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text); }
+    .nav-links { display: flex; gap: 2.25rem; list-style: none; align-items: center; }
+    .nav-item { position: relative; }
+    .nav-links > li > a { font-size: 0.85rem; font-weight: 500; color: var(--text-dim); position: relative; padding: 0.5rem 0; transition: color 0.2s; }
+    .nav-links > li > a:hover { color: var(--text); }
+    .nav-links > li > a::after { content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: var(--accent); transition: width 0.25s ease; }
+    .nav-links > li > a:hover::after { width: 100%; }
+    .dropdown { position: absolute; top: calc(100% + 0.5rem); left: -1rem; min-width: 200px; background: var(--bg-elevated); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.5rem; list-style: none; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .dropdown li { list-style: none; }
+    .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown a { display: block; padding: 0.65rem 0.9rem; border-radius: 8px; font-size: 0.87rem; color: var(--text-dim); transition: background 0.15s, color 0.15s; }
+    .dropdown a:hover { background: var(--surface-hi); color: var(--text); }
+    .nav-cta { font-size: 0.8rem; font-weight: 600; padding: 0.65rem 1.2rem; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); transition: all 0.25s; }
+    .nav-cta:hover { background: var(--accent); color: #111; border-color: var(--accent); }
+    .nav-socials { display: flex; align-items: center; gap: 1rem; }
+    .nav-social-link { color: var(--text-mute); display: flex; align-items: center; transition: color 0.2s; }
+    .nav-social-link:hover { color: var(--text); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 6px; background: none; border: none; cursor: pointer; }
+    .hamburger span { width: 22px; height: 1.5px; background: var(--text); display: block; transition: all 0.3s; }
+    @media (max-width: 768px) {
+      nav#navbar { padding: 1rem 1.5rem; }
+      nav#navbar.scrolled { padding: 0.75rem 1.5rem; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-socials { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    /* Mobile nav open */
+    body.nav-open { overflow: hidden; }
+    body.nav-open .nav-links { display: flex !important; flex-direction: column; position: fixed; inset: 0; z-index: 999; background: var(--bg); padding: 5.5rem 2rem 2rem; gap: 0; overflow-y: auto; align-items: flex-start; }
+    body.nav-open .nav-links > li > a { font-size: 1.5rem; font-weight: 600; color: var(--text); padding: 0.75rem 0; }
+    body.nav-open .dropdown { position: static; opacity: 1 !important; visibility: visible !important; transform: none !important; background: transparent; border: none; box-shadow: none; padding: 0.25rem 0 0.75rem 1rem; min-width: auto; }
+    body.nav-open .dropdown a { font-size: 1rem; padding: 0.4rem 0.5rem; }
+    body.nav-open .hamburger span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
+    body.nav-open .hamburger span:nth-child(2) { opacity: 0; }
+    body.nav-open .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
+
+    /* ── REVEAL ANIMATION ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+
+    /* ── SECTION BASE ── */
+    section {
+      padding: 8rem 2.5rem;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    section.full-bleed {
+      max-width: none;
+      padding-left: 0; padding-right: 0;
+    }
+    .section-divider {
+      max-width: 1160px;
+      margin: 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line), transparent);
+    }
+    .section-eyebrow {
+      color: var(--text-mute);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .section-lead {
+      font-size: 1rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      max-width: 600px;
+    }
+
+    /* ── HERO ── */
+    #home {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      padding-top: 9rem;
+      padding-bottom: 6rem;
+      position: relative;
+    }
+    .hero-copy h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+    }
+    .hero-copy h1 .accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--c-photo) 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-tagline {
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      max-width: 480px;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.9rem; font-weight: 600;
+      padding: 0.9rem 1.75rem;
+      border-radius: 999px;
+      transition: all 0.25s;
+    }
+    .btn-primary { background: var(--accent); color: #111; }
+    .btn-primary:hover { background: #fff; }
+    .btn-ghost { border: 1px solid var(--line-strong); color: var(--text); }
+    .btn-ghost:hover { background: var(--surface-hi); border-color: var(--line-strong); }
+
+    .hero-photo-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-photo {
+      width: 320px; height: 400px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--bg-elevated);
+      position: relative;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    }
+    .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+    .hero-photo-badge {
+      position: absolute;
+      bottom: 1.25rem; left: 1.25rem;
+      background: rgba(10,11,16,0.82);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--c-travel);
+      box-shadow: 0 0 10px var(--c-travel);
+      flex-shrink: 0;
+    }
+    .badge-text { font-size: 0.78rem; color: var(--text-dim); }
+
+    /* ── PASSIONS (services) ── */
+    #passions { background: var(--bg-alt); }
+    #passions.full-bleed > * { max-width: 1160px; margin-left: auto; margin-right: auto; }
+
+    .passions-header { text-align: center; margin-bottom: 3.5rem; }
+    .passions-header .section-lead { margin: 0 auto; }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+      isolation: isolate;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--card-accent, var(--accent));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .service-card:hover { background: var(--surface-hi); border-color: var(--line-strong); transform: translateY(-4px); }
+    .service-card:hover::before { opacity: 1; }
+    .service-card--travel { --card-accent: var(--c-travel); }
+    .service-card--photo  { --card-accent: var(--c-photo); }
+    .service-card--tech   { --card-accent: var(--c-tech); }
+
+    .service-icon {
+      font-size: 2rem; margin-bottom: 1.25rem;
+      display: inline-block;
+    }
+    .service-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .service-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.75; margin-bottom: 1.5rem; }
+    .service-link {
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--card-accent, var(--accent));
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+
+    /* ── ABOUT (photo + bio) ── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .about-photo-col { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+    .about-photo {
+      width: 100%; max-width: 340px;
+      aspect-ratio: 4/5;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--bg-elevated);
+    }
+    .about-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+    .about-socials { display: flex; gap: 0.75rem; }
+    .about-social-btn {
+      width: 40px; height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-mute);
+      transition: all 0.2s;
+    }
+    .about-social-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .about-text .section-eyebrow { margin-bottom: 0.5rem; }
+    .about-text h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
+    .about-text .subtitle { font-size: 1rem; color: var(--c-tech); font-weight: 500; margin-bottom: 2rem; }
+    .about-text p { font-size: 0.95rem; color: var(--text-dim); line-height: 1.85; margin-bottom: 1.25rem; }
+    .about-quote {
+      font-size: 1.05rem; font-style: italic; font-weight: 400;
+      line-height: 1.6; color: var(--text);
+      padding-left: 1.25rem;
+      border-left: 2px solid var(--accent);
+      margin: 1.75rem 0 2rem;
+    }
+
+    /* ── CAREER (work section) ── */
+    #career { background: var(--bg-alt); }
+    .career-header { text-align: center; margin-bottom: 3.5rem; }
+    .career-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+    .career-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .career-card:hover { background: var(--surface-hi); border-color: var(--line-strong); }
+    .career-card-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.12em;
+      color: var(--text-mute); margin-bottom: 0.75rem;
+    }
+    .career-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .career-card p { font-size: 0.875rem; color: var(--text-dim); line-height: 1.7; }
+
+    .career-tag {
+      display: flex; align-items: center; gap: 1.25rem;
+      padding: 1.5rem 2rem;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      max-width: 520px; margin: 0 auto;
+    }
+    .career-tag-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--c-tech);
+      box-shadow: 0 0 12px var(--c-tech);
+      flex-shrink: 0;
+    }
+    .career-tag-name { font-size: 1.2rem; font-weight: 700; }
+    .career-tag-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: var(--text-mute); margin-left: auto;
+    }
+
+    /* ── CONTACT ── */
+    #contact {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .contact-form-col h2 { font-size: clamp(2rem, 3.5vw, 2.6rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
+    .contact-form-col .section-lead { margin-bottom: 2rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+    .form-field label { font-size: 0.8rem; font-weight: 500; color: var(--text-mute); letter-spacing: 0.06em; text-transform: uppercase; }
+    .form-field input,
+    .form-field textarea {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm, 8px);
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: border-color 0.2s, background 0.2s;
+      outline: none;
+      width: 100%;
+    }
+    .form-field input:focus,
+    .form-field textarea:focus { border-color: var(--accent); background: var(--surface-hi); }
+    .form-field textarea { resize: vertical; min-height: 140px; }
+    .form-submit {
+      background: var(--accent); color: #111;
+      font-size: 0.9rem; font-weight: 700;
+      padding: 0.9rem 2rem; border-radius: 999px;
+      border: none; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .form-submit:hover { background: #fff; }
+
+    .contact-info-col { padding-top: 0.5rem; }
+    .contact-info-col h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; }
+    .contact-info-item {
+      display: flex; align-items: center; gap: 0.9rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem; color: var(--text-dim);
+    }
+    .contact-info-item:last-child { border-bottom: none; }
+    .contact-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .contact-info-item a { color: var(--text-dim); transition: color 0.2s; }
+    .contact-info-item a:hover { color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer { padding: 2.5rem; border-top: 1px solid var(--line); }
+    .footer-inner { max-width: 1160px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-copy { font-size: 0.82rem; color: var(--text-mute); }
+    .footer-links { display: flex; gap: 1.75rem; }
+    .footer-links a { font-size: 0.82rem; font-weight: 500; color: var(--text-dim); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #home { grid-template-columns: 1fr; gap: 3rem; padding-top: 8rem; }
+      .hero-photo-wrap { justify-content: flex-start; }
+      .hero-photo { width: 260px; height: 320px; }
+      #about { grid-template-columns: 1fr; gap: 3rem; }
+      .about-photo-col { flex-direction: row; align-items: flex-start; gap: 2rem; flex-wrap: wrap; }
+      .about-photo { max-width: 260px; }
+      .service-grid { grid-template-columns: 1fr; }
+      .career-grid { grid-template-columns: 1fr; }
+      #contact { grid-template-columns: 1fr; gap: 3rem; }
+      .form-row { grid-template-columns: 1fr; }
+      section { padding: 5rem 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .hero-actions { flex-direction: column; }
+      .hero-photo { width: 100%; height: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Preloader -->
+<div class="preloader" id="preloader">
+  <div class="spinner"></div>
+</div>
+
+<nav id="navbar">
+  <a href="../../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
+  <ul class="nav-links">
+    <li class="nav-item">
+      <a href="../../index.html">Home</a>
+      <ul class="dropdown">
+        <li><a href="about.html">About me</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../travel/travel-map.html">Travel</a>
+      <ul class="dropdown">
+        <li><a href="../travel/travel-map.html">Travel Map</a></li>
+        <li><a href="../travel/volunteering.html">Volunteering</a></li>
+        <li><a href="../travel/flight-log.html">Flight Log</a></li>
+        <li><a href="../travel/dive-log.html">Dive Log</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../photography/gallery.html">Photography</a>
+      <ul class="dropdown">
+        <li><a href="../photography/gallery.html">Gallery</a></li>
+        <li><a href="../photography/northern-lights.html">Northern Lights</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../tech/ai-projects.html">Tech</a>
+      <ul class="dropdown">
+        <li><a href="../tech/xr-videos.html">XR Videos</a></li>
+        <li><a href="../tech/reality-capture.html">Reality Capture</a></li>
+        <li><a href="../tech/ai-projects.html">AI tools</a></li>
+        <li><a href="../tech/3d-printing.html">3D Printing</a></li>
+      </ul>
+    </li>
+  </ul>
+  <div class="nav-socials">
+    <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener" aria-label="LinkedIn" class="nav-social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    </a>
+    <a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener" aria-label="Instagram" class="nav-social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+    </a>
+  </div>
+  <a href="contact.html" class="nav-cta">Get in touch</a>
+  <button class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HOME
+════════════════════════════════════════ -->
+<section id="home">
+
+  <div class="hero-copy">
+    <p class="mono section-eyebrow reveal">Based in Aarhus, Denmark</p>
+    <h1 class="reveal delay-1">Hey, I'm <span class="accent">Carlos.</span></h1>
+    <p class="hero-tagline reveal delay-2">
+      I'm from Barcelona, but I've been living in Denmark for the past 7 years. Currently a Senior AI Project Manager at Grundfos — and when possible I love to travel as much as I can and document everything with a worrying amount of detail.
+    </p>
+    <div class="hero-actions reveal delay-3">
+      <a href="../travel/travel-map.html" class="btn btn-primary">Explore my world ↗</a>
+      <a href="contact.html" class="btn btn-ghost">Get in touch</a>
+    </div>
+  </div>
+
+  <div class="hero-photo-wrap reveal delay-2">
+    <div class="hero-photo">
+      <img src="../../media/headshot.png" alt="Carlos Ebrahim Vendrell"
+           onerror="this.style.display='none'">
+      <div class="hero-photo-badge">
+        <div class="badge-dot"></div>
+        <span class="badge-text mono">Currently in Aarhus</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════
+     PASSIONS  (→ Services in template)
+════════════════════════════════════════ -->
+<section id="passions">
+  <div class="passions-header">
+    <p class="mono section-eyebrow reveal">What I'm passionate about</p>
+    <h2 class="section-title reveal delay-1">Three things I keep coming back to</h2>
+    <p class="section-lead reveal delay-2">
+      For better or worse, my interests are incredibly diverse and have evolved considerably over time. Despite this, there are three areas I've been passionate about for the longest time.
+    </p>
+  </div>
+
+  <div class="service-grid">
+
+    <a href="../travel/travel-map.html" class="service-card service-card--travel reveal">
+      <span class="service-icon">✈️</span>
+      <h3>Travel</h3>
+      <p>Interactive maps, flight logs, dive logs, and volunteering adventures across the globe. 429 pins, 53 countries, 4 continents — and counting. I document everything obsessively.</p>
+      <span class="service-link">Explore the map →</span>
+    </a>
+
+    <a href="../photography/gallery.html" class="service-card service-card--photo reveal delay-1">
+      <span class="service-icon">📷</span>
+      <h3>Photography</h3>
+      <p>Gallery, northern lights captures, and visual stories from around the world. Light, composition, and a bit of luck. Mostly shot on a Sony A7C.</p>
+      <span class="service-link">View gallery →</span>
+    </a>
+
+    <a href="../tech/ai-projects.html" class="service-card service-card--tech reveal delay-2">
+      <span class="service-icon">🤖</span>
+      <h3>Tech & AI</h3>
+      <p>AI tools, XR experiences, 3D printing, and reality capture work from my career at Grundfos. The future, built today — and occasionally broken tomorrow.</p>
+      <span class="service-link">See projects →</span>
+    </a>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════
+     ABOUT  (→ About in template)
+════════════════════════════════════════ -->
+<section id="about">
+
+  <div class="about-photo-col">
+    <div class="about-photo reveal">
+      <img src="../../media/headshot.png" alt="Carlos Ebrahim Vendrell"
+           onerror="this.style.display='none'">
+    </div>
+    <div class="about-socials reveal delay-1">
+      <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener" aria-label="LinkedIn" class="about-social-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener" aria-label="Instagram" class="about-social-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+      <a href="https://www.strava.com/athletes/22414565" target="_blank" rel="noopener" aria-label="Strava" class="about-social-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="about-text">
+    <p class="mono section-eyebrow reveal">A little more about Carlos</p>
+    <h2 class="reveal delay-1">Welcome to my unapologetically diverse site.</h2>
+    <p class="subtitle reveal delay-1">Senior AI Project Manager · XR Professional · Photographer</p>
+
+    <blockquote class="about-quote reveal delay-2">
+      Balancing the exploration and implementation of emerging XR and AI technologies within a well-established, water-focused global enterprise.
+    </blockquote>
+
+    <p class="reveal delay-2">
+      I'm someone who can become captivated by a completely new random topic and suddenly find myself immersed in videos about it around the clock — the rabbit hole is my friend. Despite this curiosity, there are three areas I've been passionate about for a longer time: Travel, Photography, and Tech.
+    </p>
+    <p class="reveal delay-3">
+      I have over 6 years of diverse industry experience gained through a rotation-based Graduate Program at Grundfos, which allowed me to explore Additive Manufacturing, Product Management, Sales Development, and XR & AI for Industry. I eventually chose the rapidly growing world of XR and AI for industry applications to continue my career.
+    </p>
+    <p class="reveal delay-3">
+      I've centred this site around these three topics — have a look around.
+    </p>
+  </div>
+
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════
+     CAREER  (→ Work in template)
+════════════════════════════════════════ -->
+<section id="career">
+  <div class="career-header">
+    <p class="mono section-eyebrow reveal">Experience</p>
+    <h2 class="section-title reveal delay-1">Career at Grundfos</h2>
+    <p class="section-lead reveal delay-2" style="margin: 0 auto;">
+      A rotation-based Graduate Program that became a career — exploring the full breadth of a global enterprise before going deep on XR and AI.
+    </p>
+  </div>
+
+  <div class="career-grid">
+
+    <div class="career-card reveal">
+      <p class="career-card-num">01</p>
+      <h3>Additive Manufacturing</h3>
+      <p>Exploring 3D printing technologies and their application within industrial manufacturing at scale — from prototyping to production-ready parts.</p>
+    </div>
+
+    <div class="career-card reveal delay-1">
+      <p class="career-card-num">02</p>
+      <h3>Product Management</h3>
+      <p>Owning the product lifecycle from concept to launch, working cross-functionally with engineering, marketing, and commercial teams.</p>
+    </div>
+
+    <div class="career-card reveal delay-2">
+      <p class="career-card-num">03</p>
+      <h3>Sales Development</h3>
+      <p>Building customer relationships and developing go-to-market strategies across international markets.</p>
+    </div>
+
+    <div class="career-card reveal delay-3">
+      <p class="career-card-num">04</p>
+      <h3>XR & AI for Industry</h3>
+      <p>Currently focused on the intersection of extended reality and artificial intelligence — building tools that create real value in industrial environments.</p>
+    </div>
+
+  </div>
+
+  <div class="career-tag reveal delay-2">
+    <div class="career-tag-dot"></div>
+    <span class="career-tag-name">Grundfos</span>
+    <span class="career-tag-date">August 2019 – Present</span>
+  </div>
+
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════
+     CONTACT  (→ Contact in template)
+════════════════════════════════════════ -->
+<section id="contact">
+
+  <div class="contact-form-col">
+    <p class="mono section-eyebrow reveal">Say hello</p>
+    <h2 class="reveal delay-1">Get in touch</h2>
+    <p class="section-lead reveal delay-2">Whether it's an XR project, a speaking opportunity, or just to connect — I'd love to hear from you.</p>
+
+    <!-- Replace YOUR_FORM_ID with your Formspree form ID at formspree.io -->
+    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="reveal delay-2">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your name" required>
+        </div>
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="your@email.com" required>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="What's on your mind?" required></textarea>
+      </div>
+      <button type="submit" class="form-submit">Send Message</button>
+    </form>
+  </div>
+
+  <div class="contact-info-col reveal delay-1">
+    <h3>Contact Info</h3>
+    <div class="contact-info-item">
+      <span class="contact-icon">📍</span>
+      <span>Aarhus, Denmark</span>
+    </div>
+    <div class="contact-info-item">
+      <span class="contact-icon">💼</span>
+      <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener">linkedin.com/in/carlosevendrell</a>
+    </div>
+    <div class="contact-info-item">
+      <span class="contact-icon">📷</span>
+      <a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener">@carlosevendrell</a>
+    </div>
+    <div class="contact-info-item">
+      <span class="contact-icon">🏃</span>
+      <a href="https://www.strava.com/athletes/22414565" target="_blank" rel="noopener">Strava profile</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">© 2026 Carlos Ebrahim Vendrell</span>
+    <div class="footer-links">
+      <a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/22414565" target="_blank" rel="noopener">Strava</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Preloader */
+  window.addEventListener('load', () => {
+    document.getElementById('preloader').classList.add('done');
+  });
+
+  /* Nav scroll state */
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  /* Hamburger */
+  const hamburger = document.querySelector('.hamburger');
+  if (hamburger) {
+    hamburger.addEventListener('click', () => document.body.classList.toggle('nav-open'));
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => document.body.classList.remove('nav-open'));
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.body.classList.remove('nav-open');
+    });
+  }
+
+  /* Reveal on scroll */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

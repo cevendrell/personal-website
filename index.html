@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Personal website of Carlos Ebrahim Vendrell — XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cevendrell.github.io/personal-website/">
+  <meta property="og:title" content="Carlos Ebrahim Vendrell">
+  <meta property="og:description" content="Personal website of Carlos Ebrahim Vendrell — XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
+  <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Carlos Ebrahim Vendrell">
+  <meta name="twitter:description" content="Personal website of Carlos Ebrahim Vendrell — XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
 <title>Carlos Ebrahim Vendrell</title>
 <meta name="description" content="A portfolio for a curious AI project manager exploring travel, photography, and technology.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1450,6 +1459,19 @@ footer {
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 40);
   }, { passive: true });
+
+  const hamburger = document.querySelector('.hamburger');
+  if (hamburger) {
+    hamburger.addEventListener('click', () => {
+      document.body.classList.toggle('nav-open');
+    });
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => document.body.classList.remove('nav-open'));
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.body.classList.remove('nav-open');
+    });
+  }
 
   /* Reset scroll on load */
   if (!window.location.hash) window.scrollTo(0, 0);
