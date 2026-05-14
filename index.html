@@ -270,7 +270,7 @@
     #service .section-title h2::after { display: none; }
     #service .section-title h2 { padding-bottom: 0; }
     .passion-intro {
-      max-width: 700px; margin: 0 auto 52px; text-align: center;
+      max-width: 700px; margin: -28px auto 52px; text-align: center;
     }
     .passion-intro p {
       color: var(--cream-dim); font-size: 0.97rem; line-height: 1.85; margin-bottom: 1rem;
@@ -304,12 +304,9 @@
     }
     .passion-tile--travel .passion-tile-overlay { background: rgba(140,68,30,0.92); }    /* amber — matches Travel word */
     .passion-tile--photo  .passion-tile-overlay { background: rgba(20,14,6,0.92); }     /* near-black — matches Photography word */
-    .passion-tile--tech   .passion-tile-overlay { background: rgba(10,14,36,0.92); }    /* dark blue — matches Tech word */
+    .passion-tile--tech   .passion-tile-overlay { background: rgba(50,80,128,0.92); }    /* slate blue — matches Tech word colour */
     .passion-tile:hover .passion-tile-overlay { opacity: 1; }
-    .passion-tile-overlay .pt-label {
-      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
-      text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px;
-    }
+    .passion-tile-overlay .pt-label { display: none; }
     .passion-tile-overlay .pt-title { font-size: 1.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
 
     /* ── CAREER (Melan format) — dark blue ── */
@@ -352,6 +349,11 @@
       display: flex; align-items: center; gap: 1.25rem;
       padding-top: 2rem; border-top: 1px solid var(--line); flex-wrap: wrap;
     }
+    .career-company-logo {
+      height: 28px; width: auto; max-width: 120px;
+      object-fit: contain; filter: brightness(0) invert(1);
+      opacity: 0.85;
+    }
     .career-tag-name {
       font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em;
       display: flex; align-items: center; gap: 0.6rem;
@@ -390,8 +392,8 @@
       font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800;
       letter-spacing: -0.04em; color: var(--cream-dark); line-height: 1.1;
     }
-    /* override legacy white_text class — cream bg needs dark text */
-    .white_text .section_title h3 { color: var(--cream-dark); }
+    /* portfolio title — orange */
+    .white_text .section_title h3 { color: var(--c-photo); }
     .white_text .section_title span { color: var(--c-photo); }
 
     /* ── PORTFOLIO IMAGE GRID ── */
@@ -416,9 +418,7 @@
       opacity: 0; display: flex; align-items: flex-end;
       padding: 28px 24px; transition: opacity 0.4s;
     }
-    /* Alternate overlays: orange / dark-blue / orange / dark-blue / orange */
-    .portfolio_row_top .single_Portfolio:nth-child(2) .portfolio_hover  { background: var(--bg-alt); }
-    .portfolio_row_bottom .single_Portfolio:nth-child(2) .portfolio_hover { background: var(--bg-alt); }
+    /* All overlays: orange */
     .single_Portfolio:hover .portfolio_hover { opacity: 0.9; }
     .portfolio_hover .title h3 { color: #fff; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em; }
     .more_portfolio { text-align: center; margin-top: 48px; }
@@ -756,11 +756,11 @@
 
         <a href="pages/tech/ai-projects.html" class="passion-tile passion-tile--tech wow d2">
           <div class="passion-tile-bg">
-            <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/71ab7b3c-8212-4f5d-9607-e2d4e83097fc/DSC_8651.jpg" alt="Tech &amp; AI" loading="lazy">
+            <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/71ab7b3c-8212-4f5d-9607-e2d4e83097fc/DSC_8651.jpg" alt="Tech" loading="lazy">
           </div>
           <div class="passion-tile-overlay">
             <p class="pt-label">Build</p>
-            <p class="pt-title">Tech &amp; AI</p>
+            <p class="pt-title">Tech</p>
           </div>
         </a>
 
@@ -791,6 +791,8 @@
           <p class="wow d3">I eventually chose the rapidly growing world of XR and AI for industry applications to continue my career.</p>
 
           <div class="career-tag-row wow d4">
+            <img src="media/grundfoslogo.png" alt="GRUNDFOS" class="career-company-logo"
+                 onerror="this.style.display='none'">
             <span class="career-tag-name">GRUNDFOS</span>
             <span class="career-tag-date">August 2019 – Present</span>
           </div>
