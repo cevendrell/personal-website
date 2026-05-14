@@ -187,13 +187,13 @@
     .travel-hero-wrap {
       position: relative;
       width: 100%;
-      height: clamp(260px, 44vh, 520px);
+      height: clamp(380px, 62vh, 700px);
       overflow: hidden;
       background: var(--bg-elevated);
     }
     .travel-hero-wrap img {
       width: 100%; height: 100%;
-      object-fit: cover; display: block;
+      object-fit: cover; object-position: center 30%; display: block;
     }
     .travel-hero-wrap::after {
       content: '';
@@ -201,9 +201,9 @@
       background: linear-gradient(
         to bottom,
         rgba(10,11,16,0.25) 0%,
-        rgba(10,11,16,0)    35%,
-        rgba(10,11,16,0)    55%,
-        rgba(10,11,16,0.85) 88%,
+        rgba(10,11,16,0)    30%,
+        rgba(10,11,16,0)    62%,
+        rgba(10,11,16,0.85) 90%,
         rgba(10,11,16,1)    100%
       );
       pointer-events: none;

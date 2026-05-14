@@ -190,7 +190,7 @@
       will-change: transform;   /* promotes this subtree to its own compositor layer */
     }
     .hero-img-center {
-      position: absolute; right: 0; bottom: 0;  /* anchored to bottom — no gap */
+      position: absolute; right: 6vw; bottom: 0;  /* slight inset from edge */
     }
     .hero-parallax-img {
       display: block; height: 77vh; width: auto; max-width: none;  /* 15% smaller */
@@ -284,9 +284,10 @@
       font-size: clamp(2.2rem, 5.5vw, 3.6rem);
       font-weight: 800; letter-spacing: -0.04em; line-height: 1.1;
     }
-    .pw-travel { color: var(--cream-dark); }
-    .pw-photo  { color: var(--c-photo); }
-    .pw-tech   { color: var(--c-tech); }   /* slate blue */
+    .pw-travel { color: var(--c-photo); }      /* orange/amber */
+    .pw-photo  { color: var(--cream-dark); }   /* near-black */
+    .pw-tech   { color: var(--bg-alt); }       /* dark blue */
+    .pw-sep { color: var(--cream-dim); font-size: clamp(1.6rem, 3.5vw, 2.8rem); font-weight: 300; align-self: center; line-height: 1; }
 
     /* Photo tiles */
     .passion-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -299,9 +300,9 @@
       display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;
       padding: 36px 32px; opacity: 0; transition: opacity 0.4s; text-align: left;
     }
-    .passion-tile--travel .passion-tile-overlay { background: rgba(20,14,6,0.92); }       /* near-black */
-    .passion-tile--photo  .passion-tile-overlay { background: rgba(140,68,30,0.92); }    /* warm amber */
-    .passion-tile--tech   .passion-tile-overlay { background: rgba(30,55,110,0.92); }    /* slate blue */
+    .passion-tile--travel .passion-tile-overlay { background: rgba(140,68,30,0.92); }    /* amber — matches Travel word */
+    .passion-tile--photo  .passion-tile-overlay { background: rgba(20,14,6,0.92); }     /* near-black — matches Photography word */
+    .passion-tile--tech   .passion-tile-overlay { background: rgba(10,14,36,0.92); }    /* dark blue — matches Tech word */
     .passion-tile:hover .passion-tile-overlay { opacity: 1; }
     .passion-tile-overlay .pt-label {
       font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
@@ -311,9 +312,10 @@
 
     /* ── CAREER (Melan format) — dark blue ── */
     #career {
-      background: var(--bg-alt); padding: 100px 0;
+      background: var(--bg-alt); padding: 70px 0 100px;
       position: relative; overflow: hidden; z-index: 2;
     }
+    .career-text-col h2 { margin-bottom: 2.25rem; }
     .career-inner {
       max-width: 1140px; margin: 0 auto; padding: 0 30px;
       position: relative; z-index: 1;
@@ -656,7 +658,9 @@
         <p class="wow d2">Despite this curiosity, there are three areas I've been passionate about for a long time:</p>
         <div class="passion-words wow d3">
           <span class="pw-word pw-travel">Travel</span>
+          <span class="pw-sep">–</span>
           <span class="pw-word pw-photo">Photography</span>
+          <span class="pw-sep">–</span>
           <span class="pw-word pw-tech">Tech</span>
         </div>
         <p class="wow d3">I've centred this site around these three topics.</p>
@@ -757,7 +761,7 @@
 <div class="portfolio_area">
   <div class="portfolio_inner" style="position:relative;z-index:1;">
     <div class="section_title white_text wow">
-      <h3>Moments from<br>around the world</h3>
+      <h3>A glimpse of my<br>travel photography</h3>
     </div>
   </div>
 </div>
@@ -809,9 +813,8 @@
 <section id="hobbies">
   <div class="hobbies-inner">
     <h2 class="melan-h2 wow">Other stuff I love</h2>
-    <p class="melan-sub wow d2">Drag, scroll, or just watch it spin.</p>
 
-    <div class="hobby-wheel-wrap wow d3">
+    <div class="hobby-wheel-wrap wow d2" style="margin-top:2rem;">
       <div class="hobby-wheel" id="hobbyWheel">
         <div class="hobby-orb" data-color="travel"><span class="orb-icon">✈</span><span class="orb-label">Aviation</span></div>
         <div class="hobby-orb" data-color="photo"><span class="orb-icon">🏎</span><span class="orb-label">Formula 1</span></div>
