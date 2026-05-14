@@ -19,7 +19,6 @@
       --accent:       #e8dcc4;
       --line:         rgba(255, 255, 255, 0.07);
       --line-strong:  rgba(255, 255, 255, 0.14);
-      --c-tech:       #a98cff;
       --radius:       16px;
       --radius-lg:    24px;
     }
@@ -28,7 +27,6 @@
     html { scroll-behavior: smooth; background: var(--bg); }
     body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.75; }
     a { color: inherit; text-decoration: none; }
-    img { display: block; max-width: 100%; }
 
     /* ── NAV ── */
     nav#navbar {
@@ -68,36 +66,114 @@
     }
 
     /* ── LAYOUT ── */
-    .container { max-width: 960px; margin: 0 auto; padding: 8rem 2rem 5rem; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 8rem 2rem 5rem; }
     .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; }
 
     /* ── PAGE HEADER ── */
-    .page-eyebrow { color: var(--c-tech); margin-bottom: 0.75rem; }
-    .page-header { margin-bottom: 3.5rem; }
+    .page-eyebrow { color: var(--text-mute); margin-bottom: 0.75rem; }
+    .page-header { margin-bottom: 4rem; }
     .page-header h1 { font-size: clamp(2.4rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.75rem; }
-    .page-header p { font-size: 1rem; color: var(--text-dim); max-width: 640px; line-height: 1.8; }
+    .page-header p { font-size: 1rem; color: var(--text-dim); max-width: 600px; line-height: 1.8; }
 
-    /* ── VIDEO SECTIONS ── */
-    .video-section { margin-bottom: 4rem; }
-    .video-section h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
-    .video-section p { font-size: 0.95rem; color: var(--text-dim); margin-bottom: 1.25rem; line-height: 1.7; }
+    /* ── TIMELINE ── */
+    .timeline {
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: var(--line-strong);
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      align-items: center;
+      margin-bottom: 5rem;
+      position: relative;
+    }
+
+    /* Center dot */
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px rgba(232,220,196,0.3);
+      z-index: 1;
+    }
+
+    /* Text side */
+    .timeline-text {
+      padding: 0 3rem 0 0;
+    }
+    .timeline-item:nth-child(even) .timeline-text {
+      padding: 0 0 0 3rem;
+      order: 2;
+    }
+
+    /* Video side */
+    .timeline-video {
+      padding: 0 0 0 3rem;
+    }
+    .timeline-item:nth-child(even) .timeline-video {
+      padding: 0 3rem 0 0;
+      order: 1;
+    }
+
+    .timeline-text .video-location {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mute);
+      margin-bottom: 0.6rem;
+    }
+    .timeline-text h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+    .timeline-text p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
     .video-wrap {
       width: 100%;
       aspect-ratio: 16/9;
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--line);
       background: var(--bg-elevated);
     }
     .video-wrap iframe {
-      width: 100%;
-      height: 100%;
-      display: block;
-      border: none;
+      width: 100%; height: 100%;
+      display: block; border: none;
     }
 
-    /* ── DIVIDER ── */
-    .divider { border: none; border-top: 1px solid var(--line); margin: 3rem 0; }
+    /* ── MOBILE ── */
+    @media (max-width: 700px) {
+      .timeline::before { display: none; }
+      .timeline-item { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3.5rem; }
+      .timeline-item::after { display: none; }
+      .timeline-text,
+      .timeline-item:nth-child(even) .timeline-text { padding: 0; order: 1; }
+      .timeline-video,
+      .timeline-item:nth-child(even) .timeline-video { padding: 0; order: 2; }
+    }
 
     /* ── FOOTER ── */
     footer { margin-top: 5rem; padding: 2rem; border-top: 1px solid var(--line); }
@@ -164,35 +240,53 @@
   <div class="page-eyebrow mono">Tech</div>
   <div class="page-header">
     <h1>XR Videos</h1>
-    <p>Extended reality demos, conference talks, and industrial immersive experiences.</p>
+    <p>Conference talks, demos, and industry discussions on extended reality and reality capture.</p>
   </div>
 
-  <div class="video-section">
-    <h2>SynergyXR Platform Demo</h2>
-    <p>A walkthrough of the SynergyXR platform for industrial extended reality use cases.</p>
-    <div class="video-wrap">
-      <iframe src="https://www.youtube.com/embed/7PIofyUpub0" title="SynergyXR Platform Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <div class="timeline">
+
+    <!-- 1: text left, video right -->
+    <div class="timeline-item">
+      <div class="timeline-text">
+        <p class="video-location">Aarhus, Denmark &nbsp;·&nbsp; June 2023</p>
+        <h2>Discussing 3D Scanning with SynergyXR</h2>
+        <p>Jump in with myself, Jakob and Mads where we go over some of the best tools out there to leverage reality capture (or 3D Scanning) for the manufacturing industry.</p>
+      </div>
+      <div class="timeline-video">
+        <div class="video-wrap">
+          <iframe src="https://www.youtube.com/embed/7PIofyUpub0" title="Discussing 3D Scanning with SynergyXR" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <hr class="divider">
-
-  <div class="video-section">
-    <h2>AWE Conference Talk</h2>
-    <p>Presentation at the Augmented World Expo on XR for enterprise applications.</p>
-    <div class="video-wrap">
-      <iframe src="https://www.youtube.com/embed/HCgsgtzPAnQ" title="AWE Conference Talk" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <!-- 2: video left, text right -->
+    <div class="timeline-item">
+      <div class="timeline-text">
+        <p class="video-location">Vienna, Austria &nbsp;·&nbsp; October 2023</p>
+        <h2>AWE Europe</h2>
+        <p>Watch our presentation from AWE Europe at the Enterprise stage, where Mads and I discuss some of the great use cases of Reality Capture and SynergyXR in real life industrial applications.</p>
+      </div>
+      <div class="timeline-video">
+        <div class="video-wrap">
+          <iframe src="https://www.youtube.com/embed/HCgsgtzPAnQ" title="AWE Europe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <hr class="divider">
-
-  <div class="video-section">
-    <h2>Industrial Immersive</h2>
-    <p>Immersive training and operations scenarios built for industrial environments.</p>
-    <div class="video-wrap">
-      <iframe src="https://player.vimeo.com/video/864666368" title="Industrial Immersive" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+    <!-- 3: text left, video right -->
+    <div class="timeline-item">
+      <div class="timeline-text">
+        <p class="video-location">Houston, US &nbsp;·&nbsp; August 2023</p>
+        <h2>Industrial Immersive</h2>
+        <p>Jakob and I go over how our collaboration with SynergyXR has led to bringing tangible value to a manufacturing giant like Grundfos.</p>
+      </div>
+      <div class="timeline-video">
+        <div class="video-wrap">
+          <iframe src="https://player.vimeo.com/video/864666368" title="Industrial Immersive" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
     </div>
+
   </div>
 </div>
 
