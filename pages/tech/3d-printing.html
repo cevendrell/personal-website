@@ -87,21 +87,7 @@ section, .page-section, .sqs-layout, .sqs-block, .sqs-block-content, .sqs-block-
       gap: 0.65rem;
       text-decoration: none !important;
     }
-    .nav-logo::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 14px var(--accent);
-      animation: pulseLogo 3s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-    .nav-logo span { color: var(--accent) !important; }
-    @keyframes pulseLogo {
-      0%, 100% { box-shadow: 0 0 14px var(--accent); opacity: 1; }
-      50%       { box-shadow: 0 0 24px var(--accent); opacity: 0.85; }
-    }
+    .nav-logo span { color: inherit; }
     .nav-links {
       display: flex;
       gap: 2.25rem;
@@ -209,7 +195,7 @@ section, .page-section, .sqs-layout, .sqs-block, .sqs-block-content, .sqs-block-
 <body>
 
 <nav id="navbar">
-  <a href="../../index.html" class="nav-logo">Carlos <span>Ebrahim</span> Vendrell</a>
+  <a href="../../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
   <ul class="nav-links">
     <li class="nav-item">
       <a href="../about/about.html">About Me</a>

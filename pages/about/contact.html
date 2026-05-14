@@ -37,9 +37,7 @@
     }
     nav#navbar.scrolled { padding: 0.85rem 2.5rem; background: rgba(10,11,16,0.82); border-bottom-color: var(--line); }
     .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text); display: flex; align-items: center; gap: 0.65rem; }
-    .nav-logo::before { content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 14px var(--accent); animation: pulseLogo 3s ease-in-out infinite; flex-shrink: 0; }
-    .nav-logo span { color: var(--accent); }
-    @keyframes pulseLogo { 0%, 100% { box-shadow: 0 0 14px var(--accent); opacity: 1; } 50% { box-shadow: 0 0 24px var(--accent); opacity: 0.85; } }
+    .nav-logo span { color: inherit; }
     .nav-links { display: flex; gap: 2.25rem; list-style: none; align-items: center; }
     .nav-item { position: relative; }
     .nav-links > li > a { font-size: 0.85rem; font-weight: 500; color: var(--text-dim); position: relative; padding: 0.5rem 0; transition: color 0.2s; }
@@ -93,7 +91,7 @@
 <body>
 
 <nav id="navbar">
-  <a href="../../index.html" class="nav-logo">Carlos <span>Ebrahim</span> Vendrell</a>
+  <a href="../../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
   <ul class="nav-links">
     <li class="nav-item">
       <a href="about.html">About Me</a>

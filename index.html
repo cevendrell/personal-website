@@ -203,20 +203,7 @@ nav.scrolled {
   align-items: center;
   gap: 0.65rem;
 }
-.nav-logo::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 14px var(--accent);
-  animation: pulseLogo 3s ease-in-out infinite;
-}
-.nav-logo span { color: var(--accent); }
-@keyframes pulseLogo {
-  0%, 100% { box-shadow: 0 0 14px var(--accent); opacity: 1; }
-  50%      { box-shadow: 0 0 24px var(--accent); opacity: 0.85; }
-}
+.nav-logo span { color: inherit; }
 
 .nav-links {
   display: flex;
@@ -1168,7 +1155,7 @@ footer {
 
 <!-- ── NAVIGATION ── -->
 <nav id="navbar">
-  <a href="#top" class="nav-logo">Carlos <span>Ebrahim</span> Vendrell</a>
+  <a href="#top" class="nav-logo">Carlos Ebrahim Vendrell</a>
 
   <ul class="nav-links">
     <li class="nav-item">
@@ -1292,36 +1279,6 @@ footer {
     </div>
   </section>
 
-  <div class="section-divider"></div>
-
-  <!-- ── ABOUT ── -->
-  <section class="about" id="about">
-    <div class="about-prose">
-      <div class="section-eyebrow mono reveal">About me</div>
-      <h2 class="reveal delay-1" style="font-size: clamp(2.2rem, 4.5vw, 3.4rem); margin-bottom: 1.5rem;">A career shaped by curiosity and craft.</h2>
-      <p class="reveal delay-2">Based in Denmark, I build AI and XR projects at Grundfos while keeping the rest of life open to unexpected learning and travel.</p>
-      <p class="reveal delay-3">This site is a compact map of what I care about most — work, storytelling, and the places that keep me curious.</p>
-    </div>
-
-    <aside class="about-card reveal delay-2">
-      <div class="about-card-label mono">Currently</div>
-      <div class="about-globe-wrap">
-        <div class="about-globe">
-          <div class="about-globe-inner">🌍</div>
-          <div class="about-globe-orbit"></div>
-        </div>
-      </div>
-      <h3 style="text-align:center;">Aarhus, Denmark</h3>
-      <div class="coords" style="text-align:center;">56°N · 10°E · UTC+1</div>
-
-      <div class="about-tags">
-        <span class="about-tag">AI</span>
-        <span class="about-tag">XR</span>
-        <span class="about-tag">Travel</span>
-        <span class="about-tag">Photography</span>
-      </div>
-    </aside>
-  </section>
 
   <div class="section-divider"></div>
 
