@@ -91,20 +91,12 @@
     }
     .nav-links > li > a:hover::after { width: 100%; }
     .dropdown {
-      position: absolute;
-      top: calc(100% + 0.5rem);
-      left: -1rem;
-      min-width: 200px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 0.5rem;
-      list-style: none;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-6px);
-      transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      position: absolute; top: calc(100% + 0.5rem); left: -1rem;
+      min-width: 200px; background: rgba(6,8,20,0.92);
+      backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 0; padding: 0.4rem 0; list-style: none;
+      opacity: 0; visibility: hidden; transform: translateY(-6px);
+      transition: all 0.2s; box-shadow: 0 16px 48px rgba(0,0,0,0.6);
     }
     .dropdown li { list-style: none; }
     .nav-item:hover .dropdown {
@@ -292,8 +284,8 @@
       <a href="../../index.html">Home</a>
       <ul class="dropdown">
         <li><a href="../about/about.html">About me</a></li>
-        <li><a href="../about/about-2.html">About me v2</a></li>
-        <li><a href="../about/about-3.html">About me v3</a></li>
+        
+        
         <li><a href="../about/contact.html">Contact</a></li>
       </ul>
     </li>

@@ -81,19 +81,19 @@
     .nav-links > li > a:hover::after { width: 100%; }
     .dropdown {
       position: absolute; top: calc(100% + 0.5rem); left: -1rem;
-      min-width: 200px; background: var(--bg-elevated); border: 1px solid var(--line);
-      border-radius: var(--radius); padding: 0.5rem; list-style: none;
+      min-width: 200px; background: rgba(6,8,20,0.92);
+      backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 0; padding: 0.4rem 0; list-style: none;
       opacity: 0; visibility: hidden; transform: translateY(-6px);
-      transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      transition: all 0.2s; box-shadow: 0 16px 48px rgba(0,0,0,0.6);
     }
     .dropdown li { list-style: none; }
     .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
     .dropdown a {
-      display: block; padding: 0.65rem 0.9rem; border-radius: 8px;
-      font-size: 0.87rem; color: var(--text-dim); transition: background 0.15s, color 0.15s;
+      display: block; padding: 0.65rem 1rem; border-radius: 0;
+      font-size: 0.87rem; color: rgba(255,255,255,0.65); transition: background 0.15s, color 0.15s;
     }
-    .dropdown a:hover { background: var(--surface-hi); color: var(--text); }
+    .dropdown a:hover { background: rgba(255,255,255,0.06); color: #fff; }
     .nav-cta {
       font-size: 0.8rem; font-weight: 600; padding: 0.65rem 1.2rem;
       border: 1px solid var(--line-strong); border-radius: 999px;
@@ -334,8 +334,8 @@
       <a href="../../index.html">Home</a>
       <ul class="dropdown">
         <li><a href="about.html">About me</a></li>
-        <li><a href="about-2.html">About me v2</a></li>
-        <li><a href="about-3.html">About me v3</a></li>
+        
+        
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </li>
