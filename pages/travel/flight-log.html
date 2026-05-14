@@ -118,6 +118,198 @@
     .callout p { color: var(--text-dim); font-size: 1rem; line-height: 1.8; }
     .callout strong { color: var(--text); font-weight: 600; }
 
+    /* ══ ADS-B RADAR SECTION ══ */
+    .adsb-section {
+      margin-bottom: 4rem;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: linear-gradient(135deg, rgba(12,16,40,0.95) 0%, rgba(5,7,18,0.98) 100%);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+
+    /* Header bar */
+    .adsb-header {
+      display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+      padding: 1.1rem 1.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+    .adsb-status { display: flex; align-items: center; gap: 0.5rem; }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.2), 0 0 12px rgba(34,197,94,0.5);
+      animation: pulseLive 2s ease-in-out infinite;
+    }
+    @keyframes pulseLive {
+      0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2), 0 0 12px rgba(34,197,94,0.5); }
+      50%      { box-shadow: 0 0 0 6px rgba(34,197,94,0.08), 0 0 20px rgba(34,197,94,0.7); }
+    }
+    .status-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #22c55e;
+    }
+    .adsb-id {
+      display: flex; flex-direction: column; gap: 0.1rem; margin-left: 0.25rem;
+    }
+    .adsb-id h2 {
+      font-size: 1.15rem; font-weight: 800; letter-spacing: 0.08em;
+      color: var(--text); line-height: 1;
+    }
+    .adsb-id p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.12em; color: var(--mute);
+      text-transform: uppercase; line-height: 1;
+    }
+    .adsb-fr24-link {
+      margin-left: auto;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--c-travel); border: 1px solid rgba(106,141,181,0.3);
+      border-radius: 999px; padding: 0.45rem 1rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .adsb-fr24-link:hover { background: var(--c-travel); color: #fff; }
+
+    /* Body: radar + stats */
+    .adsb-body {
+      display: grid; grid-template-columns: 320px 1fr;
+      gap: 0; align-items: start;
+    }
+    @media (max-width: 760px) {
+      .adsb-body { grid-template-columns: 1fr; }
+    }
+
+    /* ── Radar display ── */
+    .radar-panel {
+      padding: 2rem 1.5rem 2rem 2rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    @media (max-width: 760px) {
+      .radar-panel { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1.5rem; }
+    }
+    .radar-display {
+      position: relative; width: 260px; height: 260px; border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%,
+        #071209 0%, #050e08 45%, #030a06 70%, #020706 100%);
+      border: 1px solid rgba(0,220,80,0.18);
+      box-shadow:
+        0 0 0 1px rgba(0,220,80,0.06),
+        0 0 40px rgba(0,220,80,0.06) inset,
+        0 8px 40px rgba(0,0,0,0.6);
+      overflow: hidden; flex-shrink: 0;
+    }
+    /* Concentric range rings */
+    .radar-rings {
+      position: absolute; inset: 0; border-radius: 50%;
+      background:
+        radial-gradient(circle, transparent 24%, rgba(0,200,70,0.08) 24.5%, transparent 25%),
+        radial-gradient(circle, transparent 49%, rgba(0,200,70,0.08) 49.5%, transparent 50%),
+        radial-gradient(circle, transparent 74%, rgba(0,200,70,0.08) 74.5%, transparent 75%);
+    }
+    /* Cross-hairs */
+    .radar-cross {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to right, transparent calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+        linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+    }
+    /* Rotating sweep beam */
+    .radar-sweep {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        transparent       0deg,
+        transparent     300deg,
+        rgba(0,220,80,0.04) 330deg,
+        rgba(0,220,80,0.15) 350deg,
+        rgba(0,220,80,0.35) 358deg,
+        transparent       360deg
+      );
+      animation: sweepRotate 4s linear infinite;
+      transform-origin: center;
+    }
+    @keyframes sweepRotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    /* Aircraft blips */
+    .radar-blip {
+      position: absolute;
+      left: var(--bx); top: var(--by);
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px 2px rgba(74,222,128,0.7);
+      transform: translate(-50%, -50%);
+      animation: blipPulse var(--bd, 3s) ease-in-out var(--delay, 0s) infinite;
+    }
+    @keyframes blipPulse {
+      0%,100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+      50%     { opacity: 0.4; transform: translate(-50%,-50%) scale(0.6); }
+    }
+    /* Centre pip */
+    .radar-center {
+      position: absolute; top: 50%; left: 50%;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(0,220,80,0.9);
+      box-shadow: 0 0 8px rgba(0,220,80,0.8);
+      transform: translate(-50%,-50%);
+    }
+    .radar-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(0,200,70,0.5); text-align: center; line-height: 1.6;
+    }
+
+    /* ── Stat cards grid ── */
+    .adsb-stats {
+      padding: 1.75rem;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem; align-content: start;
+    }
+    @media (max-width: 560px) { .adsb-stats { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 1.1rem 1.1rem 0.9rem;
+      display: flex; flex-direction: column; gap: 0.2rem;
+      position: relative; overflow: hidden;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .stat-card:hover {
+      background: rgba(255,255,255,0.045);
+      border-color: rgba(106,141,181,0.25);
+    }
+    .stat-card::before {
+      content: var(--icon,'');
+      position: absolute; top: 0.75rem; right: 0.9rem;
+      font-size: 1.1rem; opacity: 0.18;
+    }
+    .stat-value {
+      font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800;
+      letter-spacing: -0.04em; color: var(--text); line-height: 1;
+    }
+    .stat-unit {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 400; color: var(--c-travel);
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .stat-label {
+      font-size: 0.72rem; color: var(--mute); margin-top: 0.35rem; line-height: 1.3;
+    }
+    /* Accent top border per card theme */
+    .stat-card.accent-green  { border-top: 2px solid rgba(34,197,94,0.5); }
+    .stat-card.accent-blue   { border-top: 2px solid rgba(106,141,181,0.5); }
+    .stat-card.accent-amber  { border-top: 2px solid rgba(200,120,74,0.5); }
+    /* Wide card spanning 2 columns */
+    .stat-card.wide { grid-column: span 2; }
+    @media (max-width: 560px) { .stat-card.wide { grid-column: span 1; } }
+
     /* ── FOOTER ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
     .footer-slim {
@@ -288,8 +480,103 @@
   <img src="../../media/flight-hero.jpg" alt="Aerial view" class="page-hero-img" onerror="this.style.display='none'">
 
   <div class="callout">
-    <p><strong>Coming soon</strong> — the full log is being built.</p>
+    <p><strong>Coming soon</strong> — the full flight log is being built. In the meantime, here's my ADS-B radar feeding live data to FlightRadar24.</p>
   </div>
+
+  <!-- ══ ADS-B RADAR STATS ══
+       UPDATE THE VALUES BELOW from your FlightRadar24 stats page:
+       https://www.flightradar24.com/share-statistics
+  ══════════════════════════ -->
+  <div class="adsb-section">
+
+    <!-- Header -->
+    <div class="adsb-header">
+      <div class="adsb-status">
+        <span class="status-dot"></span>
+        <span class="status-label">Feeding live</span>
+      </div>
+      <div class="adsb-id">
+        <h2>T-EKAC94</h2>
+        <p>ADS-B Receiver · FlightRadar24 · Billund, Denmark</p>
+      </div>
+      <a class="adsb-fr24-link" href="https://www.flightradar24.com/share-statistics" target="_blank" rel="noopener">
+        Full stats
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+
+    <!-- Body -->
+    <div class="adsb-body">
+
+      <!-- Radar sweep -->
+      <div class="radar-panel">
+        <div class="radar-display">
+          <div class="radar-rings"></div>
+          <div class="radar-cross"></div>
+          <div class="radar-sweep"></div>
+          <!-- Aircraft blips — positions are approximate within the circle -->
+          <div class="radar-blip" style="--bx:62%;--by:28%;--delay:0s;--bd:2.8s"></div>
+          <div class="radar-blip" style="--bx:74%;--by:48%;--delay:0.6s;--bd:3.2s"></div>
+          <div class="radar-blip" style="--bx:35%;--by:41%;--delay:1.2s;--bd:2.5s"></div>
+          <div class="radar-blip" style="--bx:55%;--by:68%;--delay:0.3s;--bd:3.6s"></div>
+          <div class="radar-blip" style="--bx:42%;--by:22%;--delay:1.8s;--bd:2.9s"></div>
+          <div class="radar-blip" style="--bx:80%;--by:62%;--delay:0.9s;--bd:3.1s"></div>
+          <div class="radar-blip" style="--bx:28%;--by:60%;--delay:2.1s;--bd:2.7s"></div>
+          <div class="radar-blip" style="--bx:67%;--by:75%;--delay:1.5s;--bd:3.4s"></div>
+          <div class="radar-blip" style="--bx:20%;--by:38%;--delay:0.4s;--bd:4s"></div>
+          <div class="radar-blip" style="--bx:50%;--by:82%;--delay:2.5s;--bd:2.6s"></div>
+          <div class="radar-center"></div>
+        </div>
+        <p class="radar-label">
+          T-EKAC94 · Billund<br>
+          ADS-B 1090 MHz
+        </p>
+      </div>
+
+      <!-- Stat cards grid -->
+      <!-- ↓ UPDATE these data-target values with your real numbers ↓ -->
+      <div class="adsb-stats">
+
+        <div class="stat-card accent-green" style="--icon:'✈'">
+          <div class="stat-value" data-target="0" data-suffix="">—</div>
+          <div class="stat-unit">aircraft / 24 h</div>
+          <div class="stat-label">Unique aircraft detected today</div>
+        </div>
+
+        <div class="stat-card accent-blue" style="--icon:'📡'">
+          <div class="stat-value" data-target="0" data-suffix=" km">—</div>
+          <div class="stat-unit">max range</div>
+          <div class="stat-label">Furthest aircraft tracked</div>
+        </div>
+
+        <div class="stat-card accent-amber" style="--icon:'⬆'">
+          <div class="stat-value" data-target="0" data-suffix="%">—</div>
+          <div class="stat-unit">uptime</div>
+          <div class="stat-label">Feeding reliability</div>
+        </div>
+
+        <div class="stat-card accent-green" style="--icon:'📍'">
+          <div class="stat-value" data-target="0" data-suffix="">—</div>
+          <div class="stat-unit">positions / 24 h</div>
+          <div class="stat-label">ADS-B positions logged</div>
+        </div>
+
+        <div class="stat-card accent-blue" style="--icon:'🏆'">
+          <div class="stat-value" data-prefix="#" data-target="0" data-suffix="">—</div>
+          <div class="stat-unit">global rank</div>
+          <div class="stat-label">FlightRadar24 feeder ranking</div>
+        </div>
+
+        <div class="stat-card accent-amber" style="--icon:'🛩'">
+          <div class="stat-value" data-target="0" data-suffix="">—</div>
+          <div class="stat-unit">aircraft types</div>
+          <div class="stat-label">Unique types seen (7 days)</div>
+        </div>
+
+      </div><!-- /adsb-stats -->
+    </div><!-- /adsb-body -->
+  </div><!-- /adsb-section -->
+
 </div>
 
 <footer>
@@ -339,6 +626,39 @@
       if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
     }, { passive: true });
   }
+
+  /* ── ADS-B stat counter animation ── */
+  function animateCount(el, target, prefix, suffix, duration) {
+    if (target === 0) return; // leave as "—" if no value set
+    const start = performance.now();
+    const isFloat = String(target).includes('.');
+    function step(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3); // ease-out cubic
+      const val = isFloat
+        ? (ease * target).toFixed(1)
+        : Math.round(ease * target).toLocaleString();
+      el.textContent = prefix + val + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target  = parseFloat(el.dataset.target  || '0');
+      const prefix  = el.dataset.prefix  || '';
+      const suffix  = el.dataset.suffix  || '';
+      animateCount(el, target, prefix, suffix, 1600);
+      statObserver.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-value[data-target]').forEach(el => {
+    statObserver.observe(el);
+  });
 </script>
 
 </body>
