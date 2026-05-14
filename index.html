@@ -172,6 +172,7 @@
       display: flex; align-items: center;
       position: relative; overflow: hidden;
       background-color: var(--bg);
+      will-change: background-position;
     }
     /* Gradient fades from solid dark (left) to transparent (where photo lives on right) */
     #top::before {
@@ -847,15 +848,22 @@
     progress.style.width = pct + '%';
   }, { passive: true });
 
-  /* ── Hero slow parallax ── */
+  /* ── Hero parallax ── */
   /* background-attachment:fixed keeps position viewport-relative.
-     We nudge backgroundPositionY upward at 15% of scroll speed,
-     so the image drifts slowly while text scrolls at full speed. */
+     We nudge backgroundPositionY upward on scroll — throttled via rAF so we
+     write the style exactly once per rendered frame, eliminating jitter. */
   const heroSection = document.getElementById('top');
   if (heroSection) {
+    let rafId = null;
+    let lastScrollY = window.scrollY;
+
     window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      heroSection.style.backgroundPositionY = `calc(50% - ${scrollY * 0.15}px)`;
+      lastScrollY = window.scrollY;
+      if (rafId) return;          // already a frame queued — skip
+      rafId = requestAnimationFrame(() => {
+        heroSection.style.backgroundPositionY = `calc(50% - ${lastScrollY * 0.3}px)`;
+        rafId = null;
+      });
     }, { passive: true });
   }
 
