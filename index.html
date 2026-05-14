@@ -252,15 +252,14 @@
     .passion-intro .h-photo  { color: var(--c-photo);  font-weight: 700; }
     .passion-intro .h-tech   { color: var(--c-tech);   font-weight: 700; }
 
-    /* Colorful gradient tiles (same as work-thumb style) */
+    /* Photo tiles */
     .passion-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .passion-tile { border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 4/3; display: block; }
-    .passion-tile-bg { width: 100%; height: 100%; }
-    .passion-tile--travel .passion-tile-bg { background: linear-gradient(135deg, #0d2520 0%, #1a4038 60%, #2a6654 100%); }
-    .passion-tile--photo  .passion-tile-bg { background: linear-gradient(135deg, #1f1508 0%, #3d2a10 60%, #6b4a1e 100%); }
-    .passion-tile--tech   .passion-tile-bg { background: linear-gradient(135deg, #120d1f 0%, #241848 60%, #3b2876 100%); }
+    .passion-tile { border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 4/3; display: block; background: var(--surface); }
+    .passion-tile-bg { position: absolute; inset: 0; overflow: hidden; }
+    .passion-tile-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+    .passion-tile:hover .passion-tile-bg img { transform: scale(1.06); }
     .passion-tile-overlay {
-      position: absolute; inset: 0; border-radius: 8px;
+      position: absolute; inset: 0;
       display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;
       padding: 36px 32px; opacity: 0; transition: opacity 0.4s; text-align: left;
     }
@@ -273,7 +272,6 @@
       text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px;
     }
     .passion-tile-overlay .pt-title { font-size: 1.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
-    .passion-tile-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 3.5rem; opacity: 0.22; pointer-events: none; }
 
     /* ── CAREER (Melan format) ── */
     #career {
@@ -638,8 +636,9 @@
       <div class="passion-tiles">
 
         <a href="pages/travel/travel-map.html" class="passion-tile passion-tile--travel wow">
-          <div class="passion-tile-bg"></div>
-          <span class="passion-tile-icon">🌍</span>
+          <div class="passion-tile-bg">
+            <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/e04bd7ab-9f67-498c-9fd7-5ec45d18780f/Nagarkot.jpg" alt="Nagarkot, Nepal" loading="lazy">
+          </div>
           <div class="passion-tile-overlay">
             <p class="pt-label">Explore</p>
             <p class="pt-title">Travel</p>
@@ -647,8 +646,9 @@
         </a>
 
         <a href="pages/photography/gallery.html" class="passion-tile passion-tile--photo wow d1">
-          <div class="passion-tile-bg"></div>
-          <span class="passion-tile-icon">📷</span>
+          <div class="passion-tile-bg">
+            <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/ccbc48fa-5d29-4074-9a5e-b3cc5a73db87/DSC_2417.jpg" alt="Photography" loading="lazy">
+          </div>
           <div class="passion-tile-overlay">
             <p class="pt-label">Discover</p>
             <p class="pt-title">Photography</p>
@@ -656,8 +656,9 @@
         </a>
 
         <a href="pages/tech/ai-projects.html" class="passion-tile passion-tile--tech wow d2">
-          <div class="passion-tile-bg"></div>
-          <span class="passion-tile-icon">🤖</span>
+          <div class="passion-tile-bg">
+            <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/71ab7b3c-8212-4f5d-9607-e2d4e83097fc/DSC_8651.jpg" alt="Tech &amp; AI" loading="lazy">
+          </div>
           <div class="passion-tile-overlay">
             <p class="pt-label">Build</p>
             <p class="pt-title">Tech &amp; AI</p>
