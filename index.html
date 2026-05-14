@@ -83,7 +83,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── NAV (Kalay/about-2 style) ── */
+    /* ── NAV (Kalay style) ── */
     nav#navbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
       padding: 1.25rem 2.5rem;
@@ -164,35 +164,25 @@
       line-height: 1.75; max-width: 560px; margin: 0 auto;
     }
 
-    /* ── HERO (Kalay style, full-screen) ── */
+    /* ── HERO (Kalay style — fixed background) ── */
     #top {
-      position: relative; height: 100vh; min-height: 580px;
-      display: flex; align-items: center; overflow: hidden; background: var(--bg);
+      /* Fixed background creates the "stays still" parallax effect */
+      background: url('media/headshot.png') right center / cover no-repeat fixed;
+      height: 100vh; min-height: 580px;
+      display: flex; align-items: center;
+      position: relative; overflow: hidden;
     }
-    /* Headshot: 40% smaller than full-bleed cover, positioned left-of-right-edge */
-    .home-photo {
-      position: absolute; right: -1%; bottom: 0;
-      height: 100%; width: 50%;
-      object-fit: cover; object-position: center top;
-      z-index: 0;
-    }
-    /* Gradient: dark on the left, transparent toward the photo */
+    /* Dark left gradient — covers ~55% of screen, revealing photo on right (~45% visible = ~10% smaller than full) */
     #top::before {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(
         to right,
         rgba(10,11,16,1)    0%,
-        rgba(10,11,16,0.98) 40%,
-        rgba(10,11,16,0.7)  58%,
-        rgba(10,11,16,0.18) 80%,
+        rgba(10,11,16,0.98) 48%,
+        rgba(10,11,16,0.62) 68%,
+        rgba(10,11,16,0.18) 88%,
         rgba(10,11,16,0)    100%
       );
-      z-index: 1;
-    }
-    /* Bottom fade into next section */
-    #top::after {
-      content: ''; position: absolute; left: 0; right: 0; bottom: 0;
-      height: 160px; background: linear-gradient(to bottom, transparent, var(--bg));
       z-index: 1;
     }
     .home-inner {
@@ -216,7 +206,6 @@
       background: linear-gradient(135deg, var(--accent), var(--c-photo));
       -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
-    /* Tagline — stands out with gradient bold text */
     .home-tagline {
       font-size: clamp(1.3rem, 2.8vw, 1.9rem); font-weight: 700; line-height: 1.3;
       color: var(--text); margin-bottom: 1.75rem;
@@ -246,12 +235,11 @@
     .btn-outline:hover { background: rgba(255,255,255,0.08); }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── PASSIONS / SERVICE (Kalay 3-card style) ── */
+    /* ── PASSIONS — intro + colorful tiles ── */
     #service {
       background: var(--bg-alt); padding: 90px 0;
       position: relative; z-index: 2;
     }
-    /* Intro text block */
     .passion-intro {
       max-width: 700px; margin: 0 auto 52px; text-align: center;
     }
@@ -263,32 +251,28 @@
     .passion-intro .h-photo  { color: var(--c-photo);  font-weight: 700; }
     .passion-intro .h-tech   { color: var(--c-tech);   font-weight: 700; }
 
-    /* Cards */
-    .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .service-thumb {
-      background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
-      padding: 42px 28px; text-align: center; cursor: default;
-      position: relative; top: 0; transition: all 0.4s;
-      display: flex; flex-direction: column; align-items: center;
+    /* Colorful gradient tiles (same as work-thumb style) */
+    .passion-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .passion-tile { border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 4/3; display: block; }
+    .passion-tile-bg { width: 100%; height: 100%; }
+    .passion-tile--travel .passion-tile-bg { background: linear-gradient(135deg, #0d2520 0%, #1a4038 60%, #2a6654 100%); }
+    .passion-tile--photo  .passion-tile-bg { background: linear-gradient(135deg, #1f1508 0%, #3d2a10 60%, #6b4a1e 100%); }
+    .passion-tile--tech   .passion-tile-bg { background: linear-gradient(135deg, #120d1f 0%, #241848 60%, #3b2876 100%); }
+    .passion-tile-overlay {
+      position: absolute; inset: 0; border-radius: 8px;
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;
+      padding: 36px 32px; opacity: 0; transition: opacity 0.4s; text-align: left;
     }
-    .service-thumb--travel:hover { background: var(--c-travel); top: -6px; border-color: var(--c-travel); }
-    .service-thumb--photo:hover  { background: var(--c-photo);  top: -6px; border-color: var(--c-photo); }
-    .service-thumb--tech:hover   { background: var(--c-tech);   top: -6px; border-color: var(--c-tech); }
-    .service-thumb:hover h4,
-    .service-thumb:hover p,
-    .service-thumb:hover .service-link { color: #111; }
-    .service-icon { display: block; margin: 0 auto 22px; transition: color 0.4s; line-height: 1; }
-    .service-thumb--travel .service-icon { color: var(--c-travel); }
-    .service-thumb--photo  .service-icon { color: var(--c-photo); }
-    .service-thumb--tech   .service-icon { color: var(--c-tech); }
-    .service-thumb h4 { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 14px; transition: color 0.4s; }
-    .service-thumb p  { color: var(--dim); font-size: 0.88rem; line-height: 1.8; transition: color 0.4s; flex: 1; }
-    .service-link {
-      display: inline-block; margin-top: 22px;
-      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-      color: inherit; opacity: 0.7; transition: opacity 0.3s;
+    .passion-tile--travel .passion-tile-overlay { background: rgba(50,140,120,0.92); }
+    .passion-tile--photo  .passion-tile-overlay { background: rgba(160,90,20,0.92); }
+    .passion-tile--tech   .passion-tile-overlay { background: rgba(80,50,160,0.92); }
+    .passion-tile:hover .passion-tile-overlay { opacity: 1; }
+    .passion-tile-overlay .pt-label {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px;
     }
-    .service-thumb:hover .service-link { opacity: 1; }
+    .passion-tile-overlay .pt-title { font-size: 1.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+    .passion-tile-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 3.5rem; opacity: 0.22; pointer-events: none; }
 
     /* ── CAREER (Melan format) ── */
     #career {
@@ -362,32 +346,87 @@
       background-size: 14px 14px; z-index: -1;
     }
 
-    /* ── WORK / TILES (about-2 style, 3 colored cards) ── */
-    #work {
-      background: var(--bg-alt); padding: 90px 0;
-      text-align: center; position: relative; z-index: 2;
+    /* ── PORTFOLIO BANNER (from about-3) ── */
+    .portfolio_area {
+      padding: 80px 0 60px;
+      background: var(--navy);
+      position: relative; overflow: hidden; z-index: 2;
     }
-    .work-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 52px; }
-    .work-thumb { border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 4/3; display: block; }
-    .work-thumb-bg { width: 100%; height: 100%; display: flex; align-items: flex-end; }
-    .work-thumb--travel .work-thumb-bg { background: linear-gradient(135deg, #0d2520 0%, #1a4038 60%, #2a6654 100%); }
-    .work-thumb--photo  .work-thumb-bg { background: linear-gradient(135deg, #1f1508 0%, #3d2a10 60%, #6b4a1e 100%); }
-    .work-thumb--tech   .work-thumb-bg { background: linear-gradient(135deg, #120d1f 0%, #241848 60%, #3b2876 100%); }
-    .work-thumb-overlay {
-      position: absolute; inset: 0; border-radius: 8px;
-      display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;
-      padding: 36px 32px; opacity: 0; transition: opacity 0.4s; text-align: left;
+    .portfolio_area::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 60% 50%, rgba(169,140,255,0.08), transparent 70%);
     }
-    .work-thumb--travel .work-thumb-overlay { background: rgba(50,140,120,0.92); }
-    .work-thumb--photo  .work-thumb-overlay { background: rgba(160,90,20,0.92); }
-    .work-thumb--tech   .work-thumb-overlay { background: rgba(80,50,160,0.92); }
-    .work-thumb:hover .work-thumb-overlay { opacity: 1; }
-    .work-thumb-overlay .wt-label {
-      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
-      text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px;
+    .portfolio_inner { max-width: 1140px; margin: 0 auto; padding: 0 40px; }
+    .section_title { margin-bottom: 0; position: relative; z-index: 1; }
+    .section_title span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c-tech); display: inline-block;
+      position: relative; padding-top: 72px; margin-bottom: 14px;
     }
-    .work-thumb-overlay .wt-title { font-size: 1.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
-    .work-thumb-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 3.5rem; opacity: 0.22; pointer-events: none; }
+    .section_title span::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 2px; height: 62px; background: var(--c-tech);
+    }
+    .section_title h3 {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
+      letter-spacing: -0.025em; color: var(--text); line-height: 1.1;
+    }
+    .white_text .section_title span { color: var(--c-tech); }
+    .white_text .section_title h3 { color: #fff; }
+
+    /* ── PORTFOLIO IMAGE GRID (from about-3) ── */
+    .portfolio_image_area { background: var(--bg-alt); padding: 0 0 80px; position: relative; z-index: 2; }
+    .portfolio_row_top { display: grid; grid-template-columns: 5fr 7fr; gap: 20px; margin-bottom: 20px; }
+    .portfolio_row_bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .single_Portfolio { position: relative; overflow: hidden; border-radius: 4px; cursor: pointer; }
+    .portfolio_thumb { width: 100%; aspect-ratio: 4/3; overflow: hidden; }
+    .portfolio_row_top .portfolio_thumb { aspect-ratio: unset; height: 340px; }
+    .portfolio_thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+    .single_Portfolio:hover .portfolio_thumb img { transform: scale(1.06); }
+    .portfolio_hover {
+      position: absolute; inset: 0;
+      background: var(--c-tech);
+      opacity: 0; display: flex; align-items: flex-end;
+      padding: 28px 24px; transition: opacity 0.4s;
+    }
+    .single_Portfolio:hover .portfolio_hover { opacity: 0.9; }
+    .portfolio_hover .title h3 { color: #fff; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em; }
+    .more_portfolio { text-align: center; margin-top: 48px; }
+    .boxed-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 16px 36px; border-radius: 50px; transition: all 0.4s;
+      border: 1px solid rgba(255,255,255,0.2); color: var(--text);
+    }
+    .boxed-btn:hover { background: var(--accent); color: #111; border-color: var(--accent); }
+
+    /* ── TESTIMONIAL / QUOTE (from about-3, exactly) ── */
+    .testimonial_area {
+      padding: 120px 0;
+      background: var(--navy);
+      position: relative; z-index: 2; overflow: hidden;
+    }
+    .testimonial_area::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(10,11,16,0) 0%, rgba(5,7,16,0.9) 100%);
+      z-index: -1;
+    }
+    .testimonial_area::after {
+      content: ''; position: absolute;
+      left: -200px; top: 50%; transform: translateY(-50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(169,140,255,0.1), transparent 65%);
+      z-index: -1; pointer-events: none;
+    }
+    .testimonial_inner { max-width: 760px; margin: 0 auto; padding: 0 40px; text-align: center; }
+    .quote_icon { font-size: 3.5rem; color: var(--c-tech); opacity: 0.5; margin-bottom: 32px; line-height: 1; }
+    .single_testmonial p {
+      color: #fff; font-size: clamp(1rem, 2.5vw, 1.3rem);
+      line-height: 1.75; font-weight: 300; margin-bottom: 40px;
+    }
+    .testmonial_author h3 { color: #fff; font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+    .testmonial_author span { font-size: 0.82rem; color: rgba(255,255,255,0.45); }
 
     /* ── HOBBIES — rotating wheel (Melan section title) ── */
     #hobbies {
@@ -453,10 +492,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.07);
     }
     .footer-brand h3 { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-    .footer-brand p { color: var(--mute); font-size: 0.88rem; line-height: 1.65; max-width: 260px; }
-    .footer-nav { display: flex; flex-direction: column; gap: 12px; }
-    .footer-nav a { color: var(--dim); font-size: 0.9rem; transition: color 0.2s; }
-    .footer-nav a:hover { color: var(--accent); }
+    .footer-brand p { color: var(--mute); font-size: 0.88rem; line-height: 1.65; max-width: 280px; }
     .footer-socials { display: flex; gap: 10px; list-style: none; padding: 0; align-items: center; }
     .footer-socials li a {
       width: 44px; height: 44px;
@@ -487,21 +523,19 @@
       .career-img-frame { aspect-ratio: 16/9; }
       .career-list { grid-template-columns: 1fr; }
       .career-tag-date { margin-left: 0; }
+      .portfolio_row_top, .portfolio_row_bottom { grid-template-columns: 1fr; }
+      .portfolio_row_top .portfolio_thumb { height: 240px; }
       .hobby-wheel-wrap { height: 440px; }
     }
     @media (max-width: 768px) {
-      .service-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
-      .work-grid { grid-template-columns: 1fr; }
+      #top { background-attachment: scroll; } /* fixed bg broken on mobile */
+      .passion-tiles { grid-template-columns: 1fr; }
       .footer-top { flex-direction: column; gap: 32px; }
-      #top { height: 85vh; }
-      .home-photo { width: 65%; right: -5%; }
     }
     @media (max-width: 520px) {
-      #top { height: 95vh; }
       .home-thumb h1 { font-size: 2.5rem; }
       .home-tagline { font-size: 1.15rem; }
       .cta-wrap { flex-direction: column; }
-      .home-photo { width: 80%; right: -10%; opacity: 0.65; }
       .hobby-wheel-wrap { height: 380px; }
       .hobby-orb { width: 88px; height: 88px; }
       .hobby-orb .orb-icon { font-size: 1.4rem; }
@@ -582,16 +616,12 @@
 
 <main>
 
-  <!-- ── HERO ── -->
+  <!-- ── HERO (fixed background — stays still like Kalay/about-2) ── -->
   <section id="top">
-    <!-- Photo: 40% smaller than full-bleed, shifted so it appears more central (not far right) -->
-    <img class="home-photo" src="media/headshot.png" alt="" aria-hidden="true"
-         onerror="this.style.display='none'">
-
     <div class="home-inner">
       <div class="home-thumb">
         <p class="eyebrow">Hello, I'm</p>
-        <h1><span>Carlos</span> Ebrahim<br>Vendrell</h1>
+        <h1>Hey, I'm <span>Carlos</span></h1>
         <p class="home-tagline">Welcome to my <strong>unapologetically<br>diverse</strong> site.</p>
         <p class="lead">From Barcelona, living in Denmark for the past 7 years. Senior AI Project Manager at Grundfos, passionate traveller, photographer, and perpetual rabbit-hole explorer.</p>
         <div class="cta-wrap">
@@ -602,7 +632,7 @@
     </div>
   </section>
 
-  <!-- ── PASSIONS (Kalay service cards) ── -->
+  <!-- ── PASSIONS (colorful gradient tiles + intro text) ── -->
   <section id="service">
     <div class="section-inner">
       <div class="section-title wow">
@@ -614,44 +644,33 @@
         <p class="wow d2">Despite this curiosity, there are three areas that I've been passionate about for a long time: <span class="h-travel">Travel</span>, <span class="h-photo">Photography</span>, and <span class="h-tech">Tech</span>. I've centred this site around these three topics.</p>
       </div>
 
-      <div class="service-grid">
+      <div class="passion-tiles">
 
-        <a href="pages/travel/travel-map.html" class="service-thumb service-thumb--travel wow">
-          <span class="service-icon">
-            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-          </span>
-          <h4>Travel</h4>
-          <p>Interactive maps, flight logs, dive logs, and volunteering adventures across the globe. I document everything — obsessively.</p>
-          <span class="service-link">Explore the map →</span>
+        <a href="pages/travel/travel-map.html" class="passion-tile passion-tile--travel wow">
+          <div class="passion-tile-bg"></div>
+          <span class="passion-tile-icon">🌍</span>
+          <div class="passion-tile-overlay">
+            <p class="pt-label">Explore</p>
+            <p class="pt-title">Travel</p>
+          </div>
         </a>
 
-        <a href="pages/photography/gallery.html" class="service-thumb service-thumb--photo wow d1">
-          <span class="service-icon">
-            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/>
-              <path d="M8 5.5l1.5-2h5l1.5 2"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </span>
-          <h4>Photography</h4>
-          <p>Gallery, northern lights captures, and visual stories from around the world. Light, composition, and a bit of luck.</p>
-          <span class="service-link">View gallery →</span>
+        <a href="pages/photography/gallery.html" class="passion-tile passion-tile--photo wow d1">
+          <div class="passion-tile-bg"></div>
+          <span class="passion-tile-icon">📷</span>
+          <div class="passion-tile-overlay">
+            <p class="pt-label">Discover</p>
+            <p class="pt-title">Photography</p>
+          </div>
         </a>
 
-        <a href="pages/tech/ai-projects.html" class="service-thumb service-thumb--tech wow d2">
-          <span class="service-icon">
-            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="4" y="4" width="16" height="16" rx="2"/>
-              <path d="M9 9h.01M15 9h.01M9 15h6"/>
-              <path d="M8 1v3M16 1v3M8 20v3M16 20v3M1 8h3M20 8h3M1 16h3M20 16h3"/>
-            </svg>
-          </span>
-          <h4>Tech &amp; AI</h4>
-          <p>AI tools, XR experiences, 3D printing, and reality capture work from my career at Grundfos. The future, built today.</p>
-          <span class="service-link">See projects →</span>
+        <a href="pages/tech/ai-projects.html" class="passion-tile passion-tile--tech wow d2">
+          <div class="passion-tile-bg"></div>
+          <span class="passion-tile-icon">🤖</span>
+          <div class="passion-tile-overlay">
+            <p class="pt-label">Build</p>
+            <p class="pt-title">Tech &amp; AI</p>
+          </div>
         </a>
 
       </div>
@@ -700,86 +719,106 @@
     </div>
   </section>
 
-  <!-- ── WORK TILES (Travel / Photography / Tech) ── -->
-  <section id="work">
-    <div class="section-inner">
-      <div class="section-title wow">
-        <h2>Where to explore</h2>
-      </div>
-      <div class="work-grid">
-
-        <a href="pages/travel/travel-map.html" class="work-thumb work-thumb--travel wow">
-          <div class="work-thumb-bg"></div>
-          <span class="work-thumb-icon">🌍</span>
-          <div class="work-thumb-overlay">
-            <p class="wt-label">Explore</p>
-            <p class="wt-title">Travel</p>
-          </div>
-        </a>
-
-        <a href="pages/photography/gallery.html" class="work-thumb work-thumb--photo wow d1">
-          <div class="work-thumb-bg"></div>
-          <span class="work-thumb-icon">📷</span>
-          <div class="work-thumb-overlay">
-            <p class="wt-label">Discover</p>
-            <p class="wt-title">Photography</p>
-          </div>
-        </a>
-
-        <a href="pages/tech/ai-projects.html" class="work-thumb work-thumb--tech wow d2">
-          <div class="work-thumb-bg"></div>
-          <span class="work-thumb-icon">🤖</span>
-          <div class="work-thumb-overlay">
-            <p class="wt-label">Build</p>
-            <p class="wt-title">Tech &amp; AI</p>
-          </div>
-        </a>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ── HOBBIES (Melan section style + rotating wheel) ── -->
-  <section id="hobbies">
-    <div class="hobbies-inner">
-      <div class="melan-label wow"><span>Beyond work</span></div>
-      <h2 class="melan-h2 wow d1">Other stuff I love</h2>
-      <p class="melan-sub wow d2">Drag, scroll, or just watch it spin.</p>
-
-      <div class="hobby-wheel-wrap wow d3">
-        <div class="hobby-wheel" id="hobbyWheel">
-          <div class="hobby-orb" data-color="travel"><span class="orb-icon">✈</span><span class="orb-label">Aviation</span></div>
-          <div class="hobby-orb" data-color="photo"><span class="orb-icon">🏎</span><span class="orb-label">Formula 1</span></div>
-          <div class="hobby-orb" data-color="tech"><span class="orb-icon">🔭</span><span class="orb-label">Astronomy</span></div>
-          <div class="hobby-orb" data-color="travel"><span class="orb-icon">🤿</span><span class="orb-label">Scuba Diving</span></div>
-          <div class="hobby-orb" data-color="accent"><span class="orb-icon">📈</span><span class="orb-label">Investing</span></div>
-          <div class="hobby-orb" data-color="photo"><span class="orb-icon">🖨</span><span class="orb-label">3D Printing</span></div>
-          <div class="hobby-orb" data-color="tech"><span class="orb-icon">🤖</span><span class="orb-label">AI &amp; ML</span></div>
-          <div class="hobby-orb" data-color="accent"><span class="orb-icon">🌌</span><span class="orb-label">Space</span></div>
-        </div>
-        <div class="hobby-wheel-center" aria-hidden="true"><div class="wheel-axis"></div></div>
-        <div class="hobby-wheel-hint">Drag to spin · Scroll to rotate</div>
-      </div>
-    </div>
-  </section>
-
 </main>
 
-<!-- ── FOOTER (Melan dark navy) ── -->
+<!-- ══ PORTFOLIO DARK BANNER (from about-3) ══ -->
+<div class="portfolio_area">
+  <div class="portfolio_inner" style="position:relative;z-index:1;">
+    <div class="section_title white_text wow">
+      <span>Travel Photography</span>
+      <h3>Moments from<br>around the world</h3>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PORTFOLIO IMAGE GRID (from about-3) ══ -->
+<div class="portfolio_image_area">
+  <div class="portfolio_inner">
+    <div class="portfolio_row_top wow">
+      <div class="single_Portfolio">
+        <div class="portfolio_thumb">
+          <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/e04bd7ab-9f67-498c-9fd7-5ec45d18780f/Nagarkot.jpg" alt="Nagarkot, Nepal" loading="lazy">
+        </div>
+        <div class="portfolio_hover"><div class="title"><h3>Nagarkot, Nepal</h3></div></div>
+      </div>
+      <div class="single_Portfolio">
+        <div class="portfolio_thumb">
+          <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/c9edb15b-fc75-4822-a714-3a0a4f26952a/Ngorongoro.jpg" alt="Ngorongoro, Tanzania" loading="lazy">
+        </div>
+        <div class="portfolio_hover"><div class="title"><h3>Ngorongoro, Tanzania</h3></div></div>
+      </div>
+    </div>
+    <div class="portfolio_row_bottom wow d1">
+      <div class="single_Portfolio">
+        <div class="portfolio_thumb">
+          <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/237c4114-612d-42d7-83d2-20a184098f62/Nungwi.jpg" alt="Nungwi, Zanzibar" loading="lazy">
+        </div>
+        <div class="portfolio_hover"><div class="title"><h3>Nungwi, Zanzibar</h3></div></div>
+      </div>
+      <div class="single_Portfolio">
+        <div class="portfolio_thumb">
+          <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a9e77594-19a1-441c-8791-b11cb78b64e2/Kuala+Lumpur.jpg" alt="Kuala Lumpur" loading="lazy">
+        </div>
+        <div class="portfolio_hover"><div class="title"><h3>Kuala Lumpur</h3></div></div>
+      </div>
+      <div class="single_Portfolio">
+        <div class="portfolio_thumb">
+          <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/2cb359f2-e447-4e5d-95cf-5e0eac4824d0/Orschwiller.jpg" alt="Orschwiller, France" loading="lazy">
+        </div>
+        <div class="portfolio_hover"><div class="title"><h3>Orschwiller, France</h3></div></div>
+      </div>
+    </div>
+    <div class="more_portfolio wow d2">
+      <a class="boxed-btn" href="pages/travel/travel-map.html">View all photos</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TESTIMONIAL / QUOTE (exactly from about-3) ══ -->
+<div class="testimonial_area">
+  <div class="testimonial_inner">
+    <div class="single_testmonial text-center wow">
+      <div class="quote_icon">"</div>
+      <p>Balancing the exploration and implementation of emerging XR and AI technologies within a well-established, water-focused global enterprise.</p>
+      <div class="testmonial_author">
+        <h3>Carlos Ebrahim Vendrell</h3>
+        <span>Senior AI Project Manager · Grundfos</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HOBBIES (Melan section style + rotating wheel) ── -->
+<section id="hobbies">
+  <div class="hobbies-inner">
+    <div class="melan-label wow"><span>Beyond work</span></div>
+    <h2 class="melan-h2 wow d1">Other stuff I love</h2>
+    <p class="melan-sub wow d2">Drag, scroll, or just watch it spin.</p>
+
+    <div class="hobby-wheel-wrap wow d3">
+      <div class="hobby-wheel" id="hobbyWheel">
+        <div class="hobby-orb" data-color="travel"><span class="orb-icon">✈</span><span class="orb-label">Aviation</span></div>
+        <div class="hobby-orb" data-color="photo"><span class="orb-icon">🏎</span><span class="orb-label">Formula 1</span></div>
+        <div class="hobby-orb" data-color="tech"><span class="orb-icon">🔭</span><span class="orb-label">Astronomy</span></div>
+        <div class="hobby-orb" data-color="travel"><span class="orb-icon">🤿</span><span class="orb-label">Scuba Diving</span></div>
+        <div class="hobby-orb" data-color="accent"><span class="orb-icon">📈</span><span class="orb-label">Investing</span></div>
+        <div class="hobby-orb" data-color="photo"><span class="orb-icon">🖨</span><span class="orb-label">3D Printing</span></div>
+        <div class="hobby-orb" data-color="tech"><span class="orb-icon">🤖</span><span class="orb-label">AI &amp; ML</span></div>
+        <div class="hobby-orb" data-color="accent"><span class="orb-icon">🌌</span><span class="orb-label">Space</span></div>
+      </div>
+      <div class="hobby-wheel-center" aria-hidden="true"><div class="wheel-axis"></div></div>
+      <div class="hobby-wheel-hint">Drag to spin · Scroll to rotate</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER (Melan dark navy, no nav links) ── -->
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
       <h3>Carlos Ebrahim Vendrell</h3>
       <p>XR &amp; AI Professional · Traveller · Photographer<br>Based in Aarhus, Denmark</p>
     </div>
-
-    <nav class="footer-nav" aria-label="Footer navigation">
-      <a href="pages/travel/travel-map.html">Travel</a>
-      <a href="pages/photography/gallery.html">Photography</a>
-      <a href="pages/tech/ai-projects.html">Tech &amp; AI</a>
-      <a href="pages/about/about.html">About</a>
-      <a href="pages/about/contact.html">Contact</a>
-    </nav>
 
     <ul class="footer-socials">
       <li>
