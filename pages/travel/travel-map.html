@@ -69,30 +69,70 @@
     .page-header h1 { font-size: clamp(2.4rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.75rem; }
     .page-header p { font-size: 1rem; color: var(--text-dim); }
 
+    /* ── INTRO SECTION ── */
+    .map-intro {
+      margin-bottom: 2.5rem;
+    }
+    .map-stats {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .map-desc {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      max-width: 780px;
+    }
+    .country-flags {
+      font-size: 1.5rem;
+      line-height: 2;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.75rem;
+    }
+    .map-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--surface);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .map-link-btn:hover { background: var(--accent); color: #111; border-color: var(--accent); }
+
     /* ── GEOGUESSR SECTION ── */
     .geoguessr-callout {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 2rem 2.5rem;
-      margin-bottom: 3rem;
-      text-align: center;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
     }
     .geoguessr-callout h2 {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 600;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.4rem;
     }
     .geoguessr-callout p {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--text-dim);
     }
 
     /* ── GALLERY ── */
-    .gallery { columns: 4; column-gap: 0.75rem; }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
     .gallery-item {
-      break-inside: avoid;
-      margin-bottom: 0.75rem;
+      aspect-ratio: 16 / 7;
       overflow: hidden;
       border-radius: 10px;
       background: var(--bg-elevated);
@@ -100,29 +140,30 @@
     }
     .gallery-item img {
       width: 100%;
-      height: auto;
+      height: 100%;
+      object-fit: cover;
       display: block;
       transition: transform 0.4s ease;
     }
-    .gallery-item:hover img { transform: scale(1.04); }
+    .gallery-item:hover img { transform: scale(1.06); }
     .gallery-caption {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       padding: 1.5rem 0.75rem 0.6rem;
-      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
       font-size: 0.72rem;
       font-weight: 500;
       letter-spacing: 0.05em;
-      color: rgba(255,255,255,0.85);
-      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
       opacity: 0;
       transition: opacity 0.25s ease;
     }
     .gallery-item:hover .gallery-caption { opacity: 1; }
 
-    @media (max-width: 1100px) { .gallery { columns: 3; } }
-    @media (max-width: 700px)  { .gallery { columns: 2; } }
-    @media (max-width: 420px)  { .gallery { columns: 1; } }
+    @media (max-width: 1100px) { .gallery { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .gallery { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 420px)  { .gallery { grid-template-columns: 1fr; } }
 
     /* ── FOOTER ── */
     footer { margin-top: 5rem; padding: 2rem; border-top: 1px solid var(--line); text-align: center; font-size: 0.875rem; color: var(--text-dim); }
@@ -134,9 +175,9 @@
   <a href="../../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
   <ul class="nav-links">
     <li class="nav-item">
-      <a href="../about/about.html">About Me</a>
+      <a href="../../index.html">Home</a>
       <ul class="dropdown">
-        <li><a href="../about/about.html">Career</a></li>
+        <li><a href="../about/about.html">About me</a></li>
         <li><a href="../about/contact.html">Contact</a></li>
       </ul>
     </li>
@@ -176,7 +217,20 @@
   <div class="page-eyebrow mono">Adventures</div>
   <div class="page-header">
     <h1>My Travel Map</h1>
-    <p>105 places — and counting.</p>
+  </div>
+
+  <div class="map-intro">
+    <p class="map-stats">429 Pins &nbsp;·&nbsp; 53 Countries (27%) &nbsp;·&nbsp; 4 Continents</p>
+    <p class="map-desc">
+      Below you can see where I've been, I've lived or I'm going in the near future.<br>
+      By clicking on the pins, you can also view some photographs, most of which are taken by me.
+    </p>
+    <div class="country-flags">
+      🇦🇩 🇦🇹 🇧🇧 🇧🇪 🇧🇬 🇭🇷 🇨🇿 🇩🇰 🇨🇾 🇪🇪 🇫🇷 🇫🇮 🇩🇪 🇬🇩 🇬🇷 🇭🇺 🇮🇸 🇮🇳 🇮🇩 🇮🇹 🇮🇪 🇯🇴 🇱🇺 🇱🇻 🇱🇹 🇲🇾 🇲🇹 🇲🇦 🇳🇵 🇳🇱 🇳🇴 🇵🇭 🇵🇱 🇵🇹 🇷🇴 🇶🇦 🇷🇺 🇸🇰 🇸🇬 🇸🇮 🇱🇨 🇻🇨 🇪🇸 🇸🇪 🇨🇭 🇹🇿 🇹🇭 🇹🇳 🏴󠁧󠁢󠁳󠁣󠁴󠁿 🇬🇧 🇦🇪 🇺🇸 🇻🇳 🇻🇦
+    </div>
+    <a class="map-link-btn" href="https://www.google.com/maps/d/viewer?mid=1dWm9Bb2iZKIxaUr10iBtvlkvLhCShxs&femb=1&ll=51.13815832606415%2C2.909164867106483&z=4" target="_blank" rel="noopener">
+      🗺️ Open My Map
+    </a>
   </div>
 
   <div class="geoguessr-callout">
