@@ -165,8 +165,8 @@
       width: 2px; height: 62px; background: var(--accent);
     }
     .melan-h2 {
-      text-align: center; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
-      letter-spacing: -0.02em; color: var(--text); margin-bottom: 14px;
+      text-align: center; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800;
+      letter-spacing: -0.04em; color: var(--accent); margin-bottom: 14px;
     }
     .melan-sub {
       text-align: center; color: var(--dim); font-size: 1rem;
@@ -261,10 +261,11 @@
       background: var(--cream); padding: 90px 0;
       position: relative; z-index: 2;
     }
-    /* Override section-title for cream bg — larger, dark blue */
+    /* Override section-title for cream bg — display style, dark blue */
     #service .section-title h2 {
       color: var(--bg-alt);
-      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800; letter-spacing: -0.04em;
     }
     #service .section-title h2::after { background: var(--c-photo); }
     .passion-intro {
@@ -274,9 +275,9 @@
       color: var(--cream-dim); font-size: 0.97rem; line-height: 1.85; margin-bottom: 1rem;
     }
     .passion-intro p:last-child { margin-bottom: 0; }
-    /* Big topic words — side by side */
+    /* Big topic words — side by side, never wrap */
     .passion-words {
-      display: flex; flex-direction: row; flex-wrap: wrap;
+      display: flex; flex-direction: row; flex-wrap: nowrap;
       gap: 0.15em 0.6em; margin: 1.75rem 0;
       line-height: 1;
     }
@@ -286,7 +287,7 @@
     }
     .pw-travel { color: var(--c-photo); }      /* orange/amber */
     .pw-photo  { color: var(--cream-dark); }   /* near-black */
-    .pw-tech   { color: var(--bg-alt); }       /* dark blue */
+    .pw-tech   { color: var(--c-tech); }       /* slate blue — clearly blue, not near-black */
     .pw-sep { color: var(--cream-dim); font-size: clamp(1.6rem, 3.5vw, 2.8rem); font-weight: 300; align-self: center; line-height: 1; }
 
     /* Photo tiles */
@@ -322,8 +323,8 @@
     }
     .career-grid-melan { display: grid; grid-template-columns: 1.1fr 1fr; gap: 80px; align-items: center; }
     .career-text-col h2 {
-      font-size: clamp(2rem, 4.5vw, 2.9rem); font-weight: 700;
-      letter-spacing: -0.03em; color: var(--text); margin-bottom: 1.25rem; margin-top: 1rem;
+      font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 800;
+      letter-spacing: -0.04em; color: var(--accent); margin-bottom: 1.25rem; margin-top: 1rem;
     }
     .career-quote {
       font-size: 1.05rem; font-style: italic; font-weight: 400;
@@ -385,8 +386,8 @@
     .portfolio_inner { max-width: 1140px; margin: 0 auto; padding: 0 40px; }
     .section_title { margin-bottom: 0; position: relative; z-index: 1; }
     .section_title h3 {
-      font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
-      letter-spacing: -0.025em; color: var(--cream-dark); line-height: 1.1;
+      font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800;
+      letter-spacing: -0.04em; color: var(--cream-dark); line-height: 1.1;
     }
     /* override legacy white_text class — cream bg needs dark text */
     .white_text .section_title h3 { color: var(--cream-dark); }
@@ -410,10 +411,13 @@
     .single_Portfolio:hover .portfolio_thumb img { transform: scale(1.06); }
     .portfolio_hover {
       position: absolute; inset: 0;
-      background: var(--c-photo);
+      background: var(--c-photo);  /* default: orange */
       opacity: 0; display: flex; align-items: flex-end;
       padding: 28px 24px; transition: opacity 0.4s;
     }
+    /* Alternate overlays: orange / dark-blue / orange / dark-blue / orange */
+    .portfolio_row_top .single_Portfolio:nth-child(2) .portfolio_hover  { background: var(--bg-alt); }
+    .portfolio_row_bottom .single_Portfolio:nth-child(2) .portfolio_hover { background: var(--bg-alt); }
     .single_Portfolio:hover .portfolio_hover { opacity: 0.9; }
     .portfolio_hover .title h3 { color: #fff; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em; }
     .more_portfolio { text-align: center; margin-top: 48px; }
@@ -637,7 +641,7 @@
       <div class="home-thumb">
         <h1>Hey, I'm <span>Carlos</span></h1>
         <p class="home-tagline">Welcome to my <span class="tagline-em">unapologetically diverse</span> site.</p>
-        <p class="lead">From Barcelona, living in Denmark for the past 7 years. Senior AI Project Manager at Grundfos, passionate traveller, photographer, and perpetual rabbit-hole explorer.</p>
+        <p class="lead">From Barcelona, living in Denmark for the past 7 years. Senior AI Project Manager at GRUNDFOS, passionate traveller, photographer, and perpetual rabbit-hole explorer.</p>
         <div class="cta-wrap">
           <a href="pages/travel/travel-map.html" class="btn btn-dark">Explore my world &nbsp;→</a>
           <a href="pages/about/contact.html" class="btn btn-outline">Get in touch</a>
@@ -713,7 +717,7 @@
             Balancing the exploration and implementation of emerging XR and AI technologies within a well-established, water-focused global enterprise.
           </blockquote>
 
-          <p class="wow d2">I have over 6 years of diverse industry experience gained through a rotation-based Graduate Program at Grundfos, which allowed me to explore topics like:</p>
+          <p class="wow d2">I have over 6 years of diverse industry experience gained through a rotation-based Graduate Program at GRUNDFOS, which allowed me to explore topics like:</p>
 
           <ul class="career-list wow d3">
             <li>Additive Manufacturing</li>
@@ -725,14 +729,14 @@
           <p class="wow d3">I eventually chose the rapidly growing world of XR and AI for industry applications to continue my career.</p>
 
           <div class="career-tag-row wow d4">
-            <span class="career-tag-name">Grundfos</span>
+            <span class="career-tag-name">GRUNDFOS</span>
             <span class="career-tag-date">August 2019 – Present</span>
           </div>
         </div>
 
         <div class="career-img-col wow d2">
           <div class="career-img-frame">
-            <img src="media/career-1.jpg" alt="Career at Grundfos"
+            <img src="media/career-1.jpg" alt="Career at GRUNDFOS"
                  onerror="this.style.display='none'">
           </div>
           <div class="career-dots" aria-hidden="true"></div>
