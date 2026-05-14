@@ -70,64 +70,151 @@ h1, h2, h3, h4, h5, h6 { color: var(--text) !important; font-family: 'Inter', sa
 button, input, textarea, select { font-family: 'Inter', -apple-system, sans-serif !important; }
 img, svg { max-width: 100%; height: auto; }
 section, .page-section, .sqs-layout, .sqs-block, .sqs-block-content, .sqs-block-markdown, .sqs-block-html, .collection, .content-wrapper, .page-title-wrapper, .main-content, #siteWrapper, .site-wrapper { background: transparent !important; color: inherit !important; }
-.custom-site-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.25rem 2rem;
-  background: rgba(10, 11, 16, 0.92);
-  backdrop-filter: blur(20px) saturate(140%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
-}
-.custom-site-nav .nav-brand {
-  color: var(--accent);
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  text-decoration: none;
-}
-.custom-site-nav .nav-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.custom-site-nav .nav-items li {
-  list-style: none;
-}
-.custom-site-nav .nav-items a {
-  color: #ececea;
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  transition: color 0.2s ease;
-}
-.custom-site-nav .nav-items a:hover,
-.custom-site-nav .nav-items a:focus {
-  color: var(--accent);
-}
-.custom-site-nav-spacer {
-  height: 78px;
-}
-header#header, #header, .header-title-nav-wrapper, .header-nav, .header-menu {
-  display: none !important;
-}
-body {
-  padding-top: 78px !important;
-}
+    nav#navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1.25rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 11, 16, 0.6);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+    nav#navbar.scrolled {
+      padding: 0.85rem 2.5rem;
+      background: rgba(10, 11, 16, 0.82);
+      border-bottom-color: var(--line);
+    }
+    .nav-logo {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--text) !important;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none !important;
+    }
+    .nav-logo::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 14px var(--accent);
+      animation: pulseLogo 3s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    .nav-logo span { color: var(--accent) !important; }
+    @keyframes pulseLogo {
+      0%, 100% { box-shadow: 0 0 14px var(--accent); opacity: 1; }
+      50%       { box-shadow: 0 0 24px var(--accent); opacity: 0.85; }
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.25rem;
+      list-style: none;
+      align-items: center;
+      margin: 0; padding: 0;
+    }
+    .nav-item { position: relative; }
+    .nav-links > li > a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-dim) !important;
+      position: relative;
+      padding: 0.5rem 0;
+      transition: color 0.2s;
+      text-decoration: none !important;
+    }
+    .nav-links > li > a:hover { color: var(--text) !important; }
+    .nav-links > li > a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: 0;
+      height: 1px; width: 0;
+      background: var(--accent);
+      transition: width 0.25s ease;
+    }
+    .nav-links > li > a:hover::after { width: 100%; }
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      left: -1rem;
+      min-width: 200px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 0.5rem;
+      list-style: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      margin: 0;
+    }
+    .dropdown li { list-style: none; }
+    .nav-item:hover .dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .dropdown a {
+      display: block;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.87rem;
+      color: var(--text-dim) !important;
+      transition: background 0.15s, color 0.15s;
+    }
+    .dropdown a::after { display: none !important; }
+    .dropdown a:hover {
+      background: var(--surface-hi);
+      color: var(--text) !important;
+    }
+    .nav-cta {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.65rem 1.2rem;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      color: var(--text) !important;
+      transition: all 0.25s;
+      text-decoration: none !important;
+    }
+    .nav-cta:hover {
+      background: var(--accent);
+      color: #111 !important;
+      border-color: var(--accent);
+    }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .hamburger span {
+      width: 22px;
+      height: 1.5px;
+      background: var(--text);
+      display: block;
+      transition: all 0.3s;
+    }
+    @media (max-width: 768px) {
+      nav#navbar { padding: 1rem 1.5rem; }
+      nav#navbar.scrolled { padding: 0.75rem 1.5rem; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .hamburger { display: flex; }
+    }
 </style>
 
 </head>
@@ -145,17 +232,47 @@ body {
     tabindex="-1"
   >
 
-<div class="custom-site-nav">
-  <a class="nav-brand" href="/index.html">CEV</a>
-  <ul class="nav-items">
-    <li><a href="/index.html">Home</a></li>
-    <li><a href="/pages/about/about.html">About</a></li>
-    <li><a href="/pages/travel/travel-map.html">Travel</a></li>
-    <li><a href="/pages/photography/gallery.html">Photography</a></li>
-    <li><a href="/pages/tech/ai-projects.html">Tech</a></li>
-    <li><a href="/pages/about/contact.html">Contact</a></li>
+<nav id="navbar">
+  <a href="../../index.html" class="nav-logo">Carlos <span>Ebrahim</span> Vendrell</a>
+  <ul class="nav-links">
+    <li class="nav-item">
+      <a href="../about/about.html">About Me</a>
+      <ul class="dropdown">
+        <li><a href="../about/about.html">Career</a></li>
+        <li><a href="../about/contact.html">Contact</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../travel/travel-map.html">Travel</a>
+      <ul class="dropdown">
+        <li><a href="../travel/travel-map.html">Travel Map</a></li>
+        <li><a href="../travel/volunteering.html">Volunteering</a></li>
+        <li><a href="../travel/flight-log.html">Flight Log</a></li>
+        <li><a href="../travel/dive-log.html">Dive Log</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../photography/gallery.html">Photography</a>
+      <ul class="dropdown">
+        <li><a href="../photography/gallery.html">Gallery</a></li>
+        <li><a href="../photography/northern-lights.html">Northern Lights</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../tech/ai-projects.html">Tech</a>
+      <ul class="dropdown">
+        <li><a href="../tech/xr-videos.html">XR Videos</a></li>
+        <li><a href="../tech/reality-capture.html">Reality Capture</a></li>
+        <li><a href="../tech/ai-projects.html">AI tools</a></li>
+        <li><a href="../tech/3d-printing.html">3D Printing</a></li>
+      </ul>
+    </li>
   </ul>
-</div>
+  <a href="../about/contact.html" class="nav-cta">Get in touch</a>
+  <button class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
 
     <div
       id="siteWrapper"
@@ -2906,7 +3023,15 @@ body {
     <script defer="true" src="https://static1.squarespace.com/static/vta/5c5a519771c10ba3470d8101/scripts/site-bundle.24618f321442829cf50ddb341e64781c.js" type="text/javascript"></script>
     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none" data-usage="social-icons-svg"><symbol id="instagram-unauth-icon" viewBox="0 0 64 64"><path d="M46.91,25.816c-0.073-1.597-0.326-2.687-0.697-3.641c-0.383-0.986-0.896-1.823-1.73-2.657c-0.834-0.834-1.67-1.347-2.657-1.73c-0.954-0.371-2.045-0.624-3.641-0.697C36.585,17.017,36.074,17,32,17s-4.585,0.017-6.184,0.09c-1.597,0.073-2.687,0.326-3.641,0.697c-0.986,0.383-1.823,0.896-2.657,1.73c-0.834,0.834-1.347,1.67-1.73,2.657c-0.371,0.954-0.624,2.045-0.697,3.641C17.017,27.415,17,27.926,17,32c0,4.074,0.017,4.585,0.09,6.184c0.073,1.597,0.326,2.687,0.697,3.641c0.383,0.986,0.896,1.823,1.73,2.657c0.834,0.834,1.67,1.347,2.657,1.73c0.954,0.371,2.045,0.624,3.641,0.697C27.415,46.983,27.926,47,32,47s4.585-0.017,6.184-0.09c1.597-0.073,2.687-0.326,3.641-0.697c0.986-0.383,1.823-0.896,2.657-1.73c0.834-0.834,1.347-1.67,1.73-2.657c0.371-0.954,0.624-2.045,0.697-3.641C46.983,36.585,47,36.074,47,32S46.983,27.415,46.91,25.816z M44.21,38.061c-0.067,1.462-0.311,2.257-0.516,2.785c-0.272,0.7-0.597,1.2-1.122,1.725c-0.525,0.525-1.025,0.85-1.725,1.122c-0.529,0.205-1.323,0.45-2.785,0.516c-1.581,0.072-2.056,0.087-6.061,0.087s-4.48-0.015-6.061-0.087c-1.462-0.067-2.257-0.311-2.785-0.516c-0.7-0.272-1.2-0.597-1.725-1.122c-0.525-0.525-0.85-1.025-1.122-1.725c-0.205-0.529-0.45-1.323-0.516-2.785c-0.072-1.582-0.087-2.056-0.087-6.061s0.015-4.48,0.087-6.061c0.067-1.462,0.311-2.257,0.516-2.785c0.272-0.7,0.597-1.2,1.122-1.725c0.525-0.525,1.025-0.85,1.725-1.122c0.529-0.205,1.323-0.45,2.785-0.516c1.582-0.072,2.056-0.087,6.061-0.087s4.48,0.015,6.061,0.087c1.462,0.067,2.257,0.311,2.785,0.516c0.7,0.272,1.2,0.597,1.725,1.122c0.525,0.525,0.85,1.025,1.122,1.725c0.205,0.529,0.45,1.323,0.516,2.785c0.072,1.582,0.087,2.056,0.087,6.061S44.282,36.48,44.21,38.061z M32,24.297c-4.254,0-7.703,3.449-7.703,7.703c0,4.254,3.449,7.703,7.703,7.703c4.254,0,7.703-3.449,7.703-7.703C39.703,27.746,36.254,24.297,32,24.297z M32,37c-2.761,0-5-2.239-5-5c0-2.761,2.239-5,5-5s5,2.239,5,5C37,34.761,34.761,37,32,37z M40.007,22.193c-0.994,0-1.8,0.806-1.8,1.8c0,0.994,0.806,1.8,1.8,1.8c0.994,0,1.8-0.806,1.8-1.8C41.807,22.999,41.001,22.193,40.007,22.193z"/></symbol><symbol id="instagram-unauth-mask" viewBox="0 0 64 64"><path d="M43.693,23.153c-0.272-0.7-0.597-1.2-1.122-1.725c-0.525-0.525-1.025-0.85-1.725-1.122c-0.529-0.205-1.323-0.45-2.785-0.517c-1.582-0.072-2.056-0.087-6.061-0.087s-4.48,0.015-6.061,0.087c-1.462,0.067-2.257,0.311-2.785,0.517c-0.7,0.272-1.2,0.597-1.725,1.122c-0.525,0.525-0.85,1.025-1.122,1.725c-0.205,0.529-0.45,1.323-0.516,2.785c-0.072,1.582-0.087,2.056-0.087,6.061s0.015,4.48,0.087,6.061c0.067,1.462,0.311,2.257,0.516,2.785c0.272,0.7,0.597,1.2,1.122,1.725s1.025,0.85,1.725,1.122c0.529,0.205,1.323,0.45,2.785,0.516c1.581,0.072,2.056,0.087,6.061,0.087s4.48-0.015,6.061-0.087c1.462-0.067,2.257-0.311,2.785-0.516c0.7-0.272,1.2-0.597,1.725-1.122s0.85-1.025,1.122-1.725c0.205-0.529,0.45-1.323,0.516-2.785c0.072-1.582,0.087-2.056,0.087-6.061s-0.015-4.48-0.087-6.061C44.143,24.476,43.899,23.682,43.693,23.153z M32,39.703c-4.254,0-7.703-3.449-7.703-7.703s3.449-7.703,7.703-7.703s7.703,3.449,7.703,7.703S36.254,39.703,32,39.703z M40.007,25.793c-0.994,0-1.8-0.806-1.8-1.8c0-0.994,0.806-1.8,1.8-1.8c0.994,0,1.8,0.806,1.8,1.8C41.807,24.987,41.001,25.793,40.007,25.793z M0,0v64h64V0H0z M46.91,38.184c-0.073,1.597-0.326,2.687-0.697,3.641c-0.383,0.986-0.896,1.823-1.73,2.657c-0.834,0.834-1.67,1.347-2.657,1.73c-0.954,0.371-2.044,0.624-3.641,0.697C36.585,46.983,36.074,47,32,47s-4.585-0.017-6.184-0.09c-1.597-0.073-2.687-0.326-3.641-0.697c-0.986-0.383-1.823-0.896-2.657-1.73c-0.834-0.834-1.347-1.67-1.73-2.657c-0.371-0.954-0.624-2.044-0.697-3.641C17.017,36.585,17,36.074,17,32c0-4.074,0.017-4.585,0.09-6.185c0.073-1.597,0.326-2.687,0.697-3.641c0.383-0.986,0.896-1.823,1.73-2.657c0.834-0.834,1.67-1.347,2.657-1.73c0.954-0.371,2.045-0.624,3.641-0.697C27.415,17.017,27.926,17,32,17s4.585,0.017,6.184,0.09c1.597,0.073,2.687,0.326,3.641,0.697c0.986,0.383,1.823,0.896,2.657,1.73c0.834,0.834,1.347,1.67,1.73,2.657c0.371,0.954,0.624,2.044,0.697,3.641C46.983,27.415,47,27.926,47,32C47,36.074,46.983,36.585,46.91,38.184z M32,27c-2.761,0-5,2.239-5,5s2.239,5,5,5s5-2.239,5-5S34.761,27,32,27z"/></symbol><symbol id="linkedin-unauth-icon" viewBox="0 0 64 64"><path d="M20.4,44h5.4V26.6h-5.4V44z M23.1,18c-1.7,0-3.1,1.4-3.1,3.1c0,1.7,1.4,3.1,3.1,3.1 c1.7,0,3.1-1.4,3.1-3.1C26.2,19.4,24.8,18,23.1,18z M39.5,26.2c-2.6,0-4.4,1.4-5.1,2.8h-0.1v-2.4h-5.2V44h5.4v-8.6 c0-2.3,0.4-4.5,3.2-4.5c2.8,0,2.8,2.6,2.8,4.6V44H46v-9.5C46,29.8,45,26.2,39.5,26.2z"/></symbol><symbol id="linkedin-unauth-mask" viewBox="0 0 64 64"><path d="M0,0v64h64V0H0z M25.8,44h-5.4V26.6h5.4V44z M23.1,24.3c-1.7,0-3.1-1.4-3.1-3.1c0-1.7,1.4-3.1,3.1-3.1 c1.7,0,3.1,1.4,3.1,3.1C26.2,22.9,24.8,24.3,23.1,24.3z M46,44h-5.4v-8.4c0-2,0-4.6-2.8-4.6c-2.8,0-3.2,2.2-3.2,4.5V44h-5.4V26.6 h5.2V29h0.1c0.7-1.4,2.5-2.8,5.1-2.8c5.5,0,6.5,3.6,6.5,8.3V44z"/></symbol></svg>
 
-  </body>
+  <script>
+  const navbar = document.getElementById('navbar');
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+  }
+</script>
+</body>
 
 <!-- Mirrored from cevendrell.com/ai-projects by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 11 May 2026 19:53:39 GMT -->
 </html>

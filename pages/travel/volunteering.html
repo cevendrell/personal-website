@@ -31,54 +31,151 @@
     button, input, textarea, select { font-family: 'Inter', -apple-system, sans-serif !important; }
     img, svg { max-width: 100%; height: auto; }
     section, .page-section, .sqs-layout, .sqs-block, .sqs-block-content, .sqs-block-markdown, .sqs-block-html, .collection, .content-wrapper, .page-title-wrapper, .main-content, #siteWrapper, .site-wrapper { background: transparent !important; color: inherit !important; }
-    .custom-site-nav {
+        nav#navbar {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 9999;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1.25rem 2.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
-      padding: 1.25rem 2rem;
-      background: rgba(10, 11, 16, 0.92);
+      background: rgba(10, 11, 16, 0.6);
       backdrop-filter: blur(20px) saturate(140%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border-bottom: 1px solid transparent;
       transition: all 0.3s ease;
     }
-    .custom-site-nav .nav-brand {
-      color: var(--accent);
-      font-family: 'Inter', sans-serif;
+    nav#navbar.scrolled {
+      padding: 0.85rem 2.5rem;
+      background: rgba(10, 11, 16, 0.82);
+      border-bottom-color: var(--line);
+    }
+    .nav-logo {
       font-size: 1rem;
       font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      text-decoration: none;
-    }
-    .custom-site-nav .nav-items {
+      letter-spacing: 0.02em;
+      color: var(--text) !important;
       display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none !important;
     }
-    .custom-site-nav .nav-items li {
-      list-style: none;
+    .nav-logo::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 14px var(--accent);
+      animation: pulseLogo 3s ease-in-out infinite;
+      flex-shrink: 0;
     }
-    .custom-site-nav .nav-items a {
-      color: #ececea;
-      text-decoration: none;
+    .nav-logo span { color: var(--accent) !important; }
+    @keyframes pulseLogo {
+      0%, 100% { box-shadow: 0 0 14px var(--accent); opacity: 1; }
+      50%       { box-shadow: 0 0 24px var(--accent); opacity: 0.85; }
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.25rem;
+      list-style: none;
+      align-items: center;
+      margin: 0; padding: 0;
+    }
+    .nav-item { position: relative; }
+    .nav-links > li > a {
       font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      transition: color 0.2s ease;
+      font-weight: 500;
+      color: var(--text-dim) !important;
+      position: relative;
+      padding: 0.5rem 0;
+      transition: color 0.2s;
+      text-decoration: none !important;
     }
-    .custom-site-nav .nav-items a:hover,
-    .custom-site-nav .nav-items a:focus { color: var(--accent); }
-    .custom-site-nav-spacer { height: 78px; }
+    .nav-links > li > a:hover { color: var(--text) !important; }
+    .nav-links > li > a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: 0;
+      height: 1px; width: 0;
+      background: var(--accent);
+      transition: width 0.25s ease;
+    }
+    .nav-links > li > a:hover::after { width: 100%; }
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      left: -1rem;
+      min-width: 200px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 0.5rem;
+      list-style: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      margin: 0;
+    }
+    .dropdown li { list-style: none; }
+    .nav-item:hover .dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .dropdown a {
+      display: block;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.87rem;
+      color: var(--text-dim) !important;
+      transition: background 0.15s, color 0.15s;
+    }
+    .dropdown a::after { display: none !important; }
+    .dropdown a:hover {
+      background: var(--surface-hi);
+      color: var(--text) !important;
+    }
+    .nav-cta {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.65rem 1.2rem;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      color: var(--text) !important;
+      transition: all 0.25s;
+      text-decoration: none !important;
+    }
+    .nav-cta:hover {
+      background: var(--accent);
+      color: #111 !important;
+      border-color: var(--accent);
+    }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .hamburger span {
+      width: 22px;
+      height: 1.5px;
+      background: var(--text);
+      display: block;
+      transition: all 0.3s;
+    }
+    @media (max-width: 768px) {
+      nav#navbar { padding: 1rem 1.5rem; }
+      nav#navbar.scrolled { padding: 0.75rem 1.5rem; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .hamburger { display: flex; }
+    }
     .container {
       max-width: 1040px;
       margin: 0 auto;
@@ -177,9 +274,9 @@
     <li class="nav-item">
       <a href="../tech/ai-projects.html">Tech</a>
       <ul class="dropdown">
-        <li><a href="../tech/ai-projects.html">AI tools</a></li>
         <li><a href="../tech/xr-videos.html">XR Videos</a></li>
         <li><a href="../tech/reality-capture.html">Reality Capture</a></li>
+        <li><a href="../tech/ai-projects.html">AI tools</a></li>
         <li><a href="../tech/3d-printing.html">3D Printing</a></li>
       </ul>
     </li>
@@ -208,5 +305,13 @@
       <p>© 2026 Carlos Ebrahim Vendrell</p>
     </footer>
   </main>
+<script>
+  const navbar = document.getElementById('navbar');
+  if (navbar) {
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+  }
+</script>
 </body>
 </html>
