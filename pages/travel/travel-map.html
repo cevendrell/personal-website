@@ -225,32 +225,15 @@
     }
     .imap-reset:hover { color: var(--accent); }
 
-    /* Globe wrapper (replaces #imap) */
+    /* Globe wrapper — borderless, blends into the page bg */
     .imap-stage {
       width: 100%; height: 620px;
-      background: radial-gradient(ellipse at center, #0a0d18 0%, #050610 70%);
+      background: transparent;
       position: relative; z-index: 0;
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid var(--line);
+      overflow: visible;
       margin-top: 1rem;
     }
-    /* Subtle starfield (CSS-generated) */
-    .imap-stage::before {
-      content: ''; position: absolute; inset: 0; pointer-events: none;
-      background-image:
-        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.4), transparent 50%),
-        radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.35), transparent 50%),
-        radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.3), transparent 50%),
-        radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.4), transparent 50%),
-        radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.25), transparent 50%),
-        radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.3), transparent 50%),
-        radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.35), transparent 50%),
-        radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.25), transparent 50%);
-      background-size: 600px 600px;
-      opacity: 0.5;
-      z-index: 1;
-    }
+    /* (starfield removed — globe now sits on the page bg with no frame) */
     @media (max-width: 700px) {
       .imap-stage { height: 460px; }
       .imap-header { grid-template-columns: 1fr; }
@@ -319,7 +302,7 @@
     /* ── Mission-Impossible "comm-card" ── */
     .comm-card {
       position: absolute;
-      width: 280px;
+      width: 360px;
       background: rgba(8,9,14,0.86);
       border: 1px solid rgba(200,120,74,0.5);
       backdrop-filter: blur(18px) saturate(140%);
@@ -387,11 +370,7 @@
     }
     .cc-photo img.loading { opacity: 0; }
     .cc-photo:hover img { transform: scale(1.04); }
-    .cc-photo::after {
-      content: ''; position: absolute; inset: 0; pointer-events: none;
-      background: repeating-linear-gradient(to bottom,
-        transparent 0 2px, rgba(0,0,0,0.07) 2px 3px);
-    }
+    /* (scanline overlay removed — was too retro) */
     .cc-photo .cc-skel {
       position: absolute; inset: 0; z-index: 1;
       background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.05), rgba(255,255,255,0.02));
@@ -460,7 +439,7 @@
     .comm-card.lived .cc-coords span  { color: var(--accent); }
 
     @media (max-width: 700px) {
-      .comm-card { width: calc(100% - 32px); max-width: 320px; }
+      .comm-card { width: calc(100% - 32px); max-width: 360px; }
     }
 
     /* ── Connector line ── */
@@ -1564,18 +1543,19 @@ function runGlobeInit() {
 
   // ── Initialise the globe ──────────────────────────────────
   const globe = Globe()(container)
-    .globeImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-dark.jpg')
+    // Realistic NASA Blue Marble texture (lighter, with oceans/continents/clouds)
+    .globeImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
     .backgroundColor('rgba(0,0,0,0)')
-    .atmosphereColor('#6a8db5')
-    .atmosphereAltitude(0.18)
+    .atmosphereColor('#a8c8ff')
+    .atmosphereAltitude(0.2)
     .pointsData(DATA)
     .pointLat(d => d.lat)
     .pointLng(d => d.lon)
-    .pointColor(d => d.s === 'L' ? '#e8dcc4' : '#c8784a')
-    .pointAltitude(0.012)
-    .pointRadius(0.32)
-    .pointResolution(10)
+    .pointColor(d => d.s === 'L' ? '#fff5d6' : '#ff8a3d')   // brighter, more saturated to stand out on blue-marble
+    .pointAltitude(0)              // flat dots — no columns
+    .pointRadius(0.4)
+    .pointResolution(14)
     .pointsMerge(false)
     .onPointClick(handlePinClick)
     .onPointHover(p => {
@@ -1690,7 +1670,7 @@ function runGlobeInit() {
       <span class="cc-corner br"></span>
       <div class="cc-head">
         <span class="cc-rec"></span>
-        <span class="cc-id">RECORD · ${rec.s === 'L' ? 'RESIDENT' : 'VISITED'}</span>
+        <span class="cc-id">${rec.s === 'L' ? 'LIVED' : 'VISITED'}</span>
         <button class="cc-close" aria-label="Close">×</button>
       </div>
       ${photoHTML}
@@ -1746,7 +1726,7 @@ function runGlobeInit() {
     const stageRect = stage.getBoundingClientRect();
     const isWide = stageRect.width >= 700;
     // Get pin screen position to decide which side the card sits on
-    const pin = globe.getScreenCoords(activeRec.lat, activeRec.lon, 0.012);
+    const pin = globe.getScreenCoords(activeRec.lat, activeRec.lon, 0);
     if (isWide) {
       // Card on opposite side of pin
       const onRight = pin.x < stageRect.width / 2;
@@ -1786,10 +1766,10 @@ function runGlobeInit() {
     if (!activeRec || !activeCard) return;
 
     // Where's the pin on screen?
-    const pin = globe.getScreenCoords(activeRec.lat, activeRec.lon, 0.012);
+    const pin = globe.getScreenCoords(activeRec.lat, activeRec.lon, 0);
     // Is the pin on the visible hemisphere?
     const camera = globe.camera();
-    const coords = globe.getCoords(activeRec.lat, activeRec.lon, 0.012);
+    const coords = globe.getCoords(activeRec.lat, activeRec.lon, 0);
     const camLen = Math.hypot(camera.position.x, camera.position.y, camera.position.z);
     const pinLen = Math.hypot(coords.x, coords.y, coords.z);
     const dot = (camera.position.x * coords.x + camera.position.y * coords.y + camera.position.z * coords.z) / (camLen * pinLen);
