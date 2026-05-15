@@ -16,6 +16,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- Leaflet (interactive map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
   <style>
     :root {
       --bg:         #08090e;
@@ -135,6 +140,302 @@
       transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
     .map-link-btn:hover { background: var(--accent); color: #111; border-color: var(--accent); }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ INTERACTIVE TRAVEL MAP (Leaflet)                              ══
+       ══════════════════════════════════════════════════════════════════ */
+    .imap-section {
+      margin: 3rem 0 2.5rem;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(12,16,40,0.7) 0%, rgba(8,9,14,0.85) 100%);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+    }
+    .imap-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.5rem;
+    }
+    .imap-header {
+      padding: 1.6rem 1.75rem 1.25rem;
+      display: grid; grid-template-columns: 1fr auto; gap: 1.25rem; align-items: end;
+      border-bottom: 1px solid var(--line);
+    }
+    .imap-header h2 {
+      font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.1; color: var(--text);
+    }
+    .imap-header p {
+      margin-top: 0.5rem; font-size: 0.88rem; color: var(--text-dim); line-height: 1.6;
+      max-width: 50ch;
+    }
+    /* Live stat chips */
+    .imap-stats {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .imap-stat {
+      display: flex; flex-direction: column; align-items: flex-start;
+      padding: 0.55rem 0.9rem;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; min-width: 84px;
+    }
+    .imap-stat .val {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em;
+      color: var(--text); line-height: 1; font-variant-numeric: tabular-nums;
+    }
+    .imap-stat .lbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-mute); margin-top: 0.3rem;
+    }
+
+    /* Filter bar */
+    .imap-controls {
+      padding: 1rem 1.75rem;
+      display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.015);
+    }
+    .imap-ctrl { display: flex; align-items: center; gap: 0.6rem; }
+    .imap-ctrl label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-mute);
+    }
+    .imap-year-range {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .imap-year-range input[type="range"] {
+      -webkit-appearance: none; appearance: none;
+      width: 220px; height: 4px; background: rgba(255,255,255,0.08);
+      border-radius: 2px; outline: none; cursor: pointer;
+    }
+    .imap-year-range input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
+      box-shadow: 0 0 0 4px rgba(232,220,196,0.12);
+      transition: box-shadow 0.2s;
+    }
+    .imap-year-range input[type="range"]::-webkit-slider-thumb:hover { box-shadow: 0 0 0 6px rgba(232,220,196,0.18); }
+    .imap-year-range input[type="range"]::-moz-range-thumb {
+      width: 16px; height: 16px; border-radius: 50%; border: none;
+      background: var(--accent); cursor: pointer;
+    }
+    .imap-year-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; color: var(--text); min-width: 64px;
+      letter-spacing: 0.05em; font-variant-numeric: tabular-nums;
+    }
+    .imap-pills { display: flex; gap: 0.35rem; }
+    .imap-pill {
+      font-size: 0.72rem; font-weight: 600;
+      padding: 0.4rem 0.85rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--text-dim); cursor: pointer; user-select: none;
+      transition: all 0.2s; background: transparent;
+    }
+    .imap-pill:hover { border-color: var(--accent); color: var(--text); }
+    .imap-pill.active { background: var(--accent); color: #111; border-color: var(--accent); }
+    .imap-search {
+      flex: 1; min-width: 180px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text); padding: 0.55rem 0.9rem; border-radius: 999px;
+      font-size: 0.82rem; outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .imap-search:focus { border-color: var(--accent); background: rgba(255,255,255,0.06); }
+    .imap-search::placeholder { color: var(--text-mute); }
+    .imap-reset {
+      background: transparent; border: none;
+      color: var(--text-mute); font-size: 0.75rem; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.4rem 0.5rem;
+      transition: color 0.2s;
+    }
+    .imap-reset:hover { color: var(--accent); }
+
+    /* Map itself */
+    #imap {
+      width: 100%; height: 580px;
+      background: #0a0d18;
+      position: relative; z-index: 0;
+    }
+    @media (max-width: 700px) {
+      #imap { height: 460px; }
+      .imap-header { grid-template-columns: 1fr; }
+      .imap-stats { justify-content: flex-start; }
+      .imap-year-range input[type="range"] { width: 160px; }
+    }
+
+    /* Loading skeleton */
+    .imap-loading {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1rem; background: #0a0d18; z-index: 1000;
+      transition: opacity 0.4s, visibility 0.4s;
+    }
+    .imap-loading.done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .imap-loading .skel-spin {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2px solid rgba(232,220,196,0.15); border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+    }
+    .imap-loading p { color: var(--text-mute); font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; }
+
+    /* ── Custom Leaflet styling overrides ── */
+    .leaflet-container {
+      background: #0a0d18 !important;
+      font-family: 'Inter', sans-serif !important;
+      outline: none;
+    }
+    .leaflet-tile { filter: brightness(0.9) saturate(0.85); }
+    .leaflet-control-zoom { border: none !important; box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important; }
+    .leaflet-control-zoom a {
+      background: rgba(12,16,40,0.92) !important; color: var(--text) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    .leaflet-control-zoom a:hover { background: rgba(232,220,196,0.95) !important; color: #111 !important; }
+    .leaflet-control-attribution {
+      background: rgba(8,9,14,0.7) !important; color: var(--text-mute) !important;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      border-radius: 6px; font-size: 0.65rem !important;
+    }
+    .leaflet-control-attribution a { color: var(--text-dim) !important; }
+
+    /* Custom marker circles */
+    .imap-marker {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--c-photo); /* visited = amber */
+      border: 2px solid rgba(8,9,14,0.95);
+      box-shadow: 0 0 0 1px var(--c-photo), 0 0 8px rgba(200,120,74,0.5);
+      transition: transform 0.2s ease;
+    }
+    .imap-marker.lived {
+      background: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent), 0 0 10px rgba(232,220,196,0.6);
+    }
+    .imap-marker:hover { transform: scale(1.4); }
+
+    /* Cluster styling */
+    .imap-cluster {
+      background: rgba(200,120,74,0.18);
+      border: 1.5px solid var(--c-photo);
+      color: var(--text); font-weight: 700; font-size: 0.78rem;
+      width: 38px !important; height: 38px !important;
+      border-radius: 50% !important;
+      display: flex !important; align-items: center; justify-content: center;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4), 0 0 0 4px rgba(200,120,74,0.06);
+    }
+    .imap-cluster.lg { width: 48px !important; height: 48px !important; font-size: 0.88rem; }
+    .imap-cluster.xl { width: 58px !important; height: 58px !important; font-size: 0.95rem; background: rgba(200,120,74,0.28); }
+    .imap-cluster div { background: transparent !important; }
+
+    /* Popup */
+    .leaflet-popup-content-wrapper {
+      background: rgba(8,9,14,0.96) !important;
+      color: var(--text) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      border-radius: 12px !important;
+      padding: 0 !important;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6) !important;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      overflow: hidden;
+    }
+    .leaflet-popup-content { margin: 0 !important; width: 260px !important; line-height: 1.5; }
+    .leaflet-popup-tip { background: rgba(8,9,14,0.96) !important; border-color: rgba(255,255,255,0.08) !important; }
+    .leaflet-popup-close-button {
+      color: rgba(255,255,255,0.5) !important; font-size: 22px !important;
+      width: 28px !important; height: 28px !important; line-height: 26px !important;
+      padding: 0 !important; top: 6px !important; right: 6px !important;
+    }
+    .leaflet-popup-close-button:hover { color: var(--accent) !important; }
+
+    .pop-photo {
+      position: relative; width: 100%; aspect-ratio: 4/3;
+      overflow: hidden; background: var(--bg-elevated);
+    }
+    .pop-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: opacity 0.4s;
+    }
+    .pop-photo img.loading { opacity: 0; }
+    .pop-photo .pop-skel {
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%);
+      background-size: 200% 100%;
+      animation: skelShimmer 1.4s ease-in-out infinite;
+    }
+    @keyframes skelShimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    /* Photo dots — for multi-photo navigation */
+    .pop-dots {
+      position: absolute; bottom: 0.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 5px;
+    }
+    .pop-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .pop-dot.active { background: var(--accent); }
+    .pop-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.2s;
+      font-size: 14px; border: none;
+    }
+    .pop-photo:hover .pop-nav { opacity: 1; }
+    .pop-nav.prev { left: 6px; }
+    .pop-nav.next { right: 6px; }
+    .pop-body { padding: 0.95rem 1.1rem 1.1rem; }
+    .pop-body h3 {
+      font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 0.15rem; color: var(--text);
+    }
+    .pop-body .pop-country {
+      font-size: 0.82rem; color: var(--text-dim);
+    }
+    .pop-meta {
+      margin-top: 0.6rem; display: flex; gap: 0.5rem; flex-wrap: wrap;
+      align-items: center;
+    }
+    .pop-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.2rem 0.55rem; border-radius: 999px;
+      background: rgba(255,255,255,0.05); color: var(--text-dim);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .pop-chip.year   { color: var(--accent);   border-color: rgba(232,220,196,0.25); }
+    .pop-chip.lived  { color: var(--c-photo);  border-color: rgba(200,120,74,0.35); background: rgba(200,120,74,0.07); }
+
+    /* Legend */
+    .imap-legend {
+      position: absolute; bottom: 1rem; left: 1rem; z-index: 500;
+      background: rgba(8,9,14,0.78); border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-radius: 10px; padding: 0.6rem 0.85rem;
+      font-size: 0.7rem; color: var(--text-dim);
+      display: flex; gap: 0.8rem; align-items: center;
+    }
+    .imap-legend .swatch {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+    .imap-legend .sw-vis  { background: var(--c-photo); box-shadow: 0 0 6px rgba(200,120,74,0.6); }
+    .imap-legend .sw-liv  { background: var(--accent);  box-shadow: 0 0 6px rgba(232,220,196,0.6); }
+    @media (max-width: 500px) { .imap-legend { font-size: 0.62rem; bottom: 0.5rem; left: 0.5rem; padding: 0.45rem 0.65rem; gap: 0.55rem; } }
 
     /* ── GEOGUESSR SECTION ── */
     .geoguessr-callout {
@@ -417,6 +718,61 @@
       ↗ Open full map
     </a>
   </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       ══ INTERACTIVE TRAVEL MAP                                        ══
+       ══   Data: travel-map-data.js · 474 places · 58 countries        ══
+       ══   To refresh data, re-run the Python build script.            ══
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="imap-section" aria-label="Interactive travel map">
+    <header class="imap-header">
+      <div>
+        <div class="imap-eyebrow">Explore</div>
+        <h2>Every place I've been — on one canvas</h2>
+        <p>Hover, click, drag. Filter by year or status. Each pin opens a card with photos, country, and visit year.</p>
+      </div>
+      <div class="imap-stats" id="imapStats">
+        <div class="imap-stat"><span class="val" id="statPlaces">0</span><span class="lbl">Places</span></div>
+        <div class="imap-stat"><span class="val" id="statCountries">0</span><span class="lbl">Countries</span></div>
+        <div class="imap-stat"><span class="val" id="statPhotos">0</span><span class="lbl">w/ Photos</span></div>
+      </div>
+    </header>
+
+    <div class="imap-controls">
+      <div class="imap-ctrl imap-year-range">
+        <label for="yearMin">From</label>
+        <input type="range" id="yearMin" min="2000" max="2026" value="2000">
+        <span class="imap-year-val" id="yearMinVal">2000</span>
+        <label for="yearMax" style="margin-left:0.5rem">To</label>
+        <input type="range" id="yearMax" min="2000" max="2026" value="2026">
+        <span class="imap-year-val" id="yearMaxVal">2026</span>
+      </div>
+
+      <div class="imap-ctrl">
+        <label>Status</label>
+        <div class="imap-pills" id="statusPills">
+          <button class="imap-pill active" data-status="all">All</button>
+          <button class="imap-pill" data-status="V">Visited</button>
+          <button class="imap-pill" data-status="L">Lived</button>
+        </div>
+      </div>
+
+      <input type="search" class="imap-search" id="placeSearch" placeholder="Search city or country…" autocomplete="off">
+      <button class="imap-reset" id="imapReset">Reset</button>
+    </div>
+
+    <div style="position:relative;">
+      <div id="imap"></div>
+      <div class="imap-loading" id="imapLoading">
+        <div class="skel-spin"></div>
+        <p>Loading map…</p>
+      </div>
+      <div class="imap-legend">
+        <span><span class="swatch sw-vis"></span>Visited</span>
+        <span><span class="swatch sw-liv"></span>Lived</span>
+      </div>
+    </div>
+  </section>
 
   <div class="geoguessr-callout">
     <h2>Want to play some Geoguessr?</h2>
@@ -1000,6 +1356,271 @@
       if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
     }, { passive: true });
   }
+</script>
+
+<!-- ── Leaflet + cluster libs + travel data ── -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="travel-map-data.js"></script>
+
+<!-- ══ Interactive map controller ══ -->
+<script>
+(function initInteractiveMap() {
+  if (typeof L === 'undefined' || !window.TRAVEL_DATA) {
+    console.warn('Leaflet or TRAVEL_DATA missing');
+    return;
+  }
+
+  // ── Constants ──
+  const DATA       = window.TRAVEL_DATA;
+  const PHOTO_PATH = '../../media/travel-photos/';
+  const MIN_YEAR   = Math.min(...DATA.filter(d => d.y).map(d => d.y));
+  const MAX_YEAR   = Math.max(...DATA.filter(d => d.y).map(d => d.y));
+
+  // ── Initialise map ──
+  const map = L.map('imap', {
+    center: [40, 14],
+    zoom: 3,
+    minZoom: 2,
+    maxZoom: 12,
+    worldCopyJump: true,
+    zoomControl: true,
+    attributionControl: true,
+    preferCanvas: true   // faster with many markers
+  });
+
+  // CartoDB Dark Matter — matches site theme
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> · <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+  // Labels layer on top for legibility
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd', maxZoom: 19, pane: 'overlayPane', opacity: 0.75
+  }).addTo(map);
+
+  // ── Marker factory ──
+  function makeIcon(status) {
+    return L.divIcon({
+      className: '',
+      html: `<div class="imap-marker${status === 'L' ? ' lived' : ''}"></div>`,
+      iconSize: [14,14], iconAnchor: [7,7], popupAnchor: [0,-8]
+    });
+  }
+
+  // ── Popup HTML builder (carousel for multi-photo places) ──
+  function buildPopupHTML(rec) {
+    const photos = rec.p || [];
+    const hasPhotos = photos.length > 0;
+    const isLived = rec.s === 'L';
+
+    let photoSection = '';
+    if (hasPhotos) {
+      const imgs = photos.map((fn, i) => {
+        const src = PHOTO_PATH + encodeURI(fn);
+        return `<img loading="lazy" class="loading${i === 0 ? ' active' : ''}" data-idx="${i}" src="${src}" alt="${rec.n}" onload="this.classList.remove('loading')" onerror="this.style.display='none'">`;
+      }).join('');
+      const dots = photos.length > 1
+        ? `<div class="pop-dots">${photos.map((_,i)=>`<span class="pop-dot${i===0?' active':''}" data-idx="${i}"></span>`).join('')}</div>`
+        : '';
+      const nav = photos.length > 1
+        ? `<button class="pop-nav prev" aria-label="Previous">‹</button><button class="pop-nav next" aria-label="Next">›</button>`
+        : '';
+      photoSection = `<div class="pop-photo">
+        <div class="pop-skel"></div>${imgs}${nav}${dots}
+      </div>`;
+    }
+
+    const chips = [
+      isLived ? '<span class="pop-chip lived">Lived</span>' : '',
+      rec.y    ? `<span class="pop-chip year">${rec.y}</span>` : ''
+    ].filter(Boolean).join('');
+
+    return `${photoSection}<div class="pop-body">
+      <h3>${escapeHTML(rec.n)}</h3>
+      <p class="pop-country">${escapeHTML(rec.c)}</p>
+      ${chips ? `<div class="pop-meta">${chips}</div>` : ''}
+    </div>`;
+  }
+
+  function escapeHTML(s) {
+    return (s || '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  // Wire up carousel after popup opens
+  map.on('popupopen', e => {
+    const root = e.popup.getElement();
+    if (!root) return;
+    const photoBox = root.querySelector('.pop-photo');
+    if (!photoBox) return;
+    const imgs = photoBox.querySelectorAll('img');
+    const dots = photoBox.querySelectorAll('.pop-dot');
+    if (imgs.length < 2) return;
+    let current = 0;
+    function show(i) {
+      i = (i + imgs.length) % imgs.length;
+      current = i;
+      imgs.forEach((img, idx) => {
+        img.style.display = idx === i ? 'block' : 'none';
+      });
+      dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+    }
+    // hide non-first imgs initially
+    imgs.forEach((img, idx) => { if (idx !== 0) img.style.display = 'none'; });
+    photoBox.querySelector('.pop-nav.prev')?.addEventListener('click', () => show(current - 1));
+    photoBox.querySelector('.pop-nav.next')?.addEventListener('click', () => show(current + 1));
+    dots.forEach(d => d.addEventListener('click', () => show(+d.dataset.idx)));
+  });
+
+  // ── Cluster group ──
+  const cluster = L.markerClusterGroup({
+    showCoverageOnHover: false,
+    spiderfyOnMaxZoom: true,
+    chunkedLoading: true,
+    maxClusterRadius: 45,
+    iconCreateFunction: c => {
+      const n = c.getChildCount();
+      const size = n < 10 ? '' : (n < 50 ? ' lg' : ' xl');
+      return L.divIcon({
+        html: `<div class="imap-cluster${size}">${n}</div>`,
+        className: '', iconSize: [38,38]
+      });
+    }
+  });
+
+  // Build markers
+  const markers = DATA.map(rec => {
+    const m = L.marker([rec.lat, rec.lon], { icon: makeIcon(rec.s) });
+    m._rec = rec;
+    m.bindPopup(() => buildPopupHTML(rec), { maxWidth: 280, autoPan: true, closeButton: true });
+    return m;
+  });
+
+  map.addLayer(cluster);
+
+  // ── Filtering ──
+  const state = {
+    yearMin: MIN_YEAR,
+    yearMax: MAX_YEAR,
+    status: 'all',
+    search: ''
+  };
+
+  function applyFilter() {
+    const q = state.search.toLowerCase();
+    const visible = markers.filter(m => {
+      const r = m._rec;
+      if (state.status !== 'all' && r.s !== state.status) return false;
+      if (r.y !== null && r.y !== undefined) {
+        if (r.y < state.yearMin || r.y > state.yearMax) return false;
+      }
+      if (q && !(r.n.toLowerCase().includes(q) || (r.c||'').toLowerCase().includes(q))) return false;
+      return true;
+    });
+    cluster.clearLayers();
+    cluster.addLayers(visible);
+    updateStats(visible);
+  }
+
+  function updateStats(visible) {
+    const countries = new Set(visible.map(m => m._rec.c).filter(Boolean));
+    const photos    = visible.filter(m => m._rec.p && m._rec.p.length).length;
+    animateNum('statPlaces',    visible.length);
+    animateNum('statCountries', countries.size);
+    animateNum('statPhotos',    photos);
+  }
+
+  // ── Animated number counter for stats ──
+  const numCache = {};
+  function animateNum(id, target) {
+    const el = document.getElementById(id); if (!el) return;
+    const start = numCache[id] ?? 0;
+    if (start === target) { el.textContent = target; return; }
+    const dur = 500, t0 = performance.now();
+    function step(t) {
+      const p = Math.min((t - t0) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(start + (target - start) * ease);
+      if (p < 1) requestAnimationFrame(step);
+      else numCache[id] = target;
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── Initialise year range to actual data range ──
+  const ymin = document.getElementById('yearMin');
+  const ymax = document.getElementById('yearMax');
+  ymin.min = ymax.min = MIN_YEAR;
+  ymin.max = ymax.max = MAX_YEAR;
+  ymin.value = MIN_YEAR; ymax.value = MAX_YEAR;
+  state.yearMin = MIN_YEAR; state.yearMax = MAX_YEAR;
+  document.getElementById('yearMinVal').textContent = MIN_YEAR;
+  document.getElementById('yearMaxVal').textContent = MAX_YEAR;
+
+  ymin.addEventListener('input', () => {
+    let v = +ymin.value;
+    if (v > +ymax.value) v = +ymax.value;
+    state.yearMin = v; ymin.value = v;
+    document.getElementById('yearMinVal').textContent = v;
+    applyFilter();
+  });
+  ymax.addEventListener('input', () => {
+    let v = +ymax.value;
+    if (v < +ymin.value) v = +ymin.value;
+    state.yearMax = v; ymax.value = v;
+    document.getElementById('yearMaxVal').textContent = v;
+    applyFilter();
+  });
+
+  // Status pills
+  document.querySelectorAll('#statusPills .imap-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('#statusPills .imap-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      state.status = pill.dataset.status;
+      applyFilter();
+    });
+  });
+
+  // Search (debounced)
+  let searchTO;
+  document.getElementById('placeSearch').addEventListener('input', e => {
+    clearTimeout(searchTO);
+    searchTO = setTimeout(() => { state.search = e.target.value.trim(); applyFilter(); }, 150);
+  });
+
+  // Reset
+  document.getElementById('imapReset').addEventListener('click', () => {
+    ymin.value = MIN_YEAR; ymax.value = MAX_YEAR;
+    state.yearMin = MIN_YEAR; state.yearMax = MAX_YEAR;
+    document.getElementById('yearMinVal').textContent = MIN_YEAR;
+    document.getElementById('yearMaxVal').textContent = MAX_YEAR;
+    state.search = '';
+    document.getElementById('placeSearch').value = '';
+    state.status = 'all';
+    document.querySelectorAll('#statusPills .imap-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.status === 'all');
+    });
+    applyFilter();
+    map.setView([40, 14], 3);
+  });
+
+  // ── Initial load ──
+  cluster.addLayers(markers);
+  updateStats(markers);
+  document.getElementById('imapLoading').classList.add('done');
+
+  // Defer-render when scrolled into view (saves work on first paint)
+  setTimeout(() => map.invalidateSize(), 100);
+  const io = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) map.invalidateSize();
+  }, { threshold: 0.1 });
+  io.observe(document.getElementById('imap'));
+})();
 </script>
 
 </body>
