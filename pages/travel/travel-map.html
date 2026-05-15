@@ -117,40 +117,12 @@
       letter-spacing: 0.1em;
       margin-bottom: 1.75rem;
     }
-    .map-embed-wrap {
-      width: 100%;
-      height: 520px;
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid var(--line);
-      margin-bottom: 0.75rem;
-    }
-    .map-embed-wrap iframe { display: block; }
-    .map-link-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.55rem 1.1rem;
-      border: 1px solid var(--line-strong);
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-dim);
-      background: transparent;
-      transition: background 0.2s, border-color 0.2s, color 0.2s;
-    }
-    .map-link-btn:hover { background: var(--accent); color: #111; border-color: var(--accent); }
-
     /* ══════════════════════════════════════════════════════════════════
        ══ INTERACTIVE TRAVEL MAP (Leaflet)                              ══
        ══════════════════════════════════════════════════════════════════ */
+    /* Section no longer feels like a "card" — blends with the page background */
     .imap-section {
-      margin: 3rem 0 2.5rem;
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: linear-gradient(135deg, rgba(12,16,40,0.7) 0%, rgba(8,9,14,0.85) 100%);
-      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+      margin: 2.5rem 0 2.5rem;
     }
     .imap-eyebrow {
       font-family: 'JetBrains Mono', monospace;
@@ -158,17 +130,16 @@
       color: var(--accent); margin-bottom: 0.5rem;
     }
     .imap-header {
-      padding: 1.6rem 1.75rem 1.25rem;
-      display: grid; grid-template-columns: 1fr auto; gap: 1.25rem; align-items: end;
-      border-bottom: 1px solid var(--line);
+      padding: 0 0 1.5rem 0;
+      display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: end;
     }
     .imap-header h2 {
-      font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 800;
-      letter-spacing: -0.03em; line-height: 1.1; color: var(--text);
+      font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15; color: var(--text);
     }
     .imap-header p {
       margin-top: 0.5rem; font-size: 0.88rem; color: var(--text-dim); line-height: 1.6;
-      max-width: 50ch;
+      max-width: 52ch;
     }
     /* Live stat chips */
     .imap-stats {
@@ -191,12 +162,13 @@
       color: var(--text-mute); margin-top: 0.3rem;
     }
 
-    /* Filter bar */
+    /* Filter bar — slim, integrated, just above the map */
     .imap-controls {
-      padding: 1rem 1.75rem;
+      padding: 0.85rem 0;
       display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center;
+      border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
-      background: rgba(255,255,255,0.015);
+      margin-bottom: 0;
     }
     .imap-ctrl { display: flex; align-items: center; gap: 0.6rem; }
     .imap-ctrl label {
@@ -262,6 +234,10 @@
       width: 100%; height: 580px;
       background: #0a0d18;
       position: relative; z-index: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      margin-top: 1rem;
     }
     @media (max-width: 700px) {
       #imap { height: 460px; }
@@ -306,19 +282,79 @@
     }
     .leaflet-control-attribution a { color: var(--text-dim) !important; }
 
-    /* Custom marker circles */
+    /* Custom marker dots — small, refined, no clustering */
     .imap-marker {
-      width: 14px; height: 14px; border-radius: 50%;
-      background: var(--c-photo); /* visited = amber */
-      border: 2px solid rgba(8,9,14,0.95);
-      box-shadow: 0 0 0 1px var(--c-photo), 0 0 8px rgba(200,120,74,0.5);
-      transition: transform 0.2s ease;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--c-photo);
+      box-shadow: 0 0 0 1.5px rgba(8,9,14,0.85), 0 0 6px rgba(200,120,74,0.7);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      opacity: 0.92;
     }
     .imap-marker.lived {
       background: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent), 0 0 10px rgba(232,220,196,0.6);
+      box-shadow: 0 0 0 1.5px rgba(8,9,14,0.85), 0 0 8px rgba(232,220,196,0.8);
     }
-    .imap-marker:hover { transform: scale(1.4); }
+    .imap-marker:hover {
+      transform: scale(1.8);
+      box-shadow: 0 0 0 2px rgba(8,9,14,0.95), 0 0 12px rgba(200,120,74,0.9);
+      opacity: 1;
+    }
+    .imap-marker.lived:hover {
+      box-shadow: 0 0 0 2px rgba(8,9,14,0.95), 0 0 14px rgba(232,220,196,0.95);
+    }
+
+    /* ── Fullscreen photo lightbox ── */
+    .imap-lightbox {
+      position: fixed; inset: 0; z-index: 9000;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      padding: 4vh 4vw;
+    }
+    .imap-lightbox.open { opacity: 1; visibility: visible; }
+    .imap-lightbox img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain; display: block;
+      border-radius: 6px;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+      transform: scale(0.96); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .imap-lightbox.open img { transform: scale(1); }
+    .imap-lightbox-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      color: #fff; font-size: 1.5rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .imap-lightbox-close:hover { background: rgba(255,255,255,0.18); }
+    .imap-lightbox-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      color: #fff; font-size: 1.5rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; user-select: none;
+    }
+    .imap-lightbox-nav:hover { background: rgba(255,255,255,0.18); }
+    .imap-lightbox-nav.prev { left: 1.5rem; }
+    .imap-lightbox-nav.next { right: 1.5rem; }
+    .imap-lightbox-caption {
+      position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,0.7); font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em;
+      background: rgba(0,0,0,0.4); padding: 0.4rem 1rem; border-radius: 999px;
+      backdrop-filter: blur(8px);
+    }
+    @media (max-width: 600px) {
+      .imap-lightbox-nav { width: 38px; height: 38px; font-size: 1.1rem; }
+      .imap-lightbox-nav.prev { left: 0.5rem; }
+      .imap-lightbox-nav.next { right: 0.5rem; }
+      .imap-lightbox-close { top: 0.75rem; right: 0.75rem; width: 38px; height: 38px; }
+    }
 
     /* Cluster styling */
     .imap-cluster {
@@ -356,13 +392,15 @@
     .leaflet-popup-close-button:hover { color: var(--accent) !important; }
 
     .pop-photo {
-      position: relative; width: 100%; aspect-ratio: 4/3;
+      position: relative; width: 100%; aspect-ratio: 16/7;
       overflow: hidden; background: var(--bg-elevated);
+      cursor: zoom-in;
     }
     .pop-photo img {
       width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: opacity 0.4s;
+      transition: opacity 0.4s, transform 0.4s;
     }
+    .pop-photo:hover img { transform: scale(1.03); }
     .pop-photo img.loading { opacity: 0; }
     .pop-photo .pop-skel {
       position: absolute; inset: 0;
@@ -706,17 +744,6 @@
     <div class="country-flags">
       🇦🇩 🇦🇹 🇧🇧 🇧🇪 🇧🇬 🇭🇷 🇨🇿 🇩🇰 🇨🇾 🇪🇪 🇫🇷 🇫🇮 🇩🇪 🇬🇩 🇬🇷 🇭🇺 🇮🇸 🇮🇳 🇮🇩 🇮🇹 🇮🇪 🇯🇴 🇱🇺 🇱🇻 🇱🇹 🇲🇾 🇲🇹 🇲🇦 🇳🇵 🇳🇱 🇳🇴 🇵🇭 🇵🇱 🇵🇹 🇷🇴 🇶🇦 🇷🇺 🇸🇰 🇸🇬 🇸🇮 🇱🇨 🇻🇨 🇪🇸 🇸🇪 🇨🇭 🇹🇿 🇹🇭 🇹🇳 🏴󠁧󠁢󠁳󠁣󠁴󠁿 🇬🇧 🇦🇪 🇺🇸 🇻🇳 🇻🇦
     </div>
-    <div class="map-embed-wrap">
-      <iframe
-        src="https://www.google.com/maps/d/embed?mid=1dWm9Bb2iZKIxaUr10iBtvlkvLhCShxs&ehbc=2E312F"
-        width="100%" height="100%"
-        frameborder="0" allowfullscreen
-        title="Carlos's Travel Map">
-      </iframe>
-    </div>
-    <a class="map-link-btn" href="https://www.google.com/maps/d/viewer?mid=1dWm9Bb2iZKIxaUr10iBtvlkvLhCShxs&femb=1&ll=51.13815832606415%2C2.909164867106483&z=4" target="_blank" rel="noopener" style="margin-top:0.75rem;">
-      ↗ Open full map
-    </a>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
@@ -773,6 +800,15 @@
       </div>
     </div>
   </section>
+
+  <!-- Fullscreen photo lightbox -->
+  <div class="imap-lightbox" id="imapLightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <button class="imap-lightbox-close" id="imapLbClose" aria-label="Close">×</button>
+    <button class="imap-lightbox-nav prev" id="imapLbPrev" aria-label="Previous photo">‹</button>
+    <button class="imap-lightbox-nav next" id="imapLbNext" aria-label="Next photo">›</button>
+    <img id="imapLbImg" src="" alt="">
+    <div class="imap-lightbox-caption" id="imapLbCaption"></div>
+  </div>
 
   <div class="geoguessr-callout">
     <h2>Want to play some Geoguessr?</h2>
@@ -1375,8 +1411,24 @@
   // ── Constants ──
   const DATA       = window.TRAVEL_DATA;
   const PHOTO_PATH = '../../media/travel-photos/';
-  const MIN_YEAR   = Math.min(...DATA.filter(d => d.y).map(d => d.y));
-  const MAX_YEAR   = Math.max(...DATA.filter(d => d.y).map(d => d.y));
+  // d.y is now always an array of years (or undefined). Flatten to find global range.
+  const allYears = DATA.flatMap(d => Array.isArray(d.y) ? d.y : (d.y ? [d.y] : []));
+  const MIN_YEAR = allYears.length ? Math.min(...allYears) : 2000;
+  const MAX_YEAR = allYears.length ? Math.max(...allYears) : 2026;
+
+  // Format an array of years for display: [2018] → "2018", [2018,2022] → "2018, 2022",
+  // [2018,2019,2020,2021] → "2018–2021"
+  function formatYears(years) {
+    if (!years || !years.length) return '';
+    if (years.length === 1) return String(years[0]);
+    // Detect if contiguous range
+    const sorted = [...years].sort((a,b) => a - b);
+    const contiguous = sorted.every((y, i) => i === 0 || y === sorted[i-1] + 1);
+    if (contiguous && sorted.length >= 3) {
+      return `${sorted[0]}–${sorted[sorted.length-1]}`;
+    }
+    return sorted.join(', ');
+  }
 
   // ── Initialise map ──
   const map = L.map('imap', {
@@ -1433,9 +1485,10 @@
       </div>`;
     }
 
+    const yearLabel = formatYears(rec.y);
     const chips = [
       isLived ? '<span class="pop-chip lived">Lived</span>' : '',
-      rec.y    ? `<span class="pop-chip year">${rec.y}</span>` : ''
+      yearLabel ? `<span class="pop-chip year">${escapeHTML(yearLabel)}</span>` : ''
     ].filter(Boolean).join('');
 
     return `${photoSection}<div class="pop-body">
@@ -1451,7 +1504,61 @@
     }[c]));
   }
 
-  // Wire up carousel after popup opens
+  // ══ Lightbox (fullscreen image viewer) ══
+  const lb       = document.getElementById('imapLightbox');
+  const lbImg    = document.getElementById('imapLbImg');
+  const lbCap    = document.getElementById('imapLbCaption');
+  const lbClose  = document.getElementById('imapLbClose');
+  const lbPrev   = document.getElementById('imapLbPrev');
+  const lbNext   = document.getElementById('imapLbNext');
+  let lbPhotos = []; let lbIndex = 0; let lbLabel = '';
+
+  function openLightbox(photos, startIdx, label) {
+    lbPhotos = photos; lbIndex = startIdx; lbLabel = label || '';
+    showLightboxPhoto();
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    // hide nav if only 1 photo
+    const single = photos.length < 2;
+    lbPrev.style.display = single ? 'none' : 'flex';
+    lbNext.style.display = single ? 'none' : 'flex';
+  }
+  function closeLightbox() {
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    setTimeout(() => { lbImg.src = ''; }, 350);
+  }
+  function showLightboxPhoto() {
+    if (!lbPhotos.length) return;
+    lbIndex = (lbIndex + lbPhotos.length) % lbPhotos.length;
+    lbImg.src = PHOTO_PATH + encodeURI(lbPhotos[lbIndex]);
+    lbImg.alt = lbLabel;
+    const counter = lbPhotos.length > 1 ? `  ·  ${lbIndex + 1} / ${lbPhotos.length}` : '';
+    lbCap.textContent = lbLabel + counter;
+  }
+  lbClose.addEventListener('click', closeLightbox);
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+  lbPrev.addEventListener('click', () => { lbIndex--; showLightboxPhoto(); });
+  lbNext.addEventListener('click', () => { lbIndex++; showLightboxPhoto(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape')      closeLightbox();
+    if (e.key === 'ArrowLeft')  { lbIndex--; showLightboxPhoto(); }
+    if (e.key === 'ArrowRight') { lbIndex++; showLightboxPhoto(); }
+  });
+  // Touch swipe support
+  let touchStartX = null;
+  lb.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend',   e => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { lbIndex += dx < 0 ? 1 : -1; showLightboxPhoto(); }
+    touchStartX = null;
+  });
+
+  // Wire up carousel + lightbox after popup opens
   map.on('popupopen', e => {
     const root = e.popup.getElement();
     if (!root) return;
@@ -1459,48 +1566,44 @@
     if (!photoBox) return;
     const imgs = photoBox.querySelectorAll('img');
     const dots = photoBox.querySelectorAll('.pop-dot');
-    if (imgs.length < 2) return;
+    const rec  = e.popup._source && e.popup._source._rec;
+    const label = rec ? `${rec.n}${rec.c ? ', ' + rec.c : ''}` : '';
+    const photoList = rec && rec.p ? rec.p : [];
+
     let current = 0;
     function show(i) {
       i = (i + imgs.length) % imgs.length;
       current = i;
-      imgs.forEach((img, idx) => {
-        img.style.display = idx === i ? 'block' : 'none';
-      });
+      imgs.forEach((img, idx) => { img.style.display = idx === i ? 'block' : 'none'; });
       dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
     }
-    // hide non-first imgs initially
-    imgs.forEach((img, idx) => { if (idx !== 0) img.style.display = 'none'; });
-    photoBox.querySelector('.pop-nav.prev')?.addEventListener('click', () => show(current - 1));
-    photoBox.querySelector('.pop-nav.next')?.addEventListener('click', () => show(current + 1));
-    dots.forEach(d => d.addEventListener('click', () => show(+d.dataset.idx)));
+    if (imgs.length > 1) {
+      imgs.forEach((img, idx) => { if (idx !== 0) img.style.display = 'none'; });
+      photoBox.querySelector('.pop-nav.prev')?.addEventListener('click', ev => { ev.stopPropagation(); show(current - 1); });
+      photoBox.querySelector('.pop-nav.next')?.addEventListener('click', ev => { ev.stopPropagation(); show(current + 1); });
+      dots.forEach(d => d.addEventListener('click', ev => { ev.stopPropagation(); show(+d.dataset.idx); }));
+    }
+
+    // Click photo (not nav buttons) → open fullscreen
+    photoBox.addEventListener('click', ev => {
+      if (ev.target.closest('.pop-nav') || ev.target.closest('.pop-dot')) return;
+      if (!photoList.length) return;
+      openLightbox(photoList, current, label);
+    });
   });
 
-  // ── Cluster group ──
-  const cluster = L.markerClusterGroup({
-    showCoverageOnHover: false,
-    spiderfyOnMaxZoom: true,
-    chunkedLoading: true,
-    maxClusterRadius: 45,
-    iconCreateFunction: c => {
-      const n = c.getChildCount();
-      const size = n < 10 ? '' : (n < 50 ? ' lg' : ' xl');
-      return L.divIcon({
-        html: `<div class="imap-cluster${size}">${n}</div>`,
-        className: '', iconSize: [38,38]
-      });
-    }
-  });
+  // ── Marker layer (no clustering — small refined dots) ──
+  const markerLayer = L.featureGroup();
 
   // Build markers
   const markers = DATA.map(rec => {
     const m = L.marker([rec.lat, rec.lon], { icon: makeIcon(rec.s) });
     m._rec = rec;
-    m.bindPopup(() => buildPopupHTML(rec), { maxWidth: 280, autoPan: true, closeButton: true });
+    m.bindPopup(() => buildPopupHTML(rec), { maxWidth: 320, autoPan: true, closeButton: true });
     return m;
   });
 
-  map.addLayer(cluster);
+  map.addLayer(markerLayer);
 
   // ── Filtering ──
   const state = {
@@ -1515,14 +1618,15 @@
     const visible = markers.filter(m => {
       const r = m._rec;
       if (state.status !== 'all' && r.s !== state.status) return false;
-      if (r.y !== null && r.y !== undefined) {
-        if (r.y < state.yearMin || r.y > state.yearMax) return false;
+      // Year filter — if the record has years, ANY of them must fall in range
+      if (Array.isArray(r.y) && r.y.length) {
+        if (!r.y.some(y => y >= state.yearMin && y <= state.yearMax)) return false;
       }
       if (q && !(r.n.toLowerCase().includes(q) || (r.c||'').toLowerCase().includes(q))) return false;
       return true;
     });
-    cluster.clearLayers();
-    cluster.addLayers(visible);
+    markerLayer.clearLayers();
+    visible.forEach(m => markerLayer.addLayer(m));
     updateStats(visible);
   }
 
@@ -1610,7 +1714,7 @@
   });
 
   // ── Initial load ──
-  cluster.addLayers(markers);
+  markers.forEach(m => markerLayer.addLayer(m));
   updateStats(markers);
   document.getElementById('imapLoading').classList.add('done');
 
