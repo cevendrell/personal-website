@@ -1485,15 +1485,43 @@
 
 <!-- ══ Interactive map controller ══ -->
 <script>
+let __globeInitTries = 0;
 (function initInteractiveGlobe() {
   // ──────────────────────────────────────────────────────────
   // Wait for deps + data. Globe.gl exposes itself as Globe (UMD).
   // ──────────────────────────────────────────────────────────
-  if (!window.TRAVEL_DATA) { console.warn('TRAVEL_DATA missing'); return; }
+  if (!window.TRAVEL_DATA) {
+    console.warn('TRAVEL_DATA missing');
+    showGlobeError('Travel data did not load.');
+    return;
+  }
   if (typeof Globe === 'undefined') {
-    // CDN slow? Retry shortly. (Globe.gl UMD attaches to window as `Globe`.)
+    if (++__globeInitTries > 100) {  // ~6s of retries
+      console.error('Globe.gl CDN failed to load');
+      showGlobeError('Globe library failed to load (CDN issue?).');
+      return;
+    }
     return setTimeout(initInteractiveGlobe, 60);
   }
+  // Anything below this point: surface errors to the user instead of failing silently
+  try {
+    runGlobeInit();
+  } catch (err) {
+    console.error('Globe init crashed:', err);
+    showGlobeError(err && err.message ? err.message : 'Globe failed to initialise.');
+  }
+})();
+
+function showGlobeError(msg) {
+  const veil = document.getElementById('imapLoading');
+  if (!veil) return;
+  veil.innerHTML =
+    '<p style="color:#c8784a;font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;letter-spacing:0.1em;max-width:80%;text-align:center;line-height:1.6">' +
+    '⚠ ' + msg.replace(/[<>]/g,'') +
+    '<br><span style="opacity:0.6;font-size:0.65rem">Check the browser console for details.</span></p>';
+}
+
+function runGlobeInit() {
 
   // ── Constants & DOM refs ──────────────────────────────────
   const DATA       = window.TRAVEL_DATA;
@@ -1506,6 +1534,11 @@
   const connOrigin = svg.querySelector('.conn-origin');
   const connTargets= svg.querySelectorAll('.conn-target');
   const hintEl     = document.getElementById('globeHint');
+
+  // State (declared early so sizeGlobe() can safely read it on first call)
+  let activeRec   = null;
+  let activeCard  = null;
+  let trackingRAF = null;
 
   const allYears = DATA.flatMap(d => Array.isArray(d.y) ? d.y : (d.y ? [d.y] : []));
   const MIN_YEAR = allYears.length ? Math.min(...allYears) : 2000;
@@ -1585,9 +1618,6 @@
   // ──────────────────────────────────────────────────────────
   // Pin click → open comm-card + draw connector line
   // ──────────────────────────────────────────────────────────
-  let activeRec = null;
-  let activeCard = null;
-  let trackingRAF = null;
 
   function handlePinClick(rec) {
     if (!rec) return;
@@ -1959,7 +1989,7 @@
 
   // ── Initial paint ─────────────────────────────────────────
   updateStats(DATA);
-})();
+}  // end runGlobeInit
 </script>
 
 </body>
