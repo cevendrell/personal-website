@@ -850,7 +850,7 @@
     /* Hidden helper */
     .gg-hidden { display: none !important; }
 
-    /* ── GALLERY ── */
+    /* ── GALLERY (click-to-fullscreen, no hover label — Geoguessr mode) ── */
     .gallery {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -862,29 +862,21 @@
       border-radius: 10px;
       background: var(--bg-elevated);
       position: relative;
+      cursor: zoom-in;
+      outline: none;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
+    .gallery-item:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -8px rgba(0,0,0,0.4); }
+    .gallery-item:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
     .gallery-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.4s ease;
+      transition: transform 0.4s ease, opacity 0.3s ease;
     }
     .gallery-item:hover img { transform: scale(1.06); }
-    .gallery-caption {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 1.5rem 0.75rem 0.6rem;
-      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      color: rgba(255,255,255,0.9);
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-      opacity: 0;
-      transition: opacity 0.25s ease;
-    }
-    .gallery-item:hover .gallery-caption { opacity: 1; }
+    .gallery-item img.loading { opacity: 0; }
 
     @media (max-width: 1100px) { .gallery { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 700px)  { .gallery { grid-template-columns: repeat(2, 1fr); } }
@@ -1269,529 +1261,424 @@
 
   <div class="gallery">
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/e04bd7ab-9f67-498c-9fd7-5ec45d18780f/Nagarkot.jpg" alt="Nagarkot" loading="lazy">
-      <div class="gallery-caption">Nagarkot</div>
+    <div class="gallery-item" data-name="Nagarkot" data-country="Nepal" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Nagarkot.jpg" alt="Nagarkot" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/237c4114-612d-42d7-83d2-20a184098f62/Nungwi.jpg" alt="Nungwi" loading="lazy">
-      <div class="gallery-caption">Nungwi</div>
+    <div class="gallery-item" data-name="Nungwi" data-country="Tanzania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Nungwi.jpg" alt="Nungwi" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/2cb359f2-e447-4e5d-95cf-5e0eac4824d0/Orschwiller.jpg" alt="Orschwiller" loading="lazy">
-      <div class="gallery-caption">Orschwiller</div>
+    <div class="gallery-item" data-name="Orschwiller" data-country="France" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Orschwiller.jpg" alt="Orschwiller" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/ddde767a-b19d-4525-a8fe-fd7afee679ae/Karatu.jpg" alt="Karatu" loading="lazy">
-      <div class="gallery-caption">Karatu</div>
+    <div class="gallery-item" data-name="Karatu" data-country="Tanzania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Karatu.jpg" alt="Karatu" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/2f42738b-9fe3-400a-a8c4-c12a65f21b41/N%C3%B8rdre+Lii.jpg" alt="Nørdre Lii" loading="lazy">
-      <div class="gallery-caption">Nørdre Lii</div>
+    <div class="gallery-item" data-name="Nørdre Lii" data-country="Norway" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Nørdre%20Lii.jpg" alt="Nørdre Lii" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/c9edb15b-fc75-4822-a714-3a0a4f26952a/Ngorongoro.jpg" alt="Ngorongoro" loading="lazy">
-      <div class="gallery-caption">Ngorongoro</div>
+    <div class="gallery-item" data-name="Ngorongoro" data-country="Tanzania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Ngorongoro.jpg" alt="Ngorongoro" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/255d63e0-68bb-4d53-b558-ac9df8e67b93/New+Delhi.jpg" alt="New Delhi" loading="lazy">
-      <div class="gallery-caption">New Delhi</div>
+    <div class="gallery-item" data-name="New Delhi" data-country="India" tabindex="0" role="button">
+      <img src="../../media/travel-photos/New%20Delhi.jpg" alt="New Delhi" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a4f97a46-e0d8-4312-b9ec-bca5ea809d40/Ljubljana.jpg" alt="Ljubljana" loading="lazy">
-      <div class="gallery-caption">Ljubljana</div>
+    <div class="gallery-item" data-name="Ljubljana" data-country="Slovenia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Ljubljana.jpg" alt="Ljubljana" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/e9930ac6-4cae-45fc-8bfd-60a3b32ca6a3/Kuching.jpg" alt="Kuching" loading="lazy">
-      <div class="gallery-caption">Kuching</div>
+    <div class="gallery-item" data-name="Kuching" data-country="Malaysia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Kuching.jpg" alt="Kuching" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a9e77594-19a1-441c-8791-b11cb78b64e2/Kuala+Lumpur.jpg" alt="Kuala Lumpur" loading="lazy">
-      <div class="gallery-caption">Kuala Lumpur</div>
+    <div class="gallery-item" data-name="Kuala Lumpur" data-country="Malaysia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Kuala%20Lumpur.jpg" alt="Kuala Lumpur" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/1a9cb261-a24c-41c9-b58e-968d19ee9582/Kota+Kinabalu.jpg" alt="Kota Kinabalu" loading="lazy">
-      <div class="gallery-caption">Kota Kinabalu</div>
+    <div class="gallery-item" data-name="Kota Kinabalu" data-country="Malaysia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Kota%20Kinabalu.jpg" alt="Kota Kinabalu" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/f4fb4a98-2235-4f74-8cfa-8162d4882d22/Kathmandu.jpg" alt="Kathmandu" loading="lazy">
-      <div class="gallery-caption">Kathmandu</div>
+    <div class="gallery-item" data-name="Kathmandu" data-country="Nepal" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Kathmandu.jpg" alt="Kathmandu" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/304d62b4-9080-4806-8789-ffdd38dbd61e/Groningen.jpg" alt="Groningen" loading="lazy">
-      <div class="gallery-caption">Groningen</div>
+    <div class="gallery-item" data-name="Groningen" data-country="Netherlands" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Groningen.jpg" alt="Groningen" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/52dbbd8b-e7d8-4b97-9ce3-c4bd7242c733/Gl%C3%BCcksburg.jpg" alt="Glücksburg" loading="lazy">
-      <div class="gallery-caption">Glücksburg</div>
+    <div class="gallery-item" data-name="Glücksburg" data-country="Germany" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Glücksburg.jpg" alt="Glücksburg" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/0f57859d-67b7-45e8-bebb-6709587e0715/Girona.jpg" alt="Girona" loading="lazy">
-      <div class="gallery-caption">Girona</div>
+    <div class="gallery-item" data-name="Girona" data-country="Spain" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Girona.jpg" alt="Girona" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/48b9dafb-c800-48b4-802e-c9d7bb6f322c/Gili+Meno.jpg" alt="Gili Meno" loading="lazy">
-      <div class="gallery-caption">Gili Meno</div>
+    <div class="gallery-item" data-name="Gili Meno" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Gili%20Meno.jpg" alt="Gili Meno" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/067953fd-66e9-40d4-a1ab-525cb5d39b4e/Gili+Air.jpg" alt="Gili Air" loading="lazy">
-      <div class="gallery-caption">Gili Air</div>
+    <div class="gallery-item" data-name="Gili Air" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Gili%20Air.jpg" alt="Gili Air" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/8bea8e08-0c2c-44fe-913f-87f119f576da/Alling%C3%A5bro.jpg" alt="Allingåbro" loading="lazy">
-      <div class="gallery-caption">Allingåbro</div>
+    <div class="gallery-item" data-name="Allingåbro" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Allingåbro.jpg" alt="Allingåbro" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/9548a55d-8d2a-409f-bcec-88486c2be633/Al+Badayer.jpg" alt="Al Badayer" loading="lazy">
-      <div class="gallery-caption">Al Badayer</div>
+    <div class="gallery-item" data-name="Al Badayer" data-country="United Arab Emirates" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Al%20Badayer.jpg" alt="Al Badayer" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/e6ca6017-ad72-4cd3-b635-f553501a250d/Amsterdam.jpg" alt="Amsterdam" loading="lazy">
-      <div class="gallery-caption">Amsterdam</div>
+    <div class="gallery-item" data-name="Amsterdam" data-country="Netherlands" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Amsterdam.jpg" alt="Amsterdam" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/29620970-b390-4232-a9d8-16f2cc2435c9/Ao+Nang.jpg" alt="Ao Nang" loading="lazy">
-      <div class="gallery-caption">Ao Nang</div>
+    <div class="gallery-item" data-name="Ao Nang" data-country="Thailand" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Ao%20Nang.jpg" alt="Ao Nang" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/f05b735c-d07b-4670-a351-12bfa2c01bf6/Bako.jpg" alt="Bako" loading="lazy">
-      <div class="gallery-caption">Bako</div>
+    <div class="gallery-item" data-name="Bako" data-country="Malaysia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Bako.jpg" alt="Bako" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/5526b681-f6ee-43a5-bb3e-96ac4bf64112/Barcelona.jpg" alt="Barcelona" loading="lazy">
-      <div class="gallery-caption">Barcelona</div>
+    <div class="gallery-item" data-name="Barcelona" data-country="Spain" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Barcelona.jpg" alt="Barcelona" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/f5950a18-58d4-4cad-b22d-68cb2f33c6b8/Kanawa.jpg" alt="Kanawa" loading="lazy">
-      <div class="gallery-caption">Kanawa</div>
+    <div class="gallery-item" data-name="Kanawa" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Kanawa.jpg" alt="Kanawa" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/73347798-ec62-4711-9889-155271e19cd6/Beaufort.jpg" alt="Beaufort" loading="lazy">
-      <div class="gallery-caption">Beaufort</div>
+    <div class="gallery-item" data-name="Beaufort" data-country="Luxembourg" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Beaufort%20(2).jpg" alt="Beaufort" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/e906c473-126d-4b08-9163-36a7bbc6da75/Bessegen.jpg" alt="Bessegen" loading="lazy">
-      <div class="gallery-caption">Bessegen</div>
+    <div class="gallery-item" data-name="Bessegen" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Bessegen.jpg" alt="Bessegen" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/2c23a47f-5244-42dd-bd82-99eb8a490f1b/Brasov.jpg" alt="Brasov" loading="lazy">
-      <div class="gallery-caption">Brasov</div>
+    <div class="gallery-item" data-name="Brasov" data-country="Romania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Brasov.jpg" alt="Brasov" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/18d9e229-d1b2-44be-8616-258ff6e6ded8/Cemorolawang.jpg" alt="Cemorolawang" loading="lazy">
-      <div class="gallery-caption">Cemorolawang</div>
+    <div class="gallery-item" data-name="Cemorolawang" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Cemorolawang.jpg" alt="Cemorolawang" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a5f71b0e-1847-4d9f-adf7-0dad5a87f55a/Dovre.jpg" alt="Dovre" loading="lazy">
-      <div class="gallery-caption">Dovre</div>
+    <div class="gallery-item" data-name="Dovre" data-country="Norway" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Dovre.jpg" alt="Dovre" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/08c8f22a-2261-4a78-bbb1-440aaa0fc829/Dubai.jpg" alt="Dubai" loading="lazy">
-      <div class="gallery-caption">Dubai</div>
+    <div class="gallery-item" data-name="Dubai" data-country="United Arab Emirates" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Dubai.jpg" alt="Dubai" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/9c3d356b-86f7-4a85-a3fe-c2074d892301/D%C3%BCsseldorf.jpg" alt="Düsseldorf" loading="lazy">
-      <div class="gallery-caption">Düsseldorf</div>
+    <div class="gallery-item" data-name="Düsseldorf" data-country="Germany" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Düsseldorf.jpg" alt="Düsseldorf" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/fffee381-cb9b-4b5e-b034-e11b5d861fef/Ayia+Napa.jpg" alt="Ayia Napa" loading="lazy">
-      <div class="gallery-caption">Ayia Napa</div>
+    <div class="gallery-item" data-name="Ayia Napa" data-country="Cyprus" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Ayia%20Napa.jpg" alt="Ayia Napa" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/07d38a54-ce48-4918-99b7-a00ad8ec4d6f/Edinburgh.jpg" alt="Edinburgh" loading="lazy">
-      <div class="gallery-caption">Edinburgh</div>
+    <div class="gallery-item" data-name="Edinburgh" data-country="UK" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Edinburgh.jpg" alt="Edinburgh" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/1b41bcc9-0c53-4327-ab92-ed70a1889d72/Espot.jpg" alt="Espot" loading="lazy">
-      <div class="gallery-caption">Espot</div>
+    <div class="gallery-item" data-name="Espot" data-country="Spain" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Espot.jpg" alt="Espot" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/f5dd9cc5-a431-4d71-a1ff-b67700da3509/Eyjafjallaj%C3%B6kull.jpg" alt="Eyjafjallajökull" loading="lazy">
-      <div class="gallery-caption">Eyjafjallajökull</div>
+    <div class="gallery-item" data-name="Eyjafjallajökull" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Eyjafjallajökull.jpg" alt="Eyjafjallajökull" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/d01f12b6-3083-4003-a102-0c15fecc5d05/Fagradalsfjall.jpg" alt="Fagradalsfjall" loading="lazy">
-      <div class="gallery-caption">Fagradalsfjall</div>
+    <div class="gallery-item" data-name="Fagradalsfjall" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Fagradalsfjall.jpg" alt="Fagradalsfjall" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/f1bfe8a5-0a4a-4e91-8e2c-c0167cc5ac9e/Flam.jpg" alt="Flam" loading="lazy">
-      <div class="gallery-caption">Flam</div>
+    <div class="gallery-item" data-name="Flam" data-country="Norway" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Flam.jpg" alt="Flam" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b769f38a-4c38-4a6e-80c4-7e9d21240c22/Gili+T.jpg" alt="Gili T" loading="lazy">
-      <div class="gallery-caption">Gili T</div>
+    <div class="gallery-item" data-name="Gili T" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Gili%20T.jpg" alt="Gili T" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/44b73ce7-1e97-46a8-9d62-4538c135b2f7/Ho+Chi+Minh+City.jpg" alt="Ho Chi Minh City" loading="lazy">
-      <div class="gallery-caption">Ho Chi Minh City</div>
+    <div class="gallery-item" data-name="Ho Chi Minh City" data-country="Vietnam" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Ho%20Chi%20Minh%20City.jpg" alt="Ho Chi Minh City" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/428e3465-a7ed-49f8-83c3-f145047999fc/Houston.jpg" alt="Houston" loading="lazy">
-      <div class="gallery-caption">Houston</div>
+    <div class="gallery-item" data-name="Houston" data-country="USA" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Houston.jpg" alt="Houston" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/3bb9e8bc-4fe7-4675-bfcb-17cd9b24042d/Komodo.jpg" alt="Komodo" loading="lazy">
-      <div class="gallery-caption">Komodo</div>
+    <div class="gallery-item" data-name="Komodo" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Komodo.jpg" alt="Komodo" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/74f56ca5-0e74-4071-8b97-b11648b434cc/Lom.jpg" alt="Lom" loading="lazy">
-      <div class="gallery-caption">Lom</div>
+    <div class="gallery-item" data-name="Lom" data-country="Norway" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Lom.jpg" alt="Lom" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/eae0dbe2-f977-45cc-b7f3-9864b1644cc7/London.jpg" alt="London" loading="lazy">
-      <div class="gallery-caption">London</div>
+    <div class="gallery-item" data-name="London" data-country="UK" tabindex="0" role="button">
+      <img src="../../media/travel-photos/London.jpg" alt="London" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/c53270a9-ac8d-4598-9d83-048b990a6520/Malang.jpg" alt="Malang" loading="lazy">
-      <div class="gallery-caption">Malang</div>
+    <div class="gallery-item" data-name="Malang" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Malang.jpg" alt="Malang" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/7e2448d8-2d46-438b-bba8-15efc6cf4229/Marbella.jpg" alt="Marbella" loading="lazy">
-      <div class="gallery-caption">Marbella</div>
+    <div class="gallery-item" data-name="Marbella" data-country="Spain" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Marbella.jpg" alt="Marbella" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/abf428dc-1c67-474c-8cb5-a05f2ca52151/Milan.jpg" alt="Milan" loading="lazy">
-      <div class="gallery-caption">Milan</div>
+    <div class="gallery-item" data-name="Milan" data-country="Italy" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Milan.jpg" alt="Milan" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/d19b331c-0b06-4c97-8baa-5ebc874e486a/Mnemba+Atoll.jpg" alt="Mnemba Atoll" loading="lazy">
-      <div class="gallery-caption">Mnemba Atoll</div>
+    <div class="gallery-item" data-name="Mnemba Atoll" data-country="Tanzania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Mnemba%20Atoll.jpg" alt="Mnemba Atoll" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/53ef30ed-a73a-4580-903b-82b87edcf5a8/Mount+Meru.jpg" alt="Mount Meru" loading="lazy">
-      <div class="gallery-caption">Mount Meru</div>
+    <div class="gallery-item" data-name="Mount Meru" data-country="Tanzania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Mount%20Meru.jpg" alt="Mount Meru" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/fb0381b6-f657-4380-9323-3347dfd4bc0b/My+Tho.jpg" alt="My Tho" loading="lazy">
-      <div class="gallery-caption">My Tho</div>
+    <div class="gallery-item" data-name="My Tho" data-country="Vietnam" tabindex="0" role="button">
+      <img src="../../media/travel-photos/My%20Tho.jpg" alt="My Tho" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a67915a9-295c-4bf7-9d19-dbe10ac3d680/Oxford.jpg" alt="Oxford" loading="lazy">
-      <div class="gallery-caption">Oxford</div>
+    <div class="gallery-item" data-name="Oxford" data-country="UK" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Oxford.jpg" alt="Oxford" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/6ea3e7f2-759e-4f3a-8c61-dc65651f68a4/Oswiecim.jpg" alt="Oswiecim" loading="lazy">
-      <div class="gallery-caption">Oswiecim</div>
+    <div class="gallery-item" data-name="Oswiecim" data-country="Poland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Oswiecim.jpg" alt="Oswiecim" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/46331f9e-7638-4759-bbc9-266091be879d/Padar+Island.jpg" alt="Padar Island" loading="lazy">
-      <div class="gallery-caption">Padar Island</div>
+    <div class="gallery-item" data-name="Padar Island" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Padar%20Island.jpg" alt="Padar Island" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/87601470-a363-4291-8642-259121368721/Panauti.jpg" alt="Panauti" loading="lazy">
-      <div class="gallery-caption">Panauti</div>
+    <div class="gallery-item" data-name="Panauti" data-country="Nepal" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Panauti.jpg" alt="Panauti" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a0a31074-bb49-45ce-aafe-79855a014c61/Paris.jpg" alt="Paris" loading="lazy">
-      <div class="gallery-caption">Paris</div>
+    <div class="gallery-item" data-name="Paris" data-country="France" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Paris.jpg" alt="Paris" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/4bd23c6a-b0c5-4b49-a037-5298cc5cd668/Phan+Xi+Pang.jpg" alt="Phan Xi Pang" loading="lazy">
-      <div class="gallery-caption">Phan Xi Pang</div>
+    <div class="gallery-item" data-name="Phan Xi Pang" data-country="Vietnam" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Phan%20Xi%20Pang.jpg" alt="Phan Xi Pang" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/022d28c2-14b9-4279-95a0-b23f1f972d59/Pink+Beach+Padar.jpg" alt="Pink Beach Padar" loading="lazy">
-      <div class="gallery-caption">Pink Beach Padar</div>
+    <div class="gallery-item" data-name="Pink Beach Padar" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Pink%20Beach%20Padar.jpg" alt="Pink Beach Padar" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/19a9894c-2451-464f-a1fd-8304309ac9db/Prague.jpg" alt="Prague" loading="lazy">
-      <div class="gallery-caption">Prague</div>
+    <div class="gallery-item" data-name="Prague" data-country="Czech Republic" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Prague.jpg" alt="Prague" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b359e75a-3361-4ede-9608-9afe097998f4/Pulau+Kelor.jpg" alt="Pulau Kelor" loading="lazy">
-      <div class="gallery-caption">Pulau Kelor</div>
+    <div class="gallery-item" data-name="Pulau Kelor" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Pulau%20Kelor.jpg" alt="Pulau Kelor" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/ec381239-1724-4087-9996-b3c5ae84dc44/Reinli.jpg" alt="Reinli" loading="lazy">
-      <div class="gallery-caption">Reinli</div>
+    <div class="gallery-item" data-name="Reinli" data-country="Norway" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Reinli.jpg" alt="Reinli" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/93df9952-bdb9-4e89-a173-31b46aeb3fb0/Reykjav%C3%ADk.jpg" alt="Reykjavík" loading="lazy">
-      <div class="gallery-caption">Reykjavík</div>
+    <div class="gallery-item" data-name="Reykjavík" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Reykjavík.jpg" alt="Reykjavík" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/cd7fa983-d948-4889-950b-1d75a3d54765/Reynisfjara.jpg" alt="Reynisfjara" loading="lazy">
-      <div class="gallery-caption">Reynisfjara</div>
+    <div class="gallery-item" data-name="Reynisfjara" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Reynisfjara.jpg" alt="Reynisfjara" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/928d4457-20a4-417e-b5b9-dfee23d6d987/Riga.jpg" alt="Riga" loading="lazy">
-      <div class="gallery-caption">Riga</div>
+    <div class="gallery-item" data-name="Riga" data-country="Latvia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Riga.jpg" alt="Riga" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/5296b7bc-2e53-4889-8da5-c1e6f1a41cb4/Rome.jpg" alt="Rome" loading="lazy">
-      <div class="gallery-caption">Rome</div>
+    <div class="gallery-item" data-name="Rome" data-country="Italy" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Rome.jpg" alt="Rome" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/90345be9-ba27-4774-afef-0f71832a1b0d/Rovaniemi.jpg" alt="Rovaniemi" loading="lazy">
-      <div class="gallery-caption">Rovaniemi</div>
+    <div class="gallery-item" data-name="Rovaniemi" data-country="Finland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Rovaniemi.jpg" alt="Rovaniemi" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a4af86e2-c2e2-4865-a147-7952fdb92b99/Sa+Pa.jpg" alt="Sa Pa" loading="lazy">
-      <div class="gallery-caption">Sa Pa</div>
+    <div class="gallery-item" data-name="Sa Pa" data-country="Vietnam" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Sa%20Pa.jpg" alt="Sa Pa" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/aa274d7f-1ef9-4123-8aa7-a673d7798ed0/Semenggoh.jpg" alt="Semenggoh" loading="lazy">
-      <div class="gallery-caption">Semenggoh</div>
+    <div class="gallery-item" data-name="Semenggoh" data-country="Malaysia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Semenggoh.jpg" alt="Semenggoh" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/d3745475-868a-49bf-aad8-44c1c9a13793/Santorini.jpg" alt="Santorini" loading="lazy">
-      <div class="gallery-caption">Santorini</div>
+    <div class="gallery-item" data-name="Santorini" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Santorini.jpg" alt="Santorini" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/4ac905f7-d663-4033-88a4-2df5b92d30b0/Sauraha.jpg" alt="Sauraha" loading="lazy">
-      <div class="gallery-caption">Sauraha</div>
+    <div class="gallery-item" data-name="Sauraha" data-country="Nepal" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Sauraha.jpg" alt="Sauraha" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/880e10a0-0885-45e9-99a8-0609d17f4a10/Selong+Balanak.jpg" alt="Selong Balanak" loading="lazy">
-      <div class="gallery-caption">Selong Balanak</div>
+    <div class="gallery-item" data-name="Selong Balanak" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Selong%20Balanak.jpg" alt="Selong Balanak" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/c3c99652-84b7-4dc2-adfb-f9981f5fc178/Seltjarnarnes.jpg" alt="Seltjarnarnes" loading="lazy">
-      <div class="gallery-caption">Seltjarnarnes</div>
+    <div class="gallery-item" data-name="Seltjarnarnes" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Seltjarnarnes.jpg" alt="Seltjarnarnes" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/41824ba8-2b85-4ee7-b412-4f51a72acc42/Serengueti.jpg" alt="Serengueti" loading="lazy">
-      <div class="gallery-caption">Serengueti</div>
+    <div class="gallery-item" data-name="Serengueti" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Serengueti.jpg" alt="Serengueti" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/79e0b4a9-092c-4585-8e25-1b8982e746b8/Seremban.jpg" alt="Seremban" loading="lazy">
-      <div class="gallery-caption">Seremban</div>
+    <div class="gallery-item" data-name="Seremban" data-country="Malaysia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Seremban.jpg" alt="Seremban" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/f3176ee2-aafa-4f47-927f-ffcc3708c38a/Sinaia.jpg" alt="Sinaia" loading="lazy">
-      <div class="gallery-caption">Sinaia</div>
+    <div class="gallery-item" data-name="Sinaia" data-country="Romania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Sinaia%20-%20copia.jpg" alt="Sinaia" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/4ce96b62-1501-43a6-be2c-5e97f7a9cf3e/Singapore.jpg" alt="Singapore" loading="lazy">
-      <div class="gallery-caption">Singapore</div>
+    <div class="gallery-item" data-name="Singapore" data-country="Singapore" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Singapore.jpg" alt="Singapore" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/675d12bf-e57d-48d5-93af-4532d59a7e5e/S%C3%B3lheimaj%C3%B6kull.jpg" alt="Sólheimajökull" loading="lazy">
-      <div class="gallery-caption">Sólheimajökull</div>
+    <div class="gallery-item" data-name="Sólheimajökull" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Sólheimajökull.jpg" alt="Sólheimajökull" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a12a47ac-d340-4d6c-983a-7b16fcceb28e/S%C3%B8ndervig.jpg" alt="Søndervig" loading="lazy">
-      <div class="gallery-caption">Søndervig</div>
+    <div class="gallery-item" data-name="Søndervig" data-country="Denmark" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Søndervig.jpg" alt="Søndervig" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/1429cd14-8bfa-408d-8aac-73daaf12ed26/Stone+Town.jpg" alt="Stone Town" loading="lazy">
-      <div class="gallery-caption">Stone Town</div>
+    <div class="gallery-item" data-name="Stone Town" data-country="Tanzania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Stone%20Town.jpg" alt="Stone Town" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/bc93b2d6-2cbe-4c10-9cf6-8aafb9fdf073/Strasbourg.jpg" alt="Strasbourg" loading="lazy">
-      <div class="gallery-caption">Strasbourg</div>
+    <div class="gallery-item" data-name="Strasbourg" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Strasbourg.jpg" alt="Strasbourg" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/78b50787-8f37-433d-9777-bfafef5875f0/Tampere.jpg" alt="Tampere" loading="lazy">
-      <div class="gallery-caption">Tampere</div>
+    <div class="gallery-item" data-name="Tampere" data-country="Finland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Tampere.jpg" alt="Tampere" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/468f42df-64e5-47a6-84ef-1272deee34c2/Tenerife.jpg" alt="Tenerife" loading="lazy">
-      <div class="gallery-caption">Tenerife</div>
+    <div class="gallery-item" data-name="Tenerife" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Tenerife.jpg" alt="Tenerife" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b0d3dc57-7cf1-4b81-8752-2639e32f9e7a/Thingvellir.jpg" alt="Þingvellir" loading="lazy">
-      <div class="gallery-caption">Þingvellir</div>
+    <div class="gallery-item" data-name="Þingvellir" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Thingvellir.jpg" alt="Þingvellir" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b90c15ce-f4d0-4416-b35b-17874ff3850d/Tien+Gang.jpg" alt="Tien Gang" loading="lazy">
-      <div class="gallery-caption">Tien Gang</div>
+    <div class="gallery-item" data-name="Tien Gang" data-country="Vietnam" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Tien%20Gang.jpg" alt="Tien Gang" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/0ae8220f-5ca2-4f99-ac3c-1c31f67fa824/Toulouse.jpg" alt="Toulouse" loading="lazy">
-      <div class="gallery-caption">Toulouse</div>
+    <div class="gallery-item" data-name="Toulouse" data-country="France" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Toulouse.jpg" alt="Toulouse" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/4a66c4c6-757d-4558-af30-6fe60a84166d/Uluwatu.JPG" alt="Uluwatu" loading="lazy">
-      <div class="gallery-caption">Uluwatu</div>
+    <div class="gallery-item" data-name="Uluwatu" data-country="Indonesia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Uluwatu.JPG" alt="Uluwatu" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/8d832e2d-c3de-4fa2-946c-a7a7d881fcf3/Vienna.jpg" alt="Vienna" loading="lazy">
-      <div class="gallery-caption">Vienna</div>
+    <div class="gallery-item" data-name="Vienna" data-country="Austria" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Vienna.jpg" alt="Vienna" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/93017c29-bc53-43f0-a8a7-43bca5e1f5de/Warsaw.jpg" alt="Warsaw" loading="lazy">
-      <div class="gallery-caption">Warsaw</div>
+    <div class="gallery-item" data-name="Warsaw" data-country="Poland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Warsaw.jpg" alt="Warsaw" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/3aa3e941-5788-4272-a260-e33191e2d533/Zurich.jpg" alt="Zurich" loading="lazy">
-      <div class="gallery-caption">Zurich</div>
+    <div class="gallery-item" data-name="Zurich" data-country="Switzerland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Zurich.jpg" alt="Zurich" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b72f54c2-c4ca-4ef8-9731-d817de049b73/Peyia.jpg" alt="Peyia" loading="lazy">
-      <div class="gallery-caption">Peyia</div>
+    <div class="gallery-item" data-name="Peyia" data-country="Cyprus" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Peyia.jpg" alt="Peyia" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/0656580a-6e20-4a15-ac51-2ff1314bc4f6/Larnaca.jpg" alt="Larnaca" loading="lazy">
-      <div class="gallery-caption">Larnaca</div>
+    <div class="gallery-item" data-name="Larnaca" data-country="Cyprus" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Larnaca.jpg" alt="Larnaca" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/c65f1326-5220-44ce-a50b-2da5da358aff/Lanzarote.jpg" alt="Lanzarote" loading="lazy">
-      <div class="gallery-caption">Lanzarote</div>
+    <div class="gallery-item" data-name="Lanzarote" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Lanzarote.jpg" alt="Lanzarote" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/d52507d6-9467-4e78-b05d-de62c4773505/Kilchberg.jpg" alt="Kilchberg" loading="lazy">
-      <div class="gallery-caption">Kilchberg</div>
+    <div class="gallery-item" data-name="Kilchberg" data-country="Switzerland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Kilchberg.jpg" alt="Kilchberg" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/cbe9c088-1e2e-4462-aad1-3999984676b7/Kendawa.jpg" alt="Kendawa" loading="lazy">
-      <div class="gallery-caption">Kendawa</div>
+    <div class="gallery-item" data-name="Kendawa" data-country="" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Kendawa.jpg" alt="Kendawa" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/c99e8ae1-80bf-453d-923d-2ca2e49d0991/Kemah.jpg" alt="Kemah" loading="lazy">
-      <div class="gallery-caption">Kemah</div>
+    <div class="gallery-item" data-name="Kemah" data-country="USA" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Kemah.jpg" alt="Kemah" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/7ba8cc5f-617d-4c28-b886-95ad633f8bf0/Hon+Ti+Top.jpg" alt="Hon Ti Top" loading="lazy">
-      <div class="gallery-caption">Hon Ti Top</div>
+    <div class="gallery-item" data-name="Hon Ti Top" data-country="Vietnam" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Hon%20Ti%20Top.jpg" alt="Hon Ti Top" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/828a88b6-1809-4bc8-ba3f-277a92129260/Hanoi.jpg" alt="Hanoi" loading="lazy">
-      <div class="gallery-caption">Hanoi</div>
+    <div class="gallery-item" data-name="Hanoi" data-country="Vietnam" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Hanoi.jpg" alt="Hanoi" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/1c32eed7-5c14-45f8-9277-397814de94fc/Dole.jpg" alt="Dole" loading="lazy">
-      <div class="gallery-caption">Dole</div>
+    <div class="gallery-item" data-name="Dole" data-country="Tanzania" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Dole.jpg" alt="Dole" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/2cd93dec-ff42-4e13-895a-c0fa88b01d19/Copenhage.jpg" alt="Copenhagen" loading="lazy">
-      <div class="gallery-caption">Copenhagen</div>
+    <div class="gallery-item" data-name="Copenhagen" data-country="Denmark" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Copenhagen.jpg" alt="Copenhagen" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/a074e79d-0304-4af2-b27b-e70300a675d8/Castell+de+Mur.jpg" alt="Castell de Mur" loading="lazy">
-      <div class="gallery-caption">Castell de Mur</div>
+    <div class="gallery-item" data-name="Castell de Mur" data-country="Spain" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Castell%20de%20Mur.jpg" alt="Castell de Mur" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b099b38c-55e7-463b-b4ea-c18697f9ddc1/Bratislava.jpg" alt="Bratislava" loading="lazy">
-      <div class="gallery-caption">Bratislava</div>
+    <div class="gallery-item" data-name="Bratislava" data-country="Slovakia" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Bratislava.jpg" alt="Bratislava" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/42c47f06-d9bb-472e-b026-019d48f35e0f/Borgund.jpg" alt="Borgund" loading="lazy">
-      <div class="gallery-caption">Borgund</div>
+    <div class="gallery-item" data-name="Borgund" data-country="Norway" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Borgund.jpg" alt="Borgund" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/80a271f0-5f2c-44f7-b953-f3617c7c9e42/Bl%C3%A1sk%C3%B3gabygg%C3%B0+Geysir.jpg" alt="Bláskógabyggð Geysir" loading="lazy">
-      <div class="gallery-caption">Bláskógabyggð Geysir</div>
+    <div class="gallery-item" data-name="Bláskógabyggð Geysir" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Bláskógabyggð%20Geysir.jpg" alt="Bláskógabyggð Geysir" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/e68bdd70-5555-4cb1-8cbe-37d87c1007a1/Billund.jpg" alt="Billund" loading="lazy">
-      <div class="gallery-caption">Billund</div>
+    <div class="gallery-item" data-name="Billund" data-country="Denmark" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Billund.jpg" alt="Billund" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/894fb8b1-0f89-4ea2-89de-831ee3169511/Bhaktapur.jpg" alt="Bhaktapur" loading="lazy">
-      <div class="gallery-caption">Bhaktapur</div>
+    <div class="gallery-item" data-name="Bhaktapur" data-country="Nepal" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Bhaktapur.jpg" alt="Bhaktapur" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/0086d016-36a8-4ea5-81f9-c606c947d1ce/Alftanes.jpg" alt="Alftanes" loading="lazy">
-      <div class="gallery-caption">Alftanes</div>
+    <div class="gallery-item" data-name="Alftanes" data-country="Iceland" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Alftanes.jpg" alt="Alftanes" loading="lazy">
     </div>
 
-    <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/f87e42b2-4229-44a5-a5d8-b62e64c5b959/Aarhus.jpg" alt="Aarhus" loading="lazy">
-      <div class="gallery-caption">Aarhus</div>
+    <div class="gallery-item" data-name="Aarhus" data-country="Denmark" tabindex="0" role="button">
+      <img src="../../media/travel-photos/Aarhus.jpg" alt="Aarhus" loading="lazy">
     </div>
 
   </div>
@@ -2324,6 +2211,8 @@ function runGlobeInit() {
     lbPrev.style.display = single ? 'none' : 'flex';
     lbNext.style.display = single ? 'none' : 'flex';
   }
+  // Expose so the gallery (and any other component) can open it
+  window.__travelLightbox = openLightbox;
   function closeLightbox() {
     lb.classList.remove('open');
     lb.setAttribute('aria-hidden', 'true');
@@ -2780,6 +2669,57 @@ function runGlobeInit() {
   els.lbClose.addEventListener('click', resetToIdle);
   els.lbClear.addEventListener('click', clearLeaderboard);
   els.lbKey.addEventListener('click', toggleAdmin);
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ══ GALLERY · click-to-fullscreen (reveals place + country)       ══
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+(function initGalleryLightbox() {
+  const tiles = document.querySelectorAll('.gallery .gallery-item');
+  if (!tiles.length) return;
+
+  // Fade-in placeholder: mark all imgs as loading until they decode
+  tiles.forEach(tile => {
+    const img = tile.querySelector('img');
+    if (!img) return;
+    img.classList.add('loading');
+    if (img.complete && img.naturalWidth) img.classList.remove('loading');
+    else img.addEventListener('load', () => img.classList.remove('loading'), { once: true });
+  });
+
+  function open(tile) {
+    const img      = tile.querySelector('img');
+    const name     = tile.dataset.name    || '';
+    const country  = tile.dataset.country || '';
+    const label    = country ? `${name}, ${country}` : name;
+    // Extract photo URL → filename (so we can pass [filename] to the lightbox).
+    // The lightbox prefixes ../../media/travel-photos/ already, so we just need the name.
+    const src      = img.getAttribute('src') || '';
+    const filename = decodeURIComponent(src.split('/').pop());
+
+    if (typeof window.__travelLightbox === 'function') {
+      window.__travelLightbox([filename], 0, label);
+    } else {
+      // Fallback: lightbox not ready yet — try once more after a tick
+      setTimeout(() => {
+        if (typeof window.__travelLightbox === 'function') {
+          window.__travelLightbox([filename], 0, label);
+        }
+      }, 200);
+    }
+  }
+
+  tiles.forEach(tile => {
+    tile.addEventListener('click', () => open(tile));
+    tile.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        open(tile);
+      }
+    });
+  });
 })();
 </script>
 
