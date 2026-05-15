@@ -544,6 +544,277 @@
       color: var(--text-dim);
     }
 
+    /* ══════════════════════════════════════════════════════════════════
+       ══ GUESS-THE-LOCATION MINI-GAME                                  ══
+       ══════════════════════════════════════════════════════════════════ */
+    .geo-game {
+      background: linear-gradient(135deg, rgba(12,16,40,0.65) 0%, rgba(8,9,14,0.85) 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin-bottom: 2.5rem;
+      overflow: hidden;
+    }
+
+    /* — Header bar (always visible while game is open) — */
+    .gg-bar {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+    }
+    .gg-bar-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent);
+    }
+    .gg-bar-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+    .gg-bar-meta strong { color: var(--text); font-weight: 700; }
+    .gg-bar .gg-spacer { flex: 1; }
+    .gg-bar button {
+      background: transparent; border: 1px solid rgba(255,255,255,0.14);
+      color: var(--text-dim); font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.4rem 0.85rem; border-radius: 999px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .gg-bar button:hover { color: var(--text); border-color: var(--accent); }
+
+    /* — Idle state (Start button) — */
+    .gg-idle {
+      padding: 2rem 1.75rem;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem;
+    }
+    .gg-idle h3 {
+      font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+      font-weight: 800; letter-spacing: -0.03em; color: var(--text);
+    }
+    .gg-idle p {
+      color: var(--text-dim); font-size: 0.92rem; line-height: 1.6;
+      max-width: 56ch;
+    }
+    .gg-idle-actions {
+      display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;
+    }
+    .gg-start {
+      background: var(--c-photo); color: #fff;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.75rem 1.5rem;
+      border-radius: 999px; border: none; cursor: pointer;
+      box-shadow: 0 8px 24px -4px rgba(200,120,74,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .gg-start:hover { transform: translateY(-1px); box-shadow: 0 12px 30px -6px rgba(200,120,74,0.55); }
+    .gg-leaderboard-btn {
+      background: transparent; border: 1px solid rgba(255,255,255,0.14);
+      color: var(--text); font-size: 0.78rem; font-weight: 600;
+      padding: 0.75rem 1.4rem; border-radius: 999px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gg-leaderboard-btn:hover { background: rgba(255,255,255,0.05); border-color: var(--accent); }
+
+    /* — Playing layout — */
+    .gg-stage { padding: 1.25rem; display: grid; gap: 1rem; grid-template-columns: 1fr; }
+    @media (min-width: 760px) {
+      .gg-stage { grid-template-columns: 1fr 1.1fr; }
+    }
+
+    .gg-photo {
+      position: relative; width: 100%; aspect-ratio: 16/10;
+      overflow: hidden; border-radius: 10px; background: var(--bg-elevated);
+      border: 1px solid var(--line);
+    }
+    .gg-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: opacity 0.3s;
+    }
+    .gg-photo img.loading { opacity: 0; }
+    .gg-photo .gg-photo-skel {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      background-size: 200% 100%; animation: skelShimmer 1.4s ease-in-out infinite;
+    }
+    @keyframes skelShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .gg-photo .gg-photo-count {
+      position: absolute; top: 0.5rem; left: 0.5rem; z-index: 2;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.85); background: rgba(0,0,0,0.55);
+      padding: 0.25rem 0.6rem; border-radius: 999px;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
+
+    .gg-mapwrap {
+      position: relative; width: 100%; aspect-ratio: 16/10;
+      overflow: hidden; border-radius: 10px; border: 1px solid var(--line);
+      background: #0a0d18; min-height: 280px;
+    }
+    .gg-map { width: 100%; height: 100%; cursor: crosshair; }
+    .gg-map.has-guess { cursor: grab; }
+    .gg-map-hint {
+      position: absolute; top: 0.5rem; right: 0.5rem; z-index: 500;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.55);
+      padding: 0.3rem 0.65rem; border-radius: 999px;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      pointer-events: none; transition: opacity 0.3s;
+    }
+    .gg-map-hint.hidden { opacity: 0; }
+
+    /* Custom Leaflet pin styles */
+    .gg-pin-guess, .gg-pin-actual {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid rgba(8,9,14,0.95);
+      box-shadow: 0 0 0 1px var(--pin-color), 0 0 12px var(--pin-color);
+    }
+    .gg-pin-guess  { background: var(--c-photo); --pin-color: rgba(200,120,74,0.7); }
+    .gg-pin-actual { background: var(--accent);  --pin-color: rgba(232,220,196,0.7); }
+
+    /* Tooltip on pin */
+    .gg-pin-label {
+      position: absolute; left: 50%; top: -28px; transform: translateX(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #fff; background: rgba(8,9,14,0.92);
+      padding: 0.2rem 0.5rem; border-radius: 4px; white-space: nowrap;
+      border: 1px solid var(--line);
+    }
+
+    /* — Action row below map — */
+    .gg-actions {
+      padding: 0 1.25rem 1.25rem;
+      display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+    }
+    .gg-actions .gg-msg {
+      flex: 1; min-width: 200px;
+      font-size: 0.82rem; color: var(--text-dim);
+    }
+    .gg-submit, .gg-next {
+      background: var(--c-photo); color: #fff;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.65rem 1.4rem;
+      border-radius: 999px; border: none; cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .gg-submit:disabled { opacity: 0.35; cursor: not-allowed; }
+    .gg-submit:not(:disabled):hover, .gg-next:hover { transform: translateY(-1px); }
+    .gg-next { background: var(--accent); color: #111; }
+
+    /* — Reveal panel (shows after submit) — */
+    .gg-reveal {
+      padding: 0.85rem 1.25rem 1.25rem;
+      border-top: 1px solid var(--line);
+      display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap;
+    }
+    .gg-reveal-info { flex: 1; min-width: 200px; }
+    .gg-reveal-info h4 {
+      font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 0.2rem;
+    }
+    .gg-reveal-info p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.08em; color: var(--text-dim);
+    }
+    .gg-reveal-info p strong { color: var(--accent); font-weight: 600; }
+    .gg-points-burst {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.4rem 0.85rem; border-radius: 999px;
+      background: rgba(200,120,74,0.12); border: 1px solid rgba(200,120,74,0.35);
+      color: var(--c-photo); font-weight: 700; font-size: 0.92rem;
+      letter-spacing: -0.01em; font-family: 'JetBrains Mono', monospace;
+    }
+    .gg-points-burst.great { background: rgba(232,220,196,0.12); border-color: rgba(232,220,196,0.4); color: var(--accent); }
+
+    /* — Finish screen — */
+    .gg-finish { padding: 1.5rem 1.5rem 1.75rem; display: flex; flex-direction: column; gap: 1rem; }
+    .gg-finish h3 {
+      font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 800;
+      letter-spacing: -0.03em; color: var(--text);
+    }
+    .gg-finish .gg-total {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(2.5rem, 5vw, 3.6rem); font-weight: 800;
+      color: var(--c-photo); letter-spacing: -0.03em; line-height: 1;
+    }
+    .gg-finish .gg-total .gg-of { color: var(--text-mute); font-size: 0.5em; }
+    .gg-rounds {
+      list-style: none; padding: 0; margin: 0;
+      display: grid; grid-template-columns: 1fr; gap: 0.25rem;
+      border-top: 1px solid var(--line); padding-top: 0.85rem; margin-top: 0.25rem;
+      max-height: 240px; overflow-y: auto;
+    }
+    .gg-rounds li {
+      display: grid; grid-template-columns: 24px 1fr auto auto;
+      gap: 0.65rem; align-items: center;
+      padding: 0.35rem 0; font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .gg-rounds li:last-child { border-bottom: none; }
+    .gg-rounds li .gg-rn { font-family: 'JetBrains Mono', monospace; color: var(--text-mute); font-size: 0.7rem; }
+    .gg-rounds li .gg-name { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gg-rounds li .gg-d { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 0.7rem; }
+    .gg-rounds li .gg-pts { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent); font-size: 0.78rem; min-width: 50px; text-align: right; }
+
+    .gg-save-row {
+      display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;
+      margin-top: 0.5rem;
+    }
+    .gg-save-row input {
+      flex: 1; min-width: 200px; max-width: 320px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text); padding: 0.6rem 0.9rem; border-radius: 999px;
+      font-size: 0.85rem; outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .gg-save-row input:focus { border-color: var(--accent); background: rgba(255,255,255,0.06); }
+    .gg-save-row input::placeholder { color: var(--text-mute); }
+    .gg-save, .gg-skip, .gg-again {
+      font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.6rem 1.2rem;
+      border-radius: 999px; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gg-save { background: var(--accent); color: #111; border: none; }
+    .gg-save:hover { transform: translateY(-1px); }
+    .gg-skip { background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.14); }
+    .gg-skip:hover { color: var(--text); border-color: var(--text-dim); }
+    .gg-again { background: var(--c-photo); color: #fff; border: none; }
+
+    /* — Leaderboard view — */
+    .gg-leaderboard {
+      padding: 1.5rem 1.5rem 1.75rem;
+      display: flex; flex-direction: column; gap: 0.85rem;
+    }
+    .gg-leaderboard h3 {
+      font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .gg-lb-list { list-style: none; padding: 0; margin: 0; }
+    .gg-lb-list li {
+      display: grid; grid-template-columns: 32px 1fr auto auto;
+      gap: 0.85rem; align-items: center;
+      padding: 0.55rem 0; border-bottom: 1px solid var(--line);
+      font-size: 0.92rem;
+    }
+    .gg-lb-list li:last-child { border-bottom: none; }
+    .gg-lb-list .gg-rank {
+      font-family: 'JetBrains Mono', monospace; color: var(--text-mute); font-size: 0.78rem;
+    }
+    .gg-lb-list .gg-rank.medal-1 { color: #f5d27a; font-weight: 700; }
+    .gg-lb-list .gg-rank.medal-2 { color: #d0d0d0; font-weight: 700; }
+    .gg-lb-list .gg-rank.medal-3 { color: #c98c5c; font-weight: 700; }
+    .gg-lb-list .gg-who { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gg-lb-list .gg-when { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-mute); }
+    .gg-lb-list .gg-score { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent); min-width: 60px; text-align: right; }
+    .gg-lb-empty { color: var(--text-mute); font-size: 0.85rem; padding: 1rem 0; }
+
+    /* Hidden helper */
+    .gg-hidden { display: none !important; }
+
     /* ── GALLERY ── */
     .gallery {
       display: grid;
@@ -877,6 +1148,83 @@
     <h2>Want to play some Geoguessr?</h2>
     <p>The images below are all taken during my travels in the various locations above. Hover to reveal the location.</p>
   </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       ══ GUESS-THE-LOCATION MINI-GAME                                  ══
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="geo-game" id="geoGame" aria-label="Guess the location mini-game">
+
+    <!-- Header bar (always visible while game is open) — hidden in idle state -->
+    <div class="gg-bar gg-hidden" id="ggBar">
+      <span class="gg-bar-title">Guess · the · Location</span>
+      <span class="gg-spacer"></span>
+      <span class="gg-bar-meta" id="ggRoundLabel">Round <strong>1</strong> / 10</span>
+      <span class="gg-bar-meta">Score: <strong id="ggScore">0</strong></span>
+      <button id="ggQuit" type="button">Quit</button>
+    </div>
+
+    <!-- IDLE -->
+    <div class="gg-idle" id="ggIdle">
+      <h3>Guess the location</h3>
+      <p>Ten random photos from my travels. You guess where each was taken by clicking on the map — the closer your pin, the more points. Top score: 50,000.</p>
+      <div class="gg-idle-actions">
+        <button class="gg-start" id="ggStart" type="button">▶ Start game</button>
+        <button class="gg-leaderboard-btn" id="ggShowLb" type="button">🏆 Leaderboard</button>
+      </div>
+    </div>
+
+    <!-- PLAYING -->
+    <div class="gg-stage gg-hidden" id="ggStage">
+      <div class="gg-photo">
+        <div class="gg-photo-skel"></div>
+        <span class="gg-photo-count" id="ggPhotoCount">Photo 1 / 1</span>
+        <img id="ggPhotoImg" src="" alt="Guess where this was taken">
+      </div>
+      <div class="gg-mapwrap">
+        <div class="gg-map" id="ggMap"></div>
+        <div class="gg-map-hint" id="ggMapHint">Click the map to drop a pin</div>
+      </div>
+    </div>
+
+    <div class="gg-actions gg-hidden" id="ggActions">
+      <span class="gg-msg" id="ggMsg">Click on the map where you think this photo was taken</span>
+      <button class="gg-submit" id="ggSubmit" type="button" disabled>Submit guess</button>
+      <button class="gg-next gg-hidden" id="ggNext" type="button">Next round →</button>
+    </div>
+
+    <!-- REVEAL (shown after a guess is submitted) -->
+    <div class="gg-reveal gg-hidden" id="ggReveal">
+      <div class="gg-reveal-info">
+        <h4 id="ggRevealName">—</h4>
+        <p>Distance: <strong id="ggRevealDist">— km</strong></p>
+      </div>
+      <span class="gg-points-burst" id="ggRevealPoints">+0</span>
+    </div>
+
+    <!-- FINISH -->
+    <div class="gg-finish gg-hidden" id="ggFinish">
+      <h3>Game over</h3>
+      <div class="gg-total"><span id="ggFinalScore">0</span><span class="gg-of"> / 50,000</span></div>
+      <ul class="gg-rounds" id="ggRoundList"></ul>
+      <div class="gg-save-row">
+        <input type="text" id="ggNameInput" placeholder="Your name (for leaderboard)" maxlength="24" autocomplete="off">
+        <button class="gg-save" id="ggSaveScore" type="button">Save score</button>
+        <button class="gg-skip" id="ggSkipSave" type="button">Skip</button>
+        <button class="gg-again" id="ggAgain" type="button">Play again</button>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="gg-leaderboard gg-hidden" id="ggLeaderboard">
+      <h3>🏆 Leaderboard</h3>
+      <ul class="gg-lb-list" id="ggLbList"></ul>
+      <div>
+        <button class="gg-skip" id="ggLbClose" type="button">Close</button>
+        <button class="gg-skip" id="ggLbClear" type="button" style="margin-left: 0.4rem; color: var(--c-photo); border-color: rgba(200,120,74,0.35);">Clear all</button>
+      </div>
+    </div>
+
+  </section>
 
   <div class="gallery">
 
@@ -1970,6 +2318,355 @@ function runGlobeInit() {
   // ── Initial paint ─────────────────────────────────────────
   updateStats(DATA);
 }  // end runGlobeInit
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ══ GUESS-THE-LOCATION MINI-GAME · controller                     ══
+     ══════════════════════════════════════════════════════════════════ -->
+<script>
+(function initGuessGame() {
+  if (!window.TRAVEL_DATA) return;
+
+  // ── State machine ────────────────────────────────────────
+  const POOL = window.TRAVEL_DATA.filter(d => d.p && d.p.length);
+  const PHOTO_PATH = '../../media/travel-photos/';
+  const ROUNDS = 10;
+  const LS_KEY = 'cv_travelGame_leaderboard_v1';
+  const MAX_PER_ROUND = 5000;
+
+  let rounds = [];        // [{rec, photo, guess: {lat,lng}|null, distanceKm, points}]
+  let roundIdx = 0;
+  let totalScore = 0;
+  let map = null;         // Leaflet map
+  let guessMarker = null;
+  let actualMarker = null;
+  let connectorLine = null;
+  let leafletReady = null;  // Promise
+
+  // ── DOM refs ─────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const els = {
+    bar: $('ggBar'), roundLabel: $('ggRoundLabel'), score: $('ggScore'), quit: $('ggQuit'),
+    idle: $('ggIdle'), start: $('ggStart'), showLb: $('ggShowLb'),
+    stage: $('ggStage'), photoImg: $('ggPhotoImg'), photoCount: $('ggPhotoCount'),
+    map: $('ggMap'), mapHint: $('ggMapHint'),
+    actions: $('ggActions'), msg: $('ggMsg'),
+    submit: $('ggSubmit'), next: $('ggNext'),
+    reveal: $('ggReveal'), revealName: $('ggRevealName'),
+    revealDist: $('ggRevealDist'), revealPoints: $('ggRevealPoints'),
+    finish: $('ggFinish'), finalScore: $('ggFinalScore'),
+    roundList: $('ggRoundList'),
+    nameInput: $('ggNameInput'), saveScore: $('ggSaveScore'),
+    skipSave: $('ggSkipSave'), again: $('ggAgain'),
+    leaderboard: $('ggLeaderboard'), lbList: $('ggLbList'),
+    lbClose: $('ggLbClose'), lbClear: $('ggLbClear'),
+  };
+
+  function show(el)  { el && el.classList.remove('gg-hidden'); }
+  function hide(el)  { el && el.classList.add('gg-hidden'); }
+
+  // ── Leaflet lazy-loader ──────────────────────────────────
+  function loadLeaflet() {
+    if (window.L) return Promise.resolve(window.L);
+    if (leafletReady) return leafletReady;
+    leafletReady = new Promise((resolve, reject) => {
+      const css = document.createElement('link');
+      css.rel  = 'stylesheet';
+      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(css);
+      const s = document.createElement('script');
+      s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      s.onload  = () => resolve(window.L);
+      s.onerror = () => reject(new Error('Leaflet failed to load'));
+      document.body.appendChild(s);
+    });
+    return leafletReady;
+  }
+
+  // ── Math helpers ─────────────────────────────────────────
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const toRad = d => d * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+  function scoreForDistance(km) {
+    // Exponential decay (Geoguessr-style)
+    return Math.max(0, Math.round(MAX_PER_ROUND * Math.exp(-km / 1500)));
+  }
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function fmtNumber(n)  { return n.toLocaleString(); }
+  function fmtKm(km) {
+    if (km < 10)   return km.toFixed(1) + ' km';
+    if (km < 1000) return Math.round(km) + ' km';
+    return (km / 1000).toFixed(1).replace(/\.0$/, '') + ',000 km'.replace(',000','') + (km >= 1000 ? ' km' : '');
+  }
+  // Cleaner formatter
+  function fmtDist(km) {
+    if (km < 1)    return Math.round(km * 1000) + ' m';
+    if (km < 100)  return km.toFixed(1) + ' km';
+    return Math.round(km).toLocaleString() + ' km';
+  }
+
+  // ── Game flow ────────────────────────────────────────────
+  async function startGame() {
+    if (POOL.length < ROUNDS) {
+      els.msg.textContent = 'Not enough photos available for a full game.';
+      return;
+    }
+    try { await loadLeaflet(); }
+    catch (e) {
+      console.error(e);
+      els.msg.textContent = 'Map library failed to load. Check your connection and try again.';
+      return;
+    }
+
+    // Pick 10 distinct random records, pick one photo per record
+    rounds = shuffle(POOL).slice(0, ROUNDS).map(rec => ({
+      rec,
+      photo: rec.p[Math.floor(Math.random() * rec.p.length)],
+      guess: null,
+      distanceKm: null,
+      points: 0
+    }));
+    roundIdx = 0;
+    totalScore = 0;
+
+    hide(els.idle); hide(els.finish); hide(els.leaderboard); hide(els.reveal);
+    show(els.bar); show(els.stage); show(els.actions);
+
+    initMap();
+    loadRound();
+  }
+
+  function initMap() {
+    if (map) return; // already initialised
+    map = L.map(els.map, {
+      center: [20, 0],
+      zoom: 2,
+      minZoom: 2,
+      maxZoom: 12,
+      worldCopyJump: true,
+      attributionControl: false,
+      zoomControl: true,
+    });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd', maxZoom: 19
+    }).addTo(map);
+    map.on('click', onMapClick);
+    setTimeout(() => map.invalidateSize(), 100);
+  }
+
+  function onMapClick(e) {
+    if (!rounds[roundIdx] || rounds[roundIdx].guess) return; // already submitted
+    placeGuessMarker(e.latlng);
+    els.submit.disabled = false;
+    els.mapHint.classList.add('hidden');
+    els.map.classList.add('has-guess');
+  }
+
+  function placeGuessMarker(latlng) {
+    if (guessMarker) { map.removeLayer(guessMarker); }
+    guessMarker = L.marker(latlng, {
+      icon: L.divIcon({
+        className: '',
+        html: '<div class="gg-pin-guess"></div>',
+        iconSize: [18,18], iconAnchor: [9,9]
+      })
+    }).addTo(map);
+  }
+
+  function loadRound() {
+    const r = rounds[roundIdx];
+    // UI reset
+    hide(els.reveal); hide(els.next);
+    show(els.submit);
+    els.submit.disabled = true;
+    els.msg.textContent = 'Click on the map where you think this photo was taken';
+    els.mapHint.classList.remove('hidden');
+    els.map.classList.remove('has-guess');
+
+    // Reset markers + line
+    if (guessMarker)    { map.removeLayer(guessMarker);    guessMarker = null; }
+    if (actualMarker)   { map.removeLayer(actualMarker);   actualMarker = null; }
+    if (connectorLine)  { map.removeLayer(connectorLine);  connectorLine = null; }
+    map.setView([20, 0], 2);
+
+    // Photo
+    els.photoImg.classList.add('loading');
+    els.photoImg.src = PHOTO_PATH + encodeURI(r.photo);
+    els.photoImg.alt = 'Guess the location of photo ' + (roundIdx + 1);
+    els.photoImg.onload = () => els.photoImg.classList.remove('loading');
+    els.photoCount.textContent = 'Photo ' + (roundIdx + 1) + ' / ' + ROUNDS;
+    els.roundLabel.innerHTML = 'Round <strong>' + (roundIdx + 1) + '</strong> / ' + ROUNDS;
+    els.score.textContent = fmtNumber(totalScore);
+  }
+
+  function submitGuess() {
+    const r = rounds[roundIdx];
+    if (!guessMarker) return;
+    const g = guessMarker.getLatLng();
+    r.guess = { lat: g.lat, lng: g.lng };
+    r.distanceKm = haversine(g.lat, g.lng, r.rec.lat, r.rec.lon);
+    r.points = scoreForDistance(r.distanceKm);
+    totalScore += r.points;
+    els.score.textContent = fmtNumber(totalScore);
+
+    // Place actual pin + connector line
+    actualMarker = L.marker([r.rec.lat, r.rec.lon], {
+      icon: L.divIcon({
+        className: '',
+        html: '<div class="gg-pin-actual"></div>',
+        iconSize: [18,18], iconAnchor: [9,9]
+      })
+    }).addTo(map);
+
+    connectorLine = L.polyline(
+      [[g.lat, g.lng], [r.rec.lat, r.rec.lon]],
+      { color: '#c8784a', weight: 2, opacity: 0.7, dashArray: '6 5' }
+    ).addTo(map);
+
+    // Fit map to show both pins (with padding)
+    const bounds = L.latLngBounds([[g.lat, g.lng], [r.rec.lat, r.rec.lon]]).pad(0.25);
+    map.flyToBounds(bounds, { duration: 1.0, maxZoom: 6 });
+
+    // Show reveal
+    show(els.reveal);
+    hide(els.submit); show(els.next);
+    els.revealName.textContent = r.rec.n + (r.rec.c ? ', ' + r.rec.c : '');
+    els.revealDist.textContent = fmtDist(r.distanceKm);
+    els.revealPoints.textContent = '+' + fmtNumber(r.points);
+    els.revealPoints.classList.toggle('great', r.points >= 3500);
+    els.msg.textContent = 'Nice. Review the map, then move on.';
+
+    if (roundIdx === ROUNDS - 1) {
+      els.next.textContent = 'See results →';
+    } else {
+      els.next.textContent = 'Next round →';
+    }
+  }
+
+  function nextRound() {
+    roundIdx++;
+    if (roundIdx >= ROUNDS) {
+      finishGame();
+    } else {
+      loadRound();
+    }
+  }
+
+  function finishGame() {
+    hide(els.stage); hide(els.actions); hide(els.reveal); hide(els.bar);
+    show(els.finish);
+    els.finalScore.textContent = fmtNumber(totalScore);
+
+    // Render per-round breakdown
+    els.roundList.innerHTML = '';
+    rounds.forEach((r, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="gg-rn">${(i+1).toString().padStart(2,'0')}</span>
+        <span class="gg-name">${escapeHTML(r.rec.n)}<span style="color:var(--text-mute);font-weight:400">, ${escapeHTML(r.rec.c||'')}</span></span>
+        <span class="gg-d">${fmtDist(r.distanceKm)}</span>
+        <span class="gg-pts">+${fmtNumber(r.points)}</span>
+      `;
+      els.roundList.appendChild(li);
+    });
+  }
+
+  function quitGame() {
+    if (!confirm('Quit the current game? Your score will be lost.')) return;
+    resetToIdle();
+  }
+
+  function resetToIdle() {
+    hide(els.bar); hide(els.stage); hide(els.actions); hide(els.reveal);
+    hide(els.finish); hide(els.leaderboard);
+    show(els.idle);
+    // Clear map state
+    if (map) {
+      if (guessMarker)    map.removeLayer(guessMarker);
+      if (actualMarker)   map.removeLayer(actualMarker);
+      if (connectorLine)  map.removeLayer(connectorLine);
+      guessMarker = actualMarker = connectorLine = null;
+    }
+    rounds = []; roundIdx = 0; totalScore = 0;
+    els.nameInput.value = '';
+  }
+
+  // ── Leaderboard (localStorage) ───────────────────────────
+  function readLb() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+    catch (e) { return []; }
+  }
+  function writeLb(arr) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
+    catch (e) { console.warn('Cannot save to localStorage:', e); }
+  }
+  function saveScore() {
+    const name = (els.nameInput.value || 'Anonymous').trim().slice(0, 24) || 'Anonymous';
+    const entry = { name, score: totalScore, when: Date.now() };
+    const list = readLb();
+    list.push(entry);
+    list.sort((a, b) => b.score - a.score);
+    writeLb(list.slice(0, 50));     // keep top 50
+    showLeaderboard();
+  }
+  function showLeaderboard() {
+    hide(els.idle); hide(els.finish); hide(els.bar); hide(els.stage); hide(els.actions); hide(els.reveal);
+    show(els.leaderboard);
+    const list = readLb().slice(0, 10);
+    els.lbList.innerHTML = '';
+    if (!list.length) {
+      els.lbList.innerHTML = '<li class="gg-lb-empty">No scores yet — be the first!</li>';
+      return;
+    }
+    list.forEach((entry, i) => {
+      const li = document.createElement('li');
+      const medal = i < 3 ? ' medal-' + (i+1) : '';
+      const date = new Date(entry.when);
+      li.innerHTML = `
+        <span class="gg-rank${medal}">${(i+1).toString().padStart(2,'0')}</span>
+        <span class="gg-who">${escapeHTML(entry.name)}</span>
+        <span class="gg-when">${date.toLocaleDateString()}</span>
+        <span class="gg-score">${fmtNumber(entry.score)}</span>
+      `;
+      els.lbList.appendChild(li);
+    });
+  }
+  function clearLeaderboard() {
+    if (!confirm('Clear all leaderboard entries?')) return;
+    writeLb([]);
+    showLeaderboard();
+  }
+
+  function escapeHTML(s) {
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+  }
+
+  // ── Event wiring ─────────────────────────────────────────
+  els.start.addEventListener('click', startGame);
+  els.submit.addEventListener('click', submitGuess);
+  els.next.addEventListener('click', nextRound);
+  els.quit.addEventListener('click', quitGame);
+  els.again.addEventListener('click', startGame);
+  els.saveScore.addEventListener('click', saveScore);
+  els.skipSave.addEventListener('click', resetToIdle);
+  els.showLb.addEventListener('click', showLeaderboard);
+  els.lbClose.addEventListener('click', resetToIdle);
+  els.lbClear.addEventListener('click', clearLeaderboard);
+})();
 </script>
 
 </body>
