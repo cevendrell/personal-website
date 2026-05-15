@@ -812,6 +812,41 @@
     .gg-lb-list .gg-score { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent); min-width: 60px; text-align: right; }
     .gg-lb-empty { color: var(--text-mute); font-size: 0.85rem; padding: 1rem 0; }
 
+    /* Leaderboard header + footer rows */
+    .gg-lb-header { display: flex; align-items: center; gap: 0.85rem; }
+    .gg-lb-footer { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.4rem; }
+    .gg-lb-footer .gg-spacer { flex: 1; }
+    .gg-admin-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent);
+      padding: 0.2rem 0.55rem; border-radius: 999px;
+      background: rgba(232,220,196,0.08); border: 1px solid rgba(232,220,196,0.3);
+    }
+    .gg-lb-key {
+      background: transparent; border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-mute); cursor: pointer;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; transition: all 0.2s;
+    }
+    .gg-lb-key:hover { color: var(--accent); border-color: var(--accent); }
+    .gg-lb-key.unlocked { color: var(--accent); border-color: rgba(232,220,196,0.4); }
+
+    /* Per-entry delete button — appears only when admin unlocked */
+    .gg-lb-list li.admin {
+      grid-template-columns: 32px 1fr auto auto 28px;
+    }
+    .gg-lb-del {
+      background: transparent; border: 1px solid rgba(200,120,74,0.3);
+      color: var(--c-photo);
+      width: 24px; height: 24px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.7rem; line-height: 1;
+      transition: all 0.15s;
+    }
+    .gg-lb-del:hover { background: rgba(200,120,74,0.15); transform: scale(1.05); }
+
     /* Hidden helper */
     .gg-hidden { display: none !important; }
 
@@ -1216,11 +1251,17 @@
 
     <!-- LEADERBOARD -->
     <div class="gg-leaderboard gg-hidden" id="ggLeaderboard">
-      <h3>🏆 Leaderboard</h3>
+      <div class="gg-lb-header">
+        <h3>🏆 Leaderboard</h3>
+        <span class="gg-admin-chip gg-hidden" id="ggAdminChip">🔓 ADMIN</span>
+      </div>
       <ul class="gg-lb-list" id="ggLbList"></ul>
-      <div>
+      <div class="gg-lb-footer">
         <button class="gg-skip" id="ggLbClose" type="button">Close</button>
-        <button class="gg-skip" id="ggLbClear" type="button" style="margin-left: 0.4rem; color: var(--c-photo); border-color: rgba(200,120,74,0.35);">Clear all</button>
+        <button class="gg-skip gg-hidden" id="ggLbClear" type="button"
+                style="margin-left: 0.4rem; color: var(--c-photo); border-color: rgba(200,120,74,0.35);">Clear all</button>
+        <span class="gg-spacer"></span>
+        <button class="gg-lb-key" id="ggLbKey" type="button" aria-label="Admin login" title="Admin login">🔒</button>
       </div>
     </div>
 
@@ -2332,7 +2373,13 @@ function runGlobeInit() {
   const PHOTO_PATH = '../../media/travel-photos/';
   const ROUNDS = 10;
   const LS_KEY = 'cv_travelGame_leaderboard_v1';
+  const SS_ADMIN_KEY = 'cv_travelGame_admin';
   const MAX_PER_ROUND = 5000;
+
+  // SHA-256 of the admin password (computed offline — hex digest).
+  // To change the password: run    echo -n "new_password" | shasum -a 256
+  // …and paste the new hash here.
+  const ADMIN_HASH = '47172f797a75dc5fc1933c4fcb4c981c5b8eb4c6609cb5d9371c7f55181fe4cc';
 
   let rounds = [];        // [{rec, photo, guess: {lat,lng}|null, distanceKm, points}]
   let roundIdx = 0;
@@ -2360,6 +2407,7 @@ function runGlobeInit() {
     skipSave: $('ggSkipSave'), again: $('ggAgain'),
     leaderboard: $('ggLeaderboard'), lbList: $('ggLbList'),
     lbClose: $('ggLbClose'), lbClear: $('ggLbClear'),
+    lbKey: $('ggLbKey'), adminChip: $('ggAdminChip'),
   };
 
   function show(el)  { el && el.classList.remove('gg-hidden'); }
@@ -2623,10 +2671,50 @@ function runGlobeInit() {
     writeLb(list.slice(0, 50));     // keep top 50
     showLeaderboard();
   }
-  function showLeaderboard() {
-    hide(els.idle); hide(els.finish); hide(els.bar); hide(els.stage); hide(els.actions); hide(els.reveal);
-    show(els.leaderboard);
+  // ── Admin authentication (SHA-256 password gate) ─────────
+  async function sha256Hex(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  function isAdmin() {
+    try { return sessionStorage.getItem(SS_ADMIN_KEY) === '1'; }
+    catch (e) { return false; }
+  }
+  function setAdmin(on) {
+    try {
+      if (on) sessionStorage.setItem(SS_ADMIN_KEY, '1');
+      else    sessionStorage.removeItem(SS_ADMIN_KEY);
+    } catch (e) {}
+    syncAdminUI();
+  }
+  function syncAdminUI() {
+    const admin = isAdmin();
+    els.lbKey.textContent = admin ? '🔓' : '🔒';
+    els.lbKey.classList.toggle('unlocked', admin);
+    els.lbKey.title = admin ? 'Admin unlocked — click to log out' : 'Admin login';
+    els.adminChip.classList.toggle('gg-hidden', !admin);
+    els.lbClear.classList.toggle('gg-hidden', !admin);
+    // Re-render the list so per-entry delete buttons appear/disappear
+    if (!els.leaderboard.classList.contains('gg-hidden')) renderLeaderboardList();
+  }
+  async function toggleAdmin() {
+    if (isAdmin()) {
+      setAdmin(false);
+      return;
+    }
+    const pw = prompt('Admin password:');
+    if (!pw) return;
+    const hash = await sha256Hex(pw);
+    if (hash === ADMIN_HASH) {
+      setAdmin(true);
+    } else {
+      alert('Incorrect password.');
+    }
+  }
+
+  function renderLeaderboardList() {
     const list = readLb().slice(0, 10);
+    const admin = isAdmin();
     els.lbList.innerHTML = '';
     if (!list.length) {
       els.lbList.innerHTML = '<li class="gg-lb-empty">No scores yet — be the first!</li>';
@@ -2634,6 +2722,7 @@ function runGlobeInit() {
     }
     list.forEach((entry, i) => {
       const li = document.createElement('li');
+      if (admin) li.classList.add('admin');
       const medal = i < 3 ? ' medal-' + (i+1) : '';
       const date = new Date(entry.when);
       li.innerHTML = `
@@ -2641,14 +2730,38 @@ function runGlobeInit() {
         <span class="gg-who">${escapeHTML(entry.name)}</span>
         <span class="gg-when">${date.toLocaleDateString()}</span>
         <span class="gg-score">${fmtNumber(entry.score)}</span>
+        ${admin ? `<button class="gg-lb-del" data-when="${entry.when}" aria-label="Delete entry">✕</button>` : ''}
       `;
       els.lbList.appendChild(li);
     });
+    // Wire per-row delete buttons (admin only)
+    if (admin) {
+      els.lbList.querySelectorAll('.gg-lb-del').forEach(btn => {
+        btn.addEventListener('click', () => deleteEntry(+btn.dataset.when));
+      });
+    }
   }
+
+  function showLeaderboard() {
+    hide(els.idle); hide(els.finish); hide(els.bar); hide(els.stage); hide(els.actions); hide(els.reveal);
+    show(els.leaderboard);
+    syncAdminUI();
+    renderLeaderboardList();
+  }
+
+  function deleteEntry(when) {
+    if (!isAdmin()) return;          // hard guard
+    if (!confirm('Delete this score?')) return;
+    const list = readLb().filter(e => e.when !== when);
+    writeLb(list);
+    renderLeaderboardList();
+  }
+
   function clearLeaderboard() {
-    if (!confirm('Clear all leaderboard entries?')) return;
+    if (!isAdmin()) return;          // hard guard
+    if (!confirm('Clear ALL leaderboard entries? This cannot be undone.')) return;
     writeLb([]);
-    showLeaderboard();
+    renderLeaderboardList();
   }
 
   function escapeHTML(s) {
@@ -2666,6 +2779,7 @@ function runGlobeInit() {
   els.showLb.addEventListener('click', showLeaderboard);
   els.lbClose.addEventListener('click', resetToIdle);
   els.lbClear.addEventListener('click', clearLeaderboard);
+  els.lbKey.addEventListener('click', toggleAdmin);
 })();
 </script>
 
