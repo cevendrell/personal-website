@@ -16,11 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-  <!-- Leaflet (interactive map) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <!-- (Map libraries are loaded at end of body for non-blocking parse.) -->
   <style>
     :root {
       --bg:         #08090e;
@@ -229,18 +225,34 @@
     }
     .imap-reset:hover { color: var(--accent); }
 
-    /* Map itself */
-    #imap {
-      width: 100%; height: 580px;
-      background: #0a0d18;
+    /* Globe wrapper (replaces #imap) */
+    .imap-stage {
+      width: 100%; height: 620px;
+      background: radial-gradient(ellipse at center, #0a0d18 0%, #050610 70%);
       position: relative; z-index: 0;
       border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--line);
       margin-top: 1rem;
     }
+    /* Subtle starfield (CSS-generated) */
+    .imap-stage::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.4), transparent 50%),
+        radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.35), transparent 50%),
+        radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.3), transparent 50%),
+        radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.4), transparent 50%),
+        radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.25), transparent 50%),
+        radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.3), transparent 50%),
+        radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.35), transparent 50%),
+        radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.25), transparent 50%);
+      background-size: 600px 600px;
+      opacity: 0.5;
+      z-index: 1;
+    }
     @media (max-width: 700px) {
-      #imap { height: 460px; }
+      .imap-stage { height: 460px; }
       .imap-header { grid-template-columns: 1fr; }
       .imap-stats { justify-content: flex-start; }
       .imap-year-range input[type="range"] { width: 160px; }
@@ -261,47 +273,224 @@
     }
     .imap-loading p { color: var(--text-mute); font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; }
 
-    /* ── Custom Leaflet styling overrides ── */
-    .leaflet-container {
-      background: #0a0d18 !important;
-      font-family: 'Inter', sans-serif !important;
-      outline: none;
+    /* ══════════════════════════════════════════════════════════════════
+       ══ 3-D GLOBE                                                    ══
+       ══════════════════════════════════════════════════════════════════ */
+    #globe-container {
+      position: absolute; inset: 0;
+      cursor: grab; user-select: none;
     }
-    .leaflet-tile { filter: brightness(0.9) saturate(0.85); }
-    .leaflet-control-zoom { border: none !important; box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important; }
-    .leaflet-control-zoom a {
-      background: rgba(12,16,40,0.92) !important; color: var(--text) !important;
-      border: 1px solid rgba(255,255,255,0.08) !important;
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    }
-    .leaflet-control-zoom a:hover { background: rgba(232,220,196,0.95) !important; color: #111 !important; }
-    .leaflet-control-attribution {
-      background: rgba(8,9,14,0.7) !important; color: var(--text-mute) !important;
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      border-radius: 6px; font-size: 0.65rem !important;
-    }
-    .leaflet-control-attribution a { color: var(--text-dim) !important; }
+    #globe-container:active { cursor: grabbing; }
+    #globe-container canvas { display: block; outline: none; }
 
-    /* Custom marker dots — small, refined, no clustering */
-    .imap-marker {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: var(--c-photo);
-      box-shadow: 0 0 0 1.5px rgba(8,9,14,0.85), 0 0 6px rgba(200,120,74,0.7);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      opacity: 0.92;
+    /* Overlay layer above the canvas — holds cards + SVG line */
+    #globe-overlay {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 10;
     }
-    .imap-marker.lived {
-      background: var(--accent);
-      box-shadow: 0 0 0 1.5px rgba(8,9,14,0.85), 0 0 8px rgba(232,220,196,0.8);
+    #globe-overlay > .comm-card { pointer-events: auto; }
+
+    /* Connector-line SVG */
+    #globe-svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
     }
-    .imap-marker:hover {
-      transform: scale(1.8);
-      box-shadow: 0 0 0 2px rgba(8,9,14,0.95), 0 0 12px rgba(200,120,74,0.9);
+
+    /* Hint overlay */
+    .globe-hint {
+      position: absolute; top: 1rem; left: 1rem; z-index: 5;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(232,220,196,0.5); pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .globe-hint::before {
+      content: '◆'; margin-right: 0.5rem; color: var(--c-photo);
+      animation: hintPulse 2s ease-in-out infinite;
+    }
+    @keyframes hintPulse {
+      0%,100% { opacity: 0.4; }
+      50%     { opacity: 1; }
+    }
+    .globe-hint.fade { opacity: 0; }
+
+    /* ── Mission-Impossible "comm-card" ── */
+    .comm-card {
+      position: absolute;
+      width: 280px;
+      background: rgba(8,9,14,0.86);
+      border: 1px solid rgba(200,120,74,0.5);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      box-shadow:
+        0 24px 60px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(200,120,74,0.08),
+        0 0 60px -10px rgba(200,120,74,0.25);
+      opacity: 0; transform: translateY(8px) scale(0.96);
+      transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.35s cubic-bezier(0.16,1,0.3,1);
+      will-change: transform, opacity, left, top;
+    }
+    .comm-card.open { opacity: 1; transform: translateY(0) scale(1); }
+    /* Sci-fi corner brackets */
+    .comm-card::before,
+    .comm-card::after,
+    .cc-corner {
+      content: ''; position: absolute;
+      width: 14px; height: 14px;
+      border: 1.5px solid var(--c-photo);
+      pointer-events: none;
+    }
+    .comm-card::before { top: -1px; left: -1px;  border-right: none; border-bottom: none; }
+    .comm-card::after  { top: -1px; right: -1px; border-left:  none; border-bottom: none; }
+    .cc-corner.bl       { bottom: -1px; left: -1px;  border-right: none; border-top: none; }
+    .cc-corner.br       { bottom: -1px; right: -1px; border-left:  none; border-top: none; }
+
+    /* Header bar */
+    .cc-head {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(to right, rgba(200,120,74,0.08), transparent 70%);
+    }
+    .cc-head .cc-rec {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--c-photo); box-shadow: 0 0 8px var(--c-photo);
+      animation: recBlink 1.4s ease-in-out infinite;
+    }
+    @keyframes recBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .cc-head .cc-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--c-photo);
+    }
+    .cc-head .cc-close {
+      margin-left: auto;
+      background: none; border: none; color: rgba(255,255,255,0.5);
+      cursor: pointer; font-size: 1.1rem; line-height: 1;
+      width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s;
+    }
+    .cc-head .cc-close:hover { color: var(--accent); }
+
+    /* Photo */
+    .cc-photo {
+      position: relative; width: 100%; aspect-ratio: 16/7;
+      overflow: hidden; background: var(--bg-elevated);
+      cursor: zoom-in;
+    }
+    .cc-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: opacity 0.4s, transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    .cc-photo img.loading { opacity: 0; }
+    .cc-photo:hover img { transform: scale(1.04); }
+    .cc-photo::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(to bottom,
+        transparent 0 2px, rgba(0,0,0,0.07) 2px 3px);
+    }
+    .cc-photo .cc-skel {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      background-size: 200% 100%; animation: skelShimmer 1.4s ease-in-out infinite;
+    }
+    @keyframes skelShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .cc-dots {
+      position: absolute; bottom: 0.4rem; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 5px; z-index: 2;
+    }
+    .cc-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.4); cursor: pointer; transition: background 0.2s; }
+    .cc-dot.active { background: var(--accent); }
+    .cc-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.2s;
+      font-size: 13px; border: none; z-index: 2;
+    }
+    .cc-photo:hover .cc-nav { opacity: 1; }
+    .cc-nav.prev { left: 6px; }
+    .cc-nav.next { right: 6px; }
+
+    /* Body */
+    .cc-body { padding: 0.85rem 1rem 0.95rem; }
+    .cc-body h3 {
+      font-size: 1rem; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 0.1rem;
+    }
+    .cc-body .cc-country {
+      font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.55rem;
+    }
+    .cc-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .cc-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.18rem 0.55rem; border-radius: 999px;
+      background: rgba(255,255,255,0.04); color: var(--text-dim);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .cc-chip.year  { color: var(--accent);  border-color: rgba(232,220,196,0.25); }
+    .cc-chip.lived { color: var(--c-photo); border-color: rgba(200,120,74,0.35); background: rgba(200,120,74,0.07); }
+    .cc-coords {
+      margin-top: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-mute); display: flex; gap: 1rem;
+      padding-top: 0.55rem; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .cc-coords span { color: var(--c-photo); margin-right: 0.25rem; opacity: 0.7; }
+
+    /* Lived variant */
+    .comm-card.lived {
+      border-color: rgba(232,220,196,0.5);
+      box-shadow:
+        0 24px 60px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(232,220,196,0.08),
+        0 0 60px -10px rgba(232,220,196,0.3);
+    }
+    .comm-card.lived::before,
+    .comm-card.lived::after,
+    .comm-card.lived .cc-corner { border-color: var(--accent); }
+    .comm-card.lived .cc-head .cc-rec { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .comm-card.lived .cc-head .cc-id  { color: var(--accent); }
+    .comm-card.lived .cc-coords span  { color: var(--accent); }
+
+    @media (max-width: 700px) {
+      .comm-card { width: calc(100% - 32px); max-width: 320px; }
+    }
+
+    /* ── Connector line ── */
+    #globe-svg .conn-line {
+      stroke: var(--c-photo); stroke-width: 1.2;
+      stroke-dasharray: 5 4; fill: none;
+      filter: drop-shadow(0 0 4px rgba(200,120,74,0.6));
+      opacity: 0; transition: opacity 0.3s;
+      stroke-dashoffset: 200;
+    }
+    #globe-svg .conn-line.lived {
+      stroke: var(--accent);
+      filter: drop-shadow(0 0 4px rgba(232,220,196,0.6));
+    }
+    #globe-svg .conn-line.visible {
       opacity: 1;
+      animation: lineDraw 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-    .imap-marker.lived:hover {
-      box-shadow: 0 0 0 2px rgba(8,9,14,0.95), 0 0 14px rgba(232,220,196,0.95);
+    @keyframes lineDraw { to { stroke-dashoffset: 0; } }
+    #globe-svg .conn-target {
+      fill: none; stroke: var(--c-photo); stroke-width: 1;
+      opacity: 0; transition: opacity 0.3s;
     }
+    #globe-svg .conn-target.lived { stroke: var(--accent); }
+    #globe-svg .conn-target.visible { opacity: 1; }
+    #globe-svg .conn-origin {
+      fill: var(--c-photo); opacity: 0; transition: opacity 0.3s;
+    }
+    #globe-svg .conn-origin.lived { fill: var(--accent); }
+    #globe-svg .conn-origin.visible { opacity: 1; }
 
     /* ── Fullscreen photo lightbox ── */
     .imap-lightbox {
@@ -356,124 +545,7 @@
       .imap-lightbox-close { top: 0.75rem; right: 0.75rem; width: 38px; height: 38px; }
     }
 
-    /* Cluster styling */
-    .imap-cluster {
-      background: rgba(200,120,74,0.18);
-      border: 1.5px solid var(--c-photo);
-      color: var(--text); font-weight: 700; font-size: 0.78rem;
-      width: 38px !important; height: 38px !important;
-      border-radius: 50% !important;
-      display: flex !important; align-items: center; justify-content: center;
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4), 0 0 0 4px rgba(200,120,74,0.06);
-    }
-    .imap-cluster.lg { width: 48px !important; height: 48px !important; font-size: 0.88rem; }
-    .imap-cluster.xl { width: 58px !important; height: 58px !important; font-size: 0.95rem; background: rgba(200,120,74,0.28); }
-    .imap-cluster div { background: transparent !important; }
-
-    /* Popup */
-    .leaflet-popup-content-wrapper {
-      background: rgba(8,9,14,0.96) !important;
-      color: var(--text) !important;
-      border: 1px solid rgba(255,255,255,0.08) !important;
-      border-radius: 12px !important;
-      padding: 0 !important;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.6) !important;
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      overflow: hidden;
-    }
-    .leaflet-popup-content { margin: 0 !important; width: 260px !important; line-height: 1.5; }
-    .leaflet-popup-tip { background: rgba(8,9,14,0.96) !important; border-color: rgba(255,255,255,0.08) !important; }
-    .leaflet-popup-close-button {
-      color: rgba(255,255,255,0.5) !important; font-size: 22px !important;
-      width: 28px !important; height: 28px !important; line-height: 26px !important;
-      padding: 0 !important; top: 6px !important; right: 6px !important;
-    }
-    .leaflet-popup-close-button:hover { color: var(--accent) !important; }
-
-    .pop-photo {
-      position: relative; width: 100%; aspect-ratio: 16/7;
-      overflow: hidden; background: var(--bg-elevated);
-      cursor: zoom-in;
-    }
-    .pop-photo img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: opacity 0.4s, transform 0.4s;
-    }
-    .pop-photo:hover img { transform: scale(1.03); }
-    .pop-photo img.loading { opacity: 0; }
-    .pop-photo .pop-skel {
-      position: absolute; inset: 0;
-      background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%);
-      background-size: 200% 100%;
-      animation: skelShimmer 1.4s ease-in-out infinite;
-    }
-    @keyframes skelShimmer {
-      0%   { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-    /* Photo dots — for multi-photo navigation */
-    .pop-dots {
-      position: absolute; bottom: 0.5rem; left: 50%;
-      transform: translateX(-50%);
-      display: flex; gap: 5px;
-    }
-    .pop-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.35);
-      cursor: pointer; transition: background 0.2s;
-    }
-    .pop-dot.active { background: var(--accent); }
-    .pop-nav {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(0,0,0,0.55); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; opacity: 0; transition: opacity 0.2s;
-      font-size: 14px; border: none;
-    }
-    .pop-photo:hover .pop-nav { opacity: 1; }
-    .pop-nav.prev { left: 6px; }
-    .pop-nav.next { right: 6px; }
-    .pop-body { padding: 0.95rem 1.1rem 1.1rem; }
-    .pop-body h3 {
-      font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em;
-      margin-bottom: 0.15rem; color: var(--text);
-    }
-    .pop-body .pop-country {
-      font-size: 0.82rem; color: var(--text-dim);
-    }
-    .pop-meta {
-      margin-top: 0.6rem; display: flex; gap: 0.5rem; flex-wrap: wrap;
-      align-items: center;
-    }
-    .pop-chip {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 0.2rem 0.55rem; border-radius: 999px;
-      background: rgba(255,255,255,0.05); color: var(--text-dim);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .pop-chip.year   { color: var(--accent);   border-color: rgba(232,220,196,0.25); }
-    .pop-chip.lived  { color: var(--c-photo);  border-color: rgba(200,120,74,0.35); background: rgba(200,120,74,0.07); }
-
-    /* Legend */
-    .imap-legend {
-      position: absolute; bottom: 1rem; left: 1rem; z-index: 500;
-      background: rgba(8,9,14,0.78); border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border-radius: 10px; padding: 0.6rem 0.85rem;
-      font-size: 0.7rem; color: var(--text-dim);
-      display: flex; gap: 0.8rem; align-items: center;
-    }
-    .imap-legend .swatch {
-      display: inline-block; width: 10px; height: 10px;
-      border-radius: 50%; margin-right: 0.35rem;
-      vertical-align: middle;
-    }
-    .imap-legend .sw-vis  { background: var(--c-photo); box-shadow: 0 0 6px rgba(200,120,74,0.6); }
-    .imap-legend .sw-liv  { background: var(--accent);  box-shadow: 0 0 6px rgba(232,220,196,0.6); }
-    @media (max-width: 500px) { .imap-legend { font-size: 0.62rem; bottom: 0.5rem; left: 0.5rem; padding: 0.45rem 0.65rem; gap: 0.55rem; } }
+    /* (Leaflet popup / cluster / pop-* / legend CSS removed — replaced by .comm-card above.) */
 
     /* ── GEOGUESSR SECTION ── */
     .geoguessr-callout {
@@ -788,15 +860,27 @@
       <button class="imap-reset" id="imapReset">Reset</button>
     </div>
 
-    <div style="position:relative;">
-      <div id="imap"></div>
+    <div class="imap-stage">
+      <div id="globe-container"></div>
+
+      <!-- SVG layer for Mission-Impossible connector line -->
+      <svg id="globe-svg" aria-hidden="true">
+        <line   class="conn-line"   x1="0" y1="0" x2="0" y2="0" />
+        <circle class="conn-origin" cx="0" cy="0" r="3" />
+        <circle class="conn-target" cx="0" cy="0" r="9" />
+        <circle class="conn-target" cx="0" cy="0" r="15" stroke-dasharray="4 4" />
+      </svg>
+
+      <!-- Overlay holds the comm-card mount point -->
+      <div id="globe-overlay"></div>
+
+      <!-- Hint -->
+      <div class="globe-hint" id="globeHint">Drag · Scroll to zoom · Click a pin</div>
+
+      <!-- Loading veil -->
       <div class="imap-loading" id="imapLoading">
         <div class="skel-spin"></div>
-        <p>Loading map…</p>
-      </div>
-      <div class="imap-legend">
-        <span><span class="swatch sw-vis"></span>Visited</span>
-        <span><span class="swatch sw-liv"></span>Lived</span>
+        <p>Initialising globe…</p>
       </div>
     </div>
   </section>
@@ -1394,251 +1478,355 @@
   }
 </script>
 
-<!-- ── Leaflet + cluster libs + travel data ── -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<!-- ── 3D globe libs + travel data ── -->
+<script src="https://unpkg.com/three@0.155.0/build/three.min.js"></script>
+<script src="https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js"></script>
 <script src="travel-map-data.js"></script>
 
 <!-- ══ Interactive map controller ══ -->
 <script>
-(function initInteractiveMap() {
-  if (typeof L === 'undefined' || !window.TRAVEL_DATA) {
-    console.warn('Leaflet or TRAVEL_DATA missing');
-    return;
+(function initInteractiveGlobe() {
+  // ──────────────────────────────────────────────────────────
+  // Wait for deps + data. Globe.gl exposes itself as Globe (UMD).
+  // ──────────────────────────────────────────────────────────
+  if (!window.TRAVEL_DATA) { console.warn('TRAVEL_DATA missing'); return; }
+  if (typeof Globe === 'undefined') {
+    // CDN slow? Retry shortly. (Globe.gl UMD attaches to window as `Globe`.)
+    return setTimeout(initInteractiveGlobe, 60);
   }
 
-  // ── Constants ──
+  // ── Constants & DOM refs ──────────────────────────────────
   const DATA       = window.TRAVEL_DATA;
   const PHOTO_PATH = '../../media/travel-photos/';
-  // d.y is now always an array of years (or undefined). Flatten to find global range.
+  const stage      = document.querySelector('.imap-stage');
+  const container  = document.getElementById('globe-container');
+  const overlay    = document.getElementById('globe-overlay');
+  const svg        = document.getElementById('globe-svg');
+  const connLine   = svg.querySelector('.conn-line');
+  const connOrigin = svg.querySelector('.conn-origin');
+  const connTargets= svg.querySelectorAll('.conn-target');
+  const hintEl     = document.getElementById('globeHint');
+
   const allYears = DATA.flatMap(d => Array.isArray(d.y) ? d.y : (d.y ? [d.y] : []));
   const MIN_YEAR = allYears.length ? Math.min(...allYears) : 2000;
   const MAX_YEAR = allYears.length ? Math.max(...allYears) : 2026;
 
-  // Format an array of years for display: [2018] → "2018", [2018,2022] → "2018, 2022",
-  // [2018,2019,2020,2021] → "2018–2021"
   function formatYears(years) {
     if (!years || !years.length) return '';
     if (years.length === 1) return String(years[0]);
-    // Detect if contiguous range
-    const sorted = [...years].sort((a,b) => a - b);
-    const contiguous = sorted.every((y, i) => i === 0 || y === sorted[i-1] + 1);
-    if (contiguous && sorted.length >= 3) {
-      return `${sorted[0]}–${sorted[sorted.length-1]}`;
-    }
+    const sorted = [...years].sort((a,b) => a-b);
+    const contiguous = sorted.every((y,i) => i===0 || y === sorted[i-1]+1);
+    if (contiguous && sorted.length >= 3) return sorted[0] + '–' + sorted[sorted.length-1];
     return sorted.join(', ');
   }
-
-  // ── Initialise map ──
-  const map = L.map('imap', {
-    center: [40, 14],
-    zoom: 3,
-    minZoom: 2,
-    maxZoom: 12,
-    worldCopyJump: true,
-    zoomControl: true,
-    attributionControl: true,
-    preferCanvas: true   // faster with many markers
-  });
-
-  // CartoDB Dark Matter — matches site theme
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> · <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(map);
-  // Labels layer on top for legibility
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd', maxZoom: 19, pane: 'overlayPane', opacity: 0.75
-  }).addTo(map);
-
-  // ── Marker factory ──
-  function makeIcon(status) {
-    return L.divIcon({
-      className: '',
-      html: `<div class="imap-marker${status === 'L' ? ' lived' : ''}"></div>`,
-      iconSize: [14,14], iconAnchor: [7,7], popupAnchor: [0,-8]
-    });
+  function escapeHTML(s) {
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+  }
+  function fmtLat(lat) {
+    return Math.abs(lat).toFixed(2) + '°' + (lat >= 0 ? 'N' : 'S');
+  }
+  function fmtLon(lon) {
+    return Math.abs(lon).toFixed(2) + '°' + (lon >= 0 ? 'E' : 'W');
   }
 
-  // ── Popup HTML builder (carousel for multi-photo places) ──
-  function buildPopupHTML(rec) {
+  // ── Initialise the globe ──────────────────────────────────
+  const globe = Globe()(container)
+    .globeImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-dark.jpg')
+    .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
+    .backgroundColor('rgba(0,0,0,0)')
+    .atmosphereColor('#6a8db5')
+    .atmosphereAltitude(0.18)
+    .pointsData(DATA)
+    .pointLat(d => d.lat)
+    .pointLng(d => d.lon)
+    .pointColor(d => d.s === 'L' ? '#e8dcc4' : '#c8784a')
+    .pointAltitude(0.012)
+    .pointRadius(0.32)
+    .pointResolution(10)
+    .pointsMerge(false)
+    .onPointClick(handlePinClick)
+    .onPointHover(p => {
+      container.style.cursor = p ? 'pointer' : 'grab';
+    })
+    .onGlobeClick(() => closeCard());
+
+  // Initial camera position — Europe-ish
+  globe.pointOfView({ lat: 40, lng: 14, altitude: 2.2 }, 0);
+
+  // Configure orbit controls
+  const controls = globe.controls();
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.rotateSpeed   = 0.6;
+  controls.minDistance   = 180;
+  controls.maxDistance   = 600;
+  controls.autoRotate    = true;
+  controls.autoRotateSpeed = 0.35;
+  // Pause auto-rotate the first time the user interacts
+  ['pointerdown','wheel','touchstart'].forEach(ev =>
+    container.addEventListener(ev, () => { controls.autoRotate = false; hintEl.classList.add('fade'); }, { once: true })
+  );
+
+  // Resize handler — globe.gl wants explicit width/height
+  function sizeGlobe() {
+    const r = stage.getBoundingClientRect();
+    globe.width(r.width).height(r.height);
+    svg.setAttribute('viewBox', '0 0 ' + r.width + ' ' + r.height);
+    svg.setAttribute('width', r.width);
+    svg.setAttribute('height', r.height);
+    if (activeRec) updateConnector();
+  }
+  sizeGlobe();
+  window.addEventListener('resize', sizeGlobe);
+
+  // Done loading
+  setTimeout(() => document.getElementById('imapLoading').classList.add('done'), 400);
+
+  // ──────────────────────────────────────────────────────────
+  // Pin click → open comm-card + draw connector line
+  // ──────────────────────────────────────────────────────────
+  let activeRec = null;
+  let activeCard = null;
+  let trackingRAF = null;
+
+  function handlePinClick(rec) {
+    if (!rec) return;
+    openCard(rec);
+  }
+
+  function openCard(rec) {
+    activeRec = rec;
+    controls.autoRotate = false;
+    hintEl.classList.add('fade');
+
+    // Rotate the globe so the pin is centred (with a small bias so card has room)
+    const stageRect = stage.getBoundingClientRect();
+    const cardOnRight = stageRect.width >= 700;   // narrow screens → card under globe
+    const targetLng = cardOnRight ? rec.lon - 12 : rec.lon + 12;
+    globe.pointOfView({ lat: rec.lat, lng: targetLng, altitude: 1.6 }, 900);
+
+    // Build (or update) the card DOM
+    if (activeCard) activeCard.remove();
+    activeCard = buildCard(rec);
+    overlay.appendChild(activeCard);
+
+    positionCard();
+    requestAnimationFrame(() => activeCard.classList.add('open'));
+
+    // Begin tracking loop (line follows pin every frame)
+    if (trackingRAF) cancelAnimationFrame(trackingRAF);
+    track();
+  }
+
+  function closeCard() {
+    if (!activeCard) return;
+    activeCard.classList.remove('open');
+    [connLine, connOrigin, ...connTargets].forEach(el => el.classList.remove('visible'));
+    const goneCard = activeCard;
+    activeCard = null;
+    activeRec  = null;
+    if (trackingRAF) { cancelAnimationFrame(trackingRAF); trackingRAF = null; }
+    setTimeout(() => goneCard.remove(), 350);
+  }
+
+  // Esc to close
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCard(); });
+
+  // ── Card builder ──────────────────────────────────────────
+  function buildCard(rec) {
+    const card = document.createElement('div');
+    card.className = 'comm-card' + (rec.s === 'L' ? ' lived' : '');
+
     const photos = rec.p || [];
-    const hasPhotos = photos.length > 0;
-    const isLived = rec.s === 'L';
-
-    let photoSection = '';
-    if (hasPhotos) {
-      const imgs = photos.map((fn, i) => {
-        const src = PHOTO_PATH + encodeURI(fn);
-        return `<img loading="lazy" class="loading${i === 0 ? ' active' : ''}" data-idx="${i}" src="${src}" alt="${rec.n}" onload="this.classList.remove('loading')" onerror="this.style.display='none'">`;
-      }).join('');
-      const dots = photos.length > 1
-        ? `<div class="pop-dots">${photos.map((_,i)=>`<span class="pop-dot${i===0?' active':''}" data-idx="${i}"></span>`).join('')}</div>`
-        : '';
-      const nav = photos.length > 1
-        ? `<button class="pop-nav prev" aria-label="Previous">‹</button><button class="pop-nav next" aria-label="Next">›</button>`
-        : '';
-      photoSection = `<div class="pop-photo">
-        <div class="pop-skel"></div>${imgs}${nav}${dots}
-      </div>`;
-    }
-
     const yearLabel = formatYears(rec.y);
+    const photoHTML = photos.length ? `
+      <div class="cc-photo" data-photos='${JSON.stringify(photos)}'>
+        <div class="cc-skel"></div>
+        ${photos.map((fn, i) => `<img loading="lazy" data-idx="${i}" class="loading${i===0?' active':''}" src="${PHOTO_PATH + encodeURI(fn)}" alt="${escapeHTML(rec.n)}" onload="this.classList.remove('loading')" onerror="this.style.display='none'">`).join('')}
+        ${photos.length > 1 ? `
+          <button class="cc-nav prev" aria-label="Prev">‹</button>
+          <button class="cc-nav next" aria-label="Next">›</button>
+          <div class="cc-dots">${photos.map((_,i)=>`<span class="cc-dot${i===0?' active':''}" data-idx="${i}"></span>`).join('')}</div>
+        ` : ''}
+      </div>` : '';
+
     const chips = [
-      isLived ? '<span class="pop-chip lived">Lived</span>' : '',
-      yearLabel ? `<span class="pop-chip year">${escapeHTML(yearLabel)}</span>` : ''
+      rec.s === 'L'  ? '<span class="cc-chip lived">Lived</span>' : '',
+      yearLabel      ? `<span class="cc-chip year">${escapeHTML(yearLabel)}</span>` : ''
     ].filter(Boolean).join('');
 
-    return `${photoSection}<div class="pop-body">
-      <h3>${escapeHTML(rec.n)}</h3>
-      <p class="pop-country">${escapeHTML(rec.c)}</p>
-      ${chips ? `<div class="pop-meta">${chips}</div>` : ''}
-    </div>`;
-  }
+    card.innerHTML = `
+      <span class="cc-corner bl"></span>
+      <span class="cc-corner br"></span>
+      <div class="cc-head">
+        <span class="cc-rec"></span>
+        <span class="cc-id">RECORD · ${rec.s === 'L' ? 'RESIDENT' : 'VISITED'}</span>
+        <button class="cc-close" aria-label="Close">×</button>
+      </div>
+      ${photoHTML}
+      <div class="cc-body">
+        <h3>${escapeHTML(rec.n)}</h3>
+        <p class="cc-country">${escapeHTML(rec.c)}</p>
+        ${chips ? `<div class="cc-meta">${chips}</div>` : ''}
+        <div class="cc-coords">
+          <span style="display:inline">LAT</span>${fmtLat(rec.lat)}
+          <span style="display:inline">LON</span>${fmtLon(rec.lon)}
+        </div>
+      </div>
+    `;
 
-  function escapeHTML(s) {
-    return (s || '').replace(/[&<>"']/g, c => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-    }[c]));
-  }
+    // Close button
+    card.querySelector('.cc-close').addEventListener('click', closeCard);
 
-  // ══ Lightbox (fullscreen image viewer) ══
-  const lb       = document.getElementById('imapLightbox');
-  const lbImg    = document.getElementById('imapLbImg');
-  const lbCap    = document.getElementById('imapLbCaption');
-  const lbClose  = document.getElementById('imapLbClose');
-  const lbPrev   = document.getElementById('imapLbPrev');
-  const lbNext   = document.getElementById('imapLbNext');
-  let lbPhotos = []; let lbIndex = 0; let lbLabel = '';
+    // Stop globe interactions if pointer is over the card
+    ['mousedown','touchstart','wheel'].forEach(ev =>
+      card.addEventListener(ev, e => e.stopPropagation())
+    );
 
-  function openLightbox(photos, startIdx, label) {
-    lbPhotos = photos; lbIndex = startIdx; lbLabel = label || '';
-    showLightboxPhoto();
-    lb.classList.add('open');
-    lb.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-    // hide nav if only 1 photo
-    const single = photos.length < 2;
-    lbPrev.style.display = single ? 'none' : 'flex';
-    lbNext.style.display = single ? 'none' : 'flex';
-  }
-  function closeLightbox() {
-    lb.classList.remove('open');
-    lb.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-    setTimeout(() => { lbImg.src = ''; }, 350);
-  }
-  function showLightboxPhoto() {
-    if (!lbPhotos.length) return;
-    lbIndex = (lbIndex + lbPhotos.length) % lbPhotos.length;
-    lbImg.src = PHOTO_PATH + encodeURI(lbPhotos[lbIndex]);
-    lbImg.alt = lbLabel;
-    const counter = lbPhotos.length > 1 ? `  ·  ${lbIndex + 1} / ${lbPhotos.length}` : '';
-    lbCap.textContent = lbLabel + counter;
-  }
-  lbClose.addEventListener('click', closeLightbox);
-  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
-  lbPrev.addEventListener('click', () => { lbIndex--; showLightboxPhoto(); });
-  lbNext.addEventListener('click', () => { lbIndex++; showLightboxPhoto(); });
-  document.addEventListener('keydown', e => {
-    if (!lb.classList.contains('open')) return;
-    if (e.key === 'Escape')      closeLightbox();
-    if (e.key === 'ArrowLeft')  { lbIndex--; showLightboxPhoto(); }
-    if (e.key === 'ArrowRight') { lbIndex++; showLightboxPhoto(); }
-  });
-  // Touch swipe support
-  let touchStartX = null;
-  lb.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  lb.addEventListener('touchend',   e => {
-    if (touchStartX === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 50) { lbIndex += dx < 0 ? 1 : -1; showLightboxPhoto(); }
-    touchStartX = null;
-  });
-
-  // Wire up carousel + lightbox after popup opens
-  map.on('popupopen', e => {
-    const root = e.popup.getElement();
-    if (!root) return;
-    const photoBox = root.querySelector('.pop-photo');
-    if (!photoBox) return;
-    const imgs = photoBox.querySelectorAll('img');
-    const dots = photoBox.querySelectorAll('.pop-dot');
-    const rec  = e.popup._source && e.popup._source._rec;
-    const label = rec ? `${rec.n}${rec.c ? ', ' + rec.c : ''}` : '';
-    const photoList = rec && rec.p ? rec.p : [];
-
-    let current = 0;
-    function show(i) {
-      i = (i + imgs.length) % imgs.length;
-      current = i;
-      imgs.forEach((img, idx) => { img.style.display = idx === i ? 'block' : 'none'; });
-      dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
-    }
-    if (imgs.length > 1) {
-      imgs.forEach((img, idx) => { if (idx !== 0) img.style.display = 'none'; });
-      photoBox.querySelector('.pop-nav.prev')?.addEventListener('click', ev => { ev.stopPropagation(); show(current - 1); });
-      photoBox.querySelector('.pop-nav.next')?.addEventListener('click', ev => { ev.stopPropagation(); show(current + 1); });
-      dots.forEach(d => d.addEventListener('click', ev => { ev.stopPropagation(); show(+d.dataset.idx); }));
+    // Carousel + lightbox wiring (same logic, but inside our card)
+    if (photos.length) {
+      const photoBox = card.querySelector('.cc-photo');
+      const imgs = photoBox.querySelectorAll('img');
+      const dots = photoBox.querySelectorAll('.cc-dot');
+      let current = 0;
+      function show(i) {
+        i = (i + imgs.length) % imgs.length;
+        current = i;
+        imgs.forEach((img,idx) => img.style.display = (idx === i ? 'block' : 'none'));
+        dots.forEach((d,idx) => d.classList.toggle('active', idx === i));
+      }
+      if (imgs.length > 1) {
+        imgs.forEach((img,idx) => { if (idx !== 0) img.style.display = 'none'; });
+        photoBox.querySelector('.cc-nav.prev')?.addEventListener('click', e => { e.stopPropagation(); show(current - 1); });
+        photoBox.querySelector('.cc-nav.next')?.addEventListener('click', e => { e.stopPropagation(); show(current + 1); });
+        dots.forEach(d => d.addEventListener('click', e => { e.stopPropagation(); show(+d.dataset.idx); }));
+      }
+      photoBox.addEventListener('click', e => {
+        if (e.target.closest('.cc-nav') || e.target.closest('.cc-dot')) return;
+        openLightbox(photos, current, rec.n + (rec.c ? ', ' + rec.c : ''));
+      });
     }
 
-    // Click photo (not nav buttons) → open fullscreen
-    photoBox.addEventListener('click', ev => {
-      if (ev.target.closest('.pop-nav') || ev.target.closest('.pop-dot')) return;
-      if (!photoList.length) return;
-      openLightbox(photoList, current, label);
-    });
-  });
+    return card;
+  }
 
-  // ── Marker layer (no clustering — small refined dots) ──
-  const markerLayer = L.featureGroup();
+  // ── Card positioning ──────────────────────────────────────
+  function positionCard() {
+    if (!activeCard) return;
+    const stageRect = stage.getBoundingClientRect();
+    const isWide = stageRect.width >= 700;
+    // Get pin screen position to decide which side the card sits on
+    const pin = globe.getScreenCoords(activeRec.lat, activeRec.lon, 0.012);
+    if (isWide) {
+      // Card on opposite side of pin
+      const onRight = pin.x < stageRect.width / 2;
+      activeCard.style.right = onRight ? '24px' : 'auto';
+      activeCard.style.left  = onRight ? 'auto' : '24px';
+      activeCard.style.top   = '50%';
+      activeCard.style.transform = 'translateY(-50%)';
+      // The .open class will override transform — re-apply after frame
+      requestAnimationFrame(() => {
+        if (activeCard) activeCard.style.transform = activeCard.classList.contains('open')
+          ? 'translateY(-50%) scale(1)'
+          : 'translateY(-50%) scale(0.96)';
+      });
+    } else {
+      // Narrow: pin card to bottom centre
+      activeCard.style.left = '50%';
+      activeCard.style.right = 'auto';
+      activeCard.style.bottom = '16px';
+      activeCard.style.top = 'auto';
+      activeCard.style.transform = 'translateX(-50%)';
+      requestAnimationFrame(() => {
+        if (activeCard) activeCard.style.transform = activeCard.classList.contains('open')
+          ? 'translateX(-50%) scale(1)'
+          : 'translateX(-50%) scale(0.96)';
+      });
+    }
+  }
 
-  // Build markers
-  const markers = DATA.map(rec => {
-    const m = L.marker([rec.lat, rec.lon], { icon: makeIcon(rec.s) });
-    m._rec = rec;
-    m.bindPopup(() => buildPopupHTML(rec), { maxWidth: 320, autoPan: true, closeButton: true });
-    return m;
-  });
+  // ── Connector tracking loop ───────────────────────────────
+  function track() {
+    if (!activeRec) return;
+    updateConnector();
+    trackingRAF = requestAnimationFrame(track);
+  }
 
-  map.addLayer(markerLayer);
+  function updateConnector() {
+    if (!activeRec || !activeCard) return;
 
-  // ── Filtering ──
-  const state = {
-    yearMin: MIN_YEAR,
-    yearMax: MAX_YEAR,
-    status: 'all',
-    search: ''
-  };
+    // Where's the pin on screen?
+    const pin = globe.getScreenCoords(activeRec.lat, activeRec.lon, 0.012);
+    // Is the pin on the visible hemisphere?
+    const camera = globe.camera();
+    const coords = globe.getCoords(activeRec.lat, activeRec.lon, 0.012);
+    const camLen = Math.hypot(camera.position.x, camera.position.y, camera.position.z);
+    const pinLen = Math.hypot(coords.x, coords.y, coords.z);
+    const dot = (camera.position.x * coords.x + camera.position.y * coords.y + camera.position.z * coords.z) / (camLen * pinLen);
+    const isVisible = dot > 0.0;
+
+    // Card edge anchor
+    const cardRect = activeCard.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const cardX = cardRect.left - stageRect.left;
+    const cardY = cardRect.top  - stageRect.top;
+    const cw = cardRect.width;
+    const ch = cardRect.height;
+    const isWide = stageRect.width >= 700;
+
+    // Pick the card-side that faces the pin
+    let originX, originY;
+    if (isWide) {
+      const cardOnRight = cardX > stageRect.width / 2;
+      originX = cardOnRight ? cardX : cardX + cw;
+      originY = cardY + ch / 2;
+    } else {
+      originX = cardX + cw / 2;
+      originY = cardY;
+    }
+
+    // Curved path: card edge → pin (a slight quadratic bend)
+    if (isVisible) {
+      connLine.setAttribute('x1', originX);
+      connLine.setAttribute('y1', originY);
+      connLine.setAttribute('x2', pin.x);
+      connLine.setAttribute('y2', pin.y);
+
+      connOrigin.setAttribute('cx', originX);
+      connOrigin.setAttribute('cy', originY);
+      connTargets.forEach(t => { t.setAttribute('cx', pin.x); t.setAttribute('cy', pin.y); });
+
+      [connLine, connOrigin, ...connTargets].forEach(el => el.classList.add('visible'));
+    } else {
+      [connLine, connOrigin, ...connTargets].forEach(el => el.classList.remove('visible'));
+    }
+  }
+
+  // Update line during interactive globe motion (extra responsive)
+  globe.onZoom(() => activeRec && updateConnector());
+
+  // ──────────────────────────────────────────────────────────
+  // Filters (year slider, status pills, search, reset)
+  // ──────────────────────────────────────────────────────────
+  const state = { yearMin: MIN_YEAR, yearMax: MAX_YEAR, status: 'all', search: '' };
 
   function applyFilter() {
     const q = state.search.toLowerCase();
-    const visible = markers.filter(m => {
-      const r = m._rec;
+    const visible = DATA.filter(r => {
       if (state.status !== 'all' && r.s !== state.status) return false;
-      // Year filter — if the record has years, ANY of them must fall in range
       if (Array.isArray(r.y) && r.y.length) {
         if (!r.y.some(y => y >= state.yearMin && y <= state.yearMax)) return false;
       }
       if (q && !(r.n.toLowerCase().includes(q) || (r.c||'').toLowerCase().includes(q))) return false;
       return true;
     });
-    markerLayer.clearLayers();
-    visible.forEach(m => markerLayer.addLayer(m));
+    globe.pointsData(visible);
     updateStats(visible);
+    // If the currently-open pin is no longer visible, close the card
+    if (activeRec && !visible.includes(activeRec)) closeCard();
   }
 
-  function updateStats(visible) {
-    const countries = new Set(visible.map(m => m._rec.c).filter(Boolean));
-    const photos    = visible.filter(m => m._rec.p && m._rec.p.length).length;
-    animateNum('statPlaces',    visible.length);
-    animateNum('statCountries', countries.size);
-    animateNum('statPhotos',    photos);
-  }
-
-  // ── Animated number counter for stats ──
+  // ── Live stat counters ────────────────────────────────────
   const numCache = {};
   function animateNum(id, target) {
     const el = document.getElementById(id); if (!el) return;
@@ -1649,13 +1837,19 @@
       const p = Math.min((t - t0) / dur, 1);
       const ease = 1 - Math.pow(1 - p, 3);
       el.textContent = Math.round(start + (target - start) * ease);
-      if (p < 1) requestAnimationFrame(step);
-      else numCache[id] = target;
+      if (p < 1) requestAnimationFrame(step); else numCache[id] = target;
     }
     requestAnimationFrame(step);
   }
+  function updateStats(visible) {
+    const countries = new Set(visible.map(r => r.c).filter(Boolean));
+    const photos    = visible.filter(r => r.p && r.p.length).length;
+    animateNum('statPlaces',    visible.length);
+    animateNum('statCountries', countries.size);
+    animateNum('statPhotos',    photos);
+  }
 
-  // ── Initialise year range to actual data range ──
+  // Year sliders
   const ymin = document.getElementById('yearMin');
   const ymax = document.getElementById('yearMax');
   ymin.min = ymax.min = MIN_YEAR;
@@ -1680,7 +1874,6 @@
     applyFilter();
   });
 
-  // Status pills
   document.querySelectorAll('#statusPills .imap-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       document.querySelectorAll('#statusPills .imap-pill').forEach(p => p.classList.remove('active'));
@@ -1690,14 +1883,12 @@
     });
   });
 
-  // Search (debounced)
   let searchTO;
   document.getElementById('placeSearch').addEventListener('input', e => {
     clearTimeout(searchTO);
     searchTO = setTimeout(() => { state.search = e.target.value.trim(); applyFilter(); }, 150);
   });
 
-  // Reset
   document.getElementById('imapReset').addEventListener('click', () => {
     ymin.value = MIN_YEAR; ymax.value = MAX_YEAR;
     state.yearMin = MIN_YEAR; state.yearMax = MAX_YEAR;
@@ -1710,20 +1901,64 @@
       p.classList.toggle('active', p.dataset.status === 'all');
     });
     applyFilter();
-    map.setView([40, 14], 3);
+    closeCard();
+    globe.pointOfView({ lat: 40, lng: 14, altitude: 2.2 }, 800);
+    controls.autoRotate = true;
   });
 
-  // ── Initial load ──
-  markers.forEach(m => markerLayer.addLayer(m));
-  updateStats(markers);
-  document.getElementById('imapLoading').classList.add('done');
+  // ── Lightbox (same DOM as before — fullscreen image viewer) ──
+  const lb       = document.getElementById('imapLightbox');
+  const lbImg    = document.getElementById('imapLbImg');
+  const lbCap    = document.getElementById('imapLbCaption');
+  const lbClose  = document.getElementById('imapLbClose');
+  const lbPrev   = document.getElementById('imapLbPrev');
+  const lbNext   = document.getElementById('imapLbNext');
+  let lbPhotos = []; let lbIndex = 0; let lbLabel = '';
 
-  // Defer-render when scrolled into view (saves work on first paint)
-  setTimeout(() => map.invalidateSize(), 100);
-  const io = new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting) map.invalidateSize();
-  }, { threshold: 0.1 });
-  io.observe(document.getElementById('imap'));
+  function openLightbox(photos, startIdx, label) {
+    lbPhotos = photos; lbIndex = startIdx; lbLabel = label || '';
+    showLightboxPhoto();
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    const single = photos.length < 2;
+    lbPrev.style.display = single ? 'none' : 'flex';
+    lbNext.style.display = single ? 'none' : 'flex';
+  }
+  function closeLightbox() {
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    setTimeout(() => { lbImg.src = ''; }, 350);
+  }
+  function showLightboxPhoto() {
+    if (!lbPhotos.length) return;
+    lbIndex = (lbIndex + lbPhotos.length) % lbPhotos.length;
+    lbImg.src = PHOTO_PATH + encodeURI(lbPhotos[lbIndex]);
+    lbImg.alt = lbLabel;
+    lbCap.textContent = lbLabel + (lbPhotos.length > 1 ? '  ·  ' + (lbIndex+1) + ' / ' + lbPhotos.length : '');
+  }
+  lbClose.addEventListener('click', closeLightbox);
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+  lbPrev.addEventListener('click', () => { lbIndex--; showLightboxPhoto(); });
+  lbNext.addEventListener('click', () => { lbIndex++; showLightboxPhoto(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape')      closeLightbox();
+    if (e.key === 'ArrowLeft')  { lbIndex--; showLightboxPhoto(); }
+    if (e.key === 'ArrowRight') { lbIndex++; showLightboxPhoto(); }
+  });
+  let touchStartX = null;
+  lb.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend',   e => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { lbIndex += dx < 0 ? 1 : -1; showLightboxPhoto(); }
+    touchStartX = null;
+  });
+
+  // ── Initial paint ─────────────────────────────────────────
+  updateStats(DATA);
 })();
 </script>
 
