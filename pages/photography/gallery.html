@@ -412,6 +412,16 @@
     <p>A selection of photographs from around the world.</p>
   </div>
 
+  <div class="filter-cloud" aria-label="Photo filters">
+    <div class="filter-lbl">Browse:</div>
+    <button type="button" class="filter-chip s-all active" data-filter="all">All</button>
+    <button type="button" class="filter-chip s-3" data-filter="landscape">Landscape</button>
+    <button type="button" class="filter-chip s-2" data-filter="city">City</button>
+    <button type="button" class="filter-chip s-1" data-filter="people">People</button>
+    <button type="button" class="filter-chip s-2" data-filter="nature">Nature</button>
+    <span class="filter-count"><strong>24</strong> photos</span>
+  </div>
+
   <div class="gallery">
 
     <div class="gallery-item">
@@ -515,6 +525,14 @@
     </div>
 
   </div>
+  <div class="gallery-empty" role="status">No photos match this filter.</div>
+  <div class="gallery-lightbox" aria-hidden="true">
+    <button class="gl-close" aria-label="Close lightbox">×</button>
+    <button class="gl-nav prev" aria-label="Previous photo">‹</button>
+    <img src="" alt="Expanded photo">
+    <button class="gl-nav next" aria-label="Next photo">›</button>
+    <div class="gl-counter" aria-live="polite"></div>
+  </div>
 </div>
 
 <footer>
@@ -564,6 +582,109 @@
       if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
     }, { passive: true });
   }
+
+  /* ── Gallery filters + lightbox ── */
+  const filterChips = document.querySelectorAll('.filter-chip');
+  const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+  const galleryEmpty = document.querySelector('.gallery-empty');
+  const lightbox = document.querySelector('.gallery-lightbox');
+  const lightboxImage = lightbox.querySelector('img');
+  const lightboxClose = lightbox.querySelector('.gl-close');
+  const lightboxPrev = lightbox.querySelector('.gl-nav.prev');
+  const lightboxNext = lightbox.querySelector('.gl-nav.next');
+  const lightboxCounter = lightbox.querySelector('.gl-counter');
+  const filterCount = document.querySelector('.filter-count strong');
+  const categoryCycle = ['landscape', 'city', 'nature', 'people'];
+
+  galleryItems.forEach((item, index) => {
+    item.dataset.tags = `all ${categoryCycle[index % categoryCycle.length]}`;
+    const caption = document.createElement('div');
+    caption.className = 'gi-overlay';
+    caption.innerHTML = `<span class="gi-tags">${categoryCycle[index % categoryCycle.length]}</span>`;
+    item.appendChild(caption);
+  });
+
+  const setActiveFilter = filter => {
+    filterChips.forEach(chip => {
+      chip.classList.toggle('active', chip.dataset.filter === filter);
+    });
+  };
+
+  const applyFilter = filter => {
+    let visibleCount = 0;
+    galleryItems.forEach(item => {
+      const tags = item.dataset.tags.split(' ');
+      const match = filter === 'all' || tags.includes(filter);
+      item.classList.toggle('hidden', !match);
+      if (match) visibleCount += 1;
+    });
+    galleryEmpty.classList.toggle('show', visibleCount === 0);
+    filterCount.textContent = visibleCount;
+  };
+
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const filter = chip.dataset.filter;
+      setActiveFilter(filter);
+      applyFilter(filter);
+    });
+  });
+
+  const images = galleryItems.map(item => item.querySelector('img'));
+  images.forEach(img => {
+    if (img.complete) img.classList.add('loaded');
+    else img.addEventListener('load', () => img.classList.add('loaded'));
+  });
+
+  let currentIndex = 0;
+
+  const updateLightbox = index => {
+    const target = galleryItems[index].querySelector('img');
+    lightboxImage.src = target.src;
+    lightboxImage.alt = target.alt || 'Photography gallery image';
+    lightboxCounter.textContent = `${index + 1} / ${galleryItems.length}`;
+    currentIndex = index;
+  };
+
+  const openLightbox = index => {
+    updateLightbox(index);
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+  };
+
+  const showNext = () => updateLightbox((currentIndex + 1) % galleryItems.length);
+  const showPrev = () => updateLightbox((currentIndex - 1 + galleryItems.length) % galleryItems.length);
+
+  galleryItems.forEach((item, index) => {
+    item.addEventListener('click', () => openLightbox(index));
+    item.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openLightbox(index);
+      }
+    });
+    item.setAttribute('tabindex', '0');
+  });
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightboxPrev.addEventListener('click', showPrev);
+  lightboxNext.addEventListener('click', showNext);
+
+  lightbox.addEventListener('click', event => {
+    if (event.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (!lightbox.classList.contains('open')) return;
+    if (event.key === 'Escape') closeLightbox();
+    if (event.key === 'ArrowRight') showNext();
+    if (event.key === 'ArrowLeft') showPrev();
+  });
 </script>
 
 </body>
