@@ -556,40 +556,43 @@
        ══ GUESS-THE-LOCATION MINI-GAME                                  ══
        ══════════════════════════════════════════════════════════════════ */
     .geo-game {
-      background: linear-gradient(135deg, rgba(12,16,40,0.65) 0%, rgba(8,9,14,0.85) 100%);
-      border: 1px solid var(--line);
+      background: var(--bg-alt);                                  /* solid dark blue (matches career section on home) */
+      border: 1px solid rgba(232,220,196,0.18);                   /* warm cream border instead of grey */
       border-radius: var(--radius);
       margin-bottom: 2.5rem;
       overflow: hidden;
+      box-shadow:
+        0 24px 60px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(200,120,74,0.08);                          /* faint amber outer halo */
     }
 
     /* — Header bar (always visible while game is open) — */
     .gg-bar {
       display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
       padding: 0.85rem 1.25rem;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid rgba(232,220,196,0.12);          /* warm cream divider, not grey */
+      background: linear-gradient(to right, rgba(200,120,74,0.08), transparent 60%);
     }
     .gg-bar-title {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--accent);
+      color: var(--c-photo);                                     /* amber — pops against dark blue */
     }
     .gg-bar-meta {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; letter-spacing: 0.1em;
-      color: var(--text-dim);
+      color: var(--accent);                                      /* cream meta — warm and readable */
     }
-    .gg-bar-meta strong { color: var(--text); font-weight: 700; }
+    .gg-bar-meta strong { color: #fff; font-weight: 700; }
     .gg-bar .gg-spacer { flex: 1; }
     .gg-bar button {
-      background: transparent; border: 1px solid rgba(255,255,255,0.14);
-      color: var(--text-dim); font-size: 0.7rem;
+      background: transparent; border: 1px solid rgba(232,220,196,0.3);
+      color: var(--accent); font-size: 0.7rem;
       font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;
       text-transform: uppercase; padding: 0.4rem 0.85rem; border-radius: 999px;
       cursor: pointer; transition: all 0.2s;
     }
-    .gg-bar button:hover { color: var(--text); border-color: var(--accent); }
+    .gg-bar button:hover { color: #fff; background: var(--c-photo); border-color: var(--c-photo); }
 
     /* — Idle state (Start button) — */
     .gg-idle {
@@ -598,10 +601,10 @@
     }
     .gg-idle h3 {
       font-size: clamp(1.4rem, 2.4vw, 1.8rem);
-      font-weight: 800; letter-spacing: -0.03em; color: var(--text);
+      font-weight: 800; letter-spacing: -0.03em; color: #fff;
     }
     .gg-idle p {
-      color: var(--text-dim); font-size: 0.92rem; line-height: 1.6;
+      color: var(--accent); opacity: 0.8; font-size: 0.92rem; line-height: 1.6;
       max-width: 56ch;
     }
     .gg-idle-actions {
@@ -617,12 +620,12 @@
     }
     .gg-start:hover { transform: translateY(-1px); box-shadow: 0 12px 30px -6px rgba(200,120,74,0.55); }
     .gg-leaderboard-btn {
-      background: transparent; border: 1px solid rgba(255,255,255,0.14);
-      color: var(--text); font-size: 0.78rem; font-weight: 600;
+      background: transparent; border: 1px solid var(--c-travel);   /* slate blue accent */
+      color: var(--c-travel); font-size: 0.78rem; font-weight: 600;
       padding: 0.75rem 1.4rem; border-radius: 999px; cursor: pointer;
       transition: all 0.2s;
     }
-    .gg-leaderboard-btn:hover { background: rgba(255,255,255,0.05); border-color: var(--accent); }
+    .gg-leaderboard-btn:hover { background: var(--c-travel); color: #fff; }
 
     /* — Playing layout — photo and map share the same form factor (equal columns) — */
     .gg-stage { padding: 1.25rem; display: grid; gap: 1rem; grid-template-columns: 1fr; }
@@ -633,7 +636,7 @@
     .gg-photo {
       position: relative; width: 100%; aspect-ratio: 16/10;
       overflow: hidden; border-radius: 10px; background: var(--bg-elevated);
-      border: 1px solid var(--line);
+      border: 1px solid rgba(232,220,196,0.15);                  /* warm cream border */
     }
     .gg-photo img {
       width: 100%; height: 100%; object-fit: cover; display: block;
@@ -642,7 +645,7 @@
     .gg-photo img.loading { opacity: 0; }
     .gg-photo .gg-photo-skel {
       position: absolute; inset: 0; z-index: 1;
-      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      background: linear-gradient(90deg, rgba(232,220,196,0.03), rgba(232,220,196,0.08), rgba(232,220,196,0.03));
       background-size: 200% 100%; animation: skelShimmer 1.4s ease-in-out infinite;
     }
     @keyframes skelShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -657,7 +660,7 @@
 
     .gg-mapwrap {
       position: relative; width: 100%; aspect-ratio: 16/10;
-      overflow: hidden; border-radius: 10px; border: 1px solid var(--line);
+      overflow: hidden; border-radius: 10px; border: 1px solid rgba(232,220,196,0.15);
       background: #0a0d18; min-height: 280px;
     }
     .gg-map { width: 100%; height: 100%; cursor: crosshair; }
@@ -699,7 +702,7 @@
     }
     .gg-actions .gg-msg {
       flex: 1; min-width: 200px;
-      font-size: 0.82rem; color: var(--text-dim);
+      font-size: 0.82rem; color: var(--accent); opacity: 0.75;
     }
     .gg-submit, .gg-next {
       background: var(--c-photo); color: #fff;
@@ -715,19 +718,19 @@
     /* — Reveal panel (shows after submit) — */
     .gg-reveal {
       padding: 0.85rem 1.25rem 1.25rem;
-      border-top: 1px solid var(--line);
+      border-top: 1px solid rgba(232,220,196,0.15);
       display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap;
     }
     .gg-reveal-info { flex: 1; min-width: 200px; }
     .gg-reveal-info h4 {
       font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em;
-      color: var(--text); margin-bottom: 0.2rem;
+      color: #fff; margin-bottom: 0.2rem;
     }
     .gg-reveal-info p {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem; letter-spacing: 0.08em; color: var(--text-dim);
+      font-size: 0.72rem; letter-spacing: 0.08em; color: var(--accent);
     }
-    .gg-reveal-info p strong { color: var(--accent); font-weight: 600; }
+    .gg-reveal-info p strong { color: var(--c-photo); font-weight: 600; }
     .gg-points-burst {
       display: inline-flex; align-items: center; gap: 0.4rem;
       padding: 0.4rem 0.85rem; border-radius: 999px;
@@ -741,31 +744,31 @@
     .gg-finish { padding: 1.5rem 1.5rem 1.75rem; display: flex; flex-direction: column; gap: 1rem; }
     .gg-finish h3 {
       font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 800;
-      letter-spacing: -0.03em; color: var(--text);
+      letter-spacing: -0.03em; color: #fff;
     }
     .gg-finish .gg-total {
       font-family: 'JetBrains Mono', monospace;
       font-size: clamp(2.5rem, 5vw, 3.6rem); font-weight: 800;
       color: var(--c-photo); letter-spacing: -0.03em; line-height: 1;
     }
-    .gg-finish .gg-total .gg-of { color: var(--text-mute); font-size: 0.5em; }
+    .gg-finish .gg-total .gg-of { color: var(--accent); opacity: 0.55; font-size: 0.5em; }
     .gg-rounds {
       list-style: none; padding: 0; margin: 0;
       display: grid; grid-template-columns: 1fr; gap: 0.25rem;
-      border-top: 1px solid var(--line); padding-top: 0.85rem; margin-top: 0.25rem;
+      border-top: 1px solid rgba(232,220,196,0.15); padding-top: 0.85rem; margin-top: 0.25rem;
       max-height: 240px; overflow-y: auto;
     }
     .gg-rounds li {
       display: grid; grid-template-columns: 24px 1fr auto auto;
       gap: 0.65rem; align-items: center;
       padding: 0.35rem 0; font-size: 0.85rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(232,220,196,0.06);
     }
     .gg-rounds li:last-child { border-bottom: none; }
-    .gg-rounds li .gg-rn { font-family: 'JetBrains Mono', monospace; color: var(--text-mute); font-size: 0.7rem; }
-    .gg-rounds li .gg-name { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .gg-rounds li .gg-d { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 0.7rem; }
-    .gg-rounds li .gg-pts { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent); font-size: 0.78rem; min-width: 50px; text-align: right; }
+    .gg-rounds li .gg-rn { font-family: 'JetBrains Mono', monospace; color: var(--c-photo); font-size: 0.7rem; opacity: 0.7; }
+    .gg-rounds li .gg-name { color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gg-rounds li .gg-d { font-family: 'JetBrains Mono', monospace; color: var(--accent); opacity: 0.65; font-size: 0.7rem; }
+    .gg-rounds li .gg-pts { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--c-photo); font-size: 0.78rem; min-width: 50px; text-align: right; }
 
     .gg-save-row {
       display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;
@@ -773,24 +776,26 @@
     }
     .gg-save-row input {
       flex: 1; min-width: 200px; max-width: 320px;
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-      color: var(--text); padding: 0.6rem 0.9rem; border-radius: 999px;
+      background: rgba(232,220,196,0.06);                       /* warm tinted */
+      border: 1px solid rgba(232,220,196,0.25);
+      color: #fff; padding: 0.6rem 0.9rem; border-radius: 999px;
       font-size: 0.85rem; outline: none;
       transition: border-color 0.2s, background 0.2s;
     }
-    .gg-save-row input:focus { border-color: var(--accent); background: rgba(255,255,255,0.06); }
-    .gg-save-row input::placeholder { color: var(--text-mute); }
+    .gg-save-row input:focus { border-color: var(--c-photo); background: rgba(200,120,74,0.1); }
+    .gg-save-row input::placeholder { color: rgba(232,220,196,0.5); }
     .gg-save, .gg-skip, .gg-again {
       font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em;
       text-transform: uppercase; padding: 0.6rem 1.2rem;
       border-radius: 999px; cursor: pointer;
       transition: all 0.15s;
     }
-    .gg-save { background: var(--accent); color: #111; border: none; }
+    .gg-save { background: var(--accent); color: var(--cream-dark); border: none; }
     .gg-save:hover { transform: translateY(-1px); }
-    .gg-skip { background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.14); }
-    .gg-skip:hover { color: var(--text); border-color: var(--text-dim); }
+    .gg-skip { background: transparent; color: var(--accent); border: 1px solid rgba(232,220,196,0.3); }
+    .gg-skip:hover { color: #fff; background: rgba(232,220,196,0.08); border-color: var(--accent); }
     .gg-again { background: var(--c-photo); color: #fff; border: none; }
+    .gg-again:hover { transform: translateY(-1px); }
 
     /* — Leaderboard view — */
     .gg-leaderboard {
@@ -799,26 +804,26 @@
     }
     .gg-leaderboard h3 {
       font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em;
-      color: var(--text);
+      color: #fff;
     }
     .gg-lb-list { list-style: none; padding: 0; margin: 0; }
     .gg-lb-list li {
       display: grid; grid-template-columns: 32px 1fr auto auto;
       gap: 0.85rem; align-items: center;
-      padding: 0.55rem 0; border-bottom: 1px solid var(--line);
+      padding: 0.55rem 0; border-bottom: 1px solid rgba(232,220,196,0.12);
       font-size: 0.92rem;
     }
     .gg-lb-list li:last-child { border-bottom: none; }
     .gg-lb-list .gg-rank {
-      font-family: 'JetBrains Mono', monospace; color: var(--text-mute); font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace; color: var(--accent); opacity: 0.6; font-size: 0.78rem;
     }
-    .gg-lb-list .gg-rank.medal-1 { color: #f5d27a; font-weight: 700; }
-    .gg-lb-list .gg-rank.medal-2 { color: #d0d0d0; font-weight: 700; }
-    .gg-lb-list .gg-rank.medal-3 { color: #c98c5c; font-weight: 700; }
-    .gg-lb-list .gg-who { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .gg-lb-list .gg-when { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-mute); }
-    .gg-lb-list .gg-score { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent); min-width: 60px; text-align: right; }
-    .gg-lb-empty { color: var(--text-mute); font-size: 0.85rem; padding: 1rem 0; }
+    .gg-lb-list .gg-rank.medal-1 { color: #f5d27a; opacity: 1; font-weight: 700; }
+    .gg-lb-list .gg-rank.medal-2 { color: var(--accent); opacity: 1; font-weight: 700; }
+    .gg-lb-list .gg-rank.medal-3 { color: var(--c-photo); opacity: 1; font-weight: 700; }
+    .gg-lb-list .gg-who { color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gg-lb-list .gg-when { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); opacity: 0.55; }
+    .gg-lb-list .gg-score { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--c-photo); min-width: 60px; text-align: right; }
+    .gg-lb-empty { color: var(--accent); opacity: 0.6; font-size: 0.85rem; padding: 1rem 0; }
 
     /* Leaderboard header + footer rows */
     .gg-lb-header { display: flex; align-items: center; gap: 0.85rem; }
@@ -832,14 +837,14 @@
       background: rgba(232,220,196,0.08); border: 1px solid rgba(232,220,196,0.3);
     }
     .gg-lb-key {
-      background: transparent; border: 1px solid rgba(255,255,255,0.1);
-      color: var(--text-mute); cursor: pointer;
+      background: transparent; border: 1px solid rgba(232,220,196,0.2);
+      color: var(--accent); opacity: 0.65; cursor: pointer;
       width: 32px; height: 32px; border-radius: 50%;
       display: inline-flex; align-items: center; justify-content: center;
       font-size: 0.9rem; transition: all 0.2s;
     }
-    .gg-lb-key:hover { color: var(--accent); border-color: var(--accent); }
-    .gg-lb-key.unlocked { color: var(--accent); border-color: rgba(232,220,196,0.4); }
+    .gg-lb-key:hover { color: var(--c-photo); border-color: var(--c-photo); opacity: 1; }
+    .gg-lb-key.unlocked { color: var(--c-photo); border-color: var(--c-photo); opacity: 1; }
 
     /* Per-entry delete button — appears only when admin unlocked */
     .gg-lb-list li.admin {
@@ -1834,10 +1839,10 @@ function runGlobeInit() {
   }
 
   // ── Lollipop pin colours ──────────────────────────────────
-  const PIN_VISITED = '#ff8a3d';  // orange
-  const PIN_LIVED   = '#fff5d6';  // cream
-  const STEM_HEIGHT = 0.025;       // globe-radii units
-  const HEAD_RADIUS = 0.55;        // globe-radii units
+  const PIN_VISITED = '#ff7a2e';  // warm orange (matches --c-photo family)
+  const PIN_LIVED   = '#fff0c8';  // warm cream
+  const STEM_HEIGHT = 0.035;       // slightly taller so heads stand off the surface
+  const HEAD_RADIUS = 0.7;         // larger head — more substantial
 
   // ── Initialise the globe ──────────────────────────────────
   const globe = Globe()(container)
@@ -1847,13 +1852,13 @@ function runGlobeInit() {
     .backgroundColor('rgba(0,0,0,0)')
     .atmosphereColor('#a8c8ff')
     .atmosphereAltitude(0.2)
-    // ── Stems (thin cylinders) — handle clicks. Radius larger than visual for easy aim. ──
+    // ── Stems: SLIM (visible) cylinders. Click target is the head sphere (much larger). ──
     .pointsData(DATA)
     .pointLat(d => d.lat)
     .pointLng(d => d.lon)
     .pointColor(d => d.s === 'L' ? PIN_LIVED : PIN_VISITED)
     .pointAltitude(STEM_HEIGHT)
-    .pointRadius(0.22)                // wide hitbox, easier to click
+    .pointRadius(0.07)                // slim stalk
     .pointResolution(8)
     .pointsMerge(false)
     .onPointClick(handlePinClick)
@@ -1861,31 +1866,37 @@ function runGlobeInit() {
       container.style.cursor = p ? 'pointer' : 'grab';
     })
     .onGlobeClick(() => closeCard())
-    // ── Heads (shaded spheres on top of each stem) ──
+    // ── Heads: clean Phong spheres, no emissive — relies on the directional light below ──
     .customLayerData(DATA)
     .customThreeObject(d => {
-      // Phong material catches the directional light we add below → has shading + a highlight,
-      // giving the spheres a real "ball" look instead of flat disks.
       const mat = new THREE.MeshPhongMaterial({
         color:     d.s === 'L' ? PIN_LIVED : PIN_VISITED,
         specular:  0xffffff,
-        shininess: 35,
-        emissive:  d.s === 'L' ? 0x4a4530 : 0x6a3018,   // subtle ambient glow
-        emissiveIntensity: 0.45
+        shininess: 90,
+        flatShading: false
       });
-      const mesh = new THREE.Mesh(new THREE.SphereGeometry(HEAD_RADIUS, 16, 16), mat);
-      mesh.raycast = () => {};   // clicks land on the stem, never the head
-      return mesh;
+      // 24-segment sphere for smoother highlight
+      return new THREE.Mesh(new THREE.SphereGeometry(HEAD_RADIUS, 24, 24), mat);
+      // (raycasting LEFT ENABLED so clicks land on the head — bigger hitbox)
     })
     .customThreeObjectUpdate((obj, d) => {
       Object.assign(obj.position, globe.getCoords(d.lat, d.lon, STEM_HEIGHT));
     });
 
-  // Add an extra directional light so the pin spheres get a clear highlight + shaded side.
-  // (Globe.gl ships with ambient + soft directional; this one is brighter and more directional.)
-  const pinLight = new THREE.DirectionalLight(0xffffff, 0.9);
-  pinLight.position.set(80, 80, 100);
-  globe.scene().add(pinLight);
+  // ── Lighting: key + fill for the pin spheres ──
+  // The head sphere catches a clear highlight from the key light + a soft cool fill
+  // from the other side, so each pin reads as a 3-D ball, not a flat dot.
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+  keyLight.position.set(100, 120, 80);
+  globe.scene().add(keyLight);
+  const fillLight = new THREE.DirectionalLight(0x88aaff, 0.35);
+  fillLight.position.set(-80, -40, -60);
+  globe.scene().add(fillLight);
+
+  // Make head spheres also clickable (large hitbox vs. slim stems)
+  if (typeof globe.onCustomLayerClick === 'function') {
+    globe.onCustomLayerClick(handlePinClick);
+  }
 
   // Initial camera position — Europe-ish, ~50% closer than before
   globe.pointOfView({ lat: 40, lng: 14, altitude: 1.4 }, 0);
