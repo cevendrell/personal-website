@@ -45,6 +45,7 @@
     }
     html { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; }
     body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; margin: 0; min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }    /* missing global reset — nav dropdown items inherited browser-default underline without this */
     img, svg { max-width: 100%; height: auto; }
         nav#navbar {
       position: fixed;
@@ -555,39 +556,13 @@
 
       <div class="vol-timeline">
 
-        <article class="vol-entry" data-year="2010">
-          <div class="vol-photo"><img src="../../media/volunteering/vol-2010-medieval-archaeology.jpg" alt="Medieval Archaeology" loading="lazy"></div>
+        <article class="vol-entry is-recent" data-year="2024">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2024-typhoon-relief.jpg" alt="Typhoon Relief" loading="lazy"></div>
           <div class="vol-body">
-            <h3>Medieval Archaeology</h3>
-            <p class="vol-meta">Guardiola de Berguedà, Spain · July 2010</p>
-            <p>Two weeks excavating medieval ruins in the Catalan Pyrenees as a teenager. My first taste of "volunteering as travel" — sleeping in dorms, eating with the team, and getting my hands dirty under a 12th-century church.</p>
-          </div>
-        </article>
-
-        <article class="vol-entry" data-year="2011">
-          <div class="vol-photo"><img src="../../media/volunteering/vol-2011-roman-archaeology.jpg" alt="Roman Archaeology" loading="lazy"></div>
-          <div class="vol-body">
-            <h3>Roman Archaeology</h3>
-            <p class="vol-meta">Cabrera de Mar, Spain · July 2011</p>
-            <p>The following summer, a Roman-era dig on the Mediterranean coast — uncovering pottery, mosaics, and the bones of a 2,000-year-old wine industry that turned out to be one of the largest of Hispania Citerior.</p>
-          </div>
-        </article>
-
-        <article class="vol-entry" data-year="2015">
-          <div class="vol-photo"><img src="../../media/volunteering/vol-2015-urban-restoration.jpg" alt="Urban Restoration" loading="lazy"></div>
-          <div class="vol-body">
-            <h3>Urban Restoration</h3>
-            <p class="vol-meta">Prettin, Germany · July 2015</p>
-            <p>A small town on the Elbe with a long industrial past. Two weeks restoring public spaces alongside German and international volunteers — concrete, paint, sweat, and surprisingly good currywurst.</p>
-          </div>
-        </article>
-
-        <article class="vol-entry" data-year="2016">
-          <div class="vol-photo"><img src="../../media/volunteering/vol-2016-nature-conservation.jpg" alt="Nature Conservation" loading="lazy"></div>
-          <div class="vol-body">
-            <h3>Nature Conservation</h3>
-            <p class="vol-meta">Eckartsau, Austria · July 2016</p>
-            <p>Conservation work in the floodplain forests east of Vienna — clearing invasive species, maintaining trails, and protecting one of Central Europe's last large wetland ecosystems.</p>
+            <h3>Typhoon Relief</h3>
+            <p class="vol-meta">Southern Leyte, Philippines · November 2024</p>
+            <p>Back with All Hands and Hearts, this time helping families and schools recover from successive typhoons in the southern Philippines. Building back stronger — disaster-resilient schools designed to weather the next storm.</p>
+            <span class="vol-org">All Hands and Hearts</span>
           </div>
         </article>
 
@@ -601,13 +576,39 @@
           </div>
         </article>
 
-        <article class="vol-entry is-recent" data-year="2024">
-          <div class="vol-photo"><img src="../../media/volunteering/vol-2024-typhoon-relief.jpg" alt="Typhoon Relief" loading="lazy"></div>
+        <article class="vol-entry" data-year="2016">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2016-nature-conservation.jpg" alt="Nature Conservation" loading="lazy"></div>
           <div class="vol-body">
-            <h3>Typhoon Relief</h3>
-            <p class="vol-meta">Southern Leyte, Philippines · November 2024</p>
-            <p>Back with All Hands and Hearts, this time helping families and schools recover from successive typhoons in the southern Philippines. Building back stronger — disaster-resilient schools designed to weather the next storm.</p>
-            <span class="vol-org">All Hands and Hearts</span>
+            <h3>Nature Conservation</h3>
+            <p class="vol-meta">Eckartsau, Austria · July 2016</p>
+            <p>Conservation work in the floodplain forests east of Vienna — clearing invasive species, maintaining trails, and protecting one of Central Europe's last large wetland ecosystems.</p>
+          </div>
+        </article>
+
+        <article class="vol-entry" data-year="2015">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2015-urban-restoration.jpg" alt="Urban Restoration" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Urban Restoration</h3>
+            <p class="vol-meta">Prettin, Germany · July 2015</p>
+            <p>A small town on the Elbe with a long industrial past. Two weeks restoring public spaces alongside German and international volunteers — concrete, paint, sweat, and surprisingly good currywurst.</p>
+          </div>
+        </article>
+
+        <article class="vol-entry" data-year="2011">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2011-roman-archaeology.jpg" alt="Roman Archaeology" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Roman Archaeology</h3>
+            <p class="vol-meta">Cabrera de Mar, Spain · July 2011</p>
+            <p>The following summer, a Roman-era dig on the Mediterranean coast — uncovering pottery, mosaics, and the bones of a 2,000-year-old wine industry that turned out to be one of the largest of Hispania Citerior.</p>
+          </div>
+        </article>
+
+        <article class="vol-entry" data-year="2010">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2010-medieval-archaeology.jpg" alt="Medieval Archaeology" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Medieval Archaeology</h3>
+            <p class="vol-meta">Guardiola de Berguedà, Spain · July 2010</p>
+            <p>Two weeks excavating medieval ruins in the Catalan Pyrenees as a teenager. My first taste of "volunteering as travel" — sleeping in dorms, eating with the team, and getting my hands dirty under a 12th-century church.</p>
           </div>
         </article>
 
