@@ -91,12 +91,12 @@
     .page-header p { font-size: 1rem; color: var(--text-dim); }
 
     /* ── INTRO SECTION ── */
-    /* Hero stats — sit to the RIGHT of the h1 title. Each in its own colour. */
+    /* Hero stats — sit to the right of the description paragraph, baselines aligned */
     .page-hero-row {
       display: flex; align-items: flex-end; justify-content: space-between;
-      flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1rem;
+      flex-wrap: wrap; gap: 2rem; margin-bottom: 1.5rem;
     }
-    .page-hero-row .page-header { margin-bottom: 0; }
+    .page-hero-row .map-desc { margin-bottom: 0; flex: 1 1 360px; }
     .hero-stats {
       display: flex; gap: clamp(1.5rem, 3vw, 2.6rem); flex-wrap: wrap;
       align-items: flex-end;
@@ -1088,11 +1088,16 @@
 
 <div class="container">
   <div class="page-eyebrow mono">Travel</div>
-  <!-- h1 on the left, big colored stats on the right (same row) -->
+  <div class="page-header">
+    <h1>My Travel Map</h1>
+  </div>
+
+  <!-- Description on the left, stats on the right — stats baseline aligns with description -->
   <div class="page-hero-row">
-    <div class="page-header">
-      <h1>My Travel Map</h1>
-    </div>
+    <p class="map-desc">
+      Below you can see where I've been, I've lived or I'm going in the near future.<br>
+      By clicking on the pins, you can also view some photographs, most of which are taken by me.
+    </p>
     <div class="hero-stats">
       <div class="hero-stat places">
         <span class="num" id="heroPlaces">0</span>
@@ -1108,12 +1113,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Description sits directly under the title -->
-  <p class="map-desc">
-    Below you can see where I've been, I've lived or I'm going in the near future.<br>
-    By clicking on the pins, you can also view some photographs, most of which are taken by me.
-  </p>
 
   <!-- ══════════════════════════════════════════════════════════════════
        ══ INTERACTIVE TRAVEL MAP                                        ══
@@ -1278,20 +1277,80 @@
 
   <div class="gallery">
 
-    <div class="gallery-item" data-name="Aarhus" data-country="Denmark" data-photo="Aarhus.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Aarhus.jpg" alt="Aarhus" loading="lazy">
+    <div class="gallery-item" data-name="Nagarkot" data-country="Nepal" data-photo="Nagarkot.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Nagarkot.jpg" alt="Nagarkot" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Nungwi" data-country="Tanzania" data-photo="Nungwi.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Nungwi.jpg" alt="Nungwi" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Orschwiller" data-country="France" data-photo="Orschwiller.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Orschwiller.jpg" alt="Orschwiller" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Karatu" data-country="Tanzania" data-photo="Karatu.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Karatu.jpg" alt="Karatu" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Nørdre Lii" data-country="Norway" data-photo="Nørdre Lii.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/N%C3%B8rdre%20Lii.jpg" alt="Nørdre Lii" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Ngorongoro" data-country="Tanzania" data-photo="Ngorongoro.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Ngorongoro.jpg" alt="Ngorongoro" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="New Delhi" data-country="India" data-photo="New Delhi.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/New%20Delhi.jpg" alt="New Delhi" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Ljubljana" data-country="Slovenia" data-photo="Ljubljana.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Ljubljana.jpg" alt="Ljubljana" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Kuching" data-country="Malaysia" data-photo="Kuching.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Kuching.jpg" alt="Kuching" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Kuala Lumpur" data-country="Malaysia" data-photo="Kuala Lumpur.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Kuala%20Lumpur.jpg" alt="Kuala Lumpur" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Kota Kinabalu" data-country="Malaysia" data-photo="Kota Kinabalu.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Kota%20Kinabalu.jpg" alt="Kota Kinabalu" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Kathmandu" data-country="Nepal" data-photo="Kathmandu.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Kathmandu.jpg" alt="Kathmandu" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Groningen" data-country="Netherlands" data-photo="Groningen.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Groningen.jpg" alt="Groningen" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Glücksburg" data-country="Germany" data-photo="Glücksburg.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Glu%CC%88cksburg.jpg" alt="Glücksburg" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Girona" data-country="Spain" data-photo="Girona.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Girona.jpg" alt="Girona" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Gili Meno" data-country="Indonesia" data-photo="Gili Meno.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Gili%20Meno.jpg" alt="Gili Meno" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Gili Air" data-country="Indonesia" data-photo="Gili Air.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Gili%20Air.jpg" alt="Gili Air" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Allingåbro" data-country="" data-photo="Allingåbro.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Allinga%CC%8Abro.jpg" alt="Allingåbro" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Al Badayer" data-country="United Arab Emirates" data-photo="Al Badayer.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Al%20Badayer.jpg" alt="Al Badayer" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Alftanes" data-country="Iceland" data-photo="Alftanes.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Alftanes.jpg" alt="Alftanes" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Allingåbro" data-country="" data-photo="Allingåbro.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Allingåbro.jpg" alt="Allingåbro" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Amsterdam" data-country="Netherlands" data-photo="Amsterdam.jpg" tabindex="0" role="button">
@@ -1302,10 +1361,6 @@
       <img src="../../media/travel-photos-thumbs/Ao%20Nang.jpg" alt="Ao Nang" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Ayia Napa" data-country="Cyprus" data-photo="Ayia Napa.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Ayia%20Napa.jpg" alt="Ayia Napa" loading="lazy">
-    </div>
-
     <div class="gallery-item" data-name="Bako" data-country="Malaysia" data-photo="Bako.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Bako.jpg" alt="Bako" loading="lazy">
     </div>
@@ -1314,52 +1369,24 @@
       <img src="../../media/travel-photos-thumbs/Barcelona.jpg" alt="Barcelona" loading="lazy">
     </div>
 
+    <div class="gallery-item" data-name="Kanawa" data-country="Indonesia" data-photo="Kanawa.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Kanawa.jpg" alt="Kanawa" loading="lazy">
+    </div>
+
     <div class="gallery-item" data-name="Beaufort" data-country="Luxembourg" data-photo="Beaufort (2).jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Beaufort%20(2).jpg" alt="Beaufort" loading="lazy">
+      <img src="../../media/travel-photos-thumbs/Beaufort%20%282%29.jpg" alt="Beaufort" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Bessegen" data-country="" data-photo="Bessegen.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Bessegen.jpg" alt="Bessegen" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Bhaktapur" data-country="Nepal" data-photo="Bhaktapur.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Bhaktapur.jpg" alt="Bhaktapur" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Billund" data-country="Denmark" data-photo="Billund.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Billund.jpg" alt="Billund" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Bláskógabyggð Geysir" data-country="Iceland" data-photo="Bláskógabyggð Geysir.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Bláskógabyggð%20Geysir.jpg" alt="Bláskógabyggð Geysir" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Borgund" data-country="Norway" data-photo="Borgund.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Borgund.jpg" alt="Borgund" loading="lazy">
-    </div>
-
     <div class="gallery-item" data-name="Brasov" data-country="Romania" data-photo="Brasov.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Brasov.jpg" alt="Brasov" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Bratislava" data-country="Slovakia" data-photo="Bratislava.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Bratislava.jpg" alt="Bratislava" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Castell de Mur" data-country="Spain" data-photo="Castell de Mur.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Castell%20de%20Mur.jpg" alt="Castell de Mur" loading="lazy">
-    </div>
-
     <div class="gallery-item" data-name="Cemorolawang" data-country="Indonesia" data-photo="Cemorolawang.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Cemorolawang.jpg" alt="Cemorolawang" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Copenhagen" data-country="Denmark" data-photo="Copenhagen.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Copenhagen.jpg" alt="Copenhagen" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Dole" data-country="Tanzania" data-photo="Dole.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Dole.jpg" alt="Dole" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Dovre" data-country="Norway" data-photo="Dovre.jpg" tabindex="0" role="button">
@@ -1371,7 +1398,11 @@
     </div>
 
     <div class="gallery-item" data-name="Düsseldorf" data-country="Germany" data-photo="Düsseldorf.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Düsseldorf.jpg" alt="Düsseldorf" loading="lazy">
+      <img src="../../media/travel-photos-thumbs/Du%CC%88sseldorf.jpg" alt="Düsseldorf" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Ayia Napa" data-country="Cyprus" data-photo="Ayia Napa.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Ayia%20Napa.jpg" alt="Ayia Napa" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Edinburgh" data-country="UK" data-photo="Edinburgh.jpg" tabindex="0" role="button">
@@ -1383,7 +1414,7 @@
     </div>
 
     <div class="gallery-item" data-name="Eyjafjallajökull" data-country="Iceland" data-photo="Eyjafjallajökull.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Eyjafjallajökull.jpg" alt="Eyjafjallajökull" loading="lazy">
+      <img src="../../media/travel-photos-thumbs/Eyjafjallajo%CC%88kull.jpg" alt="Eyjafjallajökull" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Fagradalsfjall" data-country="Iceland" data-photo="Fagradalsfjall.jpg" tabindex="0" role="button">
@@ -1394,96 +1425,20 @@
       <img src="../../media/travel-photos-thumbs/Flam.jpg" alt="Flam" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Gili Air" data-country="Indonesia" data-photo="Gili Air.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Gili%20Air.jpg" alt="Gili Air" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Gili Meno" data-country="Indonesia" data-photo="Gili Meno.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Gili%20Meno.jpg" alt="Gili Meno" loading="lazy">
-    </div>
-
     <div class="gallery-item" data-name="Gili T" data-country="" data-photo="Gili T.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Gili%20T.jpg" alt="Gili T" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Girona" data-country="Spain" data-photo="Girona.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Girona.jpg" alt="Girona" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Glücksburg" data-country="Germany" data-photo="Glücksburg.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Glücksburg.jpg" alt="Glücksburg" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Groningen" data-country="Netherlands" data-photo="Groningen.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Groningen.jpg" alt="Groningen" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Hanoi" data-country="Vietnam" data-photo="Hanoi.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Hanoi.jpg" alt="Hanoi" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Ho Chi Minh City" data-country="Vietnam" data-photo="Ho Chi Minh City.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Ho%20Chi%20Minh%20City.jpg" alt="Ho Chi Minh City" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Hon Ti Top" data-country="Vietnam" data-photo="Hon Ti Top.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Hon%20Ti%20Top.jpg" alt="Hon Ti Top" loading="lazy">
-    </div>
-
     <div class="gallery-item" data-name="Houston" data-country="USA" data-photo="Houston.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Houston.jpg" alt="Houston" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Kanawa" data-country="Indonesia" data-photo="Kanawa.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Kanawa.jpg" alt="Kanawa" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Karatu" data-country="Tanzania" data-photo="Karatu.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Karatu.jpg" alt="Karatu" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Kathmandu" data-country="Nepal" data-photo="Kathmandu.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Kathmandu.jpg" alt="Kathmandu" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Kemah" data-country="USA" data-photo="Kemah.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Kemah.jpg" alt="Kemah" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Kendawa" data-country="" data-photo="Kendawa.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Kendawa.jpg" alt="Kendawa" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Kilchberg" data-country="Switzerland" data-photo="Kilchberg.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Kilchberg.jpg" alt="Kilchberg" loading="lazy">
-    </div>
-
     <div class="gallery-item" data-name="Komodo" data-country="Indonesia" data-photo="Komodo.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Komodo.jpg" alt="Komodo" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Kota Kinabalu" data-country="Malaysia" data-photo="Kota Kinabalu.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Kota%20Kinabalu.jpg" alt="Kota Kinabalu" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Kuala Lumpur" data-country="Malaysia" data-photo="Kuala Lumpur.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Kuala%20Lumpur.jpg" alt="Kuala Lumpur" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Kuching" data-country="Malaysia" data-photo="Kuching.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Kuching.jpg" alt="Kuching" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Lanzarote" data-country="" data-photo="Lanzarote.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Lanzarote.jpg" alt="Lanzarote" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Larnaca" data-country="Cyprus" data-photo="Larnaca.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Larnaca.jpg" alt="Larnaca" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Ljubljana" data-country="Slovenia" data-photo="Ljubljana.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Ljubljana.jpg" alt="Ljubljana" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Lom" data-country="Norway" data-photo="Lom.jpg" tabindex="0" role="button">
@@ -1518,36 +1473,12 @@
       <img src="../../media/travel-photos-thumbs/My%20Tho.jpg" alt="My Tho" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Nagarkot" data-country="Nepal" data-photo="Nagarkot.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Nagarkot.jpg" alt="Nagarkot" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="New Delhi" data-country="India" data-photo="New Delhi.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/New%20Delhi.jpg" alt="New Delhi" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Ngorongoro" data-country="Tanzania" data-photo="Ngorongoro.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Ngorongoro.jpg" alt="Ngorongoro" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Nungwi" data-country="Tanzania" data-photo="Nungwi.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Nungwi.jpg" alt="Nungwi" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Nørdre Lii" data-country="Norway" data-photo="Nørdre Lii.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Nørdre%20Lii.jpg" alt="Nørdre Lii" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Orschwiller" data-country="France" data-photo="Orschwiller.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Orschwiller.jpg" alt="Orschwiller" loading="lazy">
+    <div class="gallery-item" data-name="Oxford" data-country="UK" data-photo="Oxford.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Oxford.jpg" alt="Oxford" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Oswiecim" data-country="Poland" data-photo="Oswiecim.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Oswiecim.jpg" alt="Oswiecim" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Oxford" data-country="UK" data-photo="Oxford.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Oxford.jpg" alt="Oxford" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Padar Island" data-country="Indonesia" data-photo="Padar Island.jpg" tabindex="0" role="button">
@@ -1560,10 +1491,6 @@
 
     <div class="gallery-item" data-name="Paris" data-country="France" data-photo="Paris.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Paris.jpg" alt="Paris" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Peyia" data-country="Cyprus" data-photo="Peyia.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Peyia.jpg" alt="Peyia" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Phan Xi Pang" data-country="Vietnam" data-photo="Phan Xi Pang.jpg" tabindex="0" role="button">
@@ -1587,7 +1514,7 @@
     </div>
 
     <div class="gallery-item" data-name="Reykjavík" data-country="Iceland" data-photo="Reykjavík.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Reykjavík.jpg" alt="Reykjavík" loading="lazy">
+      <img src="../../media/travel-photos-thumbs/Reykjavi%CC%81k.jpg" alt="Reykjavík" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Reynisfjara" data-country="Iceland" data-photo="Reynisfjara.jpg" tabindex="0" role="button">
@@ -1610,6 +1537,10 @@
       <img src="../../media/travel-photos-thumbs/Sa%20Pa.jpg" alt="Sa Pa" loading="lazy">
     </div>
 
+    <div class="gallery-item" data-name="Semenggoh" data-country="Malaysia" data-photo="Semenggoh.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Semenggoh.jpg" alt="Semenggoh" loading="lazy">
+    </div>
+
     <div class="gallery-item" data-name="Santorini" data-country="" data-photo="Santorini.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Santorini.jpg" alt="Santorini" loading="lazy">
     </div>
@@ -1626,16 +1557,12 @@
       <img src="../../media/travel-photos-thumbs/Seltjarnarnes.jpg" alt="Seltjarnarnes" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Semenggoh" data-country="Malaysia" data-photo="Semenggoh.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Semenggoh.jpg" alt="Semenggoh" loading="lazy">
+    <div class="gallery-item" data-name="Serengueti" data-country="" data-photo="Serengueti.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Serengueti.jpg" alt="Serengueti" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Seremban" data-country="Malaysia" data-photo="Seremban.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Seremban.jpg" alt="Seremban" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Serengueti" data-country="" data-photo="Serengueti.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Serengueti.jpg" alt="Serengueti" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Sinaia" data-country="Romania" data-photo="Sinaia - copia.jpg" tabindex="0" role="button">
@@ -1646,6 +1573,14 @@
       <img src="../../media/travel-photos-thumbs/Singapore.jpg" alt="Singapore" loading="lazy">
     </div>
 
+    <div class="gallery-item" data-name="Sólheimajökull" data-country="Iceland" data-photo="Sólheimajökull.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/So%CC%81lheimajo%CC%88kull.jpg" alt="Sólheimajökull" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Søndervig" data-country="Denmark" data-photo="Søndervig.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/S%C3%B8ndervig.jpg" alt="Søndervig" loading="lazy">
+    </div>
+
     <div class="gallery-item" data-name="Stone Town" data-country="Tanzania" data-photo="Stone Town.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Stone%20Town.jpg" alt="Stone Town" loading="lazy">
     </div>
@@ -1654,20 +1589,16 @@
       <img src="../../media/travel-photos-thumbs/Strasbourg.jpg" alt="Strasbourg" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Sólheimajökull" data-country="Iceland" data-photo="Sólheimajökull.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Sólheimajökull.jpg" alt="Sólheimajökull" loading="lazy">
-    </div>
-
-    <div class="gallery-item" data-name="Søndervig" data-country="Denmark" data-photo="Søndervig.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Søndervig.jpg" alt="Søndervig" loading="lazy">
-    </div>
-
     <div class="gallery-item" data-name="Tampere" data-country="Finland" data-photo="Tampere.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Tampere.jpg" alt="Tampere" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Tenerife" data-country="" data-photo="Tenerife.jpg" tabindex="0" role="button">
       <img src="../../media/travel-photos-thumbs/Tenerife.jpg" alt="Tenerife" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Þingvellir" data-country="Iceland" data-photo="Thingvellir.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Thingvellir.jpg" alt="Þingvellir" loading="lazy">
     </div>
 
     <div class="gallery-item" data-name="Tien Gang" data-country="Vietnam" data-photo="Tien Gang.jpg" tabindex="0" role="button">
@@ -1694,8 +1625,76 @@
       <img src="../../media/travel-photos-thumbs/Zurich.jpg" alt="Zurich" loading="lazy">
     </div>
 
-    <div class="gallery-item" data-name="Þingvellir" data-country="Iceland" data-photo="Thingvellir.jpg" tabindex="0" role="button">
-      <img src="../../media/travel-photos-thumbs/Thingvellir.jpg" alt="Þingvellir" loading="lazy">
+    <div class="gallery-item" data-name="Peyia" data-country="Cyprus" data-photo="Peyia.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Peyia.jpg" alt="Peyia" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Larnaca" data-country="Cyprus" data-photo="Larnaca.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Larnaca.jpg" alt="Larnaca" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Lanzarote" data-country="" data-photo="Lanzarote.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Lanzarote.jpg" alt="Lanzarote" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Kilchberg" data-country="Switzerland" data-photo="Kilchberg.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Kilchberg.jpg" alt="Kilchberg" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Kendawa" data-country="" data-photo="Kendawa.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Kendawa.jpg" alt="Kendawa" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Kemah" data-country="USA" data-photo="Kemah.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Kemah.jpg" alt="Kemah" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Hon Ti Top" data-country="Vietnam" data-photo="Hon Ti Top.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Hon%20Ti%20Top.jpg" alt="Hon Ti Top" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Hanoi" data-country="Vietnam" data-photo="Hanoi.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Hanoi.jpg" alt="Hanoi" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Dole" data-country="Tanzania" data-photo="Dole.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Dole.jpg" alt="Dole" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Copenhagen" data-country="Denmark" data-photo="Copenhagen.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Copenhagen.jpg" alt="Copenhagen" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Castell de Mur" data-country="Spain" data-photo="Castell de Mur.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Castell%20de%20Mur.jpg" alt="Castell de Mur" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Bratislava" data-country="Slovakia" data-photo="Bratislava.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Bratislava.jpg" alt="Bratislava" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Borgund" data-country="Norway" data-photo="Borgund.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Borgund.jpg" alt="Borgund" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Bláskógabyggð Geysir" data-country="Iceland" data-photo="Bláskógabyggð Geysir.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Bla%CC%81sko%CC%81gabygg%C3%B0%20Geysir.jpg" alt="Bláskógabyggð Geysir" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Billund" data-country="Denmark" data-photo="Billund.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Billund.jpg" alt="Billund" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Bhaktapur" data-country="Nepal" data-photo="Bhaktapur.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Bhaktapur.jpg" alt="Bhaktapur" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Alftanes" data-country="Iceland" data-photo="Alftanes.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Alftanes.jpg" alt="Alftanes" loading="lazy">
+    </div>
+
+    <div class="gallery-item" data-name="Aarhus" data-country="Denmark" data-photo="Aarhus.jpg" tabindex="0" role="button">
+      <img src="../../media/travel-photos-thumbs/Aarhus.jpg" alt="Aarhus" loading="lazy">
     </div>
 
   </div>
