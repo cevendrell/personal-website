@@ -206,14 +206,17 @@
       align-items: center;
       justify-content: center;
       margin-top: 1.5rem;
-      padding: 1rem 1.6rem;
+      padding: 0.95rem 1.6rem;
       border-radius: 999px;
-      background: var(--accent-bright);
-      color: #081713;
+      background: var(--c-photo);                /* warm amber, matches home */
+      color: #fff;
       font-weight: 700;
-      transition: transform 0.2s ease, background 0.2s ease;
+      letter-spacing: 0.04em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      box-shadow: 0 10px 28px -6px rgba(200,120,74,0.45);
+      text-decoration: none !important;
     }
-    .hero-text .button:hover { transform: translateY(-1px); background: #55f2d7; }
+    .hero-text .button:hover { transform: translateY(-1px); background: #d68a5a; box-shadow: 0 14px 36px -6px rgba(200,120,74,0.55); }
     .hero-image {
       width: 100%;
       overflow: hidden;
@@ -226,6 +229,132 @@
       display: block;
       object-fit: cover;
       border-radius: 1.25rem;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ VOLUNTEERING TIMELINE                                          ══
+       ══════════════════════════════════════════════════════════════════ */
+    .vol-timeline-section {
+      margin-top: 5rem;
+    }
+    .vol-timeline-section .section-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c-photo); margin-bottom: 0.6rem; display: block;
+    }
+    .vol-timeline-section h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      color: var(--accent-bright); margin-bottom: 0.6rem; line-height: 1.1;
+    }
+    .vol-timeline-section .vol-sub {
+      color: var(--text-muted); font-size: 0.95rem; max-width: 56ch;
+      margin-bottom: 3rem;
+    }
+
+    /* The timeline rail */
+    .vol-timeline {
+      position: relative;
+      padding-left: 4rem;             /* leave room for the rail + year column */
+    }
+    .vol-timeline::before {
+      content: '';
+      position: absolute;
+      left: 1.6rem; top: 0.5rem; bottom: 0.5rem;
+      width: 1.5px;
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(200,120,74,0.35) 8%,
+        rgba(232,220,196,0.4) 50%,
+        rgba(200,120,74,0.35) 92%,
+        transparent 100%);
+    }
+
+    .vol-entry {
+      position: relative;
+      display: grid; grid-template-columns: 200px 1fr;
+      gap: 1.75rem; align-items: start;
+      padding-bottom: 3rem;
+    }
+    .vol-entry:last-child { padding-bottom: 0; }
+
+    /* Year dot on the rail */
+    .vol-entry::before {
+      content: '';
+      position: absolute;
+      left: -2.55rem; top: 0.6rem;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--c-photo);
+      box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px rgba(200,120,74,0.4), 0 0 16px rgba(200,120,74,0.5);
+    }
+    .vol-entry.is-recent::before {
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px rgba(232,220,196,0.4), 0 0 16px rgba(232,220,196,0.5);
+    }
+    /* Year label on the rail */
+    .vol-entry::after {
+      content: attr(data-year);
+      position: absolute;
+      left: -3.5rem; top: 2rem;
+      width: 4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.1em;
+      color: var(--accent); opacity: 0.6;
+      text-align: right;
+    }
+
+    /* Photo column */
+    .vol-photo {
+      width: 200px; height: 150px;
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(232,220,196,0.15);
+      background: var(--bg-alt);
+    }
+    .vol-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.4s ease;
+    }
+    .vol-entry:hover .vol-photo img { transform: scale(1.04); }
+
+    /* Text column */
+    .vol-body h3 {
+      font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em;
+      color: var(--accent-bright); margin-bottom: 0.35rem; line-height: 1.2;
+    }
+    .vol-body .vol-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--c-photo); margin-bottom: 0.85rem;
+    }
+    .vol-body p {
+      color: var(--text-muted); font-size: 0.95rem; line-height: 1.7;
+      max-width: 56ch;
+    }
+    .vol-body .vol-org {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); opacity: 0.85;
+      padding: 0.3rem 0.7rem; border-radius: 999px;
+      background: rgba(232,220,196,0.06);
+      border: 1px solid rgba(232,220,196,0.2);
+    }
+    .vol-body .vol-org::before {
+      content: ''; display: inline-block;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--c-photo);
+    }
+
+    /* Mobile: stack everything */
+    @media (max-width: 700px) {
+      .vol-timeline { padding-left: 3rem; }
+      .vol-timeline::before { left: 1.1rem; }
+      .vol-entry { grid-template-columns: 1fr; gap: 1rem; }
+      .vol-entry::before { left: -2.05rem; }
+      .vol-entry::after { display: none; }   /* hide year column, year is in meta line */
+      .vol-photo { width: 100%; height: 200px; }
     }
     @media (max-width: 900px) {
       .hero { grid-template-columns: 1fr; }
@@ -406,13 +535,82 @@
     <section class="hero">
       <div class="hero-text">
         <h1>Volunteering</h1>
-        <p>Since I was a teenager, I’ve used volunteering opportunities as a way to help out in different ways that I’m used to, meet people from very diverse backgrounds, and lately, as a way to travel and experience countries beyond conventional tourism.</p>
-        <p>For the last two years, I’ve been volunteering with All Hands and Hearts, a disaster relief organization that works alongside local residents to help families and communities recover by building safe, resilient schools, homes, and other community infrastructure.</p>
+        <p>Since I was a teenager, I've used volunteering opportunities as a way to help out in different ways that I'm used to, meet people from very diverse backgrounds, and lately, as a way to travel and experience countries beyond conventional tourism.</p>
+        <p>For the last two years, I've been volunteering with <strong>All Hands and Hearts</strong>, a disaster relief organization that works alongside local residents to help families and communities recover by building safe, resilient schools, homes, and other community infrastructure.</p>
         <p>You can find a link to my fundraising page below, where you can consider donating.</p>
-        <a class="button" href="https://give.allhandsandhearts.org/fundraiser/5923378" target="_blank" rel="noopener">All Hands and Hearts Fundraising Page</a>
+        <a class="button" href="https://give.allhandsandhearts.org/fundraiser/5923378" target="_blank" rel="noopener">All Hands and Hearts Fundraising Page →</a>
       </div>
       <div class="hero-image">
-        <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b4ece954-f0a2-4c9f-8282-cd31b06327b4/WhatsApp+Image+2024-11-08+at+20.44.22.jpeg" alt="Volunteering with All Hands and Hearts" loading="lazy">
+        <img src="../../media/volunteering/vol-hero.jpg" alt="Volunteering" loading="lazy">
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         ══ TIMELINE — every volunteering experience, chronological     ══
+         ══════════════════════════════════════════════════════════════════ -->
+    <section class="vol-timeline-section">
+      <span class="section-eyebrow">Experiences</span>
+      <h2>Where I've helped out</h2>
+      <p class="vol-sub">From medieval ruins in the Pyrenees as a teen, to typhoon recovery in the Philippines. Each project shaped the next.</p>
+
+      <div class="vol-timeline">
+
+        <article class="vol-entry" data-year="2010">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2010-medieval-archaeology.jpg" alt="Medieval Archaeology" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Medieval Archaeology</h3>
+            <p class="vol-meta">Guardiola de Berguedà, Spain · July 2010</p>
+            <p>Two weeks excavating medieval ruins in the Catalan Pyrenees as a teenager. My first taste of "volunteering as travel" — sleeping in dorms, eating with the team, and getting my hands dirty under a 12th-century church.</p>
+          </div>
+        </article>
+
+        <article class="vol-entry" data-year="2011">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2011-roman-archaeology.jpg" alt="Roman Archaeology" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Roman Archaeology</h3>
+            <p class="vol-meta">Cabrera de Mar, Spain · July 2011</p>
+            <p>The following summer, a Roman-era dig on the Mediterranean coast — uncovering pottery, mosaics, and the bones of a 2,000-year-old wine industry that turned out to be one of the largest of Hispania Citerior.</p>
+          </div>
+        </article>
+
+        <article class="vol-entry" data-year="2015">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2015-urban-restoration.jpg" alt="Urban Restoration" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Urban Restoration</h3>
+            <p class="vol-meta">Prettin, Germany · July 2015</p>
+            <p>A small town on the Elbe with a long industrial past. Two weeks restoring public spaces alongside German and international volunteers — concrete, paint, sweat, and surprisingly good currywurst.</p>
+          </div>
+        </article>
+
+        <article class="vol-entry" data-year="2016">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2016-nature-conservation.jpg" alt="Nature Conservation" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Nature Conservation</h3>
+            <p class="vol-meta">Eckartsau, Austria · July 2016</p>
+            <p>Conservation work in the floodplain forests east of Vienna — clearing invasive species, maintaining trails, and protecting one of Central Europe's last large wetland ecosystems.</p>
+          </div>
+        </article>
+
+        <article class="vol-entry is-recent" data-year="2023">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2023-earthquake-relief.jpg" alt="Earthquake Relief" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Earthquake Relief</h3>
+            <p class="vol-meta">Hariharpur Gadhi, Nepal · April 2023</p>
+            <p>My first deployment with All Hands and Hearts — rebuilding earthquake-damaged schools in rural Nepal. Hard work at altitude, an extraordinary team, and lifelong friendships with locals and volunteers from across the world.</p>
+            <span class="vol-org">All Hands and Hearts</span>
+          </div>
+        </article>
+
+        <article class="vol-entry is-recent" data-year="2024">
+          <div class="vol-photo"><img src="../../media/volunteering/vol-2024-typhoon-relief.jpg" alt="Typhoon Relief" loading="lazy"></div>
+          <div class="vol-body">
+            <h3>Typhoon Relief</h3>
+            <p class="vol-meta">Southern Leyte, Philippines · November 2024</p>
+            <p>Back with All Hands and Hearts, this time helping families and schools recover from successive typhoons in the southern Philippines. Building back stronger — disaster-resilient schools designed to weather the next storm.</p>
+            <span class="vol-org">All Hands and Hearts</span>
+          </div>
+        </article>
+
       </div>
     </section>
   </main>
