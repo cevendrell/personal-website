@@ -303,12 +303,12 @@
       background: var(--surface); border: 1px solid var(--line);
       border-radius: var(--radius); padding: 1.75rem 1.75rem 1.25rem;
     }
-    .year-bars { display: flex; align-items: flex-end; gap: 0.4rem; height: 200px; margin-top: 1rem; }
+    .year-bars { display: flex; align-items: stretch; gap: 0.4rem; height: 200px; margin-top: 1rem; }
     .year-bar-col {
       flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
-      min-width: 0; cursor: default;
+      min-width: 0; cursor: default; height: 100%;
     }
-    .year-bar-wrap { width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+    .year-bar-wrap { width: 100%; flex: 1; min-height: 0; display: flex; align-items: flex-end; justify-content: center; }
     .year-bar {
       width: 70%; max-width: 26px; min-height: 2px;
       background: linear-gradient(180deg, var(--c-travel), rgba(106,141,181,0.4));
@@ -445,10 +445,11 @@
     .lt-flight { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent); white-space: nowrap; }
     .lt-airline { color: var(--text-dim); }
     .lt-aircraft { color: var(--text-dim); font-size: 0.78rem; }
+    .lt-reg { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--mute); letter-spacing: 0.05em; white-space: nowrap; }
     .lt-dur { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text); white-space: nowrap; }
     .lt-empty { padding: 3rem 1rem; text-align: center; color: var(--mute); font-style: italic; }
     @media (max-width: 720px) {
-      .lt-airline, .lt-aircraft, .log-table th.col-hide { display: none; }
+      .lt-airline, .lt-aircraft, .lt-reg, .log-table th.col-hide { display: none; }
       .log-table td.col-hide { display: none; }
     }
 
@@ -785,8 +786,8 @@
     <div class="globe-stage">
       <div id="flight-globe"></div>
       <div class="globe-legend">
-        <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg,#6a8db5,#e8dcc4)"></span> Flight route</div>
-        <div class="lg-row"><span class="lg-dot"></span> Airport visited</div>
+        <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg,#ff5f56,#ffb84d,#34d399,#60a5fa,#a78bfa)"></span> Flight route</div>
+        <div class="lg-row"><span class="lg-dot" style="background:#ff3344;box-shadow:0 0 6px #ff3344"></span> Airport visited</div>
       </div>
       <div class="globe-hint">Drag · Scroll to zoom</div>
       <div class="globe-loading" id="globeLoading"><div class="spinner"></div><p>Initialising globe…</p></div>
@@ -900,6 +901,7 @@
               <th class="col-hide">Flight</th>
               <th class="col-hide">Airline</th>
               <th class="col-hide">Aircraft</th>
+              <th class="col-hide">Reg</th>
               <th>Duration</th>
             </tr>
           </thead>
@@ -1123,7 +1125,7 @@
 
   function renderRows(rows) {
     if (!rows.length) {
-      logBody.innerHTML = '<tr><td colspan="6" class="lt-empty">No flights match those filters.</td></tr>';
+      logBody.innerHTML = '<tr><td colspan="7" class="lt-empty">No flights match those filters.</td></tr>';
       return;
     }
     const frag = document.createDocumentFragment();
@@ -1142,6 +1144,7 @@
         <td class="lt-flight col-hide">${f.fn || '—'}</td>
         <td class="lt-airline col-hide">${f.al || '—'}</td>
         <td class="lt-aircraft col-hide">${f.ac || '—'}</td>
+        <td class="lt-reg col-hide">${f.reg || '—'}</td>
         <td class="lt-dur">${fmtDur(f.dur)}</td>
       `;
       frag.appendChild(tr);
@@ -1194,32 +1197,47 @@
       airportVisits[b] = (airportVisits[b] || 0) + 1;
     });
 
+    // Vibrant palette — one colour per unique route, deterministic by key
+    const PALETTE = [
+      '#ff5f56', '#ffb84d', '#ffe066', '#a3e635', '#34d399',
+      '#22d3ee', '#60a5fa', '#a78bfa', '#e879f9', '#fb7185',
+      '#f97316', '#fbbf24', '#84cc16', '#10b981', '#06b6d4',
+      '#3b82f6', '#8b5cf6', '#d946ef', '#ec4899', '#f43f5e'
+    ];
+    function pickColor(key) {
+      let h = 0;
+      for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+      return PALETTE[h % PALETTE.length];
+    }
+
     const maxRoute = Math.max(...Object.values(routeCounts));
-    const arcs = Object.entries(routeCounts).map(([key, count]) => {
+
+    // Two arc entries per route: a SOLID base that's always visible,
+    // and an ANIMATED bright overlay that "travels" along it.
+    const arcs = [];
+    Object.entries(routeCounts).forEach(([key, count]) => {
       const [a, b] = key.split('-');
       const [latA, lngA] = AIRPORTS[a];
       const [latB, lngB] = AIRPORTS[b];
-      const intensity = 0.35 + 0.65 * (count / maxRoute);
-      // gradient endpoint colors so arcs read as bright travel-blue → warm accent
-      return {
-        startLat: latA, startLng: lngA,
-        endLat: latB, endLng: lngB,
-        count,
-        color: [
-          `rgba(106,141,181,${intensity})`,
-          `rgba(232,220,196,${intensity})`
-        ],
-        stroke: 0.4 + 0.8 * (count / maxRoute)
-      };
+      const baseColor = pickColor(key);
+      const freq = count / maxRoute;
+      const stroke = 0.35 + 0.7 * freq;
+      const base = { startLat: latA, startLng: lngA, endLat: latB, endLng: lngB, count, stroke, mode: 'solid', color: baseColor };
+      const anim = { startLat: latA, startLng: lngA, endLat: latB, endLng: lngB, count, stroke: stroke * 1.4, mode: 'anim', color: [baseColor, '#ffffff'] };
+      arcs.push(base, anim);
     });
 
+    // Airport pins — lollipop style copied from travel-map, in red
+    const PIN_COLOR = '#ff3344';
+    const STEM_HEIGHT = 0.035;
+    const HEAD_RADIUS = 0.7;
     const maxApt = Math.max(...Object.values(airportVisits));
-    const points = Object.entries(airportVisits).map(([iata, count]) => {
+    const pins = Object.entries(airportVisits).map(([iata, count]) => {
       const [lat, lng, name] = AIRPORTS[iata];
       return {
-        lat, lng, iata, name, count,
-        radius: 0.18 + 0.55 * Math.sqrt(count / maxApt),
-        altitude: 0.005
+        lat, lon: lng, iata, name, count,
+        // Bigger heads for more-visited airports
+        headScale: 0.7 + 0.6 * Math.sqrt(count / maxApt)
       };
     });
 
@@ -1229,24 +1247,44 @@
       .backgroundColor('rgba(0,0,0,0)')
       .atmosphereColor('#a8c8ff')
       .atmosphereAltitude(0.18)
-      // arcs
+      // ── Arcs: solid base + animated overlay ──
       .arcsData(arcs)
       .arcColor('color')
       .arcStroke('stroke')
       .arcAltitudeAutoScale(0.45)
-      .arcDashLength(0.5)
-      .arcDashGap(1.2)
-      .arcDashInitialGap(() => Math.random())
-      .arcDashAnimateTime(4500)
+      .arcDashLength(d => d.mode === 'solid' ? 1 : 0.35)
+      .arcDashGap(d => d.mode === 'solid' ? 0 : 2.5)
+      .arcDashInitialGap(d => d.mode === 'solid' ? 0 : Math.random() * 2.5)
+      .arcDashAnimateTime(d => d.mode === 'solid' ? 0 : 5000)
       .arcsTransitionDuration(0)
       .arcLabel(d => `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:rgba(8,9,14,.92);border:1px solid rgba(106,141,181,.4);padding:.45rem .7rem;border-radius:8px;color:#ececea;letter-spacing:.05em"><b>${d.count}×</b> flight${d.count>1?'s':''}</div>`)
-      // airport pins
-      .pointsData(points)
-      .pointAltitude('altitude')
-      .pointRadius('radius')
-      .pointColor(() => '#c8784a')
-      .pointResolution(8)
-      .pointLabel(d => `<div style="font-family:'Inter',sans-serif;font-size:.78rem;background:rgba(8,9,14,.92);border:1px solid rgba(200,120,74,.4);padding:.5rem .75rem;border-radius:8px;color:#ececea"><b style="font-family:'JetBrains Mono',monospace;letter-spacing:.06em;color:#e8dcc4">${d.iata}</b> · ${d.name}<br><span style="color:#a8a9af;font-size:.72rem">${d.count} visit${d.count>1?'s':''}</span></div>`);
+      // ── Lollipop pins (red) ──
+      .customLayerData(pins)
+      .customThreeObject(d => {
+        const group = new THREE.Group();
+        group.__pinData = d;
+        const stemH = STEM_HEIGHT * 100;
+        const headR = HEAD_RADIUS * d.headScale;
+        const stem = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.07, 0.07, stemH, 8),
+          new THREE.MeshLambertMaterial({ color: PIN_COLOR })
+        );
+        stem.position.y = stemH / 2;
+        const head = new THREE.Mesh(
+          new THREE.SphereGeometry(headR, 24, 24),
+          new THREE.MeshLambertMaterial({ color: PIN_COLOR })
+        );
+        head.position.y = stemH;
+        group.add(stem, head);
+        return group;
+      })
+      .customThreeObjectUpdate((obj, d) => {
+        const coords = globe.getCoords(d.lat, d.lon, 0);
+        obj.position.set(coords.x, coords.y, coords.z);
+        const out = new THREE.Vector3(coords.x, coords.y, coords.z).normalize();
+        obj.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), out);
+      })
+      .onCustomLayerHover(p => { container.style.cursor = p ? 'pointer' : 'grab'; });
 
     // Lighting
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
