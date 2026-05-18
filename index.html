@@ -345,6 +345,77 @@
       content: ''; position: absolute; left: 0; top: 0.65em;
       width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
     }
+
+    /* ── Career tab toggle (Experience / Education) ── */
+    .career-tabs {
+      display: inline-flex; gap: 0;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(232,220,196,0.18);
+      border-radius: 999px;
+      padding: 4px;
+      margin: 1.5rem 0 1.75rem;
+    }
+    .career-tab {
+      background: transparent; border: none; cursor: pointer;
+      padding: 0.55rem 1.3rem; border-radius: 999px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.74rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(232,220,196,0.65);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+    .career-tab:hover:not(.active) { color: var(--accent); }
+    .career-tab.active { background: var(--c-photo); color: #fff; }
+
+    /* ── Timeline (used inside both Experience and Education panels) ── */
+    .career-tab-panel { display: none; }
+    .career-tab-panel.active { display: block; animation: fadeUp 0.35s cubic-bezier(0.16,1,0.3,1); }
+    .career-timeline {
+      list-style: none; padding: 0.4rem 0 0.5rem 1.4rem;
+      border-left: 1px solid rgba(232,220,196,0.18);
+      margin: 0 0 2rem;
+    }
+    .career-timeline > li {
+      position: relative; padding-bottom: 1.6rem;
+    }
+    .career-timeline > li:last-child { padding-bottom: 0; }
+    .career-timeline > li::before {
+      content: ''; position: absolute;
+      left: calc(-1.4rem - 5px); top: 0.45rem;
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--c-photo);
+      box-shadow: 0 0 0 3px var(--bg-alt), 0 0 0 4px rgba(200,120,74,0.35), 0 0 12px rgba(200,120,74,0.4);
+    }
+    .career-timeline > li.is-current::before {
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--bg-alt), 0 0 0 4px rgba(232,220,196,0.35), 0 0 12px rgba(232,220,196,0.5);
+    }
+    .career-timeline .ce-date {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--c-photo); margin-bottom: 0.2rem;
+    }
+    .career-timeline > li.is-current .ce-date { color: var(--accent); }
+    .career-timeline .ce-role {
+      font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em;
+      color: var(--text); margin-bottom: 0.1rem; line-height: 1.25;
+    }
+    .career-timeline .ce-org {
+      color: var(--dim); font-size: 0.88rem; margin-bottom: 0.5rem;
+    }
+    .career-timeline .ce-bullets {
+      list-style: none; padding: 0; margin: 0.4rem 0 0;
+    }
+    .career-timeline .ce-bullets li {
+      position: relative; padding-left: 1rem;
+      font-size: 0.88rem; color: var(--dim); line-height: 1.6;
+      margin-bottom: 0.15rem;
+    }
+    .career-timeline .ce-bullets li::before {
+      content: '·'; position: absolute; left: 0.15rem; top: -0.15em;
+      color: var(--c-photo); font-size: 1.4em; line-height: 1;
+    }
     .career-tag-row {
       display: flex; align-items: center; gap: 1.25rem;
       padding-top: 2rem; border-top: 1px solid var(--line); flex-wrap: wrap;
@@ -779,20 +850,61 @@
             Balancing the exploration and implementation of emerging XR and AI technologies within a well-established, water-focused global enterprise.
           </blockquote>
 
-          <p class="wow d2">I have over 6 years of diverse industry experience gained through a rotation-based Graduate Program at GRUNDFOS, which allowed me to explore topics like:</p>
+          <!-- Tab toggle — Experience / Education -->
+          <div class="career-tabs wow d2" role="tablist">
+            <button class="career-tab active" data-tab="exp" role="tab" aria-selected="true">Experience</button>
+            <button class="career-tab" data-tab="edu" role="tab" aria-selected="false">Education</button>
+          </div>
 
-          <ul class="career-list wow d3">
-            <li>Additive Manufacturing</li>
-            <li>Product Management</li>
-            <li>Sales Development</li>
-            <li>XR and AI for Industry</li>
-          </ul>
+          <!-- ─── Experience panel ─── -->
+          <div class="career-tab-panel active wow d3" id="career-panel-exp" role="tabpanel">
+            <ul class="career-timeline">
+              <li class="is-current">
+                <span class="ce-date">Aug 2019 – Present</span>
+                <p class="ce-role">Senior AI Project Manager</p>
+                <p class="ce-org">GRUNDFOS · Aarhus, Denmark</p>
+                <ul class="ce-bullets">
+                  <li>Driving emerging XR &amp; AI initiatives across the global organisation</li>
+                  <li>Bridging exploratory tech with industrial-scale deployment</li>
+                </ul>
+              </li>
+              <li>
+                <span class="ce-date">2019 – 2024 · Graduate Programme</span>
+                <p class="ce-role">Rotational Programme</p>
+                <p class="ce-org">GRUNDFOS · Multiple departments</p>
+                <ul class="ce-bullets">
+                  <li>Additive Manufacturing</li>
+                  <li>Product Management</li>
+                  <li>Sales Development</li>
+                  <li>XR &amp; AI for Industry</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="career-tag-row wow d4">
+              <img src="media/grundfoslogo.png" alt="GRUNDFOS" class="career-company-logo">
+              <span class="career-tag-date">August 2019 – Present</span>
+            </div>
+          </div>
 
-          <p class="wow d3">I eventually chose the rapidly growing world of XR and AI for industry applications to continue my career.</p>
-
-          <div class="career-tag-row wow d4">
-            <img src="media/grundfoslogo.png" alt="GRUNDFOS" class="career-company-logo">
-            <span class="career-tag-date">August 2019 – Present</span>
+          <!-- ─── Education panel ─── -->
+          <div class="career-tab-panel" id="career-panel-edu" role="tabpanel">
+            <ul class="career-timeline">
+              <li>
+                <span class="ce-date">2017 – 2019</span>
+                <p class="ce-role">MSc Mechanical Engineering</p>
+                <p class="ce-org">Aarhus University · Denmark</p>
+              </li>
+              <li>
+                <span class="ce-date">2013 – 2017</span>
+                <p class="ce-role">BSc Industrial Technology Engineering</p>
+                <p class="ce-org">Polytechnic University of Catalonia · Spain</p>
+              </li>
+              <li>
+                <span class="ce-date">Exchanges</span>
+                <p class="ce-role">Semesters abroad</p>
+                <p class="ce-org">Portugal · United Kingdom · Finland</p>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -1089,6 +1201,24 @@
     }, { passive: false });
 
     window.addEventListener('resize', render);
+  })();
+
+  /* ── Career tab toggle (Experience / Education) ── */
+  (function initCareerTabs() {
+    const tabs = document.querySelectorAll('.career-tab');
+    const panels = document.querySelectorAll('.career-tab-panel');
+    if (!tabs.length || !panels.length) return;
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+        tabs.forEach(t => {
+          const active = t === tab;
+          t.classList.toggle('active', active);
+          t.setAttribute('aria-selected', active);
+        });
+        panels.forEach(p => p.classList.toggle('active', p.id === 'career-panel-' + target));
+      });
+    });
   })();
 </script>
 </body>

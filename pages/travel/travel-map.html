@@ -1113,7 +1113,7 @@
         <span class="lbl">Countries</span>
       </div>
       <div class="hero-stat continents">
-        <span class="num">4</span>
+        <span class="num" id="heroContinents">0</span>
         <span class="lbl">Continents</span>
       </div>
     </div>
@@ -1847,9 +1847,8 @@ function runGlobeInit() {
   // ── Initialise the globe ──────────────────────────────────
   const globe = Globe()(container)
     // Realistic NASA Blue Marble texture (lighter, with oceans/continents/clouds)
-    // Start with three-globe's default 4096×2048 Blue Marble (rich sea-tone variations
-    // that the user likes). When the camera zooms in, the LOD code below swaps in the
-    // 8192×4096 HD version — Google-Earth-style level-of-detail.
+    // Single Blue Marble texture (4096×2048, rich sea-tone variations).
+    // No LOD swap — the dual-texture transition was visually jarring.
     .globeImageUrl('../../media/textures/earth-blue-marble-lo.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
     .backgroundColor('rgba(0,0,0,0)')
@@ -1912,86 +1911,23 @@ function runGlobeInit() {
   fillLight.position.set(-80, -40, -60);
   globe.scene().add(fillLight);
 
-  // ─── Level-of-detail (LOD) earth texture loader ──────────────
-  // Google-Earth-style approach: ship a small/fast texture for the wide view, and a
-  // sharper one that swaps in automatically once the camera is close enough to need it.
-  //
-  // ‣ LO_TEX is the texture currently bound by .globeImageUrl() above (1.4 MB, 4K).
-  // ‣ HI_TEX is preloaded in the background and only attached when zoom drops below
-  //   ALTITUDE_SWAP. We don't undo the swap on zoom-out — there's no benefit, and the
-  //   visible cost of the higher-res sampling is nil once it's on the GPU.
-  // ‣ Anisotropic filtering (16× on most GPUs) is applied to BOTH textures so they stay
-  //   crisp at oblique viewing angles.
-  const HI_TEX_URL     = '../../media/textures/earth-blue-marble-hd.jpg';
-  const ALTITUDE_SWAP  = 1.0;       // zoom-in trigger — initial view is 1.4, so user
-                                    // must actively zoom in past this to load the HD map
-  let   hiTexUpgraded  = false;     // true after HI_TEX is bound to the material
-  let   hiTexPromise   = null;      // single shared loader Promise
-
-  function setMaxAniso(tex, renderer) {
-    if (!tex || !renderer) return;
-    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    tex.needsUpdate = true;
-  }
-
-  // Boost anisotropy on whatever textures the globe material already has.
+  // ─── Anisotropic filtering on the earth texture ─────────────
+  // Bumping to 16× (GPU max) keeps the texture crisp at oblique viewing angles.
   function bumpAnisotropyOnCurrentTextures() {
     const mat      = globe.globeMaterial && globe.globeMaterial();
     const renderer = globe.renderer();
     if (!mat || !renderer) return false;
-    ['map', 'bumpMap', 'normalMap', 'specularMap'].forEach(k => setMaxAniso(mat[k], renderer));
+    const maxA = renderer.capabilities.getMaxAnisotropy();
+    ['map', 'bumpMap', 'normalMap', 'specularMap'].forEach(k => {
+      if (mat[k]) { mat[k].anisotropy = maxA; mat[k].needsUpdate = true; }
+    });
     return !!mat.map;
   }
-  // Poll until the lo-res texture has been bound, then apply max anisotropy.
   let anisoTries = 0;
   (function applyWhenReady() {
     if (bumpAnisotropyOnCurrentTextures() || ++anisoTries > 40) return;
     setTimeout(applyWhenReady, 100);
   })();
-
-  // Preload + cache the HD texture (kicked off immediately so it's ready by the time
-  // the user zooms in — doesn't block initial render).
-  function preloadHiTex() {
-    if (hiTexPromise) return hiTexPromise;
-    hiTexPromise = new Promise(resolve => {
-      const loader = new THREE.TextureLoader();
-      loader.load(
-        HI_TEX_URL,
-        tex => {
-          // Match the colour-space + wrapping of whatever the lo-res texture used
-          const cur = globe.globeMaterial && globe.globeMaterial().map;
-          if (cur) {
-            tex.colorSpace = cur.colorSpace;
-            tex.wrapS = cur.wrapS;
-            tex.wrapT = cur.wrapT;
-          }
-          setMaxAniso(tex, globe.renderer());
-          resolve(tex);
-        },
-        undefined,
-        err => { console.warn('HD globe texture failed to load:', err); resolve(null); }
-      );
-    });
-    return hiTexPromise;
-  }
-
-  // Swap the lo-res map for the hi-res one. Idempotent — runs at most once.
-  async function ensureHiTex() {
-    if (hiTexUpgraded) return;
-    const tex = await preloadHiTex();
-    if (!tex || hiTexUpgraded) return;
-    const mat = globe.globeMaterial && globe.globeMaterial();
-    if (!mat) return;
-    mat.map = tex;
-    mat.needsUpdate = true;
-    hiTexUpgraded = true;
-  }
-
-  // Start the preload right away.
-  preloadHiTex();
-
-  // (The onZoom handler is wired further down — see the connector-tracker code.
-  // It also calls ensureHiTex() so we don't overwrite each other.)
 
   // (Pin click handler is wired in the .customLayerData chain above.)
 
@@ -2247,11 +2183,7 @@ function runGlobeInit() {
   }
 
   // Update line during interactive globe motion (extra responsive)
-  // Single onZoom handler — handles BOTH connector tracking AND LOD texture swap.
-  globe.onZoom(pov => {
-    if (activeRec) updateConnector();
-    if (pov && pov.altitude !== undefined && pov.altitude < ALTITUDE_SWAP) ensureHiTex();
-  });
+  globe.onZoom(() => activeRec && updateConnector());
 
   // ──────────────────────────────────────────────────────────
   // Filters (year slider, status pills, search, reset)
@@ -2289,11 +2221,39 @@ function runGlobeInit() {
     }
     requestAnimationFrame(step);
   }
+  // Country → continent map for the live "Continents" stat. Covers every country
+  // currently in the travel data; if a new one appears, it's silently bucketed as
+  // "Other" and still counted as 1 unique entry — better than dropping it.
+  const COUNTRY_CONTINENT = {
+    // Africa
+    'Morocco':'Africa','Tanzania':'Africa','Tunisia':'Africa','Seychelles':'Africa',
+    // Asia
+    'India':'Asia','Indonesia':'Asia','Jordan':'Asia','Malaysia':'Asia','Nepal':'Asia',
+    'Philippines':'Asia','Qatar':'Asia','Singapore':'Asia','Thailand':'Asia',
+    'United Arab Emirates':'Asia','Vietnam':'Asia',
+    // Europe (Russia listed as Europe — that's where Carlos's pin lives)
+    'Albania':'Europe','Andorra':'Europe','Austria':'Europe','Belgium':'Europe',
+    'Bosnia and Herzegovina':'Europe','Bulgaria':'Europe','Croatia':'Europe','Cyprus':'Europe',
+    'Czech Republic':'Europe','Denmark':'Europe','Estonia':'Europe','Finland':'Europe',
+    'France':'Europe','Germany':'Europe','Greece':'Europe','Hungary':'Europe',
+    'Iceland':'Europe','Ireland':'Europe','Italy':'Europe','Latvia':'Europe',
+    'Liechtenstein':'Europe','Lithuania':'Europe','Luxembourg':'Europe','Malta':'Europe',
+    'Montenegro':'Europe','Netherlands':'Europe','Norway':'Europe','Poland':'Europe',
+    'Portugal':'Europe','Romania':'Europe','Russia':'Europe','Slovakia':'Europe',
+    'Slovenia':'Europe','Spain':'Europe','Sweden':'Europe','Switzerland':'Europe',
+    'UK':'Europe','Vatican City':'Europe',
+    // North America (incl. Caribbean)
+    'USA':'North America','Barbados':'North America','Grenada':'North America',
+    'Saint Lucia':'North America','Saint Vincent and the Grenadines':'North America',
+  };
+
   function updateStats(visible) {
-    const countries = new Set(visible.map(r => r.c).filter(Boolean));
-    // Hero stats (big text at top of page) — only Places + Countries are dynamic
-    animateNum('heroPlaces',    visible.length);
-    animateNum('heroCountries', countries.size);
+    const countries  = new Set(visible.map(r => r.c).filter(Boolean));
+    const continents = new Set();
+    countries.forEach(c => continents.add(COUNTRY_CONTINENT[c] || c));
+    animateNum('heroPlaces',     visible.length);
+    animateNum('heroCountries',  countries.size);
+    animateNum('heroContinents', continents.size);
   }
 
   // Year sliders
