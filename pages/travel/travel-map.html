@@ -1847,7 +1847,9 @@ function runGlobeInit() {
   // ── Initialise the globe ──────────────────────────────────
   const globe = Globe()(container)
     // Realistic NASA Blue Marble texture (lighter, with oceans/continents/clouds)
-    .globeImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg')
+    // 5400×2700 NASA Blue Marble (Solar System Scope, CC BY 4.0) — ~3× the pixel density
+    // of the three-globe default, hosted locally for cache reliability.
+    .globeImageUrl('../../media/textures/earth-blue-marble-hd.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
     .backgroundColor('rgba(0,0,0,0)')
     .atmosphereColor('#a8c8ff')
@@ -1908,6 +1910,35 @@ function runGlobeInit() {
   const fillLight = new THREE.DirectionalLight(0x88aaff, 0.35);
   fillLight.position.set(-80, -40, -60);
   globe.scene().add(fillLight);
+
+  // ── Anisotropic filtering on the earth texture ───────────────
+  // Without this, three.js uses trilinear filtering which gets very blurry / pixelated
+  // when the texture is viewed at oblique angles (i.e. when zoomed in). Bumping this to
+  // the GPU's max (typically 16 on modern hardware) is the single biggest quality win for
+  // the globe and costs almost nothing in performance.
+  function upgradeGlobeTextures() {
+    try {
+      const mat = globe.globeMaterial && globe.globeMaterial();
+      const renderer = globe.renderer();
+      if (!mat || !renderer) return false;
+      const maxAniso = renderer.capabilities.getMaxAnisotropy();
+      let bumped = false;
+      ['map', 'bumpMap', 'normalMap', 'specularMap'].forEach(k => {
+        if (mat[k]) {
+          mat[k].anisotropy = maxAniso;
+          mat[k].needsUpdate = true;
+          bumped = true;
+        }
+      });
+      return bumped;
+    } catch (e) { return false; }
+  }
+  // Textures load asynchronously — poll briefly until the map is bound, then apply.
+  let anisoTries = 0;
+  (function applyWhenReady() {
+    if (upgradeGlobeTextures() || ++anisoTries > 40) return;   // give up after ~4s
+    setTimeout(applyWhenReady, 100);
+  })();
 
   // (Pin click handler is wired in the .customLayerData chain above.)
 
