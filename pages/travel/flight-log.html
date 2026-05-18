@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A log of flights taken by Carlos Ebrahim Vendrell.">
+  <meta name="description" content="176 flights across 40 countries — a log of every flight taken by Carlos Ebrahim Vendrell, with live ADS-B radar feed from Billund.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cevendrell.github.io/personal-website/pages/travel/flight-log.html">
   <meta property="og:title" content="Flight Log — Carlos Ebrahim Vendrell">
-  <meta property="og:description" content="A log of flights taken by Carlos Ebrahim Vendrell.">
+  <meta property="og:description" content="176 flights across 40 countries — a log of every flight taken by Carlos Ebrahim Vendrell, with live ADS-B radar feed from Billund.">
   <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flight Log — Carlos Ebrahim Vendrell">
-  <meta name="twitter:description" content="A log of flights taken by Carlos Ebrahim Vendrell.">
+  <meta name="twitter:description" content="176 flights across 40 countries — a log of every flight taken by Carlos Ebrahim Vendrell.">
   <title>Flight Log - Carlos Ebrahim Vendrell</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +44,7 @@
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; background: var(--bg); }
-    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.75; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.75; overflow-x: hidden; }
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
 
@@ -87,36 +87,61 @@
     }
 
     /* ── LAYOUT ── */
-    .container { max-width: 960px; margin: 0 auto; padding: 8rem 2rem 5rem; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 8rem 2rem 5rem; }
     .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; }
 
     /* ── PAGE HEADER ── */
-    .page-eyebrow { color: var(--c-photo); margin-bottom: 0.75rem; }
-    .page-header { margin-bottom: 3rem; }
+    .page-eyebrow { color: var(--c-travel); margin-bottom: 0.75rem; }
+    .page-header { margin-bottom: 3rem; max-width: 760px; }
     .page-header h1 { font-size: clamp(2.4rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.75rem; }
-    .page-header p { font-size: 1rem; color: var(--text-dim); max-width: 600px; line-height: 1.8; }
+    .page-header p { font-size: 1rem; color: var(--text-dim); line-height: 1.8; }
 
-    /* ── HERO IMAGE ── */
-    .page-hero-img {
-      width: 100%;
-      aspect-ratio: 16/5;
-      object-fit: cover;
-      border-radius: var(--radius-lg);
-      margin-bottom: 3rem;
-      background: var(--bg-elevated);
-    }
-
-    /* ── CALLOUT ── */
-    .callout {
-      background: var(--surface);
+    /* ── HERO STATS — big-number grid at top ── */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem;
+      margin-bottom: 4rem;
+      padding: 2rem 2.25rem;
+      background: linear-gradient(135deg, rgba(12,16,40,0.6), rgba(8,9,14,0.4));
       border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 2rem 2.5rem;
-      margin-bottom: 2.5rem;
-      border-left: 3px solid var(--c-travel);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
     }
-    .callout p { color: var(--text-dim); font-size: 1rem; line-height: 1.8; }
-    .callout strong { color: var(--text); font-weight: 600; }
+    .hero-stats::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 0% 0%, rgba(106,141,181,0.08), transparent 50%),
+                  radial-gradient(circle at 100% 100%, rgba(200,120,74,0.06), transparent 50%);
+      pointer-events: none;
+    }
+    .hs-cell { position: relative; z-index: 1; padding: 0.25rem 0; }
+    .hs-num {
+      font-size: clamp(1.6rem, 2.6vw, 2.6rem); font-weight: 800; letter-spacing: -0.04em;
+      line-height: 1; color: var(--text);
+      background: linear-gradient(135deg, var(--accent), var(--c-travel));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hs-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; color: var(--c-travel); text-transform: uppercase; margin-top: 0.3rem; }
+    .hs-lbl { font-size: 0.78rem; color: var(--mute); margin-top: 0.3rem; line-height: 1.3; }
+    @media (max-width: 900px) { .hero-stats { grid-template-columns: repeat(3, 1fr); gap: 1.5rem 1rem; } }
+    @media (max-width: 480px) { .hero-stats { grid-template-columns: repeat(2, 1fr); padding: 1.5rem; } }
+
+    /* ── SECTION SHELL ── */
+    .section {
+      margin-bottom: 4rem;
+    }
+    .section-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c-photo); margin-bottom: 0.6rem;
+    }
+    .section h2 {
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 1.75rem;
+    }
 
     /* ══ ADS-B RADAR SECTION ══ */
     .adsb-section {
@@ -127,8 +152,6 @@
       background: linear-gradient(135deg, rgba(12,16,40,0.95) 0%, rgba(5,7,18,0.98) 100%);
       box-shadow: 0 24px 80px rgba(0,0,0,0.5);
     }
-
-    /* Header bar */
     .adsb-header {
       display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
       padding: 1.1rem 1.75rem;
@@ -151,18 +174,9 @@
       font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
       color: #22c55e;
     }
-    .adsb-id {
-      display: flex; flex-direction: column; gap: 0.1rem; margin-left: 0.25rem;
-    }
-    .adsb-id h2 {
-      font-size: 1.15rem; font-weight: 800; letter-spacing: 0.08em;
-      color: var(--text); line-height: 1;
-    }
-    .adsb-id p {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem; letter-spacing: 0.12em; color: var(--mute);
-      text-transform: uppercase; line-height: 1;
-    }
+    .adsb-id { display: flex; flex-direction: column; gap: 0.1rem; margin-left: 0.25rem; }
+    .adsb-id h2 { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.08em; color: var(--text); line-height: 1; }
+    .adsb-id p { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; color: var(--mute); text-transform: uppercase; line-height: 1; }
     .adsb-fr24-link {
       margin-left: auto;
       display: inline-flex; align-items: center; gap: 0.4rem;
@@ -173,36 +187,17 @@
     }
     .adsb-fr24-link:hover { background: var(--c-travel); color: #fff; }
 
-    /* Body: radar + stats */
-    .adsb-body {
-      display: grid; grid-template-columns: 320px 1fr;
-      gap: 0; align-items: start;
-    }
-    @media (max-width: 760px) {
-      .adsb-body { grid-template-columns: 1fr; }
-    }
-
-    /* ── Radar display ── */
-    .radar-panel {
-      padding: 2rem 1.5rem 2rem 2rem;
-      border-right: 1px solid rgba(255,255,255,0.06);
-      display: flex; flex-direction: column; align-items: center; gap: 1rem;
-    }
-    @media (max-width: 760px) {
-      .radar-panel { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1.5rem; }
-    }
+    .adsb-body { display: grid; grid-template-columns: 320px 1fr; gap: 0; align-items: start; }
+    @media (max-width: 760px) { .adsb-body { grid-template-columns: 1fr; } }
+    .radar-panel { padding: 2rem 1.5rem 2rem 2rem; border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    @media (max-width: 760px) { .radar-panel { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1.5rem; } }
     .radar-display {
       position: relative; width: 260px; height: 260px; border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%,
-        #071209 0%, #050e08 45%, #030a06 70%, #020706 100%);
+      background: radial-gradient(circle at 50% 50%, #071209 0%, #050e08 45%, #030a06 70%, #020706 100%);
       border: 1px solid rgba(0,220,80,0.18);
-      box-shadow:
-        0 0 0 1px rgba(0,220,80,0.06),
-        0 0 40px rgba(0,220,80,0.06) inset,
-        0 8px 40px rgba(0,0,0,0.6);
+      box-shadow: 0 0 0 1px rgba(0,220,80,0.06), 0 0 40px rgba(0,220,80,0.06) inset, 0 8px 40px rgba(0,0,0,0.6);
       overflow: hidden; flex-shrink: 0;
     }
-    /* Concentric range rings */
     .radar-rings {
       position: absolute; inset: 0; border-radius: 50%;
       background:
@@ -210,178 +205,252 @@
         radial-gradient(circle, transparent 49%, rgba(0,200,70,0.08) 49.5%, transparent 50%),
         radial-gradient(circle, transparent 74%, rgba(0,200,70,0.08) 74.5%, transparent 75%);
     }
-    /* Cross-hairs */
     .radar-cross {
       position: absolute; inset: 0;
       background:
         linear-gradient(to right, transparent calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
         linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% + 0.5px), transparent calc(50% + 0.5px));
     }
-    /* Rotating sweep beam */
     .radar-sweep {
       position: absolute; inset: 0; border-radius: 50%;
-      background: conic-gradient(
-        from 0deg at 50% 50%,
-        transparent       0deg,
-        transparent     300deg,
-        rgba(0,220,80,0.04) 330deg,
-        rgba(0,220,80,0.15) 350deg,
-        rgba(0,220,80,0.35) 358deg,
-        transparent       360deg
-      );
+      background: conic-gradient(from 0deg at 50% 50%,
+        transparent 0deg, transparent 300deg,
+        rgba(0,220,80,0.04) 330deg, rgba(0,220,80,0.15) 350deg,
+        rgba(0,220,80,0.35) 358deg, transparent 360deg);
       animation: sweepRotate 4s linear infinite;
-      transform-origin: center;
     }
-    @keyframes sweepRotate {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-    /* Aircraft blips */
+    @keyframes sweepRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .radar-blip {
-      position: absolute;
-      left: var(--bx); top: var(--by);
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: #4ade80;
+      position: absolute; left: var(--bx); top: var(--by);
+      width: 5px; height: 5px; border-radius: 50%; background: #4ade80;
       box-shadow: 0 0 6px 2px rgba(74,222,128,0.7);
       transform: translate(-50%, -50%);
       animation: blipPulse var(--bd, 3s) ease-in-out var(--delay, 0s) infinite;
     }
     @keyframes blipPulse {
       0%,100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
-      50%     { opacity: 0.4; transform: translate(-50%,-50%) scale(0.6); }
+      50% { opacity: 0.4; transform: translate(-50%,-50%) scale(0.6); }
     }
-    /* Centre pip */
     .radar-center {
       position: absolute; top: 50%; left: 50%;
       width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(0,220,80,0.9);
-      box-shadow: 0 0 8px rgba(0,220,80,0.8);
+      background: rgba(0,220,80,0.9); box-shadow: 0 0 8px rgba(0,220,80,0.8);
       transform: translate(-50%,-50%);
     }
-    .radar-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: rgba(0,200,70,0.5); text-align: center; line-height: 1.6;
-    }
+    .radar-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(0,200,70,0.5); text-align: center; line-height: 1.6; }
 
-    /* ── Stat cards grid ── */
-    .adsb-stats {
-      padding: 1.75rem;
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem; align-content: start;
-    }
+    .adsb-stats { padding: 1.75rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; align-content: start; }
     @media (max-width: 560px) { .adsb-stats { grid-template-columns: repeat(2, 1fr); } }
     .stat-card {
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 12px;
-      padding: 1.1rem 1.1rem 0.9rem;
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 1.1rem 1.1rem 0.9rem;
       display: flex; flex-direction: column; gap: 0.2rem;
       position: relative; overflow: hidden;
       transition: background 0.25s, border-color 0.25s;
     }
-    .stat-card:hover {
-      background: rgba(255,255,255,0.045);
-      border-color: rgba(106,141,181,0.25);
-    }
+    .stat-card:hover { background: rgba(255,255,255,0.045); border-color: rgba(106,141,181,0.25); }
     .stat-card::before {
-      content: var(--icon,'');
-      position: absolute; top: 0.75rem; right: 0.9rem;
+      content: var(--icon,''); position: absolute; top: 0.75rem; right: 0.9rem;
       font-size: 1.1rem; opacity: 0.18;
     }
-    .stat-value {
-      font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800;
-      letter-spacing: -0.04em; color: var(--text); line-height: 1;
-    }
-    .stat-unit {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem; font-weight: 400; color: var(--c-travel);
-      letter-spacing: 0.08em; text-transform: uppercase;
-    }
-    .stat-label {
-      font-size: 0.72rem; color: var(--mute); margin-top: 0.35rem; line-height: 1.3;
-    }
-    /* Accent top border per card theme */
+    .stat-value { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; letter-spacing: -0.04em; color: var(--text); line-height: 1; }
+    .stat-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 400; color: var(--c-travel); letter-spacing: 0.08em; text-transform: uppercase; }
+    .stat-label { font-size: 0.72rem; color: var(--mute); margin-top: 0.35rem; line-height: 1.3; }
     .stat-card.accent-green  { border-top: 2px solid rgba(34,197,94,0.5); }
     .stat-card.accent-blue   { border-top: 2px solid rgba(106,141,181,0.5); }
     .stat-card.accent-amber  { border-top: 2px solid rgba(200,120,74,0.5); }
-    /* Wide card spanning 2 columns */
-    .stat-card.wide { grid-column: span 2; }
-    @media (max-width: 560px) { .stat-card.wide { grid-column: span 1; } }
 
-    /* ── FLIGHT LOG SECTION ── */
-    .flight-log-section { margin-top: 5rem; }
-    .flight-log-header {
-      display: flex; align-items: baseline; justify-content: space-between; gap: 2rem;
-      margin-bottom: 2.5rem; flex-wrap: wrap;
+    /* ── BREAKDOWN TRIPLE — top airlines, aircraft, airports ── */
+    .breakdown-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
     }
-    .flight-log-header h2 { font-size: 2rem; font-weight: 700; color: var(--text); }
-    .flight-stats-inline {
-      display: flex; gap: 2.5rem; flex-wrap: wrap; align-items: center;
+    @media (max-width: 900px) { .breakdown-grid { grid-template-columns: 1fr; } }
+    .bd-card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1.5rem 1.6rem; min-height: 100%;
     }
-    .flight-stat-item {
-      display: flex; flex-direction: column; gap: 0.25rem;
+    .bd-card h3 {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--c-travel); margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: 0.5rem;
     }
-    .flight-stat-value {
-      font-size: 1.5rem; font-weight: 800; color: var(--c-travel); line-height: 1;
+    .bd-card h3 .bd-icon { font-size: 1rem; opacity: 0.8; }
+    .bd-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .bd-row {
+      display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;
+      align-items: center; font-size: 0.88rem;
     }
-    .flight-stat-label {
-      font-size: 0.72rem; color: var(--mute); text-transform: uppercase; letter-spacing: 0.06em;
+    .bd-name { color: var(--text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bd-count {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      color: var(--mute); font-weight: 500;
     }
+    .bd-bar {
+      grid-column: 1 / -1; height: 3px; border-radius: 2px;
+      background: rgba(255,255,255,0.05); overflow: hidden;
+    }
+    .bd-bar > span {
+      display: block; height: 100%;
+      background: linear-gradient(90deg, var(--c-travel), var(--accent));
+      border-radius: 2px;
+      transform-origin: left;
+      transform: scaleX(0); transition: transform 1.4s cubic-bezier(0.2,0.8,0.2,1);
+    }
+    .bd-bar.visible > span { transform: scaleX(var(--w, 0)); }
 
-    /* Filter & sort controls */
-    .flight-controls {
-      display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center;
+    /* ── YEARLY TIMELINE ── */
+    .year-chart {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1.75rem 1.75rem 1.25rem;
     }
-    .flight-filter-btn {
-      padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.15);
-      background: transparent; color: var(--text-dim); border-radius: 999px;
-      cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
+    .year-bars { display: flex; align-items: flex-end; gap: 0.4rem; height: 200px; margin-top: 1rem; }
+    .year-bar-col {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      min-width: 0; cursor: default;
     }
-    .flight-filter-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); border-color: rgba(255,255,255,0.25); }
-    .flight-filter-btn.active { background: var(--c-travel); color: #fff; border-color: var(--c-travel); }
+    .year-bar-wrap { width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+    .year-bar {
+      width: 70%; max-width: 26px; min-height: 2px;
+      background: linear-gradient(180deg, var(--c-travel), rgba(106,141,181,0.4));
+      border-radius: 3px 3px 0 0;
+      transform-origin: bottom; transform: scaleY(0);
+      transition: transform 1s cubic-bezier(0.2,0.8,0.2,1), background 0.2s;
+    }
+    .year-bars.visible .year-bar { transform: scaleY(1); }
+    .year-bar-col:hover .year-bar { background: linear-gradient(180deg, var(--accent), rgba(232,220,196,0.5)); }
+    .year-bar-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.05em; color: var(--mute);
+      writing-mode: vertical-rl; transform: rotate(180deg);
+    }
+    .year-bar-count {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+      color: var(--text); font-weight: 600; opacity: 0; transition: opacity 0.2s;
+    }
+    .year-bar-col:hover .year-bar-count { opacity: 1; }
 
-    /* Flight table */
-    .flight-table-wrapper {
-      overflow-x: auto; border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.02);
+    /* ── NOTABLE FLIGHTS — boarding-pass style cards ── */
+    .notable-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
     }
-    .flight-table {
-      width: 100%; border-collapse: collapse; font-size: 0.9rem;
+    @media (max-width: 900px) { .notable-grid { grid-template-columns: 1fr; } }
+    .boarding-pass {
+      position: relative;
+      background: linear-gradient(135deg, rgba(12,16,40,0.85), rgba(20,14,8,0.85));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
     }
-    .flight-table thead {
-      background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.1);
+    .boarding-pass:hover {
+      transform: translateY(-3px);
+      border-color: var(--c-travel);
     }
-    .flight-table th {
-      padding: 1rem; text-align: left; color: var(--text-dim); font-weight: 600;
-      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+    .boarding-pass::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--c-travel), var(--accent), var(--c-photo));
     }
-    .flight-table td {
-      padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.04);
-      color: var(--text);
+    .bp-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.9rem;
     }
-    .flight-table tbody tr {
-      transition: background 0.15s;
+    .bp-route { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
+    .bp-airport { display: flex; flex-direction: column; }
+    .bp-iata { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text); line-height: 1; }
+    .bp-city { font-size: 0.72rem; color: var(--mute); margin-top: 0.2rem; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bp-plane {
+      flex: 1; display: flex; align-items: center; gap: 0.3rem;
+      color: var(--c-travel); position: relative;
     }
-    .flight-table tbody tr:hover {
-      background: rgba(255,255,255,0.03);
+    .bp-plane::before, .bp-plane::after {
+      content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(106,141,181,0.4));
     }
-    .flight-date { color: var(--accent); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-    .flight-route {
-      display: flex; gap: 0.5rem; align-items: center; color: var(--text);
-    }
-    .flight-route-arrow { color: var(--c-travel); font-weight: 700; }
-    .flight-code { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--accent); }
-    .flight-airline { color: var(--text-dim); }
-    .flight-aircraft { font-size: 0.85rem; color: var(--mute); }
-    .flight-duration { font-family: 'JetBrains Mono', monospace; color: var(--c-travel); font-weight: 600; }
-    .flight-seat { font-family: 'JetBrains Mono', monospace; color: var(--mute); font-size: 0.85rem; }
+    .bp-plane::after { background: linear-gradient(90deg, rgba(106,141,181,0.4), transparent); }
+    .bp-meta { display: flex; gap: 1.2rem; padding-top: 0.9rem; border-top: 1px dashed var(--line); font-size: 0.75rem; color: var(--text-dim); flex-wrap: wrap; }
+    .bp-meta strong { color: var(--text); font-weight: 600; }
 
-    /* Empty state */
-    .flight-empty { text-align: center; padding: 3rem 2rem; color: var(--mute); }
-    .flight-empty p { margin-bottom: 1rem; }
+    /* ── FLIGHT LOG TABLE ── */
+    .log-toolbar {
+      display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+      align-items: center;
+    }
+    .log-search {
+      flex: 1; min-width: 220px; position: relative;
+    }
+    .log-search input {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line); border-radius: 999px;
+      padding: 0.7rem 1rem 0.7rem 2.5rem;
+      font-family: inherit; font-size: 0.9rem; color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .log-search input:focus { outline: none; border-color: var(--c-travel); background: rgba(255,255,255,0.06); }
+    .log-search svg {
+      position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%);
+      color: var(--mute); pointer-events: none;
+    }
+    .log-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.1em; color: var(--mute);
+      text-transform: uppercase;
+    }
+    .log-count strong { color: var(--accent); }
+    .log-filter-chips { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .chip {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+      border-radius: 999px; padding: 0.45rem 0.9rem;
+      font-size: 0.74rem; font-weight: 500; color: var(--text-dim);
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .chip:hover { color: var(--text); border-color: var(--line-strong); }
+    .chip.active { background: var(--c-travel); border-color: var(--c-travel); color: #fff; }
+
+    .log-table-wrap {
+      border: 1px solid var(--line); border-radius: var(--radius);
+      background: var(--surface); overflow: hidden;
+    }
+    .log-scroll { max-height: 720px; overflow-y: auto; overflow-x: auto; }
+    .log-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+    .log-scroll::-webkit-scrollbar-track { background: transparent; }
+    .log-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+    .log-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
+    .log-table {
+      width: 100%; border-collapse: collapse; font-size: 0.83rem;
+      min-width: 800px;
+    }
+    .log-table thead {
+      position: sticky; top: 0; z-index: 2;
+      background: rgba(8,9,14,0.95); backdrop-filter: blur(10px);
+    }
+    .log-table th {
+      text-align: left; padding: 0.85rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--c-travel); font-weight: 600;
+      border-bottom: 1px solid var(--line);
+    }
+    .log-table td {
+      padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle; color: var(--text-dim);
+    }
+    .log-table tr:hover td { background: rgba(255,255,255,0.025); }
+    .log-table tr:last-child td { border-bottom: none; }
+    .lt-date { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--mute); white-space: nowrap; }
+    .lt-route { display: flex; align-items: center; gap: 0.4rem; color: var(--text); font-weight: 600; }
+    .lt-route .lt-iata { font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 0.05em; color: var(--text); }
+    .lt-route .lt-arrow { color: var(--c-travel); font-size: 0.9em; }
+    .lt-route .lt-cities { font-size: 0.72rem; color: var(--mute); font-weight: 400; margin-left: 0.25rem; }
+    .lt-flight { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent); white-space: nowrap; }
+    .lt-airline { color: var(--text-dim); }
+    .lt-aircraft { color: var(--text-dim); font-size: 0.78rem; }
+    .lt-dur { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text); white-space: nowrap; }
+    .lt-empty { padding: 3rem 1rem; text-align: center; color: var(--mute); font-style: italic; }
+    @media (max-width: 720px) {
+      .lt-airline, .lt-aircraft, .log-table th.col-hide { display: none; }
+      .log-table td.col-hide { display: none; }
+    }
 
     /* ── FOOTER ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
@@ -400,6 +469,7 @@
       color: var(--mute); transition: all 0.3s;
     }
     .footer-socials li a:hover { background: var(--accent); color: #111; border-color: var(--accent); }
+
     /* ── AMBIENT BACKGROUND ── */
     .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
     .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.055; animation: drift 20s ease-in-out infinite; }
@@ -430,39 +500,23 @@
     /* ── MOBILE NAV OPEN ── */
     body.nav-open { overflow: hidden; }
     body.nav-open .nav-links {
-      display: flex !important;
-      flex-direction: column;
-      position: fixed;
-      inset: 0;
-      z-index: 999;
-      background: var(--bg);
-      padding: 5.5rem 2rem 2rem;
-      gap: 0;
-      overflow-y: auto;
-      align-items: flex-start;
+      display: flex !important; flex-direction: column;
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--bg); padding: 5.5rem 2rem 2rem;
+      gap: 0; overflow-y: auto; align-items: flex-start;
     }
-    body.nav-open .nav-links > li > a {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text);
-      padding: 0.75rem 0;
-    }
+    body.nav-open .nav-links > li > a { font-size: 1.5rem; font-weight: 600; color: var(--text); padding: 0.75rem 0; }
     body.nav-open .dropdown {
-      position: static;
-      opacity: 1 !important;
-      visibility: visible !important;
-      transform: none !important;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      padding: 0.25rem 0 0.75rem 1rem;
-      min-width: auto;
+      position: static; opacity: 1 !important; visibility: visible !important; transform: none !important;
+      background: transparent; border: none; box-shadow: none;
+      padding: 0.25rem 0 0.75rem 1rem; min-width: auto;
     }
     body.nav-open .dropdown a { font-size: 1rem; padding: 0.4rem 0.5rem; }
     body.nav-open .hamburger span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
     body.nav-open .hamburger span:nth-child(2) { opacity: 0; }
     body.nav-open .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
-      /* ── PRELOADER ── */
+
+    /* ── PRELOADER ── */
     .preloader {
       position: fixed; inset: 0; z-index: 9999; background: var(--bg);
       display: flex; align-items: center; justify-content: center;
@@ -475,6 +529,10 @@
       animation: spin 0.9s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── REVEAL ── */
+    .wow { opacity: 0; transform: translateY(20px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+    .wow.visible { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
@@ -496,8 +554,6 @@
       <a href="../../index.html">Home</a>
       <ul class="dropdown">
         <li><a href="../../index.html#career">About me</a></li>
-        
-        
         <li><a href="../about/contact.html">Contact</a></li>
       </ul>
     </li>
@@ -544,25 +600,48 @@
 </nav>
 
 <div class="container">
-  <div class="page-eyebrow mono">Travel</div>
+  <div class="page-eyebrow mono">Travel · Aviation</div>
   <div class="page-header">
     <h1>Flight Log</h1>
-    <p>Flights, routes, and aviation adventures — logged obsessively.</p>
+    <p>176 flights logged since 2000 — every boarding pass, every aircraft type, every airport. Tracked on FlightRadar24 and mirrored here. Below: live ADS-B feed from my receiver in Billund, plus the full lifetime ledger.</p>
   </div>
 
-  <img src="../../media/flight-hero.jpg" alt="Aerial view" class="page-hero-img" onerror="this.style.display='none'">
-
-  <div class="callout">
-    <p><strong>Coming soon</strong> — the full flight log is being built. In the meantime, here's my ADS-B radar feeding live data to FlightRadar24.</p>
+  <!-- ══ HERO STATS ══ -->
+  <div class="hero-stats wow">
+    <div class="hs-cell">
+      <div class="hs-num" data-target="176">0</div>
+      <div class="hs-unit">flights</div>
+      <div class="hs-lbl">Logged since 2000</div>
+    </div>
+    <div class="hs-cell">
+      <div class="hs-num" data-target="491">0</div>
+      <div class="hs-unit">hours airborne</div>
+      <div class="hs-lbl">≈ 20.5 days in the sky</div>
+    </div>
+    <div class="hs-cell">
+      <div class="hs-num" data-target="40">0</div>
+      <div class="hs-unit">countries</div>
+      <div class="hs-lbl">4 continents touched</div>
+    </div>
+    <div class="hs-cell">
+      <div class="hs-num" data-target="71">0</div>
+      <div class="hs-unit">airports</div>
+      <div class="hs-lbl">Unique IATA codes</div>
+    </div>
+    <div class="hs-cell">
+      <div class="hs-num" data-target="43">0</div>
+      <div class="hs-unit">airlines</div>
+      <div class="hs-lbl">From flag-carriers to LCCs</div>
+    </div>
+    <div class="hs-cell">
+      <div class="hs-num" data-target="36">0</div>
+      <div class="hs-unit">aircraft types</div>
+      <div class="hs-lbl">A380s to Twin Otters</div>
+    </div>
   </div>
 
-  <!-- ══ ADS-B RADAR STATS ══
-       UPDATE THE VALUES BELOW from your FlightRadar24 stats page:
-       https://www.flightradar24.com/share-statistics
-  ══════════════════════════ -->
-  <div class="adsb-section">
-
-    <!-- Header -->
+  <!-- ══ ADS-B RADAR ══ -->
+  <div class="adsb-section wow">
     <div class="adsb-header">
       <div class="adsb-status">
         <span class="status-dot"></span>
@@ -572,22 +651,17 @@
         <h2>T-EKAC94</h2>
         <p>ADS-B Receiver · FlightRadar24 · Billund, Denmark</p>
       </div>
-      <a class="adsb-fr24-link" href="https://www.flightradar24.com/share-statistics" target="_blank" rel="noopener">
-        Full stats
+      <a class="adsb-fr24-link" href="https://my.flightradar24.com/carlosebrahim" target="_blank" rel="noopener">
+        FR24 profile
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       </a>
     </div>
-
-    <!-- Body -->
     <div class="adsb-body">
-
-      <!-- Radar sweep -->
       <div class="radar-panel">
         <div class="radar-display">
           <div class="radar-rings"></div>
           <div class="radar-cross"></div>
           <div class="radar-sweep"></div>
-          <!-- Aircraft blips — positions are approximate within the circle -->
           <div class="radar-blip" style="--bx:62%;--by:28%;--delay:0s;--bd:2.8s"></div>
           <div class="radar-blip" style="--bx:74%;--by:48%;--delay:0.6s;--bd:3.2s"></div>
           <div class="radar-blip" style="--bx:35%;--by:41%;--delay:1.2s;--bd:2.5s"></div>
@@ -600,109 +674,158 @@
           <div class="radar-blip" style="--bx:50%;--by:82%;--delay:2.5s;--bd:2.6s"></div>
           <div class="radar-center"></div>
         </div>
-        <p class="radar-label">
-          T-EKAC94 · Billund<br>
-          ADS-B 1090 MHz
-        </p>
+        <p class="radar-label">T-EKAC94 · Billund<br>ADS-B 1090 MHz</p>
       </div>
-
-      <!-- Stat cards grid -->
-      <!-- ↓ UPDATE these data-target values with your real numbers ↓ -->
       <div class="adsb-stats">
-
         <div class="stat-card accent-green" style="--icon:'✈'">
-          <div class="stat-value" data-target="0" data-suffix="">—</div>
-          <div class="stat-unit">aircraft / 24 h</div>
-          <div class="stat-label">Unique aircraft detected today</div>
+          <div class="stat-value">176</div>
+          <div class="stat-unit">flights flown</div>
+          <div class="stat-label">Personal lifetime total</div>
         </div>
-
-        <div class="stat-card accent-blue" style="--icon:'📡'">
-          <div class="stat-value" data-target="0" data-suffix=" km">—</div>
-          <div class="stat-unit">max range</div>
-          <div class="stat-label">Furthest aircraft tracked</div>
+        <div class="stat-card accent-blue" style="--icon:'⏱'">
+          <div class="stat-value">491<span style="font-size:0.6em;color:var(--mute);font-weight:500"> h</span></div>
+          <div class="stat-unit">in the air</div>
+          <div class="stat-label">~20.5 days cumulative</div>
         </div>
-
-        <div class="stat-card accent-amber" style="--icon:'⬆'">
-          <div class="stat-value" data-target="0" data-suffix="%">—</div>
-          <div class="stat-unit">uptime</div>
-          <div class="stat-label">Feeding reliability</div>
+        <div class="stat-card accent-amber" style="--icon:'🌍'">
+          <div class="stat-value">40</div>
+          <div class="stat-unit">countries</div>
+          <div class="stat-label">Reached by air</div>
         </div>
-
-        <div class="stat-card accent-green" style="--icon:'📍'">
-          <div class="stat-value" data-target="0" data-suffix="">—</div>
-          <div class="stat-unit">positions / 24 h</div>
-          <div class="stat-label">ADS-B positions logged</div>
+        <div class="stat-card accent-green" style="--icon:'📡'">
+          <div class="stat-value">24/7</div>
+          <div class="stat-unit">feeding</div>
+          <div class="stat-label">FR24 contributor since 2024</div>
         </div>
-
-        <div class="stat-card accent-blue" style="--icon:'🏆'">
-          <div class="stat-value" data-prefix="#" data-target="0" data-suffix="">—</div>
-          <div class="stat-unit">global rank</div>
-          <div class="stat-label">FlightRadar24 feeder ranking</div>
+        <div class="stat-card accent-blue" style="--icon:'🛫'">
+          <div class="stat-value">71</div>
+          <div class="stat-unit">airports</div>
+          <div class="stat-label">Unique IATA codes visited</div>
         </div>
-
         <div class="stat-card accent-amber" style="--icon:'🛩'">
-          <div class="stat-value" data-target="0" data-suffix="">—</div>
+          <div class="stat-value">36</div>
           <div class="stat-unit">aircraft types</div>
-          <div class="stat-label">Unique types seen (7 days)</div>
-        </div>
-
-      </div><!-- /adsb-stats -->
-    </div><!-- /adsb-body -->
-  </div><!-- /adsb-section -->
-
-  <!-- ══ FLIGHT LOG ══ -->
-  <div class="flight-log-section">
-    <div class="flight-log-header">
-      <h2>Flight Log</h2>
-      <div class="flight-stats-inline">
-        <div class="flight-stat-item">
-          <div class="flight-stat-value" id="total-flights">0</div>
-          <div class="flight-stat-label">Total Flights</div>
-        </div>
-        <div class="flight-stat-item">
-          <div class="flight-stat-value" id="total-hours">0</div>
-          <div class="flight-stat-label">Flight Hours</div>
-        </div>
-        <div class="flight-stat-item">
-          <div class="flight-stat-value" id="unique-airlines">0</div>
-          <div class="flight-stat-label">Airlines</div>
-        </div>
-        <div class="flight-stat-item">
-          <div class="flight-stat-value" id="unique-aircraft">0</div>
-          <div class="flight-stat-label">Aircraft Types</div>
+          <div class="stat-label">A380 to DHC-6 Twin Otter</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="flight-controls">
-      <button class="flight-filter-btn active" data-filter="all">All Flights</button>
-      <button class="flight-filter-btn" data-filter="commercial">✈ Commercial</button>
-      <button class="flight-filter-btn" data-filter="short-haul">Short Haul</button>
-      <button class="flight-filter-btn" data-filter="long-haul">Long Haul</button>
+  <!-- ══ TOP BREAKDOWN ══ -->
+  <section class="section wow">
+    <div class="section-eyebrow">Breakdown</div>
+    <h2>By the numbers</h2>
+    <div class="breakdown-grid">
+      <div class="bd-card">
+        <h3><span class="bd-icon">✈</span> Top airlines</h3>
+        <ul class="bd-list" id="bd-airlines"></ul>
+      </div>
+      <div class="bd-card">
+        <h3><span class="bd-icon">🛩</span> Top aircraft</h3>
+        <ul class="bd-list" id="bd-aircraft"></ul>
+      </div>
+      <div class="bd-card">
+        <h3><span class="bd-icon">📍</span> Top airports</h3>
+        <ul class="bd-list" id="bd-airports"></ul>
+      </div>
     </div>
+  </section>
 
-    <div class="flight-table-wrapper">
-      <table class="flight-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Flight</th>
-            <th>Route</th>
-            <th>Airline</th>
-            <th>Aircraft</th>
-            <th>Duration</th>
-            <th>Seat</th>
-          </tr>
-        </thead>
-        <tbody id="flight-log-body">
-          <!-- Populated by JavaScript -->
-        </tbody>
-      </table>
+  <!-- ══ YEAR CHART ══ -->
+  <section class="section wow">
+    <div class="section-eyebrow">Timeline</div>
+    <h2>Flights per year</h2>
+    <div class="year-chart">
+      <div class="year-bars" id="yearBars"></div>
     </div>
-    <div class="flight-empty" id="flight-empty" style="display: none;">
-      <p>No flights match this filter.</p>
+  </section>
+
+  <!-- ══ NOTABLE FLIGHTS ══ -->
+  <section class="section wow">
+    <div class="section-eyebrow">Highlights</div>
+    <h2>Notable flights</h2>
+    <div class="notable-grid">
+      <div class="boarding-pass">
+        <div class="bp-eyebrow">Longest flight · 13 h 00 m</div>
+        <div class="bp-route">
+          <div class="bp-airport"><span class="bp-iata">CPH</span><span class="bp-city">Copenhagen</span></div>
+          <div class="bp-plane">✈</div>
+          <div class="bp-airport"><span class="bp-iata">SIN</span><span class="bp-city">Singapore</span></div>
+        </div>
+        <div class="bp-meta">
+          <span><strong>SQ353</strong> · Singapore Airlines</span>
+          <span>Airbus A350-900</span>
+          <span>2022-02-28</span>
+        </div>
+      </div>
+      <div class="boarding-pass">
+        <div class="bp-eyebrow">Largest aircraft · A380-800</div>
+        <div class="bp-route">
+          <div class="bp-airport"><span class="bp-iata">CPH</span><span class="bp-city">Copenhagen</span></div>
+          <div class="bp-plane">✈</div>
+          <div class="bp-airport"><span class="bp-iata">DXB</span><span class="bp-city">Dubai</span></div>
+        </div>
+        <div class="bp-meta">
+          <span><strong>EK152</strong> · Emirates</span>
+          <span>Airbus A380-800</span>
+          <span>2025-07-19</span>
+        </div>
+      </div>
+      <div class="boarding-pass">
+        <div class="bp-eyebrow">Smallest aircraft · DHC-6 Twin Otter</div>
+        <div class="bp-route">
+          <div class="bp-airport"><span class="bp-iata">SEZ</span><span class="bp-city">Mahé</span></div>
+          <div class="bp-plane">✈</div>
+          <div class="bp-airport"><span class="bp-iata">PRI</span><span class="bp-city">Praslin</span></div>
+        </div>
+        <div class="bp-meta">
+          <span><strong>HM3124</strong> · Air Seychelles</span>
+          <span>DHC-6 Twin Otter</span>
+          <span>2025-07-24</span>
+        </div>
+      </div>
     </div>
-  </div><!-- /flight-log-section -->
+  </section>
+
+  <!-- ══ FULL FLIGHT LOG ══ -->
+  <section class="section wow">
+    <div class="section-eyebrow">Ledger</div>
+    <h2>Every flight, ever</h2>
+    <div class="log-toolbar">
+      <label class="log-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="logSearch" placeholder="Search flight, airline, airport, aircraft…" autocomplete="off">
+      </label>
+      <span class="log-count"><strong id="logCount">176</strong> / 176</span>
+    </div>
+    <div class="log-filter-chips" id="logChips">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="2026">2026</button>
+      <button class="chip" data-filter="2025">2025</button>
+      <button class="chip" data-filter="2024">2024</button>
+      <button class="chip" data-filter="2023">2023</button>
+      <button class="chip" data-filter="2022">2022</button>
+      <button class="chip" data-filter="longhaul">Long-haul (6h+)</button>
+      <button class="chip" data-filter="widebody">Wide-body</button>
+    </div>
+    <div class="log-table-wrap" style="margin-top:1.25rem;">
+      <div class="log-scroll">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Route</th>
+              <th class="col-hide">Flight</th>
+              <th class="col-hide">Airline</th>
+              <th class="col-hide">Aircraft</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
 </div>
 
@@ -720,14 +843,16 @@
   </div>
 </footer>
 
-<script>
+<script id="flightData" type="application/json">[{"d":"2026-04-23","fn":"SK762","frn":"Budapest / Franz Liszt International","fri":"BUD","ton":"Copenhagen / Kastrup","toi":"CPH","dur":120,"al":"Scandinavian Airlines","ac":"Bombardier CRJ-1000","reg":"EI-HIB","seat":"11A"},{"d":"2026-04-23","fn":"SK1289","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Billund / Billund","toi":"BLL","dur":50,"al":"Scandinavian Airlines","ac":"ATR 72-600","reg":"SE-MKO","seat":"11A"},{"d":"2026-04-19","fn":"W62320","frn":"Billund / Billund","fri":"BLL","ton":"Budapest / Franz Liszt International","toi":"BUD","dur":120,"al":"Wizz Air","ac":"Airbus A321neo","reg":"HA-LDC","seat":"7F"},{"d":"2026-03-29","fn":"SK1905","frn":"Oslo / Gardermoen","fri":"OSL","ton":"Billund / Billund","toi":"BLL","dur":75,"al":"Scandinavian Airlines","ac":"Embraer ERJ-195","reg":"SE-RSL","seat":"21F"},{"d":"2026-03-26","fn":"SK1902","frn":"Billund / Billund","fri":"BLL","ton":"Oslo / Gardermoen","toi":"OSL","dur":70,"al":"Scandinavian Airlines","ac":"Embraer ERJ-195","reg":"SE-RSU","seat":"15F"},{"d":"2026-03-14","fn":"W45191","frn":"Tirana / Rinas","fri":"TIA","ton":"Billund / Billund","toi":"BLL","dur":180,"al":"Aero Services Executive","ac":"Airbus A321","reg":"HA-LTI","seat":"31D"},{"d":"2026-03-07","fn":"W45192","frn":"Billund / Billund","fri":"BLL","ton":"Tirana / Rinas","toi":"TIA","dur":165,"al":"Aero Services Executive","ac":"Airbus A321","reg":"HA-LTI","seat":"22A"},{"d":"2026-02-06","fn":"LH759","frn":"Chennai / Chennai","fri":"MAA","ton":"Frankfurt am Main / Frankfurt","toi":"FRA","dur":605,"al":"Lufthansa","ac":"Airbus A340-300","reg":"D-AIGT","seat":"33A"},{"d":"2026-02-06","fn":"LH838","frn":"Frankfurt am Main / Frankfurt","fri":"FRA","ton":"Billund / Billund","toi":"BLL","dur":80,"al":"Lufthansa","ac":"Airbus A321","reg":"D-AIDI","seat":"20F"},{"d":"2026-01-31","fn":"LH843","frn":"Billund / Billund","fri":"BLL","ton":"Frankfurt am Main / Frankfurt","toi":"FRA","dur":85,"al":"Lufthansa","ac":"Airbus A321","reg":"D-AIRT","seat":"19A"},{"d":"2026-01-31","fn":"LH758","frn":"Frankfurt am Main / Frankfurt","fri":"FRA","ton":"Chennai / Chennai","toi":"MAA","dur":590,"al":"Lufthansa","ac":"Airbus A340-300","reg":"D-AIGV","seat":"33K"},{"d":"2025-12-27","fn":"SK1586","frn":"Barcelona / El Prat","fri":"BCN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":175,"al":"Scandinavian Airlines","ac":"Airbus A320neo","reg":"EI-SIF","seat":"10A"},{"d":"2025-12-14","fn":"SK1585","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Barcelona / El Prat","toi":"BCN","dur":170,"al":"Scandinavian Airlines","ac":"Airbus A320neo","reg":"EI-SIW","seat":"5B"},{"d":"2025-08-01","fn":"EK151","frn":"Dubai / Dubai International","fri":"DXB","ton":"Copenhagen / Kastrup","toi":"CPH","dur":360,"al":"Emirates","ac":"Airbus A380-800","reg":"A6-EUY","seat":"12A"},{"d":"2025-07-31","fn":"HM3201","frn":"Praslin / Praslin","fri":"PRI","ton":"Mahe / Seychelles","toi":"SEZ","dur":20,"al":"Air Seychelles Limited","ac":"Viking DHC-6-400 Twin Otter","reg":"S7-FAR","seat":"06C"},{"d":"2025-07-31","fn":"EK708","frn":"Mahe / Seychelles","fri":"SEZ","ton":"Dubai / Dubai International","toi":"DXB","dur":270,"al":"Emirates","ac":"Boeing 777-300ER","reg":"A6-EPO","seat":"09K"},{"d":"2025-07-24","fn":"HM3124","frn":"Mahe / Seychelles","fri":"SEZ","ton":"Praslin / Praslin","toi":"PRI","dur":20,"al":"Air Seychelles Limited","ac":"Viking DHC-6-400 Twin Otter","reg":"S7-PRN","seat":"03A"},{"d":"2025-07-20","fn":"EK705","frn":"Dubai / Dubai International","fri":"DXB","ton":"Mahe / Seychelles","toi":"SEZ","dur":265,"al":"Emirates","ac":"Boeing 777-300ER","reg":"A6-EGI","seat":"07A"},{"d":"2025-07-19","fn":"EK152","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Dubai / Dubai International","toi":"DXB","dur":445,"al":"Emirates","ac":"Airbus A380-800","reg":"A6-EUP","seat":"10A"},{"d":"2025-06-29","fn":"FR712","frn":"London / Stansted","fri":"STN","ton":"Aarhus / Tirstrup","toi":"AAR","dur":100,"al":"Ryanair","ac":"Boeing 737-800","reg":"9H-QDH","seat":"12D"},{"d":"2025-06-26","fn":"FR713","frn":"Aarhus / Tirstrup","fri":"AAR","ton":"London / Stansted","toi":"STN","dur":105,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-DLX","seat":"26F"},{"d":"2025-05-12","fn":"LX1282","frn":"Zurich / Kloten","fri":"ZRH","ton":"Billund / Billund","toi":"BLL","dur":110,"al":"AirBaltic","ac":"Airbus A220-300","reg":"YL-AAX","seat":"29F"},{"d":"2025-05-08","fn":"LX1285","frn":"Billund / Billund","fri":"BLL","ton":"Zurich / Kloten","toi":"ZRH","dur":100,"al":"Swiss International Airlines","ac":"Airbus A321-200","reg":"HB-ION","seat":"11D"},{"d":"2025-03-17","fn":"DY998","frn":"Oslo / Gardermoen","fri":"OSL","ton":"Billund / Billund","toi":"BLL","dur":70,"al":"Norwegian Air Shuttle","ac":"Boeing 737-800","reg":"SE-RXB","seat":"25F"},{"d":"2025-03-12","fn":"DY999","frn":"Billund / Billund","fri":"BLL","ton":"Oslo / Gardermoen","toi":"OSL","dur":70,"al":"Norwegian Air Shuttle","ac":"Boeing 737-800","reg":"LN-DYT","seat":"23F"},{"d":"2024-12-28","fn":"VY1870","frn":"Barcelona / El Prat","fri":"BCN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":180,"al":"Vueling Airlines","ac":"Airbus A320-200","reg":"EC-MJC","seat":"29B"},{"d":"2024-12-15","fn":"SK1585","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Barcelona / El Prat","toi":"BCN","dur":150,"al":"Scandinavian Airlines","ac":"Airbus A320neo","reg":"SE-ROI","seat":"4E"},{"d":"2024-11-24","fn":"EY177","frn":"Abu Dhabi / Abu Dhabi","fri":"AUH","ton":"Copenhagen / Kastrup","toi":"CPH","dur":365,"al":"Etihad Airways","ac":"Boeing 787-9","reg":"A6-BLR","seat":"21B"},{"d":"2024-11-23","fn":"EY441","frn":"Manila / Ninoy Aquino International","fri":"MNL","ton":"Abu Dhabi / Abu Dhabi","toi":"AUH","dur":585,"al":"Etihad Airways","ac":"Boeing 777-300ER","reg":"A6-ETE","seat":"53A"},{"d":"2024-11-18","fn":"5J650","frn":"Tacloban / Dz Romualdez","fri":"TAC","ton":"Manila / Ninoy Aquino International","toi":"MNL","dur":90,"al":"Cebu Pacific","ac":"Airbus A320-200","reg":"RP-C4107","seat":"18A"},{"d":"2024-11-02","fn":"EY440","frn":"Abu Dhabi / Abu Dhabi","fri":"AUH","ton":"Manila / Ninoy Aquino International","toi":"MNL","dur":500,"al":"Etihad Airways","ac":"Boeing 777-300ER","reg":"A6-ETH","seat":"39K"},{"d":"2024-11-02","fn":"5J651","frn":"Manila / Ninoy Aquino International","fri":"MNL","ton":"Tacloban / Dz Romualdez","toi":"TAC","dur":95,"al":"Cebu Pacific","ac":"Airbus A320neo","reg":"RP-C4138","seat":"18A"},{"d":"2024-11-01","fn":"EY178","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Abu Dhabi / Abu Dhabi","toi":"AUH","dur":430,"al":"Etihad Airways","ac":"Boeing 787-9","reg":"A6-BNC","seat":"17A"},{"d":"2024-10-26","fn":"VY1880","frn":"Barcelona / El Prat","fri":"BCN","ton":"Billund / Billund","toi":"BLL","dur":175,"al":"Vueling Airlines","ac":"Airbus A321neo","reg":"EC-NYC","seat":"36F"},{"d":"2024-10-22","fn":"VY1881","frn":"Billund / Billund","fri":"BLL","ton":"Barcelona / El Prat","toi":"BCN","dur":165,"al":"Vueling Airlines","ac":"Airbus A320","reg":"LY-NOW","seat":"24F"},{"d":"2024-08-29","fn":"BA806","frn":"London / Heathrow","fri":"LHR","ton":"Billund / Billund","toi":"BLL","dur":100,"al":"British Airways","ac":"Airbus A319","reg":"G-DBCE","seat":"12C"},{"d":"2024-08-27","fn":"BA807","frn":"Billund / Billund","fri":"BLL","ton":"London / Heathrow","toi":"LHR","dur":105,"al":"British Airways","ac":"Airbus A319","reg":"G-DBCC","seat":"25E"},{"d":"2024-08-06","fn":"BA806","frn":"London / Heathrow","fri":"LHR","ton":"Billund / Billund","toi":"BLL","dur":100,"al":"British Airways","ac":"Airbus A320-200","reg":"G-EUYC","seat":"26A"},{"d":"2024-07-05","fn":"BA254","frn":"Barbados I / Bridgetown-Grantley Adams","fri":"BGI","ton":"London / Heathrow","toi":"LHR","dur":430,"al":"British Airways","ac":"Boeing 787-10","reg":"G-ZBLG","seat":"35A"},{"d":"2024-07-04","fn":"BW201","frn":"St Vincent / St Vincent","fri":"SVD","ton":"Barbados I / Bridgetown-Grantley Adams","toi":"BGI","dur":45,"al":"BWIA West Indies Airways","ac":"ATR 72-600","reg":"9Y-TTE","seat":"3D"},{"d":"2024-06-27","fn":"JY703","frn":"St Georges / Point Salines","fri":"GND","ton":"St Vincent / St Vincent","toi":"SVD","dur":45,"al":"InterCaribbean Airways","ac":"Embraer EMB-120 Brasilia","reg":"VQ-TMJ","seat":"7C"},{"d":"2024-06-22","fn":"BA2159","frn":"St Lucia / Hewanorra","fri":"UVF","ton":"St Georges / Point Salines","toi":"GND","dur":55,"al":"British Airways","ac":"Boeing 777","reg":"G-VIIT","seat":"29K"},{"d":"2024-06-17","fn":"BA2159","frn":"London / Gatwick","fri":"LGW","ton":"St Lucia / Hewanorra","toi":"UVF","dur":610,"al":"British Airways","ac":"Boeing 777-200","reg":"G-VIIP","seat":"33G"},{"d":"2024-06-16","fn":"BA817","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"London / Heathrow","toi":"LHR","dur":125,"al":"British Airways","ac":"Airbus A320","reg":"G-EUUE","seat":"19A"},{"d":"2024-06-13","fn":"LH840","frn":"Frankfurt am Main / Frankfurt","fri":"FRA","ton":"Billund / Billund","toi":"BLL","dur":80,"al":"Lufthansa","ac":"Airbus A320","reg":"D-AIZH","seat":"21F"},{"d":"2024-06-11","fn":"LH839","frn":"Billund / Billund","fri":"BLL","ton":"Frankfurt am Main / Frankfurt","toi":"FRA","dur":85,"al":"Lufthansa","ac":"Bombardier CRJ-900","reg":"D-ACNT","seat":"14F"},{"d":"2024-05-12","fn":"FR3762","frn":"Charleroi / Brussels South Charleroi","fri":"CRL","ton":"Billund / Billund","toi":"BLL","dur":85,"al":"Ryanair","ac":"Boeing 737-800","reg":"9H-QDW","seat":"5E"},{"d":"2024-05-09","fn":"FR3671","frn":"Billund / Billund","fri":"BLL","ton":"Charleroi / Brussels South Charleroi","toi":"CRL","dur":90,"al":"Ryanair","ac":"Boeing 737-800","reg":"9H-QDX","seat":"10B"},{"d":"2024-04-04","fn":"FR9002","frn":"Barcelona / El Prat","fri":"BCN","ton":"Billund / Billund","toi":"BLL","dur":175,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-DPI","seat":"25F"},{"d":"2024-03-17","fn":"FR9003","frn":"Billund / Billund","fri":"BLL","ton":"Barcelona / El Prat","toi":"BCN","dur":165,"al":"Ryanair","ac":"Boeing 737 MAX 8","reg":"9H-VUK","seat":"2A"},{"d":"2024-03-01","fn":"LO3944","frn":"Poznan / Lawica","fri":"POZ","ton":"Warsaw / Chopin (Okecie)","toi":"WAW","dur":55,"al":"LOT","ac":"Embraer ERJ-190","reg":"SP-LMC","seat":"22D"},{"d":"2024-03-01","fn":"LO467","frn":"Warsaw / Chopin (Okecie)","fri":"WAW","ton":"Billund / Billund","toi":"BLL","dur":110,"al":"LOT","ac":"Embraer ERJ-195","reg":"SP-LNG","seat":"25D"},{"d":"2024-02-28","fn":"LO468","frn":"Billund / Billund","fri":"BLL","ton":"Warsaw / Chopin (Okecie)","toi":"WAW","dur":95,"al":"LOT","ac":"Embraer ERJ-195","reg":"SP-LNF","seat":"6A"},{"d":"2024-02-28","fn":"LO3941","frn":"Warsaw / Chopin (Okecie)","fri":"WAW","ton":"Poznan / Lawica","toi":"POZ","dur":60,"al":"LOT","ac":"Embraer ERJ-195","reg":"SP-LNB","seat":"25A"},{"d":"2024-02-16","fn":"BA806","frn":"London / Heathrow","fri":"LHR","ton":"Billund / Billund","toi":"BLL","dur":100,"al":"British Airways","ac":"Airbus A319","reg":"G-DBCA","seat":"4A"},{"d":"2024-02-14","fn":"BA807","frn":"Billund / Billund","fri":"BLL","ton":"London / Heathrow","toi":"LHR","dur":110,"al":"British Airways","ac":"Airbus A320","reg":"G-EUUE","seat":"30A"},{"d":"2023-12-28","fn":"VY1872","frn":"Barcelona / El Prat","fri":"BCN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":180,"al":"Vueling Airlines","ac":"Airbus A320","reg":"EC-MVD","seat":"8F"},{"d":"2023-12-21","fn":"SK1585","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Barcelona / El Prat","toi":"BCN","dur":170,"al":"Scandinavian Airlines","ac":"Airbus A320neo","reg":"EI-SIH","seat":"15F"},{"d":"2023-10-25","fn":"OS305","frn":"Vienna / Schwechat","fri":"VIE","ton":"Copenhagen / Kastrup","toi":"CPH","dur":100,"al":"Austrian Airlines","ac":"Airbus A320","reg":"OE-LZF","seat":"8A"},{"d":"2023-10-25","fn":"SK1269","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Aarhus / Tirstrup","toi":"AAR","dur":35,"al":"Scandinavian Airlines","ac":"Bombardier CRJ-900","reg":"EI-FPD","seat":"21A"},{"d":"2023-10-23","fn":"SK1258","frn":"Aarhus / Tirstrup","fri":"AAR","ton":"Copenhagen / Kastrup","toi":"CPH","dur":35,"al":"Scandinavian Airlines","ac":"Bombardier CRJ-900","reg":"EI-GEA","seat":"11F"},{"d":"2023-10-23","fn":"OS304","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Vienna / Schwechat","toi":"VIE","dur":100,"al":"Austrian Airlines","ac":"Airbus A320-200","reg":"OE-LXA","seat":"12E"},{"d":"2023-10-15","fn":"SK1905","frn":"Oslo / Gardermoen","fri":"OSL","ton":"Billund / Billund","toi":"BLL","dur":65,"al":"Scandinavian Airlines","ac":"Bombardier CRJ-900","reg":"EI-FPX","seat":"12A"},{"d":"2023-10-10","fn":"SK842","frn":"Zurich / Kloten","fri":"ZRH","ton":"Oslo / Gardermoen","toi":"OSL","dur":140,"al":"Scandinavian Airlines","ac":"Airbus A320neo","reg":"SE-RON","seat":"17F"},{"d":"2023-10-04","fn":"LH837","frn":"Billund / Billund","fri":"BLL","ton":"Frankfurt am Main / Frankfurt","toi":"FRA","dur":85,"al":"Lufthansa","ac":"Airbus A319","reg":"D-AIBI","seat":"22F"},{"d":"2023-09-01","fn":"LH838","frn":"Frankfurt am Main / Frankfurt","fri":"FRA","ton":"Billund / Billund","toi":"BLL","dur":75,"al":"Lufthansa","ac":"Airbus A319","reg":"D-AILN","seat":"19A"},{"d":"2023-08-31","fn":"LH441","frn":"Houston / George Bush Intercontinental","fri":"IAH","ton":"Frankfurt am Main / Frankfurt","toi":"FRA","dur":570,"al":"Lufthansa","ac":"Boeing 747-8","reg":"D-ABYG","seat":"32A"},{"d":"2023-08-22","fn":"LH843","frn":"Billund / Billund","fri":"BLL","ton":"Frankfurt am Main / Frankfurt","toi":"FRA","dur":85,"al":"Lufthansa","ac":"Airbus A320","reg":"D-AIZF","seat":"19A"},{"d":"2023-08-22","fn":"LH440","frn":"Frankfurt am Main / Frankfurt","fri":"FRA","ton":"Houston / George Bush Intercontinental","toi":"IAH","dur":635,"al":"Lufthansa","ac":"Boeing 747-8","reg":"D-ABYM","seat":"41K"},{"d":"2023-08-07","fn":"AY1986","frn":"Doha / Hamad International","fri":"DOH","ton":"Copenhagen / Kastrup","toi":"CPH","dur":355,"al":"Finnair","ac":"Airbus A330-300","reg":"OH-LTT","seat":"58A"},{"d":"2023-08-06","fn":"QR1499","frn":"Kilimanjaro / Kilimanjaro","fri":"JRO","ton":"Doha / Hamad International","toi":"DOH","dur":340,"al":"Qatar Airways","ac":"Airbus A330-200","reg":"A4O-DJ","seat":"43K"},{"d":"2023-07-28","fn":"TC136","frn":"Zanzibar / Kisauni","fri":"ZNZ","ton":"Arusha / Arusha","toi":"ARK","dur":60,"al":"Air Tanzania","ac":"Bombardier Dash 8-400","reg":"5H-TCF","seat":"5A"},{"d":"2023-07-23","fn":"QR1487","frn":"Doha / Hamad International","fri":"DOH","ton":"Zanzibar / Kisauni","toi":"ZNZ","dur":360,"al":"Qatar Airways","ac":"Airbus A320","reg":"A7-AHP","seat":"26A"},{"d":"2023-07-22","fn":"AY1985","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Doha / Hamad International","toi":"DOH","dur":435,"al":"Finnair","ac":"Airbus A330-300","reg":"OH-LTO","seat":"57L"},{"d":"2023-05-09","fn":"W64571","frn":"Larnaca / Larnaca","fri":"LCA","ton":"Copenhagen / Kastrup","toi":"CPH","dur":275,"al":"Wizz Air","ac":"Airbus A321LR","reg":"HA-LZT","seat":"4D"},{"d":"2023-05-02","fn":"W64572","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Larnaca / Larnaca","toi":"LCA","dur":250,"al":"Wizz Air","ac":"Airbus A321LR","reg":"HA-LZT","seat":"22F"},{"d":"2023-04-26","fn":"KL1349","frn":"Amsterdam / Schiphol","fri":"AMS","ton":"Billund / Billund","toi":"BLL","dur":70,"al":"KLM Royal Dutch Airlines","ac":"Boeing 737-800","reg":"PH-BXC","seat":"26A"},{"d":"2023-04-24","fn":"KL1342","frn":"Billund / Billund","fri":"BLL","ton":"Amsterdam / Schiphol","toi":"AMS","dur":70,"al":"KLM Royal Dutch Airlines","ac":"Embraer ERJ-190","reg":"PH-EZW","seat":"8A"},{"d":"2023-04-16","fn":"AI157","frn":"Delhi / Indira Gandhi","fri":"DEL","ton":"Copenhagen / Kastrup","toi":"CPH","dur":500,"al":"Air India","ac":"Boeing 787-8","reg":"VT-ANT","seat":"33J"},{"d":"2023-04-15","fn":"UK156","frn":"Kathmandu / Tribhuvan","fri":"KTM","ton":"Delhi / Indira Gandhi","toi":"DEL","dur":90,"al":"Vistara","ac":"Airbus A320neo","reg":"VT-TNX","seat":"24F"},{"d":"2023-04-14","fn":"U4374","frn":"Bharatpur / Bharatpur","fri":"BHR","ton":"Kathmandu / Tribhuvan","toi":"KTM","dur":22,"al":"Buddha Air","ac":"ATR 42-320","reg":"9N-AIT","seat":"9B"},{"d":"2023-04-01","fn":"UK155","frn":"Delhi / Indira Gandhi","fri":"DEL","ton":"Kathmandu / Tribhuvan","toi":"KTM","dur":125,"al":"Vistara","ac":"Airbus A320neo","reg":"VT-TQE","seat":"23F"},{"d":"2023-03-31","fn":"AI158","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Delhi / Indira Gandhi","toi":"DEL","dur":470,"al":"Air India","ac":"Boeing 787-8","reg":"VT-ANT","seat":"34J"},{"d":"2023-03-07","fn":"BT139","frn":"Riga / Riga","fri":"RIX","ton":"Copenhagen / Kastrup","toi":"CPH","dur":90,"al":"AirBaltic","ac":"Bombardier CS300","reg":"YL-AAS","seat":"28F"},{"d":"2023-03-06","fn":"BT482","frn":"Prague / Praha-Ruzyne","fri":"PRG","ton":"Riga / Riga","toi":"RIX","dur":105,"al":"AirBaltic","ac":"Bombardier CS300","reg":"YL-CSM","seat":"30A"},{"d":"2023-03-02","fn":"EW4211","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Prague / Praha-Ruzyne","toi":"PRG","dur":85,"al":"Eurowings","ac":"Airbus A320","reg":"9H-EUL","seat":"17C"},{"d":"2022-12-04","fn":"BA806","frn":"London / Heathrow","fri":"LHR","ton":"Billund / Billund","toi":"BLL","dur":100,"al":"British Airways","ac":"Airbus A320","reg":"G-MIDO","seat":"30A"},{"d":"2022-12-01","fn":"BA807","frn":"Billund / Billund","fri":"BLL","ton":"London / Heathrow","toi":"LHR","dur":115,"al":"British Airways","ac":"Airbus A320","reg":"G-EUUF","seat":"19A"},{"d":"2022-11-11","fn":"D83657","frn":"Barcelona / El Prat","fri":"BCN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":180,"al":"Norwegian Air International","ac":"Boeing 737-800","reg":"SE-RXB","seat":"24F"},{"d":"2022-10-29","fn":"VY1881","frn":"Billund / Billund","fri":"BLL","ton":"Barcelona / El Prat","toi":"BCN","dur":170,"al":"Vueling Airlines","ac":"Airbus A320neo","reg":"EC-NAJ","seat":"26F"},{"d":"2022-08-31","fn":"EK151","frn":"Dubai / Dubai International","fri":"DXB","ton":"Copenhagen / Kastrup","toi":"CPH","dur":415,"al":"Emirates","ac":"Boeing 777-300ER","reg":"A6-ENS","seat":"42K"},{"d":"2022-08-28","fn":"EK355","frn":"Singapore / Changi","fri":"SIN","ton":"Dubai / Dubai International","toi":"DXB","dur":430,"al":"Emirates","ac":"Airbus A380-800","reg":"A6-EOB","seat":"48K"},{"d":"2022-08-21","fn":"TR493","frn":"Kota Kinabalu / Kota Kinabalu","fri":"BKI","ton":"Singapore / Changi","toi":"SIN","dur":130,"al":"Scoot","ac":"Airbus A320neo","reg":"9V-TNC","seat":"16F"},{"d":"2022-08-19","fn":"TR492","frn":"Singapore / Changi","fri":"SIN","ton":"Kota Kinabalu / Kota Kinabalu","toi":"BKI","dur":145,"al":"Scoot","ac":"Airbus A321neo","reg":"9V-NCB","seat":"39F"},{"d":"2022-08-10","fn":"TR301","frn":"Hanoi / Noibai","fri":"HAN","ton":"Singapore / Changi","toi":"SIN","dur":215,"al":"Scoot","ac":"Airbus A321neo","reg":"9V-NCI","seat":"10B"},{"d":"2022-08-06","fn":"TR300","frn":"Singapore / Changi","fri":"SIN","ton":"Hanoi / Noibai","toi":"HAN","dur":215,"al":"Scoot","ac":"Airbus A321neo","reg":"9V-NCF","seat":"2F"},{"d":"2022-07-24","fn":"AK1771","frn":"Kuching / Kuching","fri":"KCH","ton":"Singapore / Changi","toi":"SIN","dur":95,"al":"Air Asia","ac":"Airbus A320","reg":"9M-RAO","seat":"11D"},{"d":"2022-07-22","fn":"AK1772","frn":"Singapore / Changi","fri":"SIN","ton":"Kuching / Kuching","toi":"KCH","dur":90,"al":"Air Asia","ac":"Airbus A320","reg":"9M-RAO","seat":"22E"},{"d":"2022-07-13","fn":"TR687","frn":"Krabi / Krabi","fri":"KBV","ton":"Singapore / Changi","toi":"SIN","dur":85,"al":"Scoot","ac":"Airbus A320neo","reg":"9V-TNF","seat":"3F"},{"d":"2022-07-09","fn":"TR686","frn":"Singapore / Changi","fri":"SIN","ton":"Krabi / Krabi","toi":"KBV","dur":100,"al":"Scoot","ac":"Airbus A320","reg":"9V-TAZ","seat":"31F"},{"d":"2022-06-15","fn":"3K248","frn":"Surabaya / Juanda","fri":"SUB","ton":"Singapore / Changi","toi":"SIN","dur":140,"al":"Jetstar Asia Airways","ac":"Airbus A320","reg":"9V-JSR","seat":"28A"},{"d":"2022-06-12","fn":"JT811","frn":"Labuan Bajo / Komodo","fri":"LBJ","ton":"Surabaya / Juanda","toi":"SUB","dur":90,"al":"Lion Airlines","ac":"Boeing 737-800","reg":"PK-LKH","seat":"8A"},{"d":"2022-06-06","fn":"IW1863","frn":"Lombok / Lombok International","fri":"LOP","ton":"Denpasar Bali / Ngurah Rai","toi":"DPS","dur":40,"al":"Wings Air","ac":"ATR 72-600","reg":"PK-WHH","seat":"4F"},{"d":"2022-06-06","fn":"IW1830","frn":"Denpasar Bali / Ngurah Rai","fri":"DPS","ton":"Labuan Bajo / Komodo","toi":"LBJ","dur":90,"al":"Wings Air","ac":"ATR 72-600","reg":"PK-WGG","seat":"5F"},{"d":"2022-05-31","fn":"QZ505","frn":"Singapore / Changi","fri":"SIN","ton":"Denpasar Bali / Ngurah Rai","toi":"DPS","dur":170,"al":"Indonesia AirAsia","ac":"Airbus A320","reg":"PK-AZE","seat":"23F"},{"d":"2022-05-17","fn":"TR473","frn":"Kuala Lumpur / Kuala Lumpur International","fri":"KUL","ton":"Singapore / Changi","toi":"SIN","dur":65,"al":"Scoot","ac":"Boeing 787-9","reg":"9V-OJE","seat":"24K"},{"d":"2022-05-13","fn":"TR466","frn":"Singapore / Changi","fri":"SIN","ton":"Kuala Lumpur / Kuala Lumpur International","toi":"KUL","dur":65,"al":"Scoot","ac":"Boeing 787-9","reg":"9V-OJB","seat":"25B"},{"d":"2022-05-04","fn":"TR303","frn":"Hochiminh / Tan Son Nhat","fri":"SGN","ton":"Singapore / Changi","toi":"SIN","dur":130,"al":"Scoot","ac":"Airbus A321neo","reg":"9V-NCB","seat":"34F"},{"d":"2022-04-30","fn":"3K555","frn":"Singapore / Changi","fri":"SIN","ton":"Hochiminh / Tan Son Nhat","toi":"SGN","dur":125,"al":"Jetstar Asia Airways","ac":"Airbus A320","reg":"9V-JSQ","seat":"21D"},{"d":"2022-02-28","fn":"SK1244","frn":"Aarhus / Tirstrup","fri":"AAR","ton":"Copenhagen / Kastrup","toi":"CPH","dur":40,"al":"Scandinavian Airlines","ac":"ATR 72-600","reg":"ES-ATH","seat":"5A"},{"d":"2022-02-28","fn":"SQ353","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Singapore / Changi","toi":"SIN","dur":780,"al":"Singapore Airlines","ac":"Airbus A350-900","reg":"9V-SMT","seat":"53A"},{"d":"2022-01-01","fn":"VY1880","frn":"Barcelona / El Prat","fri":"BCN","ton":"Billund / Billund","toi":"BLL","dur":175,"al":"Vueling Airlines","ac":"Airbus A320","reg":"EC-KLT","seat":"26A"},{"d":"2021-12-24","fn":"D83656","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Barcelona / El Prat","toi":"BCN","dur":170,"al":"Norwegian Air International","ac":"Boeing 737-800","reg":"SE-RRJ","seat":"26F"},{"d":"2021-12-23","fn":"FI212","frn":"Keflavik / Keflavik","fri":"KEF","ton":"Copenhagen / Kastrup","toi":"CPH","dur":135,"al":"Icelandair","ac":"Boeing 737 MAX 8","reg":"TF-ICY","seat":"26F"},{"d":"2021-12-18","fn":"FI205","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Keflavik / Keflavik","toi":"KEF","dur":255,"al":"Icelandair","ac":"Boeing 757-200","reg":"TF-FIO","seat":"21F"},{"d":"2021-10-28","fn":"DY3657","frn":"Barcelona / El Prat","fri":"BCN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":180,"al":"Norwegian Air Shuttle","ac":"Boeing 737-800","reg":"SE-RPJ","seat":"19D"},{"d":"2021-10-21","fn":"VY1873","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Barcelona / El Prat","toi":"BCN","dur":180,"al":"Vueling Airlines","ac":"Airbus A321","reg":"EC-MMH","seat":"33A"},{"d":"2021-07-30","fn":"VY1870","frn":"Barcelona / El Prat","fri":"BCN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":185,"al":"Vueling Airlines","ac":"Airbus A320","reg":"EC-MBS","seat":"22A"},{"d":"2021-07-18","fn":"IB8470","frn":"Barcelona / El Prat","fri":"BCN","ton":"Leon / Leon","toi":"LEN","dur":85,"al":"Iberia","ac":"Bombardier CRJ-1000","reg":"EC-MJO","seat":"8C"},{"d":"2021-07-02","fn":"VY1873","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Barcelona / El Prat","toi":"BCN","dur":180,"al":"Vueling Airlines","ac":"Airbus A320","reg":"EC-LVU","seat":"23F"},{"d":"2020-03-09","fn":"SK1736","frn":"Krakow / John Paul II International","fri":"KRK","ton":"Copenhagen / Kastrup","toi":"CPH","dur":90,"al":"Scandinavian Airlines","ac":"Airbus A320neo","reg":"LN-RGN","seat":"09A"},{"d":"2020-03-04","fn":"W65032","frn":"Billund / Billund","fri":"BLL","ton":"Krakow / John Paul II International","toi":"KRK","dur":100,"al":"Wizz Air","ac":"Airbus A321","reg":"HA-LXF","seat":"19F"},{"d":"2020-01-06","fn":"FR409","frn":"Cologne / Cologne-Bonn","fri":"CGN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":90,"al":"Ryanair","ac":"Boeing 737-800","reg":"9H-QDC","seat":"29A"},{"d":"2019-08-08","fn":"FR9002","frn":"Girona / Costa Brava","fri":"GRO","ton":"Billund / Billund","toi":"BLL","dur":165,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-EKN","seat":"28A"},{"d":"2019-07-10","fn":"VY1873","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Barcelona / El Prat","toi":"BCN","dur":180,"al":"Vueling Airlines","ac":"Airbus A321","reg":"EC-MGY","seat":"34F"},{"d":"2019-04-24","fn":"FR7621","frn":"Kaunas / Kaunas","fri":"KUN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":95,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-EFY","seat":"04C"},{"d":"2019-04-22","fn":"FR5102","frn":"Amman / Queen Alia","fri":"AMM","ton":"Vilnius / Vilnius","toi":"VNO","dur":294,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-EVY","seat":"28A"},{"d":"2019-04-12","fn":"FR5103","frn":"Vilnius / Vilnius","fri":"VNO","ton":"Amman / Queen Alia","toi":"AMM","dur":250,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-EKP","seat":"28A"},{"d":"2019-04-10","fn":"FR7620","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Kaunas / Kaunas","toi":"KUN","dur":90,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-DYO","seat":"12C"},{"d":"2018-08-13","fn":"D85576","frn":"Barcelona / El Prat","fri":"BCN","ton":"Billund / Billund","toi":"BLL","dur":165,"al":"Norwegian Air International","ac":"Boeing 737-800","reg":"EI-FHU","seat":"20A"},{"d":"2018-07-22","fn":"VY8305","frn":"Amsterdam / Schiphol","fri":"AMS","ton":"Barcelona / El Prat","toi":"BCN","dur":134,"al":"Vueling Airlines","ac":"Airbus A321","reg":"EC-MLD","seat":"3F"},{"d":"2018-07-15","fn":"VY8300","frn":"Barcelona / El Prat","fri":"BCN","ton":"Amsterdam / Schiphol","toi":"AMS","dur":145,"al":"Vueling Airlines","ac":"Airbus A321","reg":"EC-MMU","seat":"18E"},{"d":"2018-04-18","fn":"VY8803","frn":"Budapest / Franz Liszt International","fri":"BUD","ton":"Barcelona / El Prat","toi":"BCN","dur":155,"al":"Vueling Airlines","ac":"Airbus A320-200","reg":"EC-HQJ","seat":"7E"},{"d":"2018-04-12","fn":"FR8394","frn":"Barcelona / El Prat","fri":"BCN","ton":"Budapest / Franz Liszt International","toi":"BUD","dur":160,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-FRN","seat":"1C"},{"d":"2018-01-31","fn":"FR8393","frn":"Budapest / Franz Liszt International","fri":"BUD","ton":"Barcelona / El Prat","toi":"BCN","dur":155,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-EVJ","seat":"21A"},{"d":"2018-01-29","fn":"W62472","frn":"Sofia / Sofia","fri":"SOF","ton":"Budapest / Franz Liszt International","toi":"BUD","dur":85,"al":"Wizz Air","ac":"Airbus A321","reg":"HA-LXG","seat":"20F"},{"d":"2018-01-26","fn":"W61583","frn":"Warsaw / Chopin (Okecie)","fri":"WAW","ton":"Bucharest / Henri Coanda","toi":"OTP","dur":105,"al":"Wizz Air","ac":"Airbus A320","reg":"HA-LPS","seat":"29A"},{"d":"2018-01-24","fn":"W62467","frn":"Budapest / Franz Liszt International","fri":"BUD","ton":"Warsaw / Chopin (Okecie)","toi":"WAW","dur":70,"al":"Wizz Air","ac":"Airbus A320","reg":"HA-LYS","seat":"12A"},{"d":"2018-01-22","fn":"FR8394","frn":"Barcelona / El Prat","fri":"BCN","ton":"Budapest / Franz Liszt International","toi":"BUD","dur":160,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-DWI","seat":"33F"},{"d":"2018-01-12","fn":"FR6266","frn":"Edinburgh / Edinburgh","fri":"EDI","ton":"Barcelona / El Prat","toi":"BCN","dur":160,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-EBS","seat":"6A"},{"d":"2018-01-09","fn":"FR6267","frn":"Barcelona / El Prat","fri":"BCN","ton":"Edinburgh / Edinburgh","toi":"EDI","dur":180,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-EPD","seat":"33B"},{"d":"2017-12-21","fn":"D85621","frn":"Helsinki / Vantaa","fri":"HEL","ton":"Barcelona / El Prat","toi":"BCN","dur":235,"al":"Norwegian Air International","ac":"Boeing 737-800","reg":"EI-FJB","seat":"27A"},{"d":"2017-12-17","fn":"AY918","frn":"Oslo / Gardermoen","fri":"OSL","ton":"Helsinki / Vantaa","toi":"HEL","dur":85,"al":"Nordic Regional Airlines / Norra","ac":"Airbus A320","reg":"OH-LXD","seat":"25A"},{"d":"2017-12-15","fn":"AY913","frn":"Helsinki / Vantaa","fri":"HEL","ton":"Oslo / Gardermoen","toi":"OSL","dur":90,"al":"Nordic Regional Airlines / Norra","ac":"Airbus A319","reg":"OH-LVB","seat":"21A"},{"d":"2017-08-14","fn":"D85620","frn":"Barcelona / El Prat","fri":"BCN","ton":"Helsinki / Vantaa","toi":"HEL","dur":240,"al":"Norwegian Air International","ac":"Boeing 737-800","reg":"EI-FJT","seat":"26A"},{"d":"2017-08-09","fn":"VY8653","frn":"Prague / Praha-Ruzyne","fri":"PRG","ton":"Barcelona / El Prat","toi":"BCN","dur":145,"al":"Vueling Airlines","ac":"Airbus A320","reg":"EC-MES","seat":"19C"},{"d":"2017-08-02","fn":"VY8656","frn":"Barcelona / El Prat","fri":"BCN","ton":"Prague / Praha-Ruzyne","toi":"PRG","dur":145,"al":"Vueling Airlines","ac":"Airbus A320","reg":"EC-LQZ","seat":"27F"},{"d":"2017-02-11","fn":"FR6366","frn":"Bergamo / Orio Al Serio","fri":"BGY","ton":"Barcelona / El Prat","toi":"BCN","dur":100,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-DPX","seat":"24A"},{"d":"2017-02-08","fn":"FR6305","frn":"Barcelona / El Prat","fri":"BCN","ton":"Bergamo / Orio Al Serio","toi":"BGY","dur":105,"al":"Ryanair","ac":"Boeing 737-800","reg":"EI-DHG","seat":"1B"},{"d":"2016-09-04","fn":"HG8952","frn":"Vienna / Schwechat","fri":"VIE","ton":"Barcelona / El Prat","toi":"BCN","dur":135,"al":"Niki","ac":"Airbus A320","reg":"OE-LEL","seat":"4E"},{"d":"2016-08-17","fn":"VY8710","frn":"Barcelona / El Prat","fri":"BCN","ton":"Vienna / Schwechat","toi":"VIE","dur":140,"al":"Vueling Airlines","ac":"Airbus A320","reg":"EC-LZZ","seat":"22A"},{"d":"2016-02-08","fn":"VY 8657","frn":"Prague / Praha-Ruzyne","fri":"PRG","ton":"Barcelona / El Prat","toi":"BCN","dur":125,"al":"Vueling Airlines","ac":"Airbus A320","reg":"","seat":"9F"},{"d":"2016-01-31","fn":"VY 8656","frn":"Barcelona / El Prat","fri":"BCN","ton":"Prague / Praha-Ruzyne","toi":"PRG","dur":130,"al":"Vueling Airlines","ac":"Airbus A320","reg":"","seat":"10A"},{"d":"2015-08-23","fn":"4U 8526","frn":"Berlin / Tegel","fri":"TXL","ton":"Barcelona / El Prat","toi":"BCN","dur":140,"al":"Germanwings","ac":"Airbus A320","reg":"","seat":"3A"},{"d":"2015-08-07","fn":"DY 5152","frn":"Barcelona / El Prat","fri":"BCN","ton":"Berlin / Schonefeld","toi":"SXF","dur":135,"al":"Norwegian Air Shuttle","ac":"Boeing 737-800","reg":"","seat":"21A"},{"d":"2011-08-15","fn":"JK6475","frn":"La Coruna / La Coruna","fri":"LCG","ton":"Barcelona / El Prat","toi":"BCN","dur":90,"al":"Spanair","ac":"McDonnell Douglas MD-82","reg":"","seat":""},{"d":"2011-08-03","fn":"JK 6464","frn":"Barcelona / El Prat","fri":"BCN","ton":"La Coruna / La Coruna","toi":"LCG","dur":86,"al":"Spanair","ac":"McDonnell Douglas MD-82","reg":"","seat":"6A"},{"d":"2009-08-15","fn":"","frn":"Edinburgh / Edinburgh","fri":"EDI","ton":"Barcelona / El Prat","toi":"BCN","dur":150,"al":"Flyglobespan","ac":"","reg":"","seat":""},{"d":"2009-08-01","fn":"","frn":"Barcelona / El Prat","fri":"BCN","ton":"Edinburgh / Edinburgh","toi":"EDI","dur":150,"al":"Flyglobespan","ac":"","reg":"","seat":""},{"d":"2009-07-11","fn":"JK 034","frn":"Copenhagen / Kastrup","fri":"CPH","ton":"Barcelona / El Prat","toi":"BCN","dur":170,"al":"Spanair","ac":"","reg":"","seat":""},{"d":"2009-07-04","fn":"JK 033","frn":"Barcelona / El Prat","fri":"BCN","ton":"Copenhagen / Kastrup","toi":"CPH","dur":175,"al":"Spanair","ac":"","reg":"","seat":""},{"d":"2008-07-29","fn":"GSM 401","frn":"Edinburgh / Edinburgh","fri":"EDI","ton":"Barcelona / El Prat","toi":"BCN","dur":160,"al":"Flyglobespan","ac":"Boeing 737-700","reg":"","seat":""},{"d":"2008-07-03","fn":"GSM 402","frn":"Barcelona / El Prat","fri":"BCN","ton":"Edinburgh / Edinburgh","toi":"EDI","dur":160,"al":"Flyglobespan","ac":"Boeing 737-700","reg":"","seat":""},{"d":"2007-07-10","fn":"GSM 401","frn":"Edinburgh / Edinburgh","fri":"EDI","ton":"Barcelona / El Prat","toi":"BCN","dur":170,"al":"Flyglobespan","ac":"Boeing 737-700","reg":"","seat":""},{"d":"2007-04-18","fn":"GSM 402","frn":"Barcelona / El Prat","fri":"BCN","ton":"Edinburgh / Edinburgh","toi":"EDI","dur":160,"al":"Flyglobespan","ac":"Boeing 737-700","reg":"","seat":""},{"d":"2007-04-08","fn":"GSM 401","frn":"Edinburgh / Edinburgh","fri":"EDI","ton":"Barcelona / El Prat","toi":"BCN","dur":155,"al":"Flyglobespan","ac":"Boeing 737-700","reg":"","seat":""},{"d":"2006-09-01","fn":"","frn":"Barcelona / El Prat","fri":"BCN","ton":"Edinburgh / Edinburgh","toi":"EDI","dur":150,"al":"","ac":"","reg":"","seat":""},{"d":"2006-08-15","fn":"","frn":"Bari / Palese Macchie","fri":"BRI","ton":"Barcelona / El Prat","toi":"BCN","dur":114,"al":"","ac":"","reg":"","seat":""},{"d":"2006-08-01","fn":"","frn":"Barcelona / El Prat","fri":"BCN","ton":"Bari / Palese Macchie","toi":"BRI","dur":114,"al":"","ac":"","reg":"","seat":""},{"d":"2006-07-01","fn":"","frn":"Edinburgh / Edinburgh","fri":"EDI","ton":"Barcelona / El Prat","toi":"BCN","dur":150,"al":"","ac":"","reg":"","seat":""},{"d":"2005-10-01","fn":"","frn":"Belfast / Belfast City","fri":"BHD","ton":"Edinburgh / Edinburgh","toi":"EDI","dur":32,"al":"Easyjet","ac":"Airbus A320","reg":"","seat":""},{"d":"2005-09-01","fn":"","frn":"Barcelona / El Prat","fri":"BCN","ton":"Belfast / Aldergrove","toi":"BFS","dur":145,"al":"","ac":"","reg":"","seat":""},{"d":"2005-07-01","fn":"","frn":"Belfast / Aldergrove","fri":"BFS","ton":"Barcelona / El Prat","toi":"BCN","dur":145,"al":"","ac":"","reg":"","seat":""},{"d":"2004-09-01","fn":"","frn":"Reus / Reus","fri":"REU","ton":"Belfast / Aldergrove","toi":"BFS","dur":144,"al":"Jet2.com","ac":"Boeing 737-700","reg":"","seat":""},{"d":"2000-08-15","fn":"","frn":"Tunis / Tunis Carthage","fri":"TUN","ton":"Barcelona / El Prat","toi":"BCN","dur":84,"al":"","ac":"","reg":"","seat":""},{"d":"2000-08-01","fn":"","frn":"Barcelona / El Prat","fri":"BCN","ton":"Tunis / Tunis Carthage","toi":"TUN","dur":84,"al":"","ac":"","reg":"","seat":""}]</script>
 
+<script>
   /* ── Preloader ── */
   window.addEventListener('load', () => {
     const pl = document.getElementById('preloader');
     if (pl) pl.classList.add('done');
   });
 
+  /* ── Nav ── */
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 40);
@@ -735,9 +860,7 @@
 
   const hamburger = document.querySelector('.hamburger');
   if (hamburger) {
-    hamburger.addEventListener('click', () => {
-      document.body.classList.toggle('nav-open');
-    });
+    hamburger.addEventListener('click', () => document.body.classList.toggle('nav-open'));
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', () => document.body.classList.remove('nav-open'));
     });
@@ -746,6 +869,7 @@
     });
   }
 
+  /* ── Progress bar ── */
   const progress = document.getElementById('progress');
   if (progress) {
     window.addEventListener('scroll', () => {
@@ -754,228 +878,207 @@
     }, { passive: true });
   }
 
-  /* ── ADS-B stat counter animation ── */
-  function animateCount(el, target, prefix, suffix, duration) {
-    if (target === 0) return; // leave as "—" if no value set
+  /* ── Reveal observer ── */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.wow').forEach(el => revealObserver.observe(el));
+
+  /* ── Hero stats counters ── */
+  function animateCount(el, target, dur = 1500) {
     const start = performance.now();
-    const isFloat = String(target).includes('.');
     function step(now) {
-      const p = Math.min((now - start) / duration, 1);
-      const ease = 1 - Math.pow(1 - p, 3); // ease-out cubic
-      const val = isFloat
-        ? (ease * target).toFixed(1)
-        : Math.round(ease * target).toLocaleString();
-      el.textContent = prefix + val + suffix;
+      const p = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(ease * target).toLocaleString();
       if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
   }
-
-  const statObserver = new IntersectionObserver((entries) => {
+  const heroObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (!e.isIntersecting) return;
-      const el = e.target;
-      const target  = parseFloat(el.dataset.target  || '0');
-      const prefix  = el.dataset.prefix  || '';
-      const suffix  = el.dataset.suffix  || '';
-      animateCount(el, target, prefix, suffix, 1600);
-      statObserver.unobserve(el);
+      animateCount(e.target, +e.target.dataset.target);
+      heroObserver.unobserve(e.target);
     });
-  }, { threshold: 0.5 });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.hs-num[data-target]').forEach(el => heroObserver.observe(el));
 
-  document.querySelectorAll('.stat-value[data-target]').forEach(el => {
-    statObserver.observe(el);
-  });
+  /* ── Load flight data ── */
+  const FLIGHTS = JSON.parse(document.getElementById('flightData').textContent);
 
-  /* ── FLIGHT LOG DATA ── */
-  const flightData = [
-    { date: "2000-08-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Tunis / Tunis Carthage (TUN/DTTA)", duration: "01:24:00", airline: "Unknown", aircraft: "Unknown" },
-    { date: "2000-08-15", flight: "", from: "Tunis / Tunis Carthage (TUN/DTTA)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "01:24:00", airline: "Unknown", aircraft: "Unknown" },
-    { date: "2005-07-01", flight: "", from: "Belfast / Aldergrove (BFS/EGAA)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:25:00", airline: "Unknown", aircraft: "Unknown" },
-    { date: "2005-09-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Belfast / Aldergrove (BFS/EGAA)", duration: "02:25:00", airline: "Unknown", aircraft: "Unknown" },
-    { date: "2005-10-01", flight: "", from: "Belfast / Belfast City (BHD/EGAC)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "00:32:00", airline: "Easyjet (U2/EZY)", aircraft: "Airbus A320 (A320)" },
-    { date: "2006-07-01", flight: "", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:30:00", airline: "Unknown", aircraft: "Unknown" },
-    { date: "2006-09-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "02:30:00", airline: "Unknown", aircraft: "Unknown" },
-    { date: "2007-07-10", flight: "GSM 401", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:50:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Boeing 737-700 (B737)" },
-    { date: "2006-08-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Bari / Palese Macchie (BRI/LIBD)", duration: "01:54:00", airline: "Unknown", aircraft: "Unknown" },
-    { date: "2006-08-15", flight: "", from: "Bari / Palese Macchie (BRI/LIBD)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "01:54:00", airline: "Unknown", aircraft: "Unknown" },
-    { date: "2009-07-04", flight: "JK 033", from: "Barcelona / El Prat (BCN/LEBL)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "02:55:00", airline: "Spanair (JK/JKK)", aircraft: "Unknown" },
-    { date: "2009-07-11", flight: "JK 034", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:50:00", airline: "Spanair (JK/JKK)", aircraft: "Unknown" },
-    { date: "2008-07-03", flight: "GSM 402", from: "Barcelona / El Prat (BCN/LEBL)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "02:40:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Boeing 737-700 (B737)" },
-    { date: "2008-07-29", flight: "GSM 401", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:40:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Boeing 737-700 (B737)" },
-    { date: "2009-08-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "02:30:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Unknown" },
-    { date: "2009-08-15", flight: "", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:30:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Unknown" },
-    { date: "2011-08-03", flight: "JK 6464", from: "Barcelona / El Prat (BCN/LEBL)", to: "La Coruna / La Coruna (LCG/LECO)", duration: "01:26:00", airline: "Spanair (JK/JKK)", aircraft: "McDonnell Douglas MD-82 (MD82)" },
-    { date: "2011-08-15", flight: "JK6475", from: "La Coruna / La Coruna (LCG/LECO)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "01:30:00", airline: "Spanair (JK/JKK)", aircraft: "McDonnell Douglas MD-82 (MD82)" },
-    { date: "2015-08-07", flight: "DY 5152", from: "Barcelona / El Prat (BCN/LEBL)", to: "Berlin / Schonefeld (SXF/EDDB)", duration: "02:15:00", airline: "Norwegian Air Shuttle (DY/NAX)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2015-08-23", flight: "4U 8526", from: "Berlin / Tegel (TXL/EDDT)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:20:00", airline: "Germanwings (4U/GWI)", aircraft: "Airbus A320 (A320)" },
-    { date: "2016-01-31", flight: "VY 8656", from: "Barcelona / El Prat (BCN/LEBL)", to: "Prague / Praha-Ruzyne (PRG/LKPR)", duration: "02:10:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2016-02-08", flight: "VY 8657", from: "Prague / Praha-Ruzyne (PRG/LKPR)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:05:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2016-08-17", flight: "VY8710", from: "Barcelona / El Prat (BCN/LEBL)", to: "Vienna / Schwechat (VIE/LOWW)", duration: "02:20:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2016-09-04", flight: "HG8952", from: "Vienna / Schwechat (VIE/LOWW)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:15:00", airline: "Niki (flyNiki) (HG/NLY)", aircraft: "Airbus A320 (A320)" },
-    { date: "2017-02-08", flight: "FR6305", from: "Barcelona / El Prat (BCN/LEBL)", to: "Bergamo / Orio Al Serio (BGY/LIME)", duration: "01:45:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2017-02-11", flight: "FR6366", from: "Bergamo / Orio Al Serio (BGY/LIME)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "01:40:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2017-08-02", flight: "VY8656", from: "Barcelona / El Prat (BCN/LEBL)", to: "Prague / Praha-Ruzyne (PRG/LKPR)", duration: "02:25:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2017-08-09", flight: "VY8653", from: "Prague / Praha-Ruzyne (PRG/LKPR)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:25:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2017-08-14", flight: "D85620", from: "Barcelona / El Prat (BCN/LEBL)", to: "Helsinki / Vantaa (HEL/EFHK)", duration: "04:00:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2017-12-21", flight: "D85621", from: "Helsinki / Vantaa (HEL/EFHK)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "03:55:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2017-12-15", flight: "AY913", from: "Helsinki / Vantaa (HEL/EFHK)", to: "Oslo / Gardermoen (OSL/ENGM)", duration: "01:30:00", airline: "Nordic Regional Airlines / Norra (N7/FIN)", aircraft: "Airbus A319 (A319)" },
-    { date: "2017-12-17", flight: "AY918", from: "Oslo / Gardermoen (OSL/ENGM)", to: "Helsinki / Vantaa (HEL/EFHK)", duration: "01:25:00", airline: "Nordic Regional Airlines / Norra (N7/FIN)", aircraft: "Airbus A320 (A320)" },
-    { date: "2018-01-22", flight: "FR8394", from: "Barcelona / El Prat (BCN/LEBL)", to: "Budapest / Franz Liszt International (BUD/LHBP)", duration: "02:40:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2018-01-24", flight: "W62467", from: "Budapest / Franz Liszt International (BUD/LHBP)", to: "Warsaw / Chopin (Okecie) (WAW/EPWA)", duration: "01:10:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A320 (A320)" },
-    { date: "2018-01-26", flight: "W61583", from: "Warsaw / Chopin (Okecie) (WAW/EPWA)", to: "Bucharest / Henri Coanda (OTP/LROP)", duration: "01:45:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A320 (A320)" },
-    { date: "2018-01-29", flight: "W62472", from: "Sofia / Sofia (SOF/LBSF)", to: "Budapest / Franz Liszt International (BUD/LHBP)", duration: "01:25:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A321 (A321)" },
-    { date: "2018-01-31", flight: "FR8393", from: "Budapest / Franz Liszt International (BUD/LHBP)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:35:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2018-01-09", flight: "FR6267", from: "Barcelona / El Prat (BCN/LEBL)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "03:00:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2018-01-12", flight: "FR6266", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:40:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2018-04-12", flight: "FR8394", from: "Barcelona / El Prat (BCN/LEBL)", to: "Budapest / Franz Liszt International (BUD/LHBP)", duration: "02:40:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2018-04-18", flight: "VY8803", from: "Budapest / Franz Liszt International (BUD/LHBP)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:35:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320-200 (A320)" },
-    { date: "2018-07-15", flight: "VY8300", from: "Barcelona / El Prat (BCN/LEBL)", to: "Amsterdam / Schiphol (AMS/EHAM)", duration: "02:25:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A321 (A321)" },
-    { date: "2018-07-22", flight: "VY8305", from: "Amsterdam / Schiphol (AMS/EHAM)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:14:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A321 (A321)" },
-    { date: "2018-08-13", flight: "D85576", from: "Barcelona / El Prat (BCN/LEBL)", to: "Billund / Billund (BLL/EKBI)", duration: "02:45:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2019-04-10", flight: "FR7620", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Kaunas / Kaunas (KUN/EYKA)", duration: "01:30:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2019-04-24", flight: "FR7621", from: "Kaunas / Kaunas (KUN/EYKA)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "01:35:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2019-04-12", flight: "FR5103", from: "Vilnius / Vilnius (VNO/EYVI)", to: "Amman / Queen Alia (AMM/OJAI)", duration: "04:10:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2019-04-22", flight: "FR5102", from: "Amman / Queen Alia (AMM/OJAI)", to: "Vilnius / Vilnius (VNO/EYVI)", duration: "04:54:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2019-07-10", flight: "VY1873", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "03:00:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A321 (A321)" },
-    { date: "2019-08-08", flight: "FR9002", from: "Girona / Costa Brava (GRO/LEGE)", to: "Billund / Billund (BLL/EKBI)", duration: "02:45:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2020-03-04", flight: "W65032", from: "Billund / Billund (BLL/EKBI)", to: "Krakow / John Paul II International (KRK/EPKK)", duration: "01:40:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A321 (A321)" },
-    { date: "2020-03-09", flight: "SK1736", from: "Krakow / John Paul II International (KRK/EPKK)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "01:30:00", airline: "Scandinavian Airlines (SK/SAS)", aircraft: "Airbus A320neo (A20N)" },
-    { date: "2020-01-06", flight: "FR409", from: "Cologne / Cologne-Bonn (CGN/EDDK)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "01:30:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2021-07-02", flight: "VY1873", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "03:00:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2021-07-18", flight: "IB8470", from: "Barcelona / El Prat (BCN/LEBL)", to: "Leon / Leon (LEN/LELN)", duration: "01:25:00", airline: "Iberia (IB/IBE)", aircraft: "Bombardier CRJ-1000 (CRJX)" },
-    { date: "2021-07-30", flight: "VY1870", from: "Barcelona / El Prat (BCN/LEBL)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "03:05:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2021-10-21", flight: "VY1873", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "03:00:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A321 (A321)" },
-    { date: "2021-10-28", flight: "DY3657", from: "Barcelona / El Prat (BCN/LEBL)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "03:00:00", airline: "Norwegian Air Shuttle (DY/NAX)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2021-12-18", flight: "FI205", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Keflavik / Keflavik (KEF/BIKF)", duration: "04:15:00", airline: "Icelandair (FI/ICE)", aircraft: "Boeing 757-200 (B752)" },
-    { date: "2021-12-23", flight: "FI212", from: "Keflavik / Keflavik (KEF/BIKF)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "02:15:00", airline: "Icelandair (FI/ICE)", aircraft: "Boeing 737 MAX 8 (B38M)" },
-    { date: "2021-12-24", flight: "D83656", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:50:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2022-01-01", flight: "VY1880", from: "Barcelona / El Prat (BCN/LEBL)", to: "Billund / Billund (BLL/EKBI)", duration: "02:55:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-02-28", flight: "SK1244", from: "Aarhus / Tirstrup (AAR/EKAH)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "00:40:00", airline: "Scandinavian Airlines (SK/SAS)", aircraft: "ATR 72-600 (AT76)" },
-    { date: "2022-02-28", flight: "SQ353", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Singapore / Changi (SIN/WSSS)", duration: "13:00:00", airline: "Singapore Airlines (SQ/SIA)", aircraft: "Airbus A350-900 (A359)" },
-    { date: "2022-04-30", flight: "3K555", from: "Singapore / Changi (SIN/WSSS)", to: "Hochiminh / Tan Son Nhat (SGN/VVTS)", duration: "02:05:00", airline: "Jetstar Asia Airways (3K/JSA)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-05-04", flight: "TR303", from: "Hochiminh / Tan Son Nhat (SGN/VVTS)", to: "Singapore / Changi (SIN/WSSS)", duration: "02:10:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A321neo (A21N)" },
-    { date: "2022-05-13", flight: "TR466", from: "Singapore / Changi (SIN/WSSS)", to: "Kuala Lumpur / Kuala Lumpur International (KUL/WMKK)", duration: "01:05:00", airline: "Scoot (TR/TGW)", aircraft: "Boeing 787-9 (B789)" },
-    { date: "2022-05-17", flight: "TR473", from: "Kuala Lumpur / Kuala Lumpur International (KUL/WMKK)", to: "Singapore / Changi (SIN/WSSS)", duration: "01:05:00", airline: "Scoot (TR/TGW)", aircraft: "Boeing 787-9 (B789)" },
-    { date: "2022-07-09", flight: "TR686", from: "Singapore / Changi (SIN/WSSS)", to: "Krabi / Krabi (KBV/VTSG)", duration: "01:40:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-07-13", flight: "TR687", from: "Krabi / Krabi (KBV/VTSG)", to: "Singapore / Changi (SIN/WSSS)", duration: "01:25:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A320neo (A20N)" },
-    { date: "2022-05-31", flight: "QZ505", from: "Singapore / Changi (SIN/WSSS)", to: "Denpasar Bali / Ngurah Rai (DPS/WADD)", duration: "02:50:00", airline: "Indonesia AirAsia (QZ/AWQ)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-06-06", flight: "IW1863", from: "Lombok / Lombok International (LOP/WADL)", to: "Denpasar Bali / Ngurah Rai (DPS/WADD)", duration: "00:40:00", airline: "Wings Air (IW/WON)", aircraft: "ATR 72-600 (AT76)" },
-    { date: "2022-06-06", flight: "IW1830", from: "Denpasar Bali / Ngurah Rai (DPS/WADD)", to: "Labuan Bajo / Komodo (LBJ/WATO)", duration: "01:30:00", airline: "Wings Air (IW/WON)", aircraft: "ATR 72-600 (AT76)" },
-    { date: "2022-06-12", flight: "JT811", from: "Labuan Bajo / Komodo (LBJ/WATO)", to: "Surabaya / Juanda (SUB/WARR)", duration: "01:30:00", airline: "Lion Airlines (JT/LNI)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2022-06-15", flight: "3K248", from: "Surabaya / Juanda (SUB/WARR)", to: "Singapore / Changi (SIN/WSSS)", duration: "02:20:00", airline: "Jetstar Asia Airways (3K/JSA)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-07-22", flight: "AK1772", from: "Singapore / Changi (SIN/WSSS)", to: "Kuching / Kuching (KCH/WBGG)", duration: "01:30:00", airline: "Air Asia (AK/AXM)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-07-24", flight: "AK1771", from: "Kuching / Kuching (KCH/WBGG)", to: "Singapore / Changi (SIN/WSSS)", duration: "01:35:00", airline: "Air Asia (AK/AXM)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-08-06", flight: "TR300", from: "Singapore / Changi (SIN/WSSS)", to: "Hanoi / Noibai (HAN/VVNB)", duration: "03:35:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A321neo (A21N)" },
-    { date: "2022-08-10", flight: "TR301", from: "Hanoi / Noibai (HAN/VVNB)", to: "Singapore / Changi (SIN/WSSS)", duration: "03:35:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A321neo (A21N)" },
-    { date: "2022-08-28", flight: "EK355", from: "Singapore / Changi (SIN/WSSS)", to: "Dubai / Dubai International (DXB/OMDB)", duration: "07:10:00", airline: "Emirates (EK/UAE)", aircraft: "Airbus A380-800 (A388)" },
-    { date: "2022-08-31", flight: "EK151", from: "Dubai / Dubai International (DXB/OMDB)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "06:55:00", airline: "Emirates (EK/UAE)", aircraft: "Boeing 777-300ER (B77W)" },
-    { date: "2022-08-19", flight: "TR492", from: "Singapore / Changi (SIN/WSSS)", to: "Kota Kinabalu / Kota Kinabalu (BKI/WBKK)", duration: "02:25:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A321neo (A21N)" },
-    { date: "2022-08-21", flight: "TR493", from: "Kota Kinabalu / Kota Kinabalu (BKI/WBKK)", to: "Singapore / Changi (SIN/WSSS)", duration: "02:10:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A320neo (A20N)" },
-    { date: "2022-10-29", flight: "VY1881", from: "Billund / Billund (BLL/EKBI)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:50:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320neo (A20N)" },
-    { date: "2022-12-01", flight: "BA807", from: "Billund / Billund (BLL/EKBI)", to: "London / Heathrow (LHR/EGLL)", duration: "01:55:00", airline: "British Airways (BA/BAW)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-12-04", flight: "BA806", from: "London / Heathrow (LHR/EGLL)", to: "Billund / Billund (BLL/EKBI)", duration: "01:40:00", airline: "British Airways (BA/BAW)", aircraft: "Airbus A320 (A320)" },
-    { date: "2022-11-11", flight: "D83657", from: "Barcelona / El Prat (BCN/LEBL)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "03:00:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
-    { date: "2023-03-02", flight: "EW4211", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Prague / Praha-Ruzyne (PRG/LKPR)", duration: "01:25:00", airline: "Eurowings (EW/EWG)", aircraft: "Airbus A320 (A320)" },
-    { date: "2023-03-06", flight: "BT482", from: "Prague / Praha-Ruzyne (PRG/LKPR)", to: "Riga / Riga (RIX/EVRA)", duration: "01:45:00", airline: "AirBaltic (BT/BTI)", aircraft: "Bombardier CS300 (BCS3)" },
-    { date: "2023-03-07", flight: "BT139", from: "Riga / Riga (RIX/EVRA)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "01:30:00", airline: "AirBaltic (BT/BTI)", aircraft: "Bombardier CS300 (BCS3)" },
-    { date: "2023-03-31", flight: "AI158", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Delhi / Indira Gandhi (DEL/VIDP)", duration: "07:50:00", airline: "Air India (AI/AIC)", aircraft: "Boeing 787-8 (B788)" },
-    { date: "2023-04-16", flight: "AI157", from: "Delhi / Indira Gandhi (DEL/VIDP)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "08:20:00", airline: "Air India (AI/AIC)", aircraft: "Boeing 787-8 (B788)" },
-    { date: "2023-05-02", flight: "W64572", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Larnaca / Larnaca (LCA/LCLK)", duration: "04:10:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A321LR (A21N)" },
-    { date: "2023-05-09", flight: "W64571", from: "Larnaca / Larnaca (LCA/LCLK)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "04:35:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A321LR (A21N)" },
-    { date: "2023-04-01", flight: "UK155", from: "Delhi / Indira Gandhi (DEL/VIDP)", to: "Kathmandu / Tribhuvan (KTM/VNKT)", duration: "02:05:00", airline: "Vistara (UK/VTI)", aircraft: "Airbus A320neo (A20N)" }
-  ];
-
-  // Parse duration to hours
-  function parseDuration(duration) {
-    const parts = duration.split(':');
-    return parseInt(parts[0]) + parseInt(parts[1]) / 60 + parseInt(parts[2]) / 3600;
+  /* ── Compute breakdowns ── */
+  function topN(arr, key, n) {
+    const counts = {};
+    arr.forEach(x => { const v = x[key]; if (v) counts[v] = (counts[v] || 0) + 1; });
+    return Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, n);
+  }
+  function topAirports(arr, n) {
+    const counts = {};
+    arr.forEach(f => {
+      if (f.fri) { counts[f.fri] = counts[f.fri] || { count: 0, name: f.frn.split(' / ')[0] }; counts[f.fri].count++; }
+      if (f.toi) { counts[f.toi] = counts[f.toi] || { count: 0, name: f.ton.split(' / ')[0] }; counts[f.toi].count++; }
+    });
+    return Object.entries(counts).sort((a,b) => b[1].count - a[1].count).slice(0, n);
   }
 
-  // Extract airport codes
-  function getAirportCode(airport) {
-    const match = airport.match(/\(([A-Z]{3})\//);
-    return match ? match[1] : airport.slice(0, 3);
-  }
-
-  // Categorize flights
-  function categorizeFlights(flights) {
-    return flights.map(f => {
-      const hours = parseDuration(f.duration);
-      let category = 'commercial';
-      if (hours <= 1.5) category = 'short-haul';
-      else if (hours >= 4) category = 'long-haul';
-      else category = 'short-haul';
-      return { ...f, hours, category, code: getAirportCode(f.from) + '-' + getAirportCode(f.to) };
+  function renderBdList(elId, items, max) {
+    const ul = document.getElementById(elId);
+    items.forEach(([name, count]) => {
+      const li = document.createElement('li');
+      li.className = 'bd-row';
+      const displayName = typeof count === 'object' ? `${name} · ${count.name}` : name;
+      const displayCount = typeof count === 'object' ? count.count : count;
+      const pct = displayCount / max;
+      li.innerHTML = `
+        <span class="bd-name" title="${displayName}">${displayName}</span>
+        <span class="bd-count">${displayCount}</span>
+        <span class="bd-bar"><span style="--w:${pct}"></span></span>
+      `;
+      ul.appendChild(li);
     });
   }
 
-  const flights = categorizeFlights(flightData);
+  const topAirlines = topN(FLIGHTS, 'al', 8);
+  const topAircraft = topN(FLIGHTS, 'ac', 8);
+  const topApts = topAirports(FLIGHTS, 8);
+  const maxAirline = topAirlines[0] ? topAirlines[0][1] : 1;
+  const maxAircraft = topAircraft[0] ? topAircraft[0][1] : 1;
+  const maxApt = topApts[0] ? topApts[0][1].count : 1;
+  renderBdList('bd-airlines', topAirlines, maxAirline);
+  renderBdList('bd-aircraft', topAircraft, maxAircraft);
+  renderBdList('bd-airports', topApts, maxApt);
 
-  // Render flights
-  function renderFlights(filter = 'all') {
-    const tbody = document.getElementById('flight-log-body');
-    const empty = document.getElementById('flight-empty');
-    const filtered = filter === 'all' ? flights : flights.filter(f => {
-      if (filter === 'commercial') return f.airline !== 'Unknown';
-      if (filter === 'short-haul') return f.hours <= 4;
-      if (filter === 'long-haul') return f.hours >= 4;
-      return true;
+  /* Animate bars when visible */
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.querySelectorAll('.bd-bar').forEach(b => b.classList.add('visible'));
+      barObserver.unobserve(e.target);
     });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.bd-card').forEach(c => barObserver.observe(c));
 
-    tbody.innerHTML = '';
-    if (filtered.length === 0) {
-      empty.style.display = 'block';
+  /* ── Year chart ── */
+  const yearCounts = {};
+  FLIGHTS.forEach(f => { const y = f.d.slice(0, 4); yearCounts[y] = (yearCounts[y] || 0) + 1; });
+  const years = Object.keys(yearCounts).sort();
+  const startY = +years[0], endY = +years[years.length - 1];
+  const maxY = Math.max(...Object.values(yearCounts));
+  const yb = document.getElementById('yearBars');
+  for (let y = startY; y <= endY; y++) {
+    const c = yearCounts[y] || 0;
+    const h = c / maxY * 100;
+    const col = document.createElement('div');
+    col.className = 'year-bar-col';
+    col.title = `${y}: ${c} flight${c === 1 ? '' : 's'}`;
+    col.innerHTML = `
+      <span class="year-bar-count">${c}</span>
+      <div class="year-bar-wrap"><div class="year-bar" style="height:${h}%"></div></div>
+      <span class="year-bar-label">${y}</span>
+    `;
+    yb.appendChild(col);
+  }
+  const ybObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); ybObserver.unobserve(e.target); }
+    });
+  }, { threshold: 0.2 });
+  ybObserver.observe(yb);
+
+  /* ── Flight log table ── */
+  const logBody = document.getElementById('logBody');
+  const logCount = document.getElementById('logCount');
+  const logSearch = document.getElementById('logSearch');
+  const logChips = document.querySelectorAll('#logChips .chip');
+  const widebodyTypes = /A330|A340|A350|A380|747|767|777|787/i;
+  let activeFilter = 'all';
+
+  function fmtDur(min) {
+    if (!min) return '—';
+    const h = Math.floor(min / 60), m = min % 60;
+    return h ? `${h}h ${m.toString().padStart(2,'0')}m` : `${m}m`;
+  }
+  function fmtDate(s) {
+    const d = new Date(s);
+    if (isNaN(d)) return s;
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  function shortCity(name) {
+    return (name || '').split(' / ')[0];
+  }
+
+  function applyFilters() {
+    const q = logSearch.value.trim().toLowerCase();
+    let filtered = FLIGHTS;
+
+    if (activeFilter !== 'all') {
+      if (activeFilter === 'longhaul') {
+        filtered = filtered.filter(f => f.dur >= 360);
+      } else if (activeFilter === 'widebody') {
+        filtered = filtered.filter(f => widebodyTypes.test(f.ac));
+      } else {
+        filtered = filtered.filter(f => f.d.startsWith(activeFilter));
+      }
+    }
+    if (q) {
+      filtered = filtered.filter(f =>
+        (f.fn || '').toLowerCase().includes(q) ||
+        (f.al || '').toLowerCase().includes(q) ||
+        (f.ac || '').toLowerCase().includes(q) ||
+        (f.fri || '').toLowerCase().includes(q) ||
+        (f.toi || '').toLowerCase().includes(q) ||
+        (f.frn || '').toLowerCase().includes(q) ||
+        (f.ton || '').toLowerCase().includes(q)
+      );
+    }
+
+    logCount.textContent = filtered.length;
+    renderRows(filtered);
+  }
+
+  function renderRows(rows) {
+    if (!rows.length) {
+      logBody.innerHTML = '<tr><td colspan="6" class="lt-empty">No flights match those filters.</td></tr>';
       return;
     }
-    empty.style.display = 'none';
-
-    // Reverse sort by date (newest first)
-    filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(f => {
-      const row = document.createElement('tr');
-      const dateObj = new Date(f.date);
-      const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      const from = getAirportCode(f.from);
-      const to = getAirportCode(f.to);
-
-      row.innerHTML = `
-        <td><span class="flight-date">${dateStr}</span></td>
-        <td><span class="flight-code">${f.flight || '—'}</span></td>
-        <td><span class="flight-route"><strong>${from}</strong><span class="flight-route-arrow">→</span><strong>${to}</strong></span></td>
-        <td><span class="flight-airline">${f.airline}</span></td>
-        <td><span class="flight-aircraft">${f.aircraft}</span></td>
-        <td><span class="flight-duration">${f.duration}</span></td>
-        <td><span class="flight-seat">—</span></td>
+    const frag = document.createDocumentFragment();
+    rows.forEach(f => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="lt-date">${fmtDate(f.d)}</td>
+        <td>
+          <div class="lt-route">
+            <span class="lt-iata">${f.fri || '—'}</span>
+            <span class="lt-arrow">→</span>
+            <span class="lt-iata">${f.toi || '—'}</span>
+          </div>
+          <div class="lt-cities">${shortCity(f.frn)} → ${shortCity(f.ton)}</div>
+        </td>
+        <td class="lt-flight col-hide">${f.fn || '—'}</td>
+        <td class="lt-airline col-hide">${f.al || '—'}</td>
+        <td class="lt-aircraft col-hide">${f.ac || '—'}</td>
+        <td class="lt-dur">${fmtDur(f.dur)}</td>
       `;
-      tbody.appendChild(row);
+      frag.appendChild(tr);
     });
+    logBody.innerHTML = '';
+    logBody.appendChild(frag);
   }
 
-  // Update statistics
-  function updateStats() {
-    const totalFlights = flights.length;
-    const totalHours = flights.reduce((sum, f) => sum + f.hours, 0);
-    const airlines = new Set(flights.filter(f => f.airline !== 'Unknown').map(f => f.airline.split('(')[1]?.slice(0, 2))).size;
-    const aircraft = new Set(flights.filter(f => f.aircraft !== 'Unknown').map(f => f.aircraft.split('(')[1]?.slice(0, 3))).size;
-
-    document.getElementById('total-flights').textContent = totalFlights;
-    document.getElementById('total-hours').textContent = Math.round(totalHours);
-    document.getElementById('unique-airlines').textContent = airlines;
-    document.getElementById('unique-aircraft').textContent = aircraft;
-  }
-
-  // Filter buttons
-  document.querySelectorAll('.flight-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.flight-filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderFlights(btn.dataset.filter);
+  logSearch.addEventListener('input', applyFilters);
+  logChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      logChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFilter = chip.dataset.filter;
+      applyFilters();
     });
   });
 
-  // Initialize
-  updateStats();
-  renderFlights();
+  applyFilters();
 </script>
 
 </body>
