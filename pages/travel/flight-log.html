@@ -452,6 +452,73 @@
       .log-table td.col-hide { display: none; }
     }
 
+    /* ── 3D GLOBE ── */
+    .globe-stage {
+      position: relative;
+      width: 100%; height: 620px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(106,141,181,0.06), transparent 70%),
+        linear-gradient(135deg, rgba(12,16,40,0.4), rgba(5,7,18,0.6));
+      border: 1px solid var(--line);
+    }
+    @media (max-width: 700px) { .globe-stage { height: 460px; } }
+    #flight-globe {
+      position: absolute; inset: 0;
+      cursor: grab; user-select: none;
+    }
+    #flight-globe:active { cursor: grabbing; }
+    #flight-globe canvas { display: block; outline: none; }
+    .globe-hint {
+      position: absolute; bottom: 1rem; left: 1rem; z-index: 5;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(232,220,196,0.5); pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .globe-hint::before {
+      content: '◆'; margin-right: 0.5rem; color: var(--c-photo);
+      animation: hintPulse 2s ease-in-out infinite;
+    }
+    @keyframes hintPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+    .globe-hint.fade { opacity: 0; }
+    .globe-legend {
+      position: absolute; top: 1rem; right: 1rem; z-index: 5;
+      display: flex; flex-direction: column; gap: 0.45rem;
+      background: rgba(8,9,14,0.65); backdrop-filter: blur(12px);
+      border: 1px solid var(--line); border-radius: 12px;
+      padding: 0.8rem 0.95rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .globe-legend .lg-row { display: flex; align-items: center; gap: 0.55rem; }
+    .globe-legend .lg-swatch {
+      width: 18px; height: 2px; border-radius: 1px;
+    }
+    .globe-legend .lg-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--c-photo);
+      box-shadow: 0 0 6px var(--c-photo);
+    }
+    .globe-loading {
+      position: absolute; inset: 0; z-index: 10;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+      background: rgba(8,9,14,0.4); backdrop-filter: blur(4px);
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    .globe-loading.done { opacity: 0; visibility: hidden; }
+    .globe-loading .spinner {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 2px solid rgba(232,220,196,0.15); border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+    }
+    .globe-loading p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-mute);
+    }
+
     /* ── FOOTER ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
     .footer-slim {
@@ -710,6 +777,21 @@
       </div>
     </div>
   </div>
+
+  <!-- ══ GLOBE — flight routes ══ -->
+  <section class="section wow">
+    <div class="section-eyebrow">Worldview</div>
+    <h2>Routes around the world</h2>
+    <div class="globe-stage">
+      <div id="flight-globe"></div>
+      <div class="globe-legend">
+        <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg,#6a8db5,#e8dcc4)"></span> Flight route</div>
+        <div class="lg-row"><span class="lg-dot"></span> Airport visited</div>
+      </div>
+      <div class="globe-hint">Drag · Scroll to zoom</div>
+      <div class="globe-loading" id="globeLoading"><div class="spinner"></div><p>Initialising globe…</p></div>
+    </div>
+  </section>
 
   <!-- ══ TOP BREAKDOWN ══ -->
   <section class="section wow">
@@ -1079,6 +1161,137 @@
   });
 
   applyFilters();
+</script>
+
+<!-- ── 3D globe libs + flight-route rendering ── -->
+<script src="https://unpkg.com/three@0.155.0/build/three.min.js"></script>
+<script src="https://unpkg.com/globe.gl@2.27.2/dist/globe.gl.min.js"></script>
+<script>
+  const AIRPORTS = {"AAR":[56.30,10.62,"Aarhus"],"AMM":[31.72,35.99,"Amman"],"AMS":[52.31,4.76,"Amsterdam"],"ARK":[-3.37,36.63,"Arusha"],"AUH":[24.43,54.65,"Abu Dhabi"],"BCN":[41.30,2.08,"Barcelona"],"BFS":[54.66,-6.22,"Belfast"],"BGI":[13.07,-59.49,"Bridgetown"],"BGY":[45.67,9.70,"Bergamo"],"BHD":[54.62,-5.87,"Belfast City"],"BHR":[27.68,84.43,"Bharatpur"],"BKI":[5.94,116.05,"Kota Kinabalu"],"BLL":[55.74,9.15,"Billund"],"BRI":[41.14,16.76,"Bari"],"BUD":[47.44,19.26,"Budapest"],"CGN":[50.87,7.14,"Cologne"],"CPH":[55.62,12.66,"Copenhagen"],"CRL":[50.46,4.45,"Charleroi"],"DEL":[28.57,77.10,"Delhi"],"DOH":[25.27,51.61,"Doha"],"DPS":[-8.75,115.17,"Denpasar"],"DXB":[25.25,55.36,"Dubai"],"EDI":[55.95,-3.37,"Edinburgh"],"FRA":[50.04,8.56,"Frankfurt"],"GND":[12.00,-61.79,"Grenada"],"GRO":[41.90,2.76,"Girona"],"HAN":[21.22,105.81,"Hanoi"],"HEL":[60.32,24.96,"Helsinki"],"IAH":[29.98,-95.34,"Houston"],"JRO":[-3.43,37.07,"Kilimanjaro"],"KBV":[8.10,98.99,"Krabi"],"KCH":[1.48,110.34,"Kuching"],"KEF":[63.99,-22.61,"Keflavik"],"KRK":[50.08,19.79,"Krakow"],"KTM":[27.70,85.36,"Kathmandu"],"KUL":[2.74,101.71,"Kuala Lumpur"],"KUN":[54.96,24.08,"Kaunas"],"LBJ":[-8.49,119.89,"Labuan Bajo"],"LCA":[34.88,33.62,"Larnaca"],"LCG":[43.30,-8.38,"La Coruña"],"LEN":[42.59,-5.65,"León"],"LGW":[51.15,-0.18,"London Gatwick"],"LHR":[51.47,-0.45,"London Heathrow"],"LOP":[-8.76,116.28,"Lombok"],"MAA":[12.99,80.18,"Chennai"],"MNL":[14.51,121.02,"Manila"],"OSL":[60.19,11.10,"Oslo"],"OTP":[44.57,26.10,"Bucharest"],"POZ":[52.42,16.83,"Poznań"],"PRG":[50.10,14.26,"Prague"],"PRI":[-4.32,55.69,"Praslin"],"REU":[41.15,1.17,"Reus"],"RIX":[56.92,23.97,"Riga"],"SEZ":[-4.67,55.52,"Mahé"],"SGN":[10.82,106.66,"Ho Chi Minh"],"SIN":[1.36,103.99,"Singapore"],"SOF":[42.69,23.41,"Sofia"],"STN":[51.89,0.23,"London Stansted"],"SUB":[-7.38,112.79,"Surabaya"],"SVD":[13.16,-61.21,"St Vincent"],"SXF":[52.38,13.52,"Berlin Schönefeld"],"TAC":[11.23,125.03,"Tacloban"],"TIA":[41.42,19.72,"Tirana"],"TUN":[36.85,10.23,"Tunis"],"TXL":[52.56,13.29,"Berlin Tegel"],"UVF":[13.73,-60.95,"St Lucia"],"VIE":[48.11,16.57,"Vienna"],"VNO":[54.64,25.29,"Vilnius"],"WAW":[52.17,20.97,"Warsaw"],"ZNZ":[-6.22,39.22,"Zanzibar"],"ZRH":[47.46,8.55,"Zürich"]};
+
+  let __globeTries = 0;
+  function initFlightGlobe() {
+    if (typeof Globe === 'undefined' || typeof THREE === 'undefined') {
+      if (++__globeTries > 100) return;
+      setTimeout(initFlightGlobe, 60);
+      return;
+    }
+
+    const container = document.getElementById('flight-globe');
+    const loading = document.getElementById('globeLoading');
+    const hint = document.querySelector('.globe-hint');
+    if (!container) return;
+
+    // ── Build unique routes + airport visit counts ──
+    const routeCounts = {};
+    const airportVisits = {};
+    FLIGHTS.forEach(f => {
+      const a = f.fri, b = f.toi;
+      if (!a || !b || !AIRPORTS[a] || !AIRPORTS[b]) return;
+      const key = [a, b].sort().join('-');
+      routeCounts[key] = (routeCounts[key] || 0) + 1;
+      airportVisits[a] = (airportVisits[a] || 0) + 1;
+      airportVisits[b] = (airportVisits[b] || 0) + 1;
+    });
+
+    const maxRoute = Math.max(...Object.values(routeCounts));
+    const arcs = Object.entries(routeCounts).map(([key, count]) => {
+      const [a, b] = key.split('-');
+      const [latA, lngA] = AIRPORTS[a];
+      const [latB, lngB] = AIRPORTS[b];
+      const intensity = 0.35 + 0.65 * (count / maxRoute);
+      // gradient endpoint colors so arcs read as bright travel-blue → warm accent
+      return {
+        startLat: latA, startLng: lngA,
+        endLat: latB, endLng: lngB,
+        count,
+        color: [
+          `rgba(106,141,181,${intensity})`,
+          `rgba(232,220,196,${intensity})`
+        ],
+        stroke: 0.4 + 0.8 * (count / maxRoute)
+      };
+    });
+
+    const maxApt = Math.max(...Object.values(airportVisits));
+    const points = Object.entries(airportVisits).map(([iata, count]) => {
+      const [lat, lng, name] = AIRPORTS[iata];
+      return {
+        lat, lng, iata, name, count,
+        radius: 0.18 + 0.55 * Math.sqrt(count / maxApt),
+        altitude: 0.005
+      };
+    });
+
+    const globe = Globe()(container)
+      .globeImageUrl('../../media/textures/earth-blue-marble-lo.jpg')
+      .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
+      .backgroundColor('rgba(0,0,0,0)')
+      .atmosphereColor('#a8c8ff')
+      .atmosphereAltitude(0.18)
+      // arcs
+      .arcsData(arcs)
+      .arcColor('color')
+      .arcStroke('stroke')
+      .arcAltitudeAutoScale(0.45)
+      .arcDashLength(0.5)
+      .arcDashGap(1.2)
+      .arcDashInitialGap(() => Math.random())
+      .arcDashAnimateTime(4500)
+      .arcsTransitionDuration(0)
+      .arcLabel(d => `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:rgba(8,9,14,.92);border:1px solid rgba(106,141,181,.4);padding:.45rem .7rem;border-radius:8px;color:#ececea;letter-spacing:.05em"><b>${d.count}×</b> flight${d.count>1?'s':''}</div>`)
+      // airport pins
+      .pointsData(points)
+      .pointAltitude('altitude')
+      .pointRadius('radius')
+      .pointColor(() => '#c8784a')
+      .pointResolution(8)
+      .pointLabel(d => `<div style="font-family:'Inter',sans-serif;font-size:.78rem;background:rgba(8,9,14,.92);border:1px solid rgba(200,120,74,.4);padding:.5rem .75rem;border-radius:8px;color:#ececea"><b style="font-family:'JetBrains Mono',monospace;letter-spacing:.06em;color:#e8dcc4">${d.iata}</b> · ${d.name}<br><span style="color:#a8a9af;font-size:.72rem">${d.count} visit${d.count>1?'s':''}</span></div>`);
+
+    // Lighting
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
+    keyLight.position.set(100, 120, 80);
+    globe.scene().add(keyLight);
+    const fillLight = new THREE.DirectionalLight(0x88aaff, 0.35);
+    fillLight.position.set(-80, -40, -60);
+    globe.scene().add(fillLight);
+
+    // Initial view — Europe-centric since most flights are there
+    globe.pointOfView({ lat: 30, lng: 25, altitude: 2.2 }, 0);
+
+    const controls = globe.controls();
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.35;
+    controls.minDistance = 180;
+    controls.maxDistance = 600;
+
+    // Stop auto-rotate on user interaction
+    let stopRotate = false;
+    ['mousedown','touchstart','wheel'].forEach(ev =>
+      container.addEventListener(ev, () => {
+        if (stopRotate) return;
+        controls.autoRotate = false;
+        stopRotate = true;
+        if (hint) hint.classList.add('fade');
+      }, { passive: true })
+    );
+
+    // Resize handling
+    function resize() {
+      const w = container.clientWidth, h = container.clientHeight;
+      globe.width(w).height(h);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Hide loading veil once first frame renders
+    requestAnimationFrame(() => {
+      setTimeout(() => loading && loading.classList.add('done'), 400);
+    });
+  }
+  initFlightGlobe();
 </script>
 
 </body>
