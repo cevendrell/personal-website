@@ -1847,8 +1847,8 @@ function runGlobeInit() {
   // ── Initialise the globe ──────────────────────────────────
   const globe = Globe()(container)
     // Realistic NASA Blue Marble texture (lighter, with oceans/continents/clouds)
-    // 5400×2700 NASA Blue Marble (Solar System Scope, CC BY 4.0) — ~3× the pixel density
-    // of the three-globe default, hosted locally for cache reliability.
+    // 8192×4096 NASA "land_shallow_topo" Blue Marble — 4× the pixel density of the
+    // three-globe default (4096×2048), same darker / atmospheric look. Hosted locally.
     .globeImageUrl('../../media/textures/earth-blue-marble-hd.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
     .backgroundColor('rgba(0,0,0,0)')
