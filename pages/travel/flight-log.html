@@ -165,6 +165,14 @@
       box-shadow: 0 0 0 3px rgba(34,197,94,0.2), 0 0 12px rgba(34,197,94,0.5);
       animation: pulseLive 2s ease-in-out infinite;
     }
+    .status-dot[data-state="loading"] {
+      background: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251,191,36,0.2), 0 0 12px rgba(251,191,36,0.5);
+    }
+    .status-dot[data-state="offline"] {
+      background: #6b6d75; animation: none;
+      box-shadow: 0 0 0 3px rgba(107,109,117,0.2);
+    }
     @keyframes pulseLive {
       0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2), 0 0 12px rgba(34,197,94,0.5); }
       50%      { box-shadow: 0 0 0 6px rgba(34,197,94,0.08), 0 0 20px rgba(34,197,94,0.7); }
@@ -174,11 +182,18 @@
       font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
       color: #22c55e;
     }
+    .status-label[data-state="loading"] { color: #fbbf24; }
+    .status-label[data-state="offline"] { color: var(--mute); }
     .adsb-id { display: flex; flex-direction: column; gap: 0.1rem; margin-left: 0.25rem; }
     .adsb-id h2 { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.08em; color: var(--text); line-height: 1; }
     .adsb-id p { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; color: var(--mute); text-transform: uppercase; line-height: 1; }
+    .adsb-tick {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.12em; color: var(--mute);
+      text-transform: uppercase; margin-left: auto;
+    }
+    .adsb-tick strong { color: var(--accent); font-weight: 600; }
     .adsb-fr24-link {
-      margin-left: auto;
       display: inline-flex; align-items: center; gap: 0.4rem;
       font-size: 0.78rem; font-weight: 600;
       color: var(--c-travel); border: 1px solid rgba(106,141,181,0.3);
@@ -187,29 +202,85 @@
     }
     .adsb-fr24-link:hover { background: var(--c-travel); color: #fff; }
 
-    .adsb-body { display: grid; grid-template-columns: 320px 1fr; gap: 0; align-items: start; }
-    @media (max-width: 760px) { .adsb-body { grid-template-columns: 1fr; } }
-    .radar-panel { padding: 2rem 1.5rem 2rem 2rem; border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-    @media (max-width: 760px) { .radar-panel { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1.5rem; } }
-    .radar-display {
-      position: relative; width: 260px; height: 260px; border-radius: 50%;
+    /* ── KPI strip ── */
+    .adsb-toprow {
+      display: grid; grid-template-columns: repeat(6, 1fr);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    @media (max-width: 900px) { .adsb-toprow { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 480px) { .adsb-toprow { grid-template-columns: repeat(2, 1fr); } }
+    .kpi {
+      padding: 1.1rem 1.25rem;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      display: flex; flex-direction: column; gap: 0.35rem;
+      position: relative; overflow: hidden;
+    }
+    .kpi:last-child { border-right: none; }
+    @media (max-width: 900px) {
+      .kpi:nth-child(3n) { border-right: none; }
+      .kpi { border-bottom: 1px solid rgba(255,255,255,0.05); }
+      .kpi:nth-last-child(-n+3) { border-bottom: none; }
+    }
+    @media (max-width: 480px) {
+      .kpi:nth-child(2n) { border-right: none; }
+      .kpi:nth-child(3n) { border-right: 1px solid rgba(255,255,255,0.05); }
+      .kpi:nth-child(6n), .kpi:nth-child(odd):last-child { border-right: none; }
+    }
+    .kpi::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--kpi-color, rgba(106,141,181,0.4));
+      opacity: 0.6;
+    }
+    .kpi[data-tone="green"] { --kpi-color: rgba(34,197,94,0.55); }
+    .kpi[data-tone="blue"]  { --kpi-color: rgba(106,141,181,0.55); }
+    .kpi[data-tone="amber"] { --kpi-color: rgba(200,120,74,0.55); }
+    .kpi-num {
+      font-size: clamp(1.4rem, 2.2vw, 1.8rem); font-weight: 800;
+      letter-spacing: -0.03em; color: var(--text); line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .kpi-num small { font-size: 0.55em; font-weight: 500; color: var(--mute); margin-left: 0.2rem; letter-spacing: 0.05em; }
+    .kpi-lbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.12em; color: var(--mute);
+      text-transform: uppercase; line-height: 1.3;
+    }
+
+    .adsb-body { display: grid; grid-template-columns: 1.05fr 1fr; gap: 0; align-items: stretch; }
+    @media (max-width: 900px) { .adsb-body { grid-template-columns: 1fr; } }
+
+    .radar-panel {
+      padding: 1.75rem 1.5rem 1.5rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+      position: relative;
+    }
+    @media (max-width: 900px) {
+      .radar-panel { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1.5rem; }
+    }
+    .radar-wrap {
+      position: relative;
+      width: 100%; max-width: 420px; aspect-ratio: 1 / 1;
+    }
+    .radar-bg {
+      position: absolute; inset: 0; border-radius: 50%;
       background: radial-gradient(circle at 50% 50%, #071209 0%, #050e08 45%, #030a06 70%, #020706 100%);
       border: 1px solid rgba(0,220,80,0.18);
       box-shadow: 0 0 0 1px rgba(0,220,80,0.06), 0 0 40px rgba(0,220,80,0.06) inset, 0 8px 40px rgba(0,0,0,0.6);
-      overflow: hidden; flex-shrink: 0;
+      overflow: hidden;
     }
     .radar-rings {
       position: absolute; inset: 0; border-radius: 50%;
       background:
-        radial-gradient(circle, transparent 24%, rgba(0,200,70,0.08) 24.5%, transparent 25%),
-        radial-gradient(circle, transparent 49%, rgba(0,200,70,0.08) 49.5%, transparent 50%),
-        radial-gradient(circle, transparent 74%, rgba(0,200,70,0.08) 74.5%, transparent 75%);
+        radial-gradient(circle, transparent 24%, rgba(0,200,70,0.10) 24.5%, transparent 25%),
+        radial-gradient(circle, transparent 49%, rgba(0,200,70,0.10) 49.5%, transparent 50%),
+        radial-gradient(circle, transparent 74%, rgba(0,200,70,0.10) 74.5%, transparent 75%);
     }
     .radar-cross {
       position: absolute; inset: 0;
       background:
-        linear-gradient(to right, transparent calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
-        linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% - 0.5px), rgba(0,200,70,0.08) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+        linear-gradient(to right, transparent calc(50% - 0.5px), rgba(0,200,70,0.10) calc(50% - 0.5px), rgba(0,200,70,0.10) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+        linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(0,200,70,0.10) calc(50% - 0.5px), rgba(0,200,70,0.10) calc(50% + 0.5px), transparent calc(50% + 0.5px));
     }
     .radar-sweep {
       position: absolute; inset: 0; border-radius: 50%;
@@ -217,48 +288,161 @@
         transparent 0deg, transparent 300deg,
         rgba(0,220,80,0.04) 330deg, rgba(0,220,80,0.15) 350deg,
         rgba(0,220,80,0.35) 358deg, transparent 360deg);
-      animation: sweepRotate 4s linear infinite;
+      animation: sweepRotate 6s linear infinite;
+      pointer-events: none;
     }
     @keyframes sweepRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .radar-blip {
-      position: absolute; left: var(--bx); top: var(--by);
-      width: 5px; height: 5px; border-radius: 50%; background: #4ade80;
-      box-shadow: 0 0 6px 2px rgba(74,222,128,0.7);
-      transform: translate(-50%, -50%);
-      animation: blipPulse var(--bd, 3s) ease-in-out var(--delay, 0s) infinite;
-    }
-    @keyframes blipPulse {
-      0%,100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
-      50% { opacity: 0.4; transform: translate(-50%,-50%) scale(0.6); }
-    }
     .radar-center {
       position: absolute; top: 50%; left: 50%;
-      width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(0,220,80,0.9); box-shadow: 0 0 8px rgba(0,220,80,0.8);
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(0,220,80,0.95);
+      box-shadow: 0 0 10px rgba(0,220,80,0.9), 0 0 0 3px rgba(0,220,80,0.18);
       transform: translate(-50%,-50%);
+      animation: rxPulse 2s ease-in-out infinite;
     }
-    .radar-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(0,200,70,0.5); text-align: center; line-height: 1.6; }
+    @keyframes rxPulse {
+      0%,100% { box-shadow: 0 0 10px rgba(0,220,80,0.9), 0 0 0 3px rgba(0,220,80,0.18); }
+      50%     { box-shadow: 0 0 14px rgba(0,220,80,1), 0 0 0 6px rgba(0,220,80,0.10); }
+    }
+    .radar-card {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.18em; color: rgba(0,200,70,0.55);
+      pointer-events: none;
+    }
+    .radar-card.n { top: 0.25rem; left: 50%; transform: translateX(-50%); }
+    .radar-card.s { bottom: 0.25rem; left: 50%; transform: translateX(-50%); }
+    .radar-card.e { top: 50%; right: 0.4rem; transform: translateY(-50%); }
+    .radar-card.w { top: 50%; left: 0.4rem; transform: translateY(-50%); }
 
-    .adsb-stats { padding: 1.75rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; align-content: start; }
-    @media (max-width: 560px) { .adsb-stats { grid-template-columns: repeat(2, 1fr); } }
-    .stat-card {
-      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 12px; padding: 1.1rem 1.1rem 0.9rem;
-      display: flex; flex-direction: column; gap: 0.2rem;
-      position: relative; overflow: hidden;
-      transition: background 0.25s, border-color 0.25s;
+    .radar-svg {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none;
     }
-    .stat-card:hover { background: rgba(255,255,255,0.045); border-color: rgba(106,141,181,0.25); }
-    .stat-card::before {
-      content: var(--icon,''); position: absolute; top: 0.75rem; right: 0.9rem;
-      font-size: 1.1rem; opacity: 0.18;
+    .radar-svg .ring-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px; fill: rgba(0,200,70,0.45);
+      letter-spacing: 0.1em;
     }
-    .stat-value { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; letter-spacing: -0.04em; color: var(--text); line-height: 1; }
-    .stat-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 400; color: var(--c-travel); letter-spacing: 0.08em; text-transform: uppercase; }
-    .stat-label { font-size: 0.72rem; color: var(--mute); margin-top: 0.35rem; line-height: 1.3; }
-    .stat-card.accent-green  { border-top: 2px solid rgba(34,197,94,0.5); }
-    .stat-card.accent-blue   { border-top: 2px solid rgba(106,141,181,0.5); }
-    .stat-card.accent-amber  { border-top: 2px solid rgba(200,120,74,0.5); }
+    .radar-svg .ac-icon {
+      transition: opacity 0.5s ease;
+      pointer-events: auto; cursor: pointer;
+    }
+    .radar-svg .ac-icon:hover .ac-triangle { filter: drop-shadow(0 0 4px currentColor); }
+    .radar-svg .ac-track-line {
+      stroke-width: 0.6; opacity: 0.5;
+    }
+    .radar-svg .ac-callsign {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 6.5px; fill: rgba(255,255,255,0.85);
+      letter-spacing: 0.04em; pointer-events: none;
+    }
+    .radar-svg .ac-icon.stale { opacity: 0.3; }
+
+    .radar-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(0,200,70,0.5); text-align: center; line-height: 1.7;
+    }
+    .radar-meta b { color: rgba(0,220,80,0.85); font-weight: 600; }
+
+    .alt-legend {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.1em; color: var(--mute);
+      text-transform: uppercase; justify-content: center;
+    }
+    .alt-legend .alt-key { color: rgba(0,200,70,0.55); }
+    .alt-row { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--text-dim); }
+    .alt-sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; box-shadow: 0 0 4px rgba(0,0,0,0.3); }
+
+    /* ── Live aircraft panel ── */
+    .aap-panel {
+      display: flex; flex-direction: column;
+      padding: 1.75rem 1.5rem 1.5rem;
+      min-height: 0; min-width: 0;
+    }
+    .aap-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .aap-header h3 {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--c-travel);
+    }
+    .aap-header .aap-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: var(--mute); letter-spacing: 0.1em;
+    }
+    .aap-header .aap-meta strong { color: var(--accent); font-weight: 600; }
+    .aap-scroll {
+      flex: 1; overflow-y: auto; overflow-x: auto;
+      max-height: 460px;
+      border: 1px solid var(--line); border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+    }
+    .aap-scroll::-webkit-scrollbar { width: 6px; }
+    .aap-scroll::-webkit-scrollbar-track { background: transparent; }
+    .aap-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    .aap-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
+
+    .aap-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 460px; }
+    .aap-table thead {
+      position: sticky; top: 0; z-index: 2;
+      background: rgba(10,12,28,0.96); backdrop-filter: blur(6px);
+    }
+    .aap-table th {
+      text-align: left; padding: 0.6rem 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--c-travel); font-weight: 600;
+      border-bottom: 1px solid var(--line);
+    }
+    .aap-table td {
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle; color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+    .aap-table tr.is-highlighted td { background: rgba(0,220,80,0.06); }
+    .aap-table tr:last-child td { border-bottom: none; }
+    .aap-table td.ac-flight {
+      font-family: 'JetBrains Mono', monospace; color: var(--accent);
+      font-weight: 600; letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .aap-table td.ac-hex {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--mute); text-transform: uppercase;
+    }
+    .aap-table td.ac-alt {
+      font-family: 'JetBrains Mono', monospace; color: var(--text);
+      white-space: nowrap; font-size: 0.74rem;
+    }
+    .aap-table td.ac-alt .alt-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      margin-right: 0.4rem; vertical-align: middle;
+      box-shadow: 0 0 4px currentColor;
+    }
+    .aap-table td.ac-spd, .aap-table td.ac-dist {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .aap-table td.ac-rssi {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--mute);
+      white-space: nowrap;
+    }
+    .aap-empty { padding: 2.5rem 1rem; text-align: center; color: var(--mute); font-style: italic; font-size: 0.82rem; }
+
+    .adsb-foot {
+      padding: 0.75rem 1.75rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.015);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.1em; color: var(--mute);
+      display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+    }
+    .adsb-foot .feed-foot-status { color: var(--text-dim); }
+    .adsb-foot a { color: var(--c-travel); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
 
     /* ── BREAKDOWN TRIPLE — top airlines, aircraft, airports ── */
     .breakdown-grid {
@@ -705,74 +889,114 @@
     </div>
   </div>
 
-  <!-- ══ ADS-B RADAR ══ -->
-  <div class="adsb-section wow">
+  <!-- ══ LIVE ADS-B FEEDER DASHBOARD ══ -->
+  <div class="adsb-section wow" id="adsbDashboard">
     <div class="adsb-header">
       <div class="adsb-status">
-        <span class="status-dot"></span>
-        <span class="status-label">Feeding live</span>
+        <span class="status-dot" id="feedDot" data-state="loading"></span>
+        <span class="status-label" id="feedStatus" data-state="loading">Connecting…</span>
       </div>
       <div class="adsb-id">
         <h2>T-EKAC94</h2>
-        <p>ADS-B Receiver · FlightRadar24 · Billund, Denmark</p>
+        <p id="feedSubtitle">tar1090 · readsb · Billund, Denmark</p>
       </div>
+      <span class="adsb-tick" id="feedTick">—</span>
       <a class="adsb-fr24-link" href="https://my.flightradar24.com/carlosebrahim" target="_blank" rel="noopener">
         FR24 profile
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       </a>
     </div>
+
+    <!-- Live KPI bar -->
+    <div class="adsb-toprow">
+      <div class="kpi" data-tone="green">
+        <div class="kpi-num" id="kpiAircraft">—</div>
+        <div class="kpi-lbl">aircraft tracked</div>
+      </div>
+      <div class="kpi" data-tone="blue">
+        <div class="kpi-num" id="kpiWithPos">—</div>
+        <div class="kpi-lbl">with position</div>
+      </div>
+      <div class="kpi" data-tone="amber">
+        <div class="kpi-num" id="kpiMaxRange">—</div>
+        <div class="kpi-lbl">max range now</div>
+      </div>
+      <div class="kpi" data-tone="green">
+        <div class="kpi-num" id="kpiMsgRate">—</div>
+        <div class="kpi-lbl">msgs / sec</div>
+      </div>
+      <div class="kpi" data-tone="blue">
+        <div class="kpi-num" id="kpiSignal">—</div>
+        <div class="kpi-lbl">avg signal (dBFS)</div>
+      </div>
+      <div class="kpi" data-tone="amber">
+        <div class="kpi-num" id="kpiUptime">—</div>
+        <div class="kpi-lbl">uptime</div>
+      </div>
+    </div>
+
+    <!-- Radar + aircraft table -->
     <div class="adsb-body">
       <div class="radar-panel">
-        <div class="radar-display">
-          <div class="radar-rings"></div>
-          <div class="radar-cross"></div>
-          <div class="radar-sweep"></div>
-          <div class="radar-blip" style="--bx:62%;--by:28%;--delay:0s;--bd:2.8s"></div>
-          <div class="radar-blip" style="--bx:74%;--by:48%;--delay:0.6s;--bd:3.2s"></div>
-          <div class="radar-blip" style="--bx:35%;--by:41%;--delay:1.2s;--bd:2.5s"></div>
-          <div class="radar-blip" style="--bx:55%;--by:68%;--delay:0.3s;--bd:3.6s"></div>
-          <div class="radar-blip" style="--bx:42%;--by:22%;--delay:1.8s;--bd:2.9s"></div>
-          <div class="radar-blip" style="--bx:80%;--by:62%;--delay:0.9s;--bd:3.1s"></div>
-          <div class="radar-blip" style="--bx:28%;--by:60%;--delay:2.1s;--bd:2.7s"></div>
-          <div class="radar-blip" style="--bx:67%;--by:75%;--delay:1.5s;--bd:3.4s"></div>
-          <div class="radar-blip" style="--bx:20%;--by:38%;--delay:0.4s;--bd:4s"></div>
-          <div class="radar-blip" style="--bx:50%;--by:82%;--delay:2.5s;--bd:2.6s"></div>
-          <div class="radar-center"></div>
+        <div class="radar-wrap">
+          <div class="radar-bg">
+            <div class="radar-rings"></div>
+            <div class="radar-cross"></div>
+            <div class="radar-sweep"></div>
+            <span class="radar-card n">N</span>
+            <span class="radar-card s">S</span>
+            <span class="radar-card e">E</span>
+            <span class="radar-card w">W</span>
+            <svg class="radar-svg" id="radarSvg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+              <!-- range ring labels drawn by JS -->
+              <g id="radarRingLabels"></g>
+              <!-- aircraft drawn by JS -->
+              <g id="radarAircraft"></g>
+            </svg>
+            <div class="radar-center" title="Receiver"></div>
+          </div>
         </div>
-        <p class="radar-label">T-EKAC94 · Billund<br>ADS-B 1090 MHz</p>
-      </div>
-      <div class="adsb-stats">
-        <div class="stat-card accent-green" style="--icon:'✈'">
-          <div class="stat-value">176</div>
-          <div class="stat-unit">flights flown</div>
-          <div class="stat-label">Personal lifetime total</div>
-        </div>
-        <div class="stat-card accent-blue" style="--icon:'⏱'">
-          <div class="stat-value">491<span style="font-size:0.6em;color:var(--mute);font-weight:500"> h</span></div>
-          <div class="stat-unit">in the air</div>
-          <div class="stat-label">~20.5 days cumulative</div>
-        </div>
-        <div class="stat-card accent-amber" style="--icon:'🌍'">
-          <div class="stat-value">40</div>
-          <div class="stat-unit">countries</div>
-          <div class="stat-label">Reached by air</div>
-        </div>
-        <div class="stat-card accent-green" style="--icon:'📡'">
-          <div class="stat-value">24/7</div>
-          <div class="stat-unit">feeding</div>
-          <div class="stat-label">FR24 contributor since 2024</div>
-        </div>
-        <div class="stat-card accent-blue" style="--icon:'🛫'">
-          <div class="stat-value">71</div>
-          <div class="stat-unit">airports</div>
-          <div class="stat-label">Unique IATA codes visited</div>
-        </div>
-        <div class="stat-card accent-amber" style="--icon:'🛩'">
-          <div class="stat-value">36</div>
-          <div class="stat-unit">aircraft types</div>
-          <div class="stat-label">A380 to DHC-6 Twin Otter</div>
+        <p class="radar-meta">
+          range: <b id="radarRange">300 km</b> · rings every <b id="radarRingStep">75 km</b>
+        </p>
+        <div class="alt-legend">
+          <span class="alt-key">Altitude (ft)</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#ff4444;color:#ff4444"></span> &lt;5k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#ff8c1a;color:#ff8c1a"></span> 5–10k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#ffd633;color:#ffd633"></span> 10–20k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#66cc44;color:#66cc44"></span> 20–30k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#33cccc;color:#33cccc"></span> 30–40k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#4488ff;color:#4488ff"></span> &gt;40k</span>
         </div>
       </div>
+
+      <div class="aap-panel">
+        <div class="aap-header">
+          <h3>Live aircraft</h3>
+          <span class="aap-meta"><strong id="aapMeta">—</strong> visible · sorted by distance</span>
+        </div>
+        <div class="aap-scroll">
+          <table class="aap-table">
+            <thead>
+              <tr>
+                <th>Flight</th>
+                <th>Hex</th>
+                <th>Alt</th>
+                <th>Spd</th>
+                <th>Dist</th>
+                <th>RSSI</th>
+              </tr>
+            </thead>
+            <tbody id="aapBody">
+              <tr><td colspan="6" class="aap-empty">Waiting for first message…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="adsb-foot">
+      <span class="feed-foot-status" id="feedFootMsg">Polling local receiver…</span>
     </div>
   </div>
 
@@ -1161,6 +1385,371 @@
   });
 
   applyFilters();
+</script>
+
+<!-- ── LIVE ADS-B FEEDER DASHBOARD ── -->
+<script>
+(function liveFeederDashboard() {
+  // ─── Configuration ─────────────────────────────────────────────
+  // Switch to a tunneled / DDNS hostname when exposing externally.
+  // Keep trailing slash on the base; paths are appended verbatim.
+  const FEEDER_BASE       = 'http://192.168.1.98/tar1090/data/';
+  const AIRCRAFT_POLL_MS  = 2000;   // tar1090 default refresh is ~1s
+  const STATS_POLL_MS     = 10000;
+  const FETCH_TIMEOUT_MS  = 4500;
+  const RADAR_MAX_KM      = 300;    // outer ring distance
+  // Fallback receiver location (Billund) if /receiver.json is unreachable
+  const FALLBACK_RX       = { lat: 55.7403, lon: 9.1518 };
+
+  // ─── Helpers ───────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+
+  async function fetchJSON(path) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const r = await fetch(FEEDER_BASE + path, {
+        cache: 'no-store', mode: 'cors', signal: ctrl.signal,
+        // tar1090 typically returns plain JSON without auth
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } finally { clearTimeout(t); }
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const toRad = d => d * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat/2) ** 2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+  function bearingDeg(lat1, lon1, lat2, lon2) {
+    const toRad = d => d * Math.PI / 180;
+    const φ1 = toRad(lat1), φ2 = toRad(lat2);
+    const Δλ = toRad(lon2 - lon1);
+    const y = Math.sin(Δλ) * Math.cos(φ2);
+    const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  }
+  function altitudeColor(ft) {
+    if (ft == null || ft === 'ground') return '#888';
+    if (ft < 5000)   return '#ff4444';
+    if (ft < 10000)  return '#ff8c1a';
+    if (ft < 20000)  return '#ffd633';
+    if (ft < 30000)  return '#66cc44';
+    if (ft < 40000)  return '#33cccc';
+    return '#4488ff';
+  }
+  function fmtAlt(ft) {
+    if (ft === 'ground') return 'GND';
+    if (ft == null) return '—';
+    if (ft >= 1000) return (ft / 1000).toFixed(1).replace(/\.0$/,'') + 'k';
+    return Math.round(ft);
+  }
+  function fmtSpeed(kt) { return kt == null ? '—' : Math.round(kt) + ' kt'; }
+  function fmtDist(km) { return km == null ? '—' : km < 10 ? km.toFixed(1) + ' km' : Math.round(km) + ' km'; }
+  function fmtRssi(db) { return db == null ? '—' : db.toFixed(1); }
+  function fmtUptime(s) {
+    if (s == null) return '—';
+    const d = Math.floor(s / 86400);
+    const h = Math.floor(s % 86400 / 3600);
+    const m = Math.floor(s % 3600 / 60);
+    if (d > 0) return `${d}d ${h}h`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+  }
+  function fmtTimeHHMMSS(d) {
+    return d.toLocaleTimeString('en-GB', { hour12: false });
+  }
+
+  // ─── DOM refs ──────────────────────────────────────────────────
+  const dashboard = $('adsbDashboard');
+  if (!dashboard) return;
+  const dot = $('feedDot');
+  const statusLbl = $('feedStatus');
+  const tick = $('feedTick');
+  const foot = $('feedFootMsg');
+  const subtitle = $('feedSubtitle');
+
+  const kpiAircraft = $('kpiAircraft');
+  const kpiWithPos = $('kpiWithPos');
+  const kpiMaxRange = $('kpiMaxRange');
+  const kpiMsgRate = $('kpiMsgRate');
+  const kpiSignal = $('kpiSignal');
+  const kpiUptime = $('kpiUptime');
+
+  const radarSvg = $('radarSvg');
+  const radarAircraftG = $('radarAircraft');
+  const radarRingLabelsG = $('radarRingLabels');
+  const radarRange = $('radarRange');
+  const radarRingStep = $('radarRingStep');
+
+  const aapBody = $('aapBody');
+  const aapMeta = $('aapMeta');
+
+  // ─── State ─────────────────────────────────────────────────────
+  let rx = null;                  // receiver position
+  let lastAircraftAt = 0;         // ms
+  let lastStatsAt = 0;
+  let aircraftTimer = null, statsTimer = null;
+  let connected = false;
+  let firstError = true;
+
+  function setStatus(state, label, footMsg) {
+    dot.dataset.state = state;
+    statusLbl.dataset.state = state;
+    statusLbl.textContent = label;
+    if (footMsg) foot.textContent = footMsg;
+  }
+
+  // ─── Radar geometry ────────────────────────────────────────────
+  // SVG is 400×400, centre at (200,200). Outer ring at r=180 (= RADAR_MAX_KM).
+  const C = 200, R_OUTER = 180;
+  function project(lat, lon) {
+    if (!rx) return null;
+    const dist = haversineKm(rx.lat, rx.lon, lat, lon);
+    if (dist > RADAR_MAX_KM) return null;
+    const brg = bearingDeg(rx.lat, rx.lon, lat, lon);
+    const r = (dist / RADAR_MAX_KM) * R_OUTER;
+    const θ = (brg) * Math.PI / 180;               // 0 = north
+    return {
+      x: C + r * Math.sin(θ),
+      y: C - r * Math.cos(θ),
+      dist, brg
+    };
+  }
+
+  function drawRingLabels() {
+    // Inner three rings labelled with their distance (every 75km out of 300km)
+    const step = RADAR_MAX_KM / 4;
+    radarRingLabelsG.innerHTML = '';
+    for (let i = 1; i <= 4; i++) {
+      const r = (i / 4) * R_OUTER;
+      const km = Math.round(i * step);
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', C + r + 2);
+      t.setAttribute('y', C + 2);
+      t.setAttribute('class', 'ring-label');
+      t.textContent = km + 'km';
+      radarRingLabelsG.appendChild(t);
+    }
+    radarRange.textContent = RADAR_MAX_KM + ' km';
+    radarRingStep.textContent = Math.round(step) + ' km';
+  }
+
+  function drawAircraft(planes) {
+    // Build SVG group: triangle + (optional) callsign label + tiny track stub
+    radarAircraftG.innerHTML = '';
+    let drawn = 0;
+    planes.forEach(ac => {
+      if (ac.lat == null || ac.lon == null) return;
+      const p = project(ac.lat, ac.lon);
+      if (!p) return;
+      const color = altitudeColor(ac.altFt);
+      const heading = (ac.track == null ? 0 : ac.track);
+
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('class', 'ac-icon' + (ac.stale ? ' stale' : ''));
+      g.setAttribute('transform', `translate(${p.x.toFixed(2)},${p.y.toFixed(2)})`);
+
+      // Triangle pointing up at 0deg → rotate by heading
+      const tri = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      tri.setAttribute('class', 'ac-triangle');
+      tri.setAttribute('d', 'M0,-5 L3.6,4 L0,2 L-3.6,4 Z');
+      tri.setAttribute('fill', color);
+      tri.setAttribute('stroke', 'rgba(0,0,0,0.5)');
+      tri.setAttribute('stroke-width', '0.4');
+      tri.setAttribute('transform', `rotate(${heading.toFixed(0)})`);
+      tri.style.color = color; // for filter:drop-shadow on hover
+      g.appendChild(tri);
+
+      // Small bright dot at the centre (visibility for tiny zoom)
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('r', '0.9'); dot.setAttribute('fill', color);
+      g.appendChild(dot);
+
+      // Callsign label for closer aircraft only (reduce clutter)
+      if (p.dist < RADAR_MAX_KM * 0.75 && ac.flight) {
+        const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tx.setAttribute('class', 'ac-callsign');
+        tx.setAttribute('x', '6'); tx.setAttribute('y', '2');
+        tx.textContent = ac.flight;
+        g.appendChild(tx);
+      }
+
+      // Tooltip
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = `${ac.flight || ac.hex}\n${ac.altFt != null ? fmtAlt(ac.altFt) + ' ft · ' : ''}${fmtSpeed(ac.gs)} · ${fmtDist(p.dist)} · ${ac.brg ? Math.round(ac.brg) + '°' : ''}`;
+      g.appendChild(title);
+
+      radarAircraftG.appendChild(g);
+      drawn++;
+    });
+    return drawn;
+  }
+
+  function renderTable(planes) {
+    if (!planes.length) {
+      aapBody.innerHTML = '<tr><td colspan="6" class="aap-empty">No aircraft visible right now.</td></tr>';
+      return;
+    }
+    const sorted = planes
+      .filter(a => a.dist != null)
+      .sort((a, b) => a.dist - b.dist)
+      .concat(planes.filter(a => a.dist == null))
+      .slice(0, 40);
+
+    const frag = document.createDocumentFragment();
+    sorted.forEach(a => {
+      const tr = document.createElement('tr');
+      const c = altitudeColor(a.altFt);
+      tr.innerHTML = `
+        <td class="ac-flight">${a.flight || '—'}</td>
+        <td class="ac-hex">${a.hex.toUpperCase()}</td>
+        <td class="ac-alt"><span class="alt-dot" style="background:${c};color:${c}"></span>${fmtAlt(a.altFt)}${a.altFt!=null && a.altFt!=='ground' ? "<small style='color:var(--mute);font-weight:400'> ft</small>" : ''}</td>
+        <td class="ac-spd">${fmtSpeed(a.gs)}</td>
+        <td class="ac-dist">${fmtDist(a.dist)}</td>
+        <td class="ac-rssi">${fmtRssi(a.rssi)}</td>
+      `;
+      frag.appendChild(tr);
+    });
+    aapBody.innerHTML = '';
+    aapBody.appendChild(frag);
+  }
+
+  // ─── Data processing ───────────────────────────────────────────
+  function normalizeAircraft(raw, now) {
+    return (raw.aircraft || []).map(a => {
+      const altFt = (a.alt_baro === 'ground') ? 'ground' : (a.alt_baro ?? a.alt_geom ?? null);
+      let dist = null, brg = null;
+      if (rx && a.lat != null && a.lon != null) {
+        dist = haversineKm(rx.lat, rx.lon, a.lat, a.lon);
+        brg = bearingDeg(rx.lat, rx.lon, a.lat, a.lon);
+      }
+      return {
+        hex: a.hex || '?',
+        flight: (a.flight || '').trim(),
+        altFt, gs: a.gs ?? null, track: a.track ?? null,
+        lat: a.lat ?? null, lon: a.lon ?? null,
+        rssi: a.rssi ?? null,
+        dist, brg,
+        stale: a.seen != null && a.seen > 30
+      };
+    });
+  }
+
+  async function tickAircraft() {
+    try {
+      const data = await fetchJSON('aircraft.json');
+      if (!connected) markConnected();
+      const now = Date.now();
+      lastAircraftAt = now;
+      const planes = normalizeAircraft(data, data.now);
+      const withPos = planes.filter(p => p.lat != null && p.lon != null);
+      const maxNow = withPos.reduce((m, p) => p.dist > m ? p.dist : m, 0);
+
+      kpiAircraft.textContent = planes.length.toLocaleString();
+      kpiWithPos.textContent = withPos.length.toLocaleString();
+      kpiMaxRange.innerHTML = maxNow > 0 ? `${Math.round(maxNow)}<small>km</small>` : '—';
+      aapMeta.textContent = planes.length;
+      tick.innerHTML = `Updated · <strong>${fmtTimeHHMMSS(new Date(now))}</strong>`;
+
+      drawAircraft(planes);
+      renderTable(planes);
+    } catch (err) {
+      handleError(err);
+    }
+  }
+
+  async function tickStats() {
+    try {
+      const data = await fetchJSON('stats.json');
+      if (!connected) markConnected();
+      lastStatsAt = Date.now();
+      const latest = data.latest || data.last1min || {};
+      const total = data.total || {};
+      const local = latest.local || total.local || {};
+
+      // Messages / sec — derive from window duration when possible
+      const winDur = (latest.end && latest.start) ? Math.max(1, latest.end - latest.start) : 60;
+      const msgs = latest.messages ?? local.accepted?.reduce((a,b)=>a+b,0) ?? 0;
+      const rate = msgs > 0 ? (msgs / winDur) : null;
+      kpiMsgRate.textContent = rate != null ? Math.round(rate).toLocaleString() : '—';
+
+      // Avg signal (dBFS) — over last minute
+      const sig = local.signal ?? null;
+      kpiSignal.textContent = sig != null ? sig.toFixed(1) : '—';
+
+      // Uptime (seconds)
+      const uptime = total.end && total.start ? (total.end - total.start) : null;
+      kpiUptime.textContent = fmtUptime(uptime);
+    } catch (err) {
+      handleError(err, /*silentIfHaveAircraft*/ true);
+    }
+  }
+
+  function markConnected() {
+    connected = true; firstError = true;
+    setStatus('live', 'Feeding live',
+      `Polling ${new URL(FEEDER_BASE).host} · aircraft every ${AIRCRAFT_POLL_MS/1000}s · stats every ${STATS_POLL_MS/1000}s`);
+  }
+
+  function handleError(err, silent) {
+    if (silent && connected) return;
+    connected = false;
+    setStatus('offline', 'Receiver offline');
+    if (firstError) {
+      firstError = false;
+      const isMixed = window.location.protocol === 'https:' && FEEDER_BASE.startsWith('http:');
+      foot.innerHTML = isMixed
+        ? `Live data is only reachable from inside the LAN — this page is served over HTTPS, and the feeder runs on plain HTTP (<code>${FEEDER_BASE}</code>). Browse to this page over <code>http://</code> on the same network, or expose tar1090 behind HTTPS to enable the live feed.`
+        : `Couldn't reach <code>${FEEDER_BASE}</code> — receiver may be off, on a different network, or blocking CORS. (${err && err.message ? err.message : 'fetch error'})`;
+    }
+  }
+
+  // ─── Lifecycle ─────────────────────────────────────────────────
+  function start() {
+    drawRingLabels();
+    // Try to fetch receiver position first, then start the loops
+    fetchJSON('receiver.json').then(rxData => {
+      if (rxData.lat != null && rxData.lon != null) {
+        rx = { lat: rxData.lat, lon: rxData.lon };
+      } else {
+        rx = FALLBACK_RX;
+      }
+      if (rxData.version) {
+        subtitle.textContent = `tar1090 · readsb ${rxData.version} · Billund, Denmark`;
+      }
+    }).catch(() => {
+      rx = FALLBACK_RX;
+    }).finally(() => {
+      tickAircraft();
+      tickStats();
+      aircraftTimer = setInterval(tickAircraft, AIRCRAFT_POLL_MS);
+      statsTimer = setInterval(tickStats, STATS_POLL_MS);
+    });
+  }
+
+  // Stop polling when the tab is hidden (saves bandwidth on the Pi)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearInterval(aircraftTimer); clearInterval(statsTimer);
+      aircraftTimer = statsTimer = null;
+    } else if (!aircraftTimer) {
+      tickAircraft(); tickStats();
+      aircraftTimer = setInterval(tickAircraft, AIRCRAFT_POLL_MS);
+      statsTimer = setInterval(tickStats, STATS_POLL_MS);
+    }
+  });
+
+  // Only boot once the dashboard scrolls into view (defer load on cold open)
+  const io = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) { io.disconnect(); start(); }
+  }, { rootMargin: '200px' });
+  io.observe(dashboard);
+})();
 </script>
 
 <!-- ── 3D globe libs + flight-route rendering ── -->
