@@ -1847,9 +1847,10 @@ function runGlobeInit() {
   // ── Initialise the globe ──────────────────────────────────
   const globe = Globe()(container)
     // Realistic NASA Blue Marble texture (lighter, with oceans/continents/clouds)
-    // 8192×4096 NASA "land_shallow_topo" Blue Marble — 4× the pixel density of the
-    // three-globe default (4096×2048), same darker / atmospheric look. Hosted locally.
-    .globeImageUrl('../../media/textures/earth-blue-marble-hd.jpg')
+    // Start with three-globe's default 4096×2048 Blue Marble (rich sea-tone variations
+    // that the user likes). When the camera zooms in, the LOD code below swaps in the
+    // 8192×4096 HD version — Google-Earth-style level-of-detail.
+    .globeImageUrl('../../media/textures/earth-blue-marble-lo.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
     .backgroundColor('rgba(0,0,0,0)')
     .atmosphereColor('#a8c8ff')
@@ -1911,34 +1912,86 @@ function runGlobeInit() {
   fillLight.position.set(-80, -40, -60);
   globe.scene().add(fillLight);
 
-  // ── Anisotropic filtering on the earth texture ───────────────
-  // Without this, three.js uses trilinear filtering which gets very blurry / pixelated
-  // when the texture is viewed at oblique angles (i.e. when zoomed in). Bumping this to
-  // the GPU's max (typically 16 on modern hardware) is the single biggest quality win for
-  // the globe and costs almost nothing in performance.
-  function upgradeGlobeTextures() {
-    try {
-      const mat = globe.globeMaterial && globe.globeMaterial();
-      const renderer = globe.renderer();
-      if (!mat || !renderer) return false;
-      const maxAniso = renderer.capabilities.getMaxAnisotropy();
-      let bumped = false;
-      ['map', 'bumpMap', 'normalMap', 'specularMap'].forEach(k => {
-        if (mat[k]) {
-          mat[k].anisotropy = maxAniso;
-          mat[k].needsUpdate = true;
-          bumped = true;
-        }
-      });
-      return bumped;
-    } catch (e) { return false; }
+  // ─── Level-of-detail (LOD) earth texture loader ──────────────
+  // Google-Earth-style approach: ship a small/fast texture for the wide view, and a
+  // sharper one that swaps in automatically once the camera is close enough to need it.
+  //
+  // ‣ LO_TEX is the texture currently bound by .globeImageUrl() above (1.4 MB, 4K).
+  // ‣ HI_TEX is preloaded in the background and only attached when zoom drops below
+  //   ALTITUDE_SWAP. We don't undo the swap on zoom-out — there's no benefit, and the
+  //   visible cost of the higher-res sampling is nil once it's on the GPU.
+  // ‣ Anisotropic filtering (16× on most GPUs) is applied to BOTH textures so they stay
+  //   crisp at oblique viewing angles.
+  const HI_TEX_URL     = '../../media/textures/earth-blue-marble-hd.jpg';
+  const ALTITUDE_SWAP  = 1.0;       // zoom-in trigger — initial view is 1.4, so user
+                                    // must actively zoom in past this to load the HD map
+  let   hiTexUpgraded  = false;     // true after HI_TEX is bound to the material
+  let   hiTexPromise   = null;      // single shared loader Promise
+
+  function setMaxAniso(tex, renderer) {
+    if (!tex || !renderer) return;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    tex.needsUpdate = true;
   }
-  // Textures load asynchronously — poll briefly until the map is bound, then apply.
+
+  // Boost anisotropy on whatever textures the globe material already has.
+  function bumpAnisotropyOnCurrentTextures() {
+    const mat      = globe.globeMaterial && globe.globeMaterial();
+    const renderer = globe.renderer();
+    if (!mat || !renderer) return false;
+    ['map', 'bumpMap', 'normalMap', 'specularMap'].forEach(k => setMaxAniso(mat[k], renderer));
+    return !!mat.map;
+  }
+  // Poll until the lo-res texture has been bound, then apply max anisotropy.
   let anisoTries = 0;
   (function applyWhenReady() {
-    if (upgradeGlobeTextures() || ++anisoTries > 40) return;   // give up after ~4s
+    if (bumpAnisotropyOnCurrentTextures() || ++anisoTries > 40) return;
     setTimeout(applyWhenReady, 100);
   })();
+
+  // Preload + cache the HD texture (kicked off immediately so it's ready by the time
+  // the user zooms in — doesn't block initial render).
+  function preloadHiTex() {
+    if (hiTexPromise) return hiTexPromise;
+    hiTexPromise = new Promise(resolve => {
+      const loader = new THREE.TextureLoader();
+      loader.load(
+        HI_TEX_URL,
+        tex => {
+          // Match the colour-space + wrapping of whatever the lo-res texture used
+          const cur = globe.globeMaterial && globe.globeMaterial().map;
+          if (cur) {
+            tex.colorSpace = cur.colorSpace;
+            tex.wrapS = cur.wrapS;
+            tex.wrapT = cur.wrapT;
+          }
+          setMaxAniso(tex, globe.renderer());
+          resolve(tex);
+        },
+        undefined,
+        err => { console.warn('HD globe texture failed to load:', err); resolve(null); }
+      );
+    });
+    return hiTexPromise;
+  }
+
+  // Swap the lo-res map for the hi-res one. Idempotent — runs at most once.
+  async function ensureHiTex() {
+    if (hiTexUpgraded) return;
+    const tex = await preloadHiTex();
+    if (!tex || hiTexUpgraded) return;
+    const mat = globe.globeMaterial && globe.globeMaterial();
+    if (!mat) return;
+    mat.map = tex;
+    mat.needsUpdate = true;
+    hiTexUpgraded = true;
+  }
+
+  // Start the preload right away.
+  preloadHiTex();
+
+  // (The onZoom handler is wired further down — see the connector-tracker code.
+  // It also calls ensureHiTex() so we don't overwrite each other.)
 
   // (Pin click handler is wired in the .customLayerData chain above.)
 
@@ -2194,7 +2247,11 @@ function runGlobeInit() {
   }
 
   // Update line during interactive globe motion (extra responsive)
-  globe.onZoom(() => activeRec && updateConnector());
+  // Single onZoom handler — handles BOTH connector tracking AND LOD texture swap.
+  globe.onZoom(pov => {
+    if (activeRec) updateConnector();
+    if (pov && pov.altitude !== undefined && pov.altitude < ALTITUDE_SWAP) ensureHiTex();
+  });
 
   // ──────────────────────────────────────────────────────────
   // Filters (year slider, status pills, search, reset)
