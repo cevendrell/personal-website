@@ -168,27 +168,62 @@
       .hamburger { display: flex; }
     }
 
+    /* ── Video hero header (Northern Lights loop) ── */
+    .nl-hero {
+      position: relative;
+      width: 100%;
+      height: clamp(420px, 75vh, 720px);
+      overflow: hidden;
+      background: #000;
+      margin-top: 0;   /* sits under the fixed nav */
+    }
+    .nl-hero video {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      /* Smooth out compression noise + keep colour fidelity */
+      transform: translate3d(0,0,0);
+    }
+    /* Vignette + slight darken so the title is always readable */
+    .nl-hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 35%, rgba(0,0,0,0.55) 100%),
+        radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%);
+      pointer-events: none;
+    }
+    .nl-hero-inner {
+      position: relative; z-index: 2;
+      width: 100%; height: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: clamp(2rem, 6vh, 4rem);
+    }
+    .nl-hero h1 {
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      font-weight: 800; letter-spacing: -0.04em;
+      line-height: 1; color: #fff;
+      margin-bottom: 0.75rem;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.6);
+    }
+    .nl-hero p {
+      font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+      font-style: italic; color: rgba(255,255,255,0.88);
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+      max-width: 36ch;
+    }
+
     /* ── PAGE ── */
     .container {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 8rem 2rem 5rem;
-    }
-    .page-header {
-      margin-bottom: 3.5rem;
-    }
-    .page-header h1 {
-      font-size: clamp(2.4rem, 4vw, 3.5rem);
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      color: var(--accent);
-      line-height: 1.1;
-      margin-bottom: 0.75rem;
-    }
-    .page-header p {
-      font-size: 1rem;
-      color: var(--text-dim);
-      font-style: italic;
+      padding: 4rem 2rem 5rem;
     }
 
     /* ── GALLERY ── */
@@ -332,7 +367,7 @@
     <li class="nav-item">
       <a href="../../index.html">Home</a>
       <ul class="dropdown">
-        <li><a href="../about/about.html">About me</a></li>
+        <li><a href="../../index.html#career">About me</a></li>
         
         
         <li><a href="../about/contact.html">Contact</a></li>
@@ -380,12 +415,19 @@
   </button>
 </nav>
 
-<div class="container">
-  <div class="page-header">
+<!-- Full-width video hero header — auroras as moving background for the title -->
+<section class="nl-hero" aria-label="Northern lights">
+  <video autoplay muted loop playsinline preload="auto" poster="../../media/travel-photos-thumbs/Reykjav%C3%ADk.jpg">
+    <source src="../../media/northern-lights.mp4" type="video/mp4">
+    <source src="../../media/NorthernLights12May.mov" type="video/quicktime">
+  </video>
+  <div class="nl-hero-inner">
     <h1>Northern Lights</h1>
     <p>Sometimes, less is more.</p>
   </div>
+</section>
 
+<div class="container">
   <div class="gallery">
     <div class="gallery-item">
       <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b7cd7e10-b873-485f-a4d5-996b9e870666/DSC_9801.JPG" alt="Northern lights" loading="lazy">

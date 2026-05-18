@@ -367,9 +367,23 @@
     .career-tab:hover:not(.active) { color: var(--accent); }
     .career-tab.active { background: var(--c-photo); color: #fff; }
 
-    /* ── Timeline (used inside both Experience and Education panels) ── */
-    .career-tab-panel { display: none; }
-    .career-tab-panel.active { display: block; animation: fadeUp 0.35s cubic-bezier(0.16,1,0.3,1); }
+    /* ── Stacked panels — both occupy the SAME grid cell so the right-column image
+       doesn't jump when toggling between Experience and Education. The cell's height
+       is naturally the taller of the two panels. ── */
+    .career-tab-stack {
+      display: grid;
+      grid-template-areas: "stack";
+    }
+    .career-tab-panel {
+      grid-area: stack;
+      opacity: 0; visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .career-tab-panel.active {
+      opacity: 1; visibility: visible;
+      pointer-events: auto;
+    }
     .career-timeline {
       list-style: none; padding: 0.4rem 0 0.5rem 1.4rem;
       border-left: 1px solid rgba(232,220,196,0.18);
@@ -421,7 +435,7 @@
       padding-top: 2rem; border-top: 1px solid var(--line); flex-wrap: wrap;
     }
     .career-company-logo {
-      height: 56px; width: auto; max-width: 280px;
+      height: 80px; width: auto; max-width: 360px;
       object-fit: contain; filter: brightness(0) invert(1);
       opacity: 0.85;
     }
@@ -715,7 +729,7 @@
     <li class="nav-item">
       <a href="index.html">Home</a>
       <ul class="dropdown">
-        <li><a href="pages/about/about.html">About me</a></li>
+        <li><a href="index.html#career">About me</a></li>
         <li><a href="pages/about/contact.html">Contact</a></li>
       </ul>
     </li>
@@ -856,56 +870,71 @@
             <button class="career-tab" data-tab="edu" role="tab" aria-selected="false">Education</button>
           </div>
 
-          <!-- ─── Experience panel ─── -->
-          <div class="career-tab-panel active wow d3" id="career-panel-exp" role="tabpanel">
-            <ul class="career-timeline">
-              <li class="is-current">
-                <span class="ce-date">Aug 2019 – Present</span>
-                <p class="ce-role">Senior AI Project Manager</p>
-                <p class="ce-org">GRUNDFOS · Aarhus, Denmark</p>
-                <ul class="ce-bullets">
-                  <li>Driving emerging XR &amp; AI initiatives across the global organisation</li>
-                  <li>Bridging exploratory tech with industrial-scale deployment</li>
-                </ul>
-              </li>
-              <li>
-                <span class="ce-date">2019 – 2024 · Graduate Programme</span>
-                <p class="ce-role">Rotational Programme</p>
-                <p class="ce-org">GRUNDFOS · Multiple departments</p>
-                <ul class="ce-bullets">
-                  <li>Additive Manufacturing</li>
-                  <li>Product Management</li>
-                  <li>Sales Development</li>
-                  <li>XR &amp; AI for Industry</li>
-                </ul>
-              </li>
-            </ul>
-            <div class="career-tag-row wow d4">
-              <img src="media/grundfoslogo.png" alt="GRUNDFOS" class="career-company-logo">
-              <span class="career-tag-date">August 2019 – Present</span>
-            </div>
-          </div>
+          <!-- Stack wrapper: both panels occupy the same grid cell so the image col never jumps -->
+          <div class="career-tab-stack wow d3">
 
-          <!-- ─── Education panel ─── -->
-          <div class="career-tab-panel" id="career-panel-edu" role="tabpanel">
-            <ul class="career-timeline">
-              <li>
-                <span class="ce-date">2017 – 2019</span>
-                <p class="ce-role">MSc Mechanical Engineering</p>
-                <p class="ce-org">Aarhus University · Denmark</p>
-              </li>
-              <li>
-                <span class="ce-date">2013 – 2017</span>
-                <p class="ce-role">BSc Industrial Technology Engineering</p>
-                <p class="ce-org">Polytechnic University of Catalonia · Spain</p>
-              </li>
-              <li>
-                <span class="ce-date">Exchanges</span>
-                <p class="ce-role">Semesters abroad</p>
-                <p class="ce-org">Portugal · United Kingdom · Finland</p>
-              </li>
-            </ul>
-          </div>
+            <!-- ─── Experience panel ─── -->
+            <div class="career-tab-panel active" id="career-panel-exp" role="tabpanel">
+              <ul class="career-timeline">
+                <li class="is-current">
+                  <span class="ce-date">Current</span>
+                  <p class="ce-role">Senior AI Project Manager</p>
+                  <p class="ce-org">GRUNDFOS · Aarhus, Denmark</p>
+                  <ul class="ce-bullets">
+                    <li>Driving emerging XR &amp; AI initiatives across the global organisation</li>
+                    <li>Bridging exploratory tech with industrial-scale deployment</li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="ce-date">Previously</span>
+                  <p class="ce-role">Senior XR Engineer</p>
+                  <p class="ce-org">GRUNDFOS · Aarhus, Denmark</p>
+                </li>
+                <li>
+                  <span class="ce-date">2019 – 2022</span>
+                  <p class="ce-role">Global Graduate Programme</p>
+                  <p class="ce-org">GRUNDFOS · Multiple departments</p>
+                  <ul class="ce-bullets">
+                    <li>Additive Manufacturing</li>
+                    <li>Product Management</li>
+                    <li>Sales Development</li>
+                    <li>XR &amp; AI for Industry</li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="ce-date">Earlier</span>
+                  <p class="ce-role">Student Assistant</p>
+                  <p class="ce-org">GRUNDFOS · Aarhus, Denmark</p>
+                </li>
+              </ul>
+              <div class="career-tag-row wow d4">
+                <img src="media/grundfoslogo.png" alt="GRUNDFOS" class="career-company-logo">
+                <span class="career-tag-date">2018 – Present</span>
+              </div>
+            </div>
+
+            <!-- ─── Education panel ─── -->
+            <div class="career-tab-panel" id="career-panel-edu" role="tabpanel">
+              <ul class="career-timeline">
+                <li>
+                  <span class="ce-date">2017 – 2019</span>
+                  <p class="ce-role">MSc Mechanical Engineering</p>
+                  <p class="ce-org">Aarhus University · Denmark</p>
+                </li>
+                <li>
+                  <span class="ce-date">2013 – 2017</span>
+                  <p class="ce-role">BSc Industrial Technology Engineering</p>
+                  <p class="ce-org">Polytechnic University of Catalonia · Spain</p>
+                </li>
+                <li>
+                  <span class="ce-date">Exchanges</span>
+                  <p class="ce-role">Semesters abroad</p>
+                  <p class="ce-org">Portugal · United Kingdom · Finland</p>
+                </li>
+              </ul>
+            </div>
+
+          </div><!-- /career-tab-stack -->
         </div>
 
         <div class="career-img-col wow d2">
