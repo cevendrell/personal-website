@@ -1,0 +1,178 @@
+
+Date,"Flight number",From,To,"Dep time","Arr time",Duration,Airline,Aircraft,Registration,"Seat number","Seat type","Flight class","Flight reason",Note,Dep_id,Arr_id,Airline_id,Aircraft_id
+2000-08-01,,"Barcelona / El Prat (BCN/LEBL)","Tunis / Tunis Carthage (TUN/DTTA)",00:00:00,00:00:00,01:24:00," (/)"," ()",,,0,0,1,,239,3044,0,0
+2000-08-15,,"Tunis / Tunis Carthage (TUN/DTTA)","Barcelona / El Prat (BCN/LEBL)",00:00:00,00:00:00,01:24:00," (/)"," ()",,,0,0,1,,3044,239,0,0
+2005-07-01,,"Belfast / Aldergrove (BFS/EGAA)","Barcelona / El Prat (BCN/LEBL)",00:00:00,00:00:00,02:25:00," (/)"," ()",,,0,0,1,,280,239,0,0
+2005-09-01,,"Barcelona / El Prat (BCN/LEBL)","Belfast / Aldergrove (BFS/EGAA)",00:00:00,00:00:00,02:25:00," (/)"," ()",,,0,0,1,,239,280,0,0
+2005-10-01,,"Belfast / Belfast City (BHD/EGAC)","Edinburgh / Edinburgh (EDI/EGPH)",00:00:00,00:00:00,00:32:00,"Easyjet (U2/EZY)","Airbus A320 (A320)",,,0,0,4,,294,785,291,27
+2006-07-01,,"Edinburgh / Edinburgh (EDI/EGPH)","Barcelona / El Prat (BCN/LEBL)",00:00:00,00:00:00,02:30:00," (/)"," ()",,,0,0,1,,785,239,0,0
+2006-09-01,,"Barcelona / El Prat (BCN/LEBL)","Edinburgh / Edinburgh (EDI/EGPH)",00:00:00,00:00:00,02:30:00," (/)"," ()",,,0,0,1,,239,785,0,0
+2007-07-10,"GSM 401","Edinburgh / Edinburgh (EDI/EGPH)","Barcelona / El Prat (BCN/LEBL)",11:00:00,14:50:00,02:50:00,"Flyglobespan (Y2/GSM)","Boeing 737-700 (B737)",,,1,1,4,,785,239,1230,230
+2006-08-01,,"Barcelona / El Prat (BCN/LEBL)","Bari / Palese Macchie (BRI/LIBD)",00:00:00,00:00:00,01:54:00," (/)"," ()",,,0,0,1,,239,396,0,0
+2006-08-15,,"Bari / Palese Macchie (BRI/LIBD)","Barcelona / El Prat (BCN/LEBL)",00:00:00,00:00:00,01:54:00," (/)"," ()",,,0,0,1,,396,239,0,0
+2009-07-04,"JK 033","Barcelona / El Prat (BCN/LEBL)","Copenhagen / Kastrup (CPH/EKCH)",10:35:00,13:30:00,02:55:00,"Spanair (JK/JKK)"," ()",,,0,0,1,,239,606,415,0
+2009-07-11,"JK 034","Copenhagen / Kastrup (CPH/EKCH)","Barcelona / El Prat (BCN/LEBL)",14:20:00,17:10:00,02:50:00,"Spanair (JK/JKK)"," ()",,,0,0,1,,606,239,415,0
+2008-07-03,"GSM 402","Barcelona / El Prat (BCN/LEBL)","Edinburgh / Edinburgh (EDI/EGPH)",13:35:00,15:15:00,02:40:00,"Flyglobespan (Y2/GSM)","Boeing 737-700 (B737)",,,0,1,1,,239,785,1230,230
+2008-07-29,"GSM 401","Edinburgh / Edinburgh (EDI/EGPH)","Barcelona / El Prat (BCN/LEBL)",09:00:00,12:40:00,02:40:00,"Flyglobespan (Y2/GSM)","Boeing 737-700 (B737)",,,0,1,1,,785,239,1230,230
+2009-08-01,,"Barcelona / El Prat (BCN/LEBL)","Edinburgh / Edinburgh (EDI/EGPH)",00:00:00,00:00:00,02:30:00,"Flyglobespan (Y2/GSM)"," ()",,,0,0,1,,239,785,1230,0
+2009-08-15,,"Edinburgh / Edinburgh (EDI/EGPH)","Barcelona / El Prat (BCN/LEBL)",00:00:00,00:00:00,02:30:00,"Flyglobespan (Y2/GSM)"," ()",,,0,0,1,,785,239,1230,0
+2011-08-03,"JK 6464","Barcelona / El Prat (BCN/LEBL)","La Coruna / La Coruna (LCG/LECO)",07:00:00,08:26:00,01:26:00,"Spanair (JK/JKK)","McDonnell Douglas MD-82 (MD82)",,6A,1,1,1,,239,1576,415,1186
+2011-08-15,JK6475,"La Coruna / La Coruna (LCG/LECO)","Barcelona / El Prat (BCN/LEBL)",21:25:00,22:55:00,01:30:00,"Spanair (JK/JKK)","McDonnell Douglas MD-82 (MD82)",,,0,1,1,,1576,239,415,1186
+2015-08-07,"DY 5152","Barcelona / El Prat (BCN/LEBL)","Berlin / Schonefeld (SXF/EDDB)",08:55:00,11:10:00,02:15:00,"Norwegian Air Shuttle (DY/NAX)","Boeing 737-800 (B738)",,21A,1,1,1,,239,2828,552,231
+2015-08-23,"4U 8526","Berlin / Tegel (TXL/EDDT)","Barcelona / El Prat (BCN/LEBL)",11:00:00,13:20:00,02:20:00,"Germanwings (4U/GWI)","Airbus A320 (A320)",,3A,1,1,1,,3055,239,951,27
+2016-01-31,"VY 8656","Barcelona / El Prat (BCN/LEBL)","Prague / Praha-Ruzyne (PRG/LKPR)",12:20:00,14:30:00,02:10:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",,10A,1,1,1,,239,2398,839,27
+2016-02-08,"VY 8657","Prague / Praha-Ruzyne (PRG/LKPR)","Barcelona / El Prat (BCN/LEBL)",15:30:00,17:35:00,02:05:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",,9F,1,1,1,,2398,239,839,27
+2004-09-01,,"Reus / Reus (REU/LERS)","Belfast / Aldergrove (BFS/EGAA)",00:00:00,00:00:00,02:24:00,"Jet2.com (LS/EXS)","Boeing 737-700 (B737)",,,0,1,4,,2505,280,286,230
+2007-04-08,"GSM 401","Edinburgh / Edinburgh (EDI/EGPH)","Barcelona / El Prat (BCN/LEBL)",13:30:00,17:05:00,02:35:00,"Flyglobespan (Y2/GSM)","Boeing 737-700 (B737)",,,1,1,1,,785,239,1230,230
+2007-04-18,"GSM 402","Barcelona / El Prat (BCN/LEBL)","Edinburgh / Edinburgh (EDI/EGPH)",13:35:00,15:15:00,02:40:00,"Flyglobespan (Y2/GSM)","Boeing 737-700 (B737)",,,1,1,1,,239,785,1230,230
+2016-08-17,VY8710,"Barcelona / El Prat (BCN/LEBL)","Vienna / Schwechat (VIE/LOWW)",12:00:00,14:20:00,02:20:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",EC-LZZ,22A,1,1,1,,239,3179,839,27
+2016-09-04,HG8952,"Vienna / Schwechat (VIE/LOWW)","Barcelona / El Prat (BCN/LEBL)",17:25:00,19:40:00,02:15:00,"Niki (flyNiki) (HG/NLY)","Airbus A320 (A320)",OE-LEL,4E,2,1,1,,3179,239,566,27
+2017-02-08,FR6305,"Barcelona / El Prat (BCN/LEBL)","Bergamo / Orio Al Serio (BGY/LIME)",13:40:00,15:25:00,01:45:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-DHG,1B,2,1,1,,239,293,668,231
+2017-02-11,FR6366,"Bergamo / Orio Al Serio (BGY/LIME)","Barcelona / El Prat (BCN/LEBL)",21:50:00,23:30:00,01:40:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-DPX,24A,1,1,1,,293,239,668,231
+2017-08-02,VY8656,"Barcelona / El Prat (BCN/LEBL)","Prague / Praha-Ruzyne (PRG/LKPR)",18:05:00,20:30:00,02:25:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",EC-LQZ,27F,1,1,1,,239,2398,839,27
+2017-08-09,VY8653,"Prague / Praha-Ruzyne (PRG/LKPR)","Barcelona / El Prat (BCN/LEBL)",13:35:00,16:00:00,02:25:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",EC-MES,19C,3,1,1,,2398,239,839,27
+2017-08-14,D85620,"Barcelona / El Prat (BCN/LEBL)","Helsinki / Vantaa (HEL/EFHK)",08:00:00,13:00:00,04:00:00,"Norwegian Air International (D8/IBK)","Boeing 737-800 (B738)",EI-FJT,26A,1,1,4,,239,1110,1644,231
+2017-12-21,D85621,"Helsinki / Vantaa (HEL/EFHK)","Barcelona / El Prat (BCN/LEBL)",20:30:00,23:25:00,03:55:00,"Norwegian Air International (D8/IBK)","Boeing 737-800 (B738)",EI-FJB,27A,1,1,4,,1110,239,1644,231
+2017-12-15,AY913,"Helsinki / Vantaa (HEL/EFHK)","Oslo / Gardermoen (OSL/ENGM)",12:10:00,12:40:00,01:30:00,"Nordic Regional Airlines / Norra (N7/FIN)","Airbus A319 (A319)",OH-LVB,21A,1,1,1,,1110,2219,2352,26
+2017-12-17,AY918,"Oslo / Gardermoen (OSL/ENGM)","Helsinki / Vantaa (HEL/EFHK)",20:20:00,22:45:00,01:25:00,"Nordic Regional Airlines / Norra (N7/FIN)","Airbus A320 (A320)",OH-LXD,25A,1,1,1,,2219,1110,2352,27
+2018-01-22,FR8394,"Barcelona / El Prat (BCN/LEBL)","Budapest / Franz Liszt International (BUD/LHBP)",16:55:00,19:35:00,02:40:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-DWI,33F,1,1,1,,239,429,668,231
+2018-01-24,W62467,"Budapest / Franz Liszt International (BUD/LHBP)","Warsaw / Chopin (Okecie) (WAW/EPWA)",08:50:00,10:00:00,01:10:00,"Wizz Air (W6/WZZ)","Airbus A320 (A320)",HA-LYS,12A,1,1,1,,429,3142,859,27
+2018-01-26,W61583,"Warsaw / Chopin (Okecie) (WAW/EPWA)","Bucharest / Henri Coanda (OTP/LROP)",10:15:00,13:00:00,01:45:00,"Wizz Air (W6/WZZ)","Airbus A320 (A320)",HA-LPS,29A,1,1,1,,3142,2230,859,27
+2018-01-29,W62472,"Sofia / Sofia (SOF/LBSF)","Budapest / Franz Liszt International (BUD/LHBP)",20:35:00,21:00:00,01:25:00,"Wizz Air (W6/WZZ)","Airbus A321 (A321)",HA-LXG,20F,1,1,1,,2738,429,859,28
+2018-01-31,FR8393,"Budapest / Franz Liszt International (BUD/LHBP)","Barcelona / El Prat (BCN/LEBL)",20:00:00,22:35:00,02:35:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-EVJ,21A,1,1,1,,429,239,668,231
+2018-01-09,FR6267,"Barcelona / El Prat (BCN/LEBL)","Edinburgh / Edinburgh (EDI/EGPH)",10:45:00,12:45:00,03:00:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-EPD,33B,2,1,1,,239,785,668,231
+2018-01-12,FR6266,"Edinburgh / Edinburgh (EDI/EGPH)","Barcelona / El Prat (BCN/LEBL)",06:20:00,10:00:00,02:40:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-EBS,6A,1,1,1,,785,239,668,231
+2018-04-12,FR8394,"Barcelona / El Prat (BCN/LEBL)","Budapest / Franz Liszt International (BUD/LHBP)",16:45:00,19:25:00,02:40:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-FRN,1C,3,1,1,,239,429,668,231
+2018-04-18,VY8803,"Budapest / Franz Liszt International (BUD/LHBP)","Barcelona / El Prat (BCN/LEBL)",22:05:00,00:40:00,02:35:00,"Vueling Airlines (VY/VLG)","Airbus A320-200 (A320)",EC-HQJ,7E,1,1,1,,429,239,839,2059
+2018-07-15,VY8300,"Barcelona / El Prat (BCN/LEBL)","Amsterdam / Schiphol (AMS/EHAM)",07:10:00,09:35:00,02:25:00,"Vueling Airlines (VY/VLG)","Airbus A321 (A321)",EC-MMU,18E,2,1,1,,239,122,839,28
+2018-07-22,VY8305,"Amsterdam / Schiphol (AMS/EHAM)","Barcelona / El Prat (BCN/LEBL)",21:45:00,23:59:00,02:14:00,"Vueling Airlines (VY/VLG)","Airbus A321 (A321)",EC-MLD,3F,1,1,1,,122,239,839,28
+2018-08-13,D85576,"Barcelona / El Prat (BCN/LEBL)","Billund / Billund (BLL/EKBI)",16:00:00,18:45:00,02:45:00,"Norwegian Air International (D8/IBK)","Boeing 737-800 (B738)",EI-FHU,20A,1,1,4,,239,345,1644,231
+2019-04-10,FR7620,"Copenhagen / Kastrup (CPH/EKCH)","Kaunas / Kaunas (KUN/EYKA)",12:10:00,14:35:00,01:30:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-DYO,12C,3,1,1,,606,3627,668,231
+2019-04-24,FR7621,"Kaunas / Kaunas (KUN/EYKA)","Copenhagen / Kastrup (CPH/EKCH)",06:25:00,06:50:00,01:35:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-EFY,04C,3,1,1,,3627,606,668,231
+2019-04-12,FR5103,"Vilnius / Vilnius (VNO/EYVI)","Amman / Queen Alia (AMM/OJAI)",08:40:00,11:35:00,04:10:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-EKP,28A,1,1,1,,3600,118,668,231
+2019-04-22,FR5102,"Amman / Queen Alia (AMM/OJAI)","Vilnius / Vilnius (VNO/EYVI)",18:35:00,23:59:00,04:54:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-EVY,28A,1,1,1,,118,3600,668,231
+2019-07-10,VY1873,"Copenhagen / Kastrup (CPH/EKCH)","Barcelona / El Prat (BCN/LEBL)",17:25:00,20:25:00,03:00:00,"Vueling Airlines (VY/VLG)","Airbus A321 (A321)",EC-MGY,34F,1,1,1,,606,239,839,28
+2019-08-08,FR9002,"Girona / Costa Brava (GRO/LEGE)","Billund / Billund (BLL/EKBI)",17:30:00,20:15:00,02:45:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-EKN,28A,1,1,1,,1039,345,668,231
+2020-03-04,W65032,"Billund / Billund (BLL/EKBI)","Krakow / John Paul II International (KRK/EPKK)",22:25:00,00:05:00,01:40:00,"Wizz Air (W6/WZZ)","Airbus A321 (A321)",HA-LXF,19F,1,1,1,,345,1489,859,28
+2020-03-09,SK1736,"Krakow / John Paul II International (KRK/EPKK)","Copenhagen / Kastrup (CPH/EKCH)",13:15:00,14:45:00,01:30:00,"Scandinavian Airlines (SK/SAS)","Airbus A320neo (A20N)",LN-RGN,09A,1,1,1,,1489,606,677,2127
+2020-01-06,FR409,"Cologne / Cologne-Bonn (CGN/EDDK)","Copenhagen / Kastrup (CPH/EKCH)",06:35:00,08:05:00,01:30:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",9H-QDC,29A,1,1,1,,535,606,668,231
+2021-07-02,VY1873,"Copenhagen / Kastrup (CPH/EKCH)","Barcelona / El Prat (BCN/LEBL)",20:15:00,23:15:00,03:00:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",EC-LVU,23F,1,1,1,,606,239,839,27
+2021-07-18,IB8470,"Barcelona / El Prat (BCN/LEBL)","Leon / Leon (LEN/LELN)",13:30:00,14:55:00,01:25:00,"Iberia (IB/IBE)","Bombardier CRJ-1000 (CRJX)",EC-MJO,8C,3,1,1,,239,4978,377,2071
+2021-07-30,VY1870,"Barcelona / El Prat (BCN/LEBL)","Copenhagen / Kastrup (CPH/EKCH)",07:10:00,10:15:00,03:05:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",EC-MBS,22A,1,1,1,,239,606,839,27
+2021-10-21,VY1873,"Copenhagen / Kastrup (CPH/EKCH)","Barcelona / El Prat (BCN/LEBL)",17:15:00,20:15:00,03:00:00,"Vueling Airlines (VY/VLG)","Airbus A321 (A321)",EC-MMH,33A,1,1,1,,606,239,839,28
+2021-10-28,DY3657,"Barcelona / El Prat (BCN/LEBL)","Copenhagen / Kastrup (CPH/EKCH)",12:40:00,15:40:00,03:00:00,"Norwegian Air Shuttle (DY/NAX)","Boeing 737-800 (B738)",SE-RPJ,19D,3,1,1,,239,606,552,231
+2021-12-18,FI205,"Copenhagen / Kastrup (CPH/EKCH)","Keflavik / Keflavik (KEF/BIKF)",13:10:00,15:25:00,04:15:00,"Icelandair (FI/ICE)","Boeing 757-200 (B752)",TF-FIO,21F,1,1,1,,606,1400,381,241
+2021-12-23,FI212,"Keflavik / Keflavik (KEF/BIKF)","Copenhagen / Kastrup (CPH/EKCH)",14:00:00,18:15:00,02:15:00,"Icelandair (FI/ICE)","Boeing 737 MAX 8 (B38M)",TF-ICY,26F,1,1,1,,1400,606,381,2123
+2021-12-24,D83656,"Copenhagen / Kastrup (CPH/EKCH)","Barcelona / El Prat (BCN/LEBL)",08:45:00,11:35:00,02:50:00,"Norwegian Air International (D8/IBK)","Boeing 737-800 (B738)",SE-RRJ,26F,1,1,1,,606,239,1644,231
+2022-01-01,VY1880,"Barcelona / El Prat (BCN/LEBL)","Billund / Billund (BLL/EKBI)",12:15:00,15:10:00,02:55:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",EC-KLT,26A,1,1,1,,239,345,839,27
+2022-02-28,SK1244,"Aarhus / Tirstrup (AAR/EKAH)","Copenhagen / Kastrup (CPH/EKCH)",09:35:00,10:15:00,00:40:00,"Scandinavian Airlines (SK/SAS)","ATR 72-600 (AT76)",ES-ATH,5A,1,1,2,,8,606,677,2105
+2022-02-28,SQ353,"Copenhagen / Kastrup (CPH/EKCH)","Singapore / Changi (SIN/WSSS)",12:30:00,07:30:00,13:00:00,"Singapore Airlines (SQ/SIA)","Airbus A350-900 (A359)",9V-SMT,53A,1,1,2,,606,2672,703,2110
+2022-04-30,3K555,"Singapore / Changi (SIN/WSSS)","Hochiminh / Tan Son Nhat (SGN/VVTS)",07:10:00,08:15:00,02:05:00,"Jetstar Asia Airways (3K/JSA)","Airbus A320 (A320)",9V-JSQ,21D,3,1,1,,2672,2650,1171,27
+2022-05-04,TR303,"Hochiminh / Tan Son Nhat (SGN/VVTS)","Singapore / Changi (SIN/WSSS)",17:20:00,20:25:00,02:10:00,"Scoot (TR/TGW)","Airbus A321neo (A21N)",9V-NCB,34F,1,1,1,,2650,2672,2695,2128
+2022-05-13,TR466,"Singapore / Changi (SIN/WSSS)","Kuala Lumpur / Kuala Lumpur International (KUL/WMKK)",19:30:00,20:35:00,01:05:00,"Scoot (TR/TGW)","Boeing 787-9 (B789)",9V-OJB,25B,2,1,1,,2672,1527,2695,2088
+2022-05-17,TR473,"Kuala Lumpur / Kuala Lumpur International (KUL/WMKK)","Singapore / Changi (SIN/WSSS)",19:30:00,20:35:00,01:05:00,"Scoot (TR/TGW)","Boeing 787-9 (B789)",9V-OJE,24K,1,1,1,,1527,2672,2695,2088
+2022-07-09,TR686,"Singapore / Changi (SIN/WSSS)","Krabi / Krabi (KBV/VTSG)",11:35:00,12:15:00,01:40:00,"Scoot (TR/TGW)","Airbus A320 (A320)",9V-TAZ,31F,1,1,1,,2672,3562,2695,27
+2022-07-13,TR687,"Krabi / Krabi (KBV/VTSG)","Singapore / Changi (SIN/WSSS)",13:25:00,16:00:00,01:25:00,"Scoot (TR/TGW)","Airbus A320neo (A20N)",9V-TNF,3F,1,1,1,,3562,2672,2695,2127
+2022-05-31,QZ505,"Singapore / Changi (SIN/WSSS)","Denpasar Bali / Ngurah Rai (DPS/WADD)",12:15:00,15:05:00,02:50:00,"Indonesia AirAsia (QZ/AWQ)","Airbus A320 (A320)",PK-AZE,23F,1,1,1,,2672,3582,1078,27
+2022-06-06,IW1863,"Lombok / Lombok International (LOP/WADL)","Denpasar Bali / Ngurah Rai (DPS/WADD)",08:20:00,09:00:00,00:40:00,"Wings Air (IW/WON)","ATR 72-600 (AT76)",PK-WHH,4F,1,1,1,,4890,3582,1427,2105
+2022-06-06,IW1830,"Denpasar Bali / Ngurah Rai (DPS/WADD)","Labuan Bajo / Komodo (LBJ/WATO)",11:30:00,13:05:00,01:30:00,"Wings Air (IW/WON)","ATR 72-600 (AT76)",PK-WGG,5F,1,1,1,,3582,3747,1427,2105
+2022-06-12,JT811,"Labuan Bajo / Komodo (LBJ/WATO)","Surabaya / Juanda (SUB/WARR)",10:10:00,10:40:00,01:30:00,"Lion Airlines (JT/LNI)","Boeing 737-800 (B738)",PK-LKH,8A,1,1,1,,3747,3748,480,231
+2022-06-15,3K248,"Surabaya / Juanda (SUB/WARR)","Singapore / Changi (SIN/WSSS)",13:20:00,16:40:00,02:20:00,"Jetstar Asia Airways (3K/JSA)","Airbus A320 (A320)",9V-JSR,28A,1,1,1,,3748,2672,1171,27
+2022-07-22,AK1772,"Singapore / Changi (SIN/WSSS)","Kuching / Kuching (KCH/WBGG)",23:00:00,00:30:00,01:30:00,"Air Asia (AK/AXM)","Airbus A320 (A320)",9M-RAO,22E,2,1,1,,2672,1392,103,27
+2022-07-24,AK1771,"Kuching / Kuching (KCH/WBGG)","Singapore / Changi (SIN/WSSS)",20:45:00,22:20:00,01:35:00,"Air Asia (AK/AXM)","Airbus A320 (A320)",9M-RAO,11D,3,1,1,,1392,2672,103,27
+2022-08-06,TR300,"Singapore / Changi (SIN/WSSS)","Hanoi / Noibai (HAN/VVNB)",09:55:00,12:30:00,03:35:00,"Scoot (TR/TGW)","Airbus A321neo (A21N)",9V-NCF,2F,1,1,1,,2672,1094,2695,2128
+2022-08-10,TR301,"Hanoi / Noibai (HAN/VVNB)","Singapore / Changi (SIN/WSSS)",13:10:00,17:45:00,03:35:00,"Scoot (TR/TGW)","Airbus A321neo (A21N)",9V-NCI,10B,2,1,1,,1094,2672,2695,2128
+2022-08-28,EK355,"Singapore / Changi (SIN/WSSS)","Dubai / Dubai International (DXB/OMDB)",21:40:00,00:50:00,07:10:00,"Emirates (EK/UAE)","Airbus A380-800 (A388)",A6-EOB,48K,1,1,2,,2672,768,807,39
+2022-08-31,EK151,"Dubai / Dubai International (DXB/OMDB)","Copenhagen / Kastrup (CPH/EKCH)",08:20:00,13:15:00,06:55:00,"Emirates (EK/UAE)","Boeing 777-300ER (B77W)",A6-ENS,42K,1,1,2,,768,606,807,2023
+2022-08-19,TR492,"Singapore / Changi (SIN/WSSS)","Kota Kinabalu / Kota Kinabalu (BKI/WBKK)",18:25:00,20:50:00,02:25:00,"Scoot (TR/TGW)","Airbus A321neo (A21N)",9V-NCB,39F,1,1,1,,2672,329,2695,2128
+2022-08-21,TR493,"Kota Kinabalu / Kota Kinabalu (BKI/WBKK)","Singapore / Changi (SIN/WSSS)",19:50:00,22:00:00,02:10:00,"Scoot (TR/TGW)","Airbus A320neo (A20N)",9V-TNC,16F,1,1,1,,329,2672,2695,2127
+2022-10-29,VY1881,"Billund / Billund (BLL/EKBI)","Barcelona / El Prat (BCN/LEBL)",19:00:00,21:50:00,02:50:00,"Vueling Airlines (VY/VLG)","Airbus A320neo (A20N)",EC-NAJ,26F,1,1,1,,345,239,839,2127
+2022-12-01,BA807,"Billund / Billund (BLL/EKBI)","London / Heathrow (LHR/EGLL)",20:05:00,20:55:00,01:55:00,"British Airways (BA/BAW)","Airbus A320 (A320)",G-EUUF,19A,1,1,1,,345,1618,113,27
+2022-12-04,BA806,"London / Heathrow (LHR/EGLL)","Billund / Billund (BLL/EKBI)",17:55:00,20:35:00,01:40:00,"British Airways (BA/BAW)","Airbus A320 (A320)",G-MIDO,30A,2,1,1,,1618,345,113,27
+2022-11-11,D83657,"Barcelona / El Prat (BCN/LEBL)","Copenhagen / Kastrup (CPH/EKCH)",12:30:00,15:30:00,03:00:00,"Norwegian Air International (D8/IBK)","Boeing 737-800 (B738)",SE-RXB,24F,1,1,1,,239,606,1644,231
+2023-03-02,EW4211,"Copenhagen / Kastrup (CPH/EKCH)","Prague / Praha-Ruzyne (PRG/LKPR)",20:20:00,21:45:00,01:25:00,"Eurowings (EW/EWG)","Airbus A320 (A320)",9H-EUL,17C,3,1,1,,606,2398,282,27
+2023-03-06,BT482,"Prague / Praha-Ruzyne (PRG/LKPR)","Riga / Riga (RIX/EVRA)",14:20:00,17:05:00,01:45:00,"AirBaltic (BT/BTI)","Bombardier CS300 (BCS3)",YL-CSM,30A,1,1,1,,2398,3623,154,2113
+2023-03-07,BT139,"Riga / Riga (RIX/EVRA)","Copenhagen / Kastrup (CPH/EKCH)",18:50:00,19:20:00,01:30:00,"AirBaltic (BT/BTI)","Bombardier CS300 (BCS3)",YL-AAS,28F,1,1,1,,3623,606,154,2113
+2023-03-31,AI158,"Copenhagen / Kastrup (CPH/EKCH)","Delhi / Indira Gandhi (DEL/VIDP)",20:45:00,07:35:00,07:50:00,"Air India (AI/AIC)","Boeing 787-8 (B788)",VT-ANT,34J,1,1,1,,606,689,43,2087
+2023-04-16,AI157,"Delhi / Indira Gandhi (DEL/VIDP)","Copenhagen / Kastrup (CPH/EKCH)",14:20:00,18:45:00,08:20:00,"Air India (AI/AIC)","Boeing 787-8 (B788)",VT-ANT,33J,1,1,1,,689,606,43,2087
+2023-05-02,W64572,"Copenhagen / Kastrup (CPH/EKCH)","Larnaca / Larnaca (LCA/LCLK)",09:50:00,15:00:00,04:10:00,"Wizz Air (W6/WZZ)","Airbus A321LR (A21N)",HA-LZT,22F,1,1,1,,606,1572,859,2181
+2023-05-09,W64571,"Larnaca / Larnaca (LCA/LCLK)","Copenhagen / Kastrup (CPH/EKCH)",05:45:00,09:20:00,04:35:00,"Wizz Air (W6/WZZ)","Airbus A321LR (A21N)",HA-LZT,4D,3,1,1,,1572,606,859,2181
+2023-04-01,UK155,"Delhi / Indira Gandhi (DEL/VIDP)","Kathmandu / Tribhuvan (KTM/VNKT)",14:00:00,16:00:00,02:05:00,"Vistara (UK/VTI)","Airbus A320neo (A20N)",VT-TQE,23F,1,1,1,,689,1515,2079,2127
+2023-04-15,UK156,"Kathmandu / Tribhuvan (KTM/VNKT)","Delhi / Indira Gandhi (DEL/VIDP)",17:00:00,18:45:00,01:30:00,"Vistara (UK/VTI)","Airbus A320neo (A20N)",VT-TNX,24F,1,1,1,,1515,689,2079,2127
+2023-07-22,AY1985,"Copenhagen / Kastrup (CPH/EKCH)","Doha / Hamad International (DOH/OTHH)",16:05:00,23:20:00,07:15:00,"Finnair (AY/FIN)","Airbus A330-300 (A333)",OH-LTO,57L,1,1,1,,606,5259,304,31
+2023-07-23,QR1487,"Doha / Hamad International (DOH/OTHH)","Zanzibar / Kisauni (ZNZ/HTZA)",02:05:00,07:55:00,06:00:00,"Qatar Airways (QR/QTR)","Airbus A320 (A320)",A7-AHP,26A,1,1,1,,5259,3542,634,27
+2023-08-06,QR1499,"Kilimanjaro / Kilimanjaro (JRO/HTKJ)","Doha / Hamad International (DOH/OTHH)",18:15:00,23:55:00,05:40:00,"Qatar Airways (QR/QTR)","Airbus A330-200 (A332)",A4O-DJ,43K,1,1,1,,1358,5259,634,30
+2023-08-07,AY1986,"Doha / Hamad International (DOH/OTHH)","Copenhagen / Kastrup (CPH/EKCH)",08:05:00,13:50:00,05:55:00,"Finnair (AY/FIN)","Airbus A330-300 (A333)",OH-LTT,58A,1,1,1,,5259,606,304,31
+2023-04-14,U4374,"Bharatpur / Bharatpur (BHR/VNBP)","Kathmandu / Tribhuvan (KTM/VNKT)",14:35:00,14:57:00,00:22:00,"Buddha Air (U4/BHA)","ATR 42-320 (AT43)",9N-AIT,9B,3,1,1,,3825,1515,1218,147
+2023-04-24,KL1342,"Billund / Billund (BLL/EKBI)","Amsterdam / Schiphol (AMS/EHAM)",10:05:00,11:15:00,01:10:00,"KLM Royal Dutch Airlines (KL/KLM)","Embraer ERJ-190 (E190)",PH-EZW,8A,1,1,2,,345,122,440,655
+2023-04-26,KL1349,"Amsterdam / Schiphol (AMS/EHAM)","Billund / Billund (BLL/EKBI)",21:35:00,22:45:00,01:10:00,"KLM Royal Dutch Airlines (KL/KLM)","Boeing 737-800 (B738)",PH-BXC,26A,1,1,2,,122,345,440,231
+2023-08-22,LH843,"Billund / Billund (BLL/EKBI)","Frankfurt am Main / Frankfurt (FRA/EDDF)",06:20:00,07:45:00,01:25:00,"Lufthansa (LH/DLH)","Airbus A320 (A320)",D-AIZF,19A,1,1,2,,345,919,239,27
+2023-08-22,LH440,"Frankfurt am Main / Frankfurt (FRA/EDDF)","Houston / George Bush Intercontinental (IAH/KIAH)",10:00:00,13:35:00,10:35:00,"Lufthansa (LH/DLH)","Boeing 747-8 (B748)",D-ABYM,41K,1,1,2,,919,1204,239,2104
+2023-08-31,LH441,"Houston / George Bush Intercontinental (IAH/KIAH)","Frankfurt am Main / Frankfurt (FRA/EDDF)",15:45:00,08:15:00,09:30:00,"Lufthansa (LH/DLH)","Boeing 747-8 (B748)",D-ABYG,32A,1,1,2,,1204,919,239,2104
+2023-09-01,LH838,"Frankfurt am Main / Frankfurt (FRA/EDDF)","Billund / Billund (BLL/EKBI)",12:35:00,13:50:00,01:15:00,"Lufthansa (LH/DLH)","Airbus A319 (A319)",D-AILN,19A,1,1,2,,919,345,239,26
+2023-10-04,LH837,"Billund / Billund (BLL/EKBI)","Frankfurt am Main / Frankfurt (FRA/EDDF)",10:55:00,12:20:00,01:25:00,"Lufthansa (LH/DLH)","Airbus A319 (A319)",D-AIBI,22F,1,1,1,,345,919,239,26
+2023-10-10,SK842,"Zurich / Kloten (ZRH/LSZH)","Oslo / Gardermoen (OSL/ENGM)",19:20:00,21:40:00,02:20:00,"Scandinavian Airlines (SK/SAS)","Airbus A320neo (A20N)",SE-RON,17F,1,1,1,,3548,2219,677,2127
+2023-10-15,SK1905,"Oslo / Gardermoen (OSL/ENGM)","Billund / Billund (BLL/EKBI)",15:35:00,16:40:00,01:05:00,"Scandinavian Airlines (SK/SAS)","Bombardier CRJ-900 (CRJ9)",EI-FPX,12A,1,1,1,,2219,345,677,531
+2023-10-23,SK1258,"Aarhus / Tirstrup (AAR/EKAH)","Copenhagen / Kastrup (CPH/EKCH)",15:55:00,16:30:00,00:35:00,"Scandinavian Airlines (SK/SAS)","Bombardier CRJ-900 (CRJ9)",EI-GEA,11F,1,1,2,,8,606,677,531
+2023-10-23,OS304,"Copenhagen / Kastrup (CPH/EKCH)","Vienna / Schwechat (VIE/LOWW)",17:40:00,19:20:00,01:40:00,"Austrian Airlines (OS/AUA)","Airbus A320-200 (A320)",OE-LXA,12E,2,1,2,,606,3179,87,2059
+2023-10-25,OS305,"Vienna / Schwechat (VIE/LOWW)","Copenhagen / Kastrup (CPH/EKCH)",17:30:00,19:10:00,01:40:00,"Austrian Airlines (OS/AUA)","Airbus A320 (A320)",OE-LZF,8A,1,1,2,,3179,606,87,27
+2023-10-25,SK1269,"Copenhagen / Kastrup (CPH/EKCH)","Aarhus / Tirstrup (AAR/EKAH)",20:55:00,21:30:00,00:35:00,"Scandinavian Airlines (SK/SAS)","Bombardier CRJ-900 (CRJ9)",EI-FPD,21A,1,1,2,,606,8,677,531
+2023-07-28,TC136,"Zanzibar / Kisauni (ZNZ/HTZA)","Arusha / Arusha (ARK/HTAR)",14:30:00,15:30:00,01:00:00,"Air Tanzania (TC/ATC)","Bombardier Dash 8-400 (DH8D)",5H-TCF,5A,1,1,1,,3542,154,84,610
+2023-12-21,SK1585,"Copenhagen / Kastrup (CPH/EKCH)","Barcelona / El Prat (BCN/LEBL)",15:30:00,18:25:00,02:50:00,"Scandinavian Airlines (SK/SAS)","Airbus A320neo (A20N)",EI-SIH,15F,1,1,1,,606,239,677,2127
+2023-12-28,VY1872,"Barcelona / El Prat (BCN/LEBL)","Copenhagen / Kastrup (CPH/EKCH)",16:40:00,19:45:00,03:00:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",EC-MVD,8F,1,1,1,,239,606,839,27
+2024-05-09,FR3671,"Billund / Billund (BLL/EKBI)","Charleroi / Brussels South Charleroi (CRL/EBCI)",14:40:00,16:10:00,01:30:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",9H-QDX,10B,2,1,1,,345,615,668,231
+2024-05-12,FR3762,"Charleroi / Brussels South Charleroi (CRL/EBCI)","Billund / Billund (BLL/EKBI)",15:55:00,17:20:00,01:25:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",9H-QDW,5E,2,1,1,,615,345,668,231
+2024-06-16,BA817,"Copenhagen / Kastrup (CPH/EKCH)","London / Heathrow (LHR/EGLL)",16:40:00,17:40:00,02:05:00,"British Airways (BA/BAW)","Airbus A320 (A320)",G-EUUE,19A,1,1,1,,606,1618,113,27
+2024-06-17,BA2159,"London / Gatwick (LGW/EGKK)","St Lucia / Hewanorra (UVF/TLPL)",11:15:00,15:00:00,10:10:00,"British Airways (BA/BAW)","Boeing 777-200 (B772)",G-VIIP,33G,2,1,1,,1614,3123,113,246
+2024-06-22,BA2159,"St Lucia / Hewanorra (UVF/TLPL)","St Georges / Point Salines (GND/TGPY)",16:10:00,17:05:00,00:55:00,"British Airways (BA/BAW)","Boeing 777 (B777)",G-VIIT,29K,1,1,1,,3123,1013,113,2012
+2024-07-05,BA254,"Barbados I / Bridgetown-Grantley Adams (BGI/TBPB)","London / Heathrow (LHR/EGLL)",17:05:00,06:20:00,07:10:00,"British Airways (BA/BAW)","Boeing 787-10 (B78X)",G-ZBLG,35A,1,1,1,,287,1618,113,2138
+2024-08-06,BA806,"London / Heathrow (LHR/EGLL)","Billund / Billund (BLL/EKBI)",08:55:00,11:35:00,01:40:00,"British Airways (BA/BAW)","Airbus A320-200 (A320)",G-EUYC,26A,1,1,1,,1618,345,113,2059
+2024-02-14,BA807,"Billund / Billund (BLL/EKBI)","London / Heathrow (LHR/EGLL)",20:35:00,21:25:00,01:50:00,"British Airways (BA/BAW)","Airbus A320 (A320)",G-EUUE,30A,2,1,2,,345,1618,113,27
+2024-02-16,BA806,"London / Heathrow (LHR/EGLL)","Billund / Billund (BLL/EKBI)",17:30:00,20:10:00,01:40:00,"British Airways (BA/BAW)","Airbus A319 (A319)",G-DBCA,4A,1,1,2,,1618,345,113,26
+2024-02-28,LO468,"Billund / Billund (BLL/EKBI)","Warsaw / Chopin (Okecie) (WAW/EPWA)",20:00:00,21:35:00,01:35:00,"LOT (LO/LOT)","Embraer ERJ-195 (E195)",SP-LNF,6A,1,1,2,,345,3142,483,2016
+2024-02-28,LO3941,"Warsaw / Chopin (Okecie) (WAW/EPWA)","Poznan / Lawica (POZ/EPPO)",22:55:00,23:55:00,01:00:00,"LOT (LO/LOT)","Embraer ERJ-195 (E195)",SP-LNB,25A,1,1,2,,3142,2387,483,2016
+2024-03-01,LO3944,"Poznan / Lawica (POZ/EPPO)","Warsaw / Chopin (Okecie) (WAW/EPWA)",14:50:00,15:45:00,00:55:00,"LOT (LO/LOT)","Embraer ERJ-190 (E190)",SP-LMC,22D,1,1,2,,2387,3142,483,655
+2024-03-01,LO467,"Warsaw / Chopin (Okecie) (WAW/EPWA)","Billund / Billund (BLL/EKBI)",17:30:00,19:20:00,01:50:00,"LOT (LO/LOT)","Embraer ERJ-195 (E195)",SP-LNG,25D,1,1,2,,3142,345,483,2016
+2024-03-17,FR9003,"Billund / Billund (BLL/EKBI)","Barcelona / El Prat (BCN/LEBL)",15:00:00,17:45:00,02:45:00,"Ryanair (FR/RYR)","Boeing 737 MAX 8 (B38M)",9H-VUK,2A,1,1,1,,345,239,668,2123
+2024-04-04,FR9002,"Barcelona / El Prat (BCN/LEBL)","Billund / Billund (BLL/EKBI)",18:20:00,21:15:00,02:55:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-DPI,25F,1,1,1,,239,345,668,231
+2024-06-27,JY703,"St Georges / Point Salines (GND/TGPY)","St Vincent / St Vincent (SVD/TVSV)",08:10:00,05:55:00,00:45:00,"InterCaribbean Airways (JY/IWY)","Embraer EMB-120 Brasilia (E120)",VQ-TMJ,7C,1,1,1,,1013,2807,403,650
+2024-06-11,LH839,"Billund / Billund (BLL/EKBI)","Frankfurt am Main / Frankfurt (FRA/EDDF)",14:50:00,16:15:00,01:25:00,"Lufthansa (LH/DLH)","Bombardier CRJ-900 (CRJ9)",D-ACNT,14F,1,1,2,,345,919,239,531
+2024-06-13,LH840,"Frankfurt am Main / Frankfurt (FRA/EDDF)","Billund / Billund (BLL/EKBI)",17:10:00,18:30:00,01:20:00,"Lufthansa (LH/DLH)","Airbus A320 (A320)",D-AIZH,21F,1,1,2,,919,345,239,27
+2024-07-04,BW201,"St Vincent / St Vincent (SVD/TVSV)","Barbados I / Bridgetown-Grantley Adams (BGI/TBPB)",05:45:00,09:30:00,00:45:00,"BWIA West Indies Airways (BW/BWA)","ATR 72-600 (AT76)",9Y-TTE,3D,1,1,1,,2807,287,156,2105
+2024-11-02,EY440,"Abu Dhabi / Abu Dhabi (AUH/OMAA)","Manila / Ninoy Aquino International (MNL/RPLL)",02:40:00,15:00:00,08:20:00,"Etihad Airways (EY/ETD)","Boeing 777-300ER (B77W)",A6-ETH,39K,1,1,1,,188,1898,276,2023
+2024-11-01,EY178,"Copenhagen / Kastrup (CPH/EKCH)","Abu Dhabi / Abu Dhabi (AUH/OMAA)",10:10:00,19:20:00,07:10:00,"Etihad Airways (EY/ETD)","Boeing 787-9 (B789)",A6-BNC,17A,1,1,1,,606,188,276,2088
+2024-11-23,EY441,"Manila / Ninoy Aquino International (MNL/RPLL)","Abu Dhabi / Abu Dhabi (AUH/OMAA)",18:35:00,00:20:00,09:45:00,"Etihad Airways (EY/ETD)","Boeing 777-300ER (B77W)",A6-ETE,53A,1,1,1,,1898,188,276,2023
+2024-11-24,EY177,"Abu Dhabi / Abu Dhabi (AUH/OMAA)","Copenhagen / Kastrup (CPH/EKCH)",02:55:00,07:00:00,06:05:00,"Etihad Airways (EY/ETD)","Boeing 787-9 (B789)",A6-BLR,21B,2,1,1,,188,606,276,2088
+2024-08-27,BA807,"Billund / Billund (BLL/EKBI)","London / Heathrow (LHR/EGLL)",17:05:00,17:50:00,01:45:00,"British Airways (BA/BAW)","Airbus A319 (A319)",G-DBCC,25E,2,1,2,,345,1618,113,26
+2024-08-29,BA806,"London / Heathrow (LHR/EGLL)","Billund / Billund (BLL/EKBI)",12:45:00,15:25:00,01:40:00,"British Airways (BA/BAW)","Airbus A319 (A319)",G-DBCE,12C,3,1,2,,1618,345,113,26
+2024-11-02,5J651,"Manila / Ninoy Aquino International (MNL/RPLL)","Tacloban / Dz Romualdez (TAC/RPVA)",18:15:00,19:50:00,01:35:00,"Cebu Pacific (5J/CEB)","Airbus A320neo (A20N)",RP-C4138,18A,1,1,1,,1898,2847,906,2127
+2024-11-18,5J650,"Tacloban / Dz Romualdez (TAC/RPVA)","Manila / Ninoy Aquino International (MNL/RPLL)",06:20:00,07:50:00,01:30:00,"Cebu Pacific (5J/CEB)","Airbus A320-200 (A320)",RP-C4107,18A,1,1,1,,2847,1898,906,2059
+2024-10-22,VY1881,"Billund / Billund (BLL/EKBI)","Barcelona / El Prat (BCN/LEBL)",14:40:00,17:25:00,02:45:00,"Vueling Airlines (VY/VLG)","Airbus A320 (A320)",LY-NOW,24F,1,1,1,,345,239,839,27
+2024-10-26,VY1880,"Barcelona / El Prat (BCN/LEBL)","Billund / Billund (BLL/EKBI)",11:30:00,14:25:00,02:55:00,"Vueling Airlines (VY/VLG)","Airbus A321neo (A21N)",EC-NYC,36F,1,1,1,,239,345,839,2128
+2024-12-15,SK1585,"Copenhagen / Kastrup (CPH/EKCH)","Barcelona / El Prat (BCN/LEBL)",15:35:00,18:05:00,02:30:00,"Scandinavian Airlines (SK/SAS)","Airbus A320neo (A20N)",SE-ROI,4E,2,1,1,,606,239,677,2127
+2024-12-28,VY1870,"Barcelona / El Prat (BCN/LEBL)","Copenhagen / Kastrup (CPH/EKCH)",14:25:00,17:25:00,03:00:00,"Vueling Airlines (VY/VLG)","Airbus A320-200 (A320)",EC-MJC,29B,2,1,1,,239,606,839,2059
+2025-03-12,DY999,"Billund / Billund (BLL/EKBI)","Oslo / Gardermoen (OSL/ENGM)",11:15:00,12:25:00,01:10:00,"Norwegian Air Shuttle (DY/NAX)","Boeing 737-800 (B738)",LN-DYT,23F,1,1,1,,345,2219,552,231
+2025-03-17,DY998,"Oslo / Gardermoen (OSL/ENGM)","Billund / Billund (BLL/EKBI)",17:40:00,18:50:00,01:10:00,"Norwegian Air Shuttle (DY/NAX)","Boeing 737-800 (B738)",SE-RXB,25F,1,1,1,,2219,345,552,231
+2025-05-08,LX1285,"Billund / Billund (BLL/EKBI)","Zurich / Kloten (ZRH/LSZH)",20:05:00,21:45:00,01:40:00,"Swiss International Airlines (LX/SWR)","Airbus A321-200 (A321)",HB-ION,11D,2,1,1,,345,3548,741,2076
+2025-05-12,LX1282,"Zurich / Kloten (ZRH/LSZH)","Billund / Billund (BLL/EKBI)",07:00:00,08:50:00,01:50:00,"AirBaltic (BT/BTI)","Airbus A220-300 (BCS3)",YL-AAX,29F,1,1,1,,3548,345,154,2142
+2025-07-19,EK152,"Copenhagen / Kastrup (CPH/EKCH)","Dubai / Dubai International (DXB/OMDB)",16:00:00,00:20:00,07:25:00,"Emirates (EK/UAE)","Airbus A380-800 (A388)",A6-EUP,10A,1,2,1,,606,768,807,39
+2025-07-20,EK705,"Dubai / Dubai International (DXB/OMDB)","Mahe / Seychelles (SEZ/FSIA)",02:15:00,06:50:00,04:25:00,"Emirates (EK/UAE)","Boeing 777-300ER (B77W)",A6-EGI,07A,1,2,1,,768,2634,807,2023
+2025-07-31,HM3201,"Praslin / Praslin (PRI/FSPP)","Mahe / Seychelles (SEZ/FSIA)",19:55:00,20:15:00,00:20:00,"Air Seychelles Limited (HM/SEY)","Viking DHC-6-400 Twin Otter (DHC6)",S7-FAR,06C,1,1,1,,2400,2634,694,2178
+2025-07-24,HM3124,"Mahe / Seychelles (SEZ/FSIA)","Praslin / Praslin (PRI/FSPP)",12:30:00,12:50:00,00:20:00,"Air Seychelles Limited (HM/SEY)","Viking DHC-6-400 Twin Otter (DHC6)",S7-PRN,03A,1,1,1,,2634,2400,694,2178
+2025-07-31,EK708,"Mahe / Seychelles (SEZ/FSIA)","Dubai / Dubai International (DXB/OMDB)",23:50:00,04:20:00,04:30:00,"Emirates (EK/UAE)","Boeing 777-300ER (B77W)",A6-EPO,09K,1,2,1,,2634,768,807,2023
+2025-08-01,EK151,"Dubai / Dubai International (DXB/OMDB)","Copenhagen / Kastrup (CPH/EKCH)",08:20:00,13:15:00,06:00:00,"Emirates (EK/UAE)","Airbus A380-800 (A388)",A6-EUY,12A,1,2,1,,768,606,807,39
+2025-06-26,FR713,"Aarhus / Tirstrup (AAR/EKAH)","London / Stansted (STN/EGSS)",14:15:00,15:00:00,01:45:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",EI-DLX,26F,1,1,1,,8,2785,668,231
+2025-06-29,FR712,"London / Stansted (STN/EGSS)","Aarhus / Tirstrup (AAR/EKAH)",06:05:00,08:45:00,01:40:00,"Ryanair (FR/RYR)","Boeing 737-800 (B738)",9H-QDH,12D,3,1,1,,2785,8,668,231
+2025-12-14,SK1585,"Copenhagen / Kastrup (CPH/EKCH)","Barcelona / El Prat (BCN/LEBL)",15:30:00,18:20:00,02:50:00,"Scandinavian Airlines (SK/SAS)","Airbus A320neo (A20N)",EI-SIW,5B,2,1,1,,606,239,677,2127
+2025-12-27,SK1586,"Barcelona / El Prat (BCN/LEBL)","Copenhagen / Kastrup (CPH/EKCH)",19:10:00,22:05:00,02:55:00,"Scandinavian Airlines (SK/SAS)","Airbus A320neo (A20N)",EI-SIF,10A,1,1,1,,239,606,677,2127
+2026-01-31,LH843,"Billund / Billund (BLL/EKBI)","Frankfurt am Main / Frankfurt (FRA/EDDF)",06:45:00,08:10:00,01:25:00,"Lufthansa (LH/DLH)","Airbus A321 (A321)",D-AIRT,19A,1,1,2,,345,919,239,28
+2026-01-31,LH758,"Frankfurt am Main / Frankfurt (FRA/EDDF)","Chennai / Chennai (MAA/VOMM)",10:15:00,00:05:00,09:50:00,"Lufthansa (LH/DLH)","Airbus A340-300 (A343)",D-AIGV,33K,1,1,2,,919,1737,239,34
+2026-02-06,LH759,"Chennai / Chennai (MAA/VOMM)","Frankfurt am Main / Frankfurt (FRA/EDDF)",01:50:00,07:55:00,10:05:00,"Lufthansa (LH/DLH)","Airbus A340-300 (A343)",D-AIGT,33A,1,1,2,,1737,919,239,34
+2026-02-06,LH838,"Frankfurt am Main / Frankfurt (FRA/EDDF)","Billund / Billund (BLL/EKBI)",12:00:00,13:20:00,01:20:00,"Lufthansa (LH/DLH)","Airbus A321 (A321)",D-AIDI,20F,1,1,2,,919,345,239,28
+2026-03-26,SK1902,"Billund / Billund (BLL/EKBI)","Oslo / Gardermoen (OSL/ENGM)",19:20:00,20:30:00,01:10:00,"Scandinavian Airlines (SK/SAS)","Embraer ERJ-195 (E195)",SE-RSU,15F,1,1,1,,345,2219,677,2016
+2026-03-29,SK1905,"Oslo / Gardermoen (OSL/ENGM)","Billund / Billund (BLL/EKBI)",18:40:00,19:45:00,01:15:00,"Scandinavian Airlines (SK/SAS)","Embraer ERJ-195 (E195)",SE-RSL,21F,1,1,1,,2219,345,677,2016
+2026-03-07,W45192,"Billund / Billund (BLL/EKBI)","Tirana / Rinas (TIA/LATI)",09:30:00,12:15:00,02:45:00,"Aero Services Executive (W4/BES)","Airbus A321 (A321)",HA-LTI,22A,1,1,1,,345,2922,126,28
+2026-03-14,W45191,"Tirana / Rinas (TIA/LATI)","Billund / Billund (BLL/EKBI)",05:55:00,08:55:00,03:00:00,"Aero Services Executive (W4/BES)","Airbus A321 (A321)",HA-LTI,31D,2,1,1,,2922,345,126,28
+2026-04-19,W62320,"Billund / Billund (BLL/EKBI)","Budapest / Franz Liszt International (BUD/LHBP)",15:05:00,17:05:00,02:00:00,"Wizz Air (W6/WZZ)","Airbus A321neo (A21N)",HA-LDC,7F,1,1,2,,345,429,859,2128
+2026-04-23,SK762,"Budapest / Franz Liszt International (BUD/LHBP)","Copenhagen / Kastrup (CPH/EKCH)",19:50:00,21:45:00,02:00:00,"Scandinavian Airlines (SK/SAS)","Bombardier CRJ-1000 (CRJX)",EI-HIB,11A,1,1,2,,429,606,677,2071
+2026-04-23,SK1289,"Copenhagen / Kastrup (CPH/EKCH)","Billund / Billund (BLL/EKBI)",23:05:00,23:55:00,00:50:00,"Scandinavian Airlines (SK/SAS)","ATR 72-600 (AT76)",SE-MKO,11A,1,1,2,,606,345,677,2105

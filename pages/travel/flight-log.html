@@ -310,6 +310,79 @@
     .stat-card.wide { grid-column: span 2; }
     @media (max-width: 560px) { .stat-card.wide { grid-column: span 1; } }
 
+    /* ── FLIGHT LOG SECTION ── */
+    .flight-log-section { margin-top: 5rem; }
+    .flight-log-header {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 2rem;
+      margin-bottom: 2.5rem; flex-wrap: wrap;
+    }
+    .flight-log-header h2 { font-size: 2rem; font-weight: 700; color: var(--text); }
+    .flight-stats-inline {
+      display: flex; gap: 2.5rem; flex-wrap: wrap; align-items: center;
+    }
+    .flight-stat-item {
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .flight-stat-value {
+      font-size: 1.5rem; font-weight: 800; color: var(--c-travel); line-height: 1;
+    }
+    .flight-stat-label {
+      font-size: 0.72rem; color: var(--mute); text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* Filter & sort controls */
+    .flight-controls {
+      display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center;
+    }
+    .flight-filter-btn {
+      padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.15);
+      background: transparent; color: var(--text-dim); border-radius: 999px;
+      cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
+    }
+    .flight-filter-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); border-color: rgba(255,255,255,0.25); }
+    .flight-filter-btn.active { background: var(--c-travel); color: #fff; border-color: var(--c-travel); }
+
+    /* Flight table */
+    .flight-table-wrapper {
+      overflow-x: auto; border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+    }
+    .flight-table {
+      width: 100%; border-collapse: collapse; font-size: 0.9rem;
+    }
+    .flight-table thead {
+      background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .flight-table th {
+      padding: 1rem; text-align: left; color: var(--text-dim); font-weight: 600;
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .flight-table td {
+      padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+    .flight-table tbody tr {
+      transition: background 0.15s;
+    }
+    .flight-table tbody tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+    .flight-date { color: var(--accent); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    .flight-route {
+      display: flex; gap: 0.5rem; align-items: center; color: var(--text);
+    }
+    .flight-route-arrow { color: var(--c-travel); font-weight: 700; }
+    .flight-code { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--accent); }
+    .flight-airline { color: var(--text-dim); }
+    .flight-aircraft { font-size: 0.85rem; color: var(--mute); }
+    .flight-duration { font-family: 'JetBrains Mono', monospace; color: var(--c-travel); font-weight: 600; }
+    .flight-seat { font-family: 'JetBrains Mono', monospace; color: var(--mute); font-size: 0.85rem; }
+
+    /* Empty state */
+    .flight-empty { text-align: center; padding: 3rem 2rem; color: var(--mute); }
+    .flight-empty p { margin-bottom: 1rem; }
+
     /* ── FOOTER ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
     .footer-slim {
@@ -577,6 +650,60 @@
     </div><!-- /adsb-body -->
   </div><!-- /adsb-section -->
 
+  <!-- ══ FLIGHT LOG ══ -->
+  <div class="flight-log-section">
+    <div class="flight-log-header">
+      <h2>Flight Log</h2>
+      <div class="flight-stats-inline">
+        <div class="flight-stat-item">
+          <div class="flight-stat-value" id="total-flights">0</div>
+          <div class="flight-stat-label">Total Flights</div>
+        </div>
+        <div class="flight-stat-item">
+          <div class="flight-stat-value" id="total-hours">0</div>
+          <div class="flight-stat-label">Flight Hours</div>
+        </div>
+        <div class="flight-stat-item">
+          <div class="flight-stat-value" id="unique-airlines">0</div>
+          <div class="flight-stat-label">Airlines</div>
+        </div>
+        <div class="flight-stat-item">
+          <div class="flight-stat-value" id="unique-aircraft">0</div>
+          <div class="flight-stat-label">Aircraft Types</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flight-controls">
+      <button class="flight-filter-btn active" data-filter="all">All Flights</button>
+      <button class="flight-filter-btn" data-filter="commercial">✈ Commercial</button>
+      <button class="flight-filter-btn" data-filter="short-haul">Short Haul</button>
+      <button class="flight-filter-btn" data-filter="long-haul">Long Haul</button>
+    </div>
+
+    <div class="flight-table-wrapper">
+      <table class="flight-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Flight</th>
+            <th>Route</th>
+            <th>Airline</th>
+            <th>Aircraft</th>
+            <th>Duration</th>
+            <th>Seat</th>
+          </tr>
+        </thead>
+        <tbody id="flight-log-body">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+    <div class="flight-empty" id="flight-empty" style="display: none;">
+      <p>No flights match this filter.</p>
+    </div>
+  </div><!-- /flight-log-section -->
+
 </div>
 
 <footer>
@@ -659,6 +786,196 @@
   document.querySelectorAll('.stat-value[data-target]').forEach(el => {
     statObserver.observe(el);
   });
+
+  /* ── FLIGHT LOG DATA ── */
+  const flightData = [
+    { date: "2000-08-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Tunis / Tunis Carthage (TUN/DTTA)", duration: "01:24:00", airline: "Unknown", aircraft: "Unknown" },
+    { date: "2000-08-15", flight: "", from: "Tunis / Tunis Carthage (TUN/DTTA)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "01:24:00", airline: "Unknown", aircraft: "Unknown" },
+    { date: "2005-07-01", flight: "", from: "Belfast / Aldergrove (BFS/EGAA)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:25:00", airline: "Unknown", aircraft: "Unknown" },
+    { date: "2005-09-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Belfast / Aldergrove (BFS/EGAA)", duration: "02:25:00", airline: "Unknown", aircraft: "Unknown" },
+    { date: "2005-10-01", flight: "", from: "Belfast / Belfast City (BHD/EGAC)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "00:32:00", airline: "Easyjet (U2/EZY)", aircraft: "Airbus A320 (A320)" },
+    { date: "2006-07-01", flight: "", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:30:00", airline: "Unknown", aircraft: "Unknown" },
+    { date: "2006-09-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "02:30:00", airline: "Unknown", aircraft: "Unknown" },
+    { date: "2007-07-10", flight: "GSM 401", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:50:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Boeing 737-700 (B737)" },
+    { date: "2006-08-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Bari / Palese Macchie (BRI/LIBD)", duration: "01:54:00", airline: "Unknown", aircraft: "Unknown" },
+    { date: "2006-08-15", flight: "", from: "Bari / Palese Macchie (BRI/LIBD)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "01:54:00", airline: "Unknown", aircraft: "Unknown" },
+    { date: "2009-07-04", flight: "JK 033", from: "Barcelona / El Prat (BCN/LEBL)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "02:55:00", airline: "Spanair (JK/JKK)", aircraft: "Unknown" },
+    { date: "2009-07-11", flight: "JK 034", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:50:00", airline: "Spanair (JK/JKK)", aircraft: "Unknown" },
+    { date: "2008-07-03", flight: "GSM 402", from: "Barcelona / El Prat (BCN/LEBL)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "02:40:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Boeing 737-700 (B737)" },
+    { date: "2008-07-29", flight: "GSM 401", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:40:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Boeing 737-700 (B737)" },
+    { date: "2009-08-01", flight: "", from: "Barcelona / El Prat (BCN/LEBL)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "02:30:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Unknown" },
+    { date: "2009-08-15", flight: "", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:30:00", airline: "Flyglobespan (Y2/GSM)", aircraft: "Unknown" },
+    { date: "2011-08-03", flight: "JK 6464", from: "Barcelona / El Prat (BCN/LEBL)", to: "La Coruna / La Coruna (LCG/LECO)", duration: "01:26:00", airline: "Spanair (JK/JKK)", aircraft: "McDonnell Douglas MD-82 (MD82)" },
+    { date: "2011-08-15", flight: "JK6475", from: "La Coruna / La Coruna (LCG/LECO)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "01:30:00", airline: "Spanair (JK/JKK)", aircraft: "McDonnell Douglas MD-82 (MD82)" },
+    { date: "2015-08-07", flight: "DY 5152", from: "Barcelona / El Prat (BCN/LEBL)", to: "Berlin / Schonefeld (SXF/EDDB)", duration: "02:15:00", airline: "Norwegian Air Shuttle (DY/NAX)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2015-08-23", flight: "4U 8526", from: "Berlin / Tegel (TXL/EDDT)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:20:00", airline: "Germanwings (4U/GWI)", aircraft: "Airbus A320 (A320)" },
+    { date: "2016-01-31", flight: "VY 8656", from: "Barcelona / El Prat (BCN/LEBL)", to: "Prague / Praha-Ruzyne (PRG/LKPR)", duration: "02:10:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2016-02-08", flight: "VY 8657", from: "Prague / Praha-Ruzyne (PRG/LKPR)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:05:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2016-08-17", flight: "VY8710", from: "Barcelona / El Prat (BCN/LEBL)", to: "Vienna / Schwechat (VIE/LOWW)", duration: "02:20:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2016-09-04", flight: "HG8952", from: "Vienna / Schwechat (VIE/LOWW)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:15:00", airline: "Niki (flyNiki) (HG/NLY)", aircraft: "Airbus A320 (A320)" },
+    { date: "2017-02-08", flight: "FR6305", from: "Barcelona / El Prat (BCN/LEBL)", to: "Bergamo / Orio Al Serio (BGY/LIME)", duration: "01:45:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2017-02-11", flight: "FR6366", from: "Bergamo / Orio Al Serio (BGY/LIME)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "01:40:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2017-08-02", flight: "VY8656", from: "Barcelona / El Prat (BCN/LEBL)", to: "Prague / Praha-Ruzyne (PRG/LKPR)", duration: "02:25:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2017-08-09", flight: "VY8653", from: "Prague / Praha-Ruzyne (PRG/LKPR)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:25:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2017-08-14", flight: "D85620", from: "Barcelona / El Prat (BCN/LEBL)", to: "Helsinki / Vantaa (HEL/EFHK)", duration: "04:00:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2017-12-21", flight: "D85621", from: "Helsinki / Vantaa (HEL/EFHK)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "03:55:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2017-12-15", flight: "AY913", from: "Helsinki / Vantaa (HEL/EFHK)", to: "Oslo / Gardermoen (OSL/ENGM)", duration: "01:30:00", airline: "Nordic Regional Airlines / Norra (N7/FIN)", aircraft: "Airbus A319 (A319)" },
+    { date: "2017-12-17", flight: "AY918", from: "Oslo / Gardermoen (OSL/ENGM)", to: "Helsinki / Vantaa (HEL/EFHK)", duration: "01:25:00", airline: "Nordic Regional Airlines / Norra (N7/FIN)", aircraft: "Airbus A320 (A320)" },
+    { date: "2018-01-22", flight: "FR8394", from: "Barcelona / El Prat (BCN/LEBL)", to: "Budapest / Franz Liszt International (BUD/LHBP)", duration: "02:40:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2018-01-24", flight: "W62467", from: "Budapest / Franz Liszt International (BUD/LHBP)", to: "Warsaw / Chopin (Okecie) (WAW/EPWA)", duration: "01:10:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A320 (A320)" },
+    { date: "2018-01-26", flight: "W61583", from: "Warsaw / Chopin (Okecie) (WAW/EPWA)", to: "Bucharest / Henri Coanda (OTP/LROP)", duration: "01:45:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A320 (A320)" },
+    { date: "2018-01-29", flight: "W62472", from: "Sofia / Sofia (SOF/LBSF)", to: "Budapest / Franz Liszt International (BUD/LHBP)", duration: "01:25:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A321 (A321)" },
+    { date: "2018-01-31", flight: "FR8393", from: "Budapest / Franz Liszt International (BUD/LHBP)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:35:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2018-01-09", flight: "FR6267", from: "Barcelona / El Prat (BCN/LEBL)", to: "Edinburgh / Edinburgh (EDI/EGPH)", duration: "03:00:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2018-01-12", flight: "FR6266", from: "Edinburgh / Edinburgh (EDI/EGPH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:40:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2018-04-12", flight: "FR8394", from: "Barcelona / El Prat (BCN/LEBL)", to: "Budapest / Franz Liszt International (BUD/LHBP)", duration: "02:40:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2018-04-18", flight: "VY8803", from: "Budapest / Franz Liszt International (BUD/LHBP)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:35:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320-200 (A320)" },
+    { date: "2018-07-15", flight: "VY8300", from: "Barcelona / El Prat (BCN/LEBL)", to: "Amsterdam / Schiphol (AMS/EHAM)", duration: "02:25:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A321 (A321)" },
+    { date: "2018-07-22", flight: "VY8305", from: "Amsterdam / Schiphol (AMS/EHAM)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:14:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A321 (A321)" },
+    { date: "2018-08-13", flight: "D85576", from: "Barcelona / El Prat (BCN/LEBL)", to: "Billund / Billund (BLL/EKBI)", duration: "02:45:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2019-04-10", flight: "FR7620", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Kaunas / Kaunas (KUN/EYKA)", duration: "01:30:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2019-04-24", flight: "FR7621", from: "Kaunas / Kaunas (KUN/EYKA)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "01:35:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2019-04-12", flight: "FR5103", from: "Vilnius / Vilnius (VNO/EYVI)", to: "Amman / Queen Alia (AMM/OJAI)", duration: "04:10:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2019-04-22", flight: "FR5102", from: "Amman / Queen Alia (AMM/OJAI)", to: "Vilnius / Vilnius (VNO/EYVI)", duration: "04:54:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2019-07-10", flight: "VY1873", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "03:00:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A321 (A321)" },
+    { date: "2019-08-08", flight: "FR9002", from: "Girona / Costa Brava (GRO/LEGE)", to: "Billund / Billund (BLL/EKBI)", duration: "02:45:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2020-03-04", flight: "W65032", from: "Billund / Billund (BLL/EKBI)", to: "Krakow / John Paul II International (KRK/EPKK)", duration: "01:40:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A321 (A321)" },
+    { date: "2020-03-09", flight: "SK1736", from: "Krakow / John Paul II International (KRK/EPKK)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "01:30:00", airline: "Scandinavian Airlines (SK/SAS)", aircraft: "Airbus A320neo (A20N)" },
+    { date: "2020-01-06", flight: "FR409", from: "Cologne / Cologne-Bonn (CGN/EDDK)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "01:30:00", airline: "Ryanair (FR/RYR)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2021-07-02", flight: "VY1873", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "03:00:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2021-07-18", flight: "IB8470", from: "Barcelona / El Prat (BCN/LEBL)", to: "Leon / Leon (LEN/LELN)", duration: "01:25:00", airline: "Iberia (IB/IBE)", aircraft: "Bombardier CRJ-1000 (CRJX)" },
+    { date: "2021-07-30", flight: "VY1870", from: "Barcelona / El Prat (BCN/LEBL)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "03:05:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2021-10-21", flight: "VY1873", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "03:00:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A321 (A321)" },
+    { date: "2021-10-28", flight: "DY3657", from: "Barcelona / El Prat (BCN/LEBL)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "03:00:00", airline: "Norwegian Air Shuttle (DY/NAX)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2021-12-18", flight: "FI205", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Keflavik / Keflavik (KEF/BIKF)", duration: "04:15:00", airline: "Icelandair (FI/ICE)", aircraft: "Boeing 757-200 (B752)" },
+    { date: "2021-12-23", flight: "FI212", from: "Keflavik / Keflavik (KEF/BIKF)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "02:15:00", airline: "Icelandair (FI/ICE)", aircraft: "Boeing 737 MAX 8 (B38M)" },
+    { date: "2021-12-24", flight: "D83656", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:50:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2022-01-01", flight: "VY1880", from: "Barcelona / El Prat (BCN/LEBL)", to: "Billund / Billund (BLL/EKBI)", duration: "02:55:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-02-28", flight: "SK1244", from: "Aarhus / Tirstrup (AAR/EKAH)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "00:40:00", airline: "Scandinavian Airlines (SK/SAS)", aircraft: "ATR 72-600 (AT76)" },
+    { date: "2022-02-28", flight: "SQ353", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Singapore / Changi (SIN/WSSS)", duration: "13:00:00", airline: "Singapore Airlines (SQ/SIA)", aircraft: "Airbus A350-900 (A359)" },
+    { date: "2022-04-30", flight: "3K555", from: "Singapore / Changi (SIN/WSSS)", to: "Hochiminh / Tan Son Nhat (SGN/VVTS)", duration: "02:05:00", airline: "Jetstar Asia Airways (3K/JSA)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-05-04", flight: "TR303", from: "Hochiminh / Tan Son Nhat (SGN/VVTS)", to: "Singapore / Changi (SIN/WSSS)", duration: "02:10:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A321neo (A21N)" },
+    { date: "2022-05-13", flight: "TR466", from: "Singapore / Changi (SIN/WSSS)", to: "Kuala Lumpur / Kuala Lumpur International (KUL/WMKK)", duration: "01:05:00", airline: "Scoot (TR/TGW)", aircraft: "Boeing 787-9 (B789)" },
+    { date: "2022-05-17", flight: "TR473", from: "Kuala Lumpur / Kuala Lumpur International (KUL/WMKK)", to: "Singapore / Changi (SIN/WSSS)", duration: "01:05:00", airline: "Scoot (TR/TGW)", aircraft: "Boeing 787-9 (B789)" },
+    { date: "2022-07-09", flight: "TR686", from: "Singapore / Changi (SIN/WSSS)", to: "Krabi / Krabi (KBV/VTSG)", duration: "01:40:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-07-13", flight: "TR687", from: "Krabi / Krabi (KBV/VTSG)", to: "Singapore / Changi (SIN/WSSS)", duration: "01:25:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A320neo (A20N)" },
+    { date: "2022-05-31", flight: "QZ505", from: "Singapore / Changi (SIN/WSSS)", to: "Denpasar Bali / Ngurah Rai (DPS/WADD)", duration: "02:50:00", airline: "Indonesia AirAsia (QZ/AWQ)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-06-06", flight: "IW1863", from: "Lombok / Lombok International (LOP/WADL)", to: "Denpasar Bali / Ngurah Rai (DPS/WADD)", duration: "00:40:00", airline: "Wings Air (IW/WON)", aircraft: "ATR 72-600 (AT76)" },
+    { date: "2022-06-06", flight: "IW1830", from: "Denpasar Bali / Ngurah Rai (DPS/WADD)", to: "Labuan Bajo / Komodo (LBJ/WATO)", duration: "01:30:00", airline: "Wings Air (IW/WON)", aircraft: "ATR 72-600 (AT76)" },
+    { date: "2022-06-12", flight: "JT811", from: "Labuan Bajo / Komodo (LBJ/WATO)", to: "Surabaya / Juanda (SUB/WARR)", duration: "01:30:00", airline: "Lion Airlines (JT/LNI)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2022-06-15", flight: "3K248", from: "Surabaya / Juanda (SUB/WARR)", to: "Singapore / Changi (SIN/WSSS)", duration: "02:20:00", airline: "Jetstar Asia Airways (3K/JSA)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-07-22", flight: "AK1772", from: "Singapore / Changi (SIN/WSSS)", to: "Kuching / Kuching (KCH/WBGG)", duration: "01:30:00", airline: "Air Asia (AK/AXM)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-07-24", flight: "AK1771", from: "Kuching / Kuching (KCH/WBGG)", to: "Singapore / Changi (SIN/WSSS)", duration: "01:35:00", airline: "Air Asia (AK/AXM)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-08-06", flight: "TR300", from: "Singapore / Changi (SIN/WSSS)", to: "Hanoi / Noibai (HAN/VVNB)", duration: "03:35:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A321neo (A21N)" },
+    { date: "2022-08-10", flight: "TR301", from: "Hanoi / Noibai (HAN/VVNB)", to: "Singapore / Changi (SIN/WSSS)", duration: "03:35:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A321neo (A21N)" },
+    { date: "2022-08-28", flight: "EK355", from: "Singapore / Changi (SIN/WSSS)", to: "Dubai / Dubai International (DXB/OMDB)", duration: "07:10:00", airline: "Emirates (EK/UAE)", aircraft: "Airbus A380-800 (A388)" },
+    { date: "2022-08-31", flight: "EK151", from: "Dubai / Dubai International (DXB/OMDB)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "06:55:00", airline: "Emirates (EK/UAE)", aircraft: "Boeing 777-300ER (B77W)" },
+    { date: "2022-08-19", flight: "TR492", from: "Singapore / Changi (SIN/WSSS)", to: "Kota Kinabalu / Kota Kinabalu (BKI/WBKK)", duration: "02:25:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A321neo (A21N)" },
+    { date: "2022-08-21", flight: "TR493", from: "Kota Kinabalu / Kota Kinabalu (BKI/WBKK)", to: "Singapore / Changi (SIN/WSSS)", duration: "02:10:00", airline: "Scoot (TR/TGW)", aircraft: "Airbus A320neo (A20N)" },
+    { date: "2022-10-29", flight: "VY1881", from: "Billund / Billund (BLL/EKBI)", to: "Barcelona / El Prat (BCN/LEBL)", duration: "02:50:00", airline: "Vueling Airlines (VY/VLG)", aircraft: "Airbus A320neo (A20N)" },
+    { date: "2022-12-01", flight: "BA807", from: "Billund / Billund (BLL/EKBI)", to: "London / Heathrow (LHR/EGLL)", duration: "01:55:00", airline: "British Airways (BA/BAW)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-12-04", flight: "BA806", from: "London / Heathrow (LHR/EGLL)", to: "Billund / Billund (BLL/EKBI)", duration: "01:40:00", airline: "British Airways (BA/BAW)", aircraft: "Airbus A320 (A320)" },
+    { date: "2022-11-11", flight: "D83657", from: "Barcelona / El Prat (BCN/LEBL)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "03:00:00", airline: "Norwegian Air International (D8/IBK)", aircraft: "Boeing 737-800 (B738)" },
+    { date: "2023-03-02", flight: "EW4211", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Prague / Praha-Ruzyne (PRG/LKPR)", duration: "01:25:00", airline: "Eurowings (EW/EWG)", aircraft: "Airbus A320 (A320)" },
+    { date: "2023-03-06", flight: "BT482", from: "Prague / Praha-Ruzyne (PRG/LKPR)", to: "Riga / Riga (RIX/EVRA)", duration: "01:45:00", airline: "AirBaltic (BT/BTI)", aircraft: "Bombardier CS300 (BCS3)" },
+    { date: "2023-03-07", flight: "BT139", from: "Riga / Riga (RIX/EVRA)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "01:30:00", airline: "AirBaltic (BT/BTI)", aircraft: "Bombardier CS300 (BCS3)" },
+    { date: "2023-03-31", flight: "AI158", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Delhi / Indira Gandhi (DEL/VIDP)", duration: "07:50:00", airline: "Air India (AI/AIC)", aircraft: "Boeing 787-8 (B788)" },
+    { date: "2023-04-16", flight: "AI157", from: "Delhi / Indira Gandhi (DEL/VIDP)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "08:20:00", airline: "Air India (AI/AIC)", aircraft: "Boeing 787-8 (B788)" },
+    { date: "2023-05-02", flight: "W64572", from: "Copenhagen / Kastrup (CPH/EKCH)", to: "Larnaca / Larnaca (LCA/LCLK)", duration: "04:10:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A321LR (A21N)" },
+    { date: "2023-05-09", flight: "W64571", from: "Larnaca / Larnaca (LCA/LCLK)", to: "Copenhagen / Kastrup (CPH/EKCH)", duration: "04:35:00", airline: "Wizz Air (W6/WZZ)", aircraft: "Airbus A321LR (A21N)" },
+    { date: "2023-04-01", flight: "UK155", from: "Delhi / Indira Gandhi (DEL/VIDP)", to: "Kathmandu / Tribhuvan (KTM/VNKT)", duration: "02:05:00", airline: "Vistara (UK/VTI)", aircraft: "Airbus A320neo (A20N)" }
+  ];
+
+  // Parse duration to hours
+  function parseDuration(duration) {
+    const parts = duration.split(':');
+    return parseInt(parts[0]) + parseInt(parts[1]) / 60 + parseInt(parts[2]) / 3600;
+  }
+
+  // Extract airport codes
+  function getAirportCode(airport) {
+    const match = airport.match(/\(([A-Z]{3})\//);
+    return match ? match[1] : airport.slice(0, 3);
+  }
+
+  // Categorize flights
+  function categorizeFlights(flights) {
+    return flights.map(f => {
+      const hours = parseDuration(f.duration);
+      let category = 'commercial';
+      if (hours <= 1.5) category = 'short-haul';
+      else if (hours >= 4) category = 'long-haul';
+      else category = 'short-haul';
+      return { ...f, hours, category, code: getAirportCode(f.from) + '-' + getAirportCode(f.to) };
+    });
+  }
+
+  const flights = categorizeFlights(flightData);
+
+  // Render flights
+  function renderFlights(filter = 'all') {
+    const tbody = document.getElementById('flight-log-body');
+    const empty = document.getElementById('flight-empty');
+    const filtered = filter === 'all' ? flights : flights.filter(f => {
+      if (filter === 'commercial') return f.airline !== 'Unknown';
+      if (filter === 'short-haul') return f.hours <= 4;
+      if (filter === 'long-haul') return f.hours >= 4;
+      return true;
+    });
+
+    tbody.innerHTML = '';
+    if (filtered.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    // Reverse sort by date (newest first)
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(f => {
+      const row = document.createElement('tr');
+      const dateObj = new Date(f.date);
+      const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const from = getAirportCode(f.from);
+      const to = getAirportCode(f.to);
+
+      row.innerHTML = `
+        <td><span class="flight-date">${dateStr}</span></td>
+        <td><span class="flight-code">${f.flight || '—'}</span></td>
+        <td><span class="flight-route"><strong>${from}</strong><span class="flight-route-arrow">→</span><strong>${to}</strong></span></td>
+        <td><span class="flight-airline">${f.airline}</span></td>
+        <td><span class="flight-aircraft">${f.aircraft}</span></td>
+        <td><span class="flight-duration">${f.duration}</span></td>
+        <td><span class="flight-seat">—</span></td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Update statistics
+  function updateStats() {
+    const totalFlights = flights.length;
+    const totalHours = flights.reduce((sum, f) => sum + f.hours, 0);
+    const airlines = new Set(flights.filter(f => f.airline !== 'Unknown').map(f => f.airline.split('(')[1]?.slice(0, 2))).size;
+    const aircraft = new Set(flights.filter(f => f.aircraft !== 'Unknown').map(f => f.aircraft.split('(')[1]?.slice(0, 3))).size;
+
+    document.getElementById('total-flights').textContent = totalFlights;
+    document.getElementById('total-hours').textContent = Math.round(totalHours);
+    document.getElementById('unique-airlines').textContent = airlines;
+    document.getElementById('unique-aircraft').textContent = aircraft;
+  }
+
+  // Filter buttons
+  document.querySelectorAll('.flight-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.flight-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderFlights(btn.dataset.filter);
+    });
+  });
+
+  // Initialize
+  updateStats();
+  renderFlights();
 </script>
 
 </body>
