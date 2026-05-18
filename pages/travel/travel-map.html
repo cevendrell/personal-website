@@ -596,19 +596,126 @@
 
     /* — Idle state (Start button) — */
     .gg-idle {
-      padding: 2rem 1.75rem;
-      display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem;
+      padding: 3rem 2.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 2.75rem; align-items: center;
     }
+    @media (max-width: 760px) {
+      .gg-idle { grid-template-columns: 1fr; padding: 2rem 1.75rem; gap: 1.75rem; }
+    }
+    .gg-idle-text { display: flex; flex-direction: column; align-items: flex-start; gap: 0.85rem; }
     .gg-idle h3 {
-      font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+      font-size: clamp(1.7rem, 3vw, 2.4rem);
       font-weight: 800; letter-spacing: -0.03em; color: #fff;
+      line-height: 1.05;
     }
     .gg-idle p {
-      color: var(--accent); opacity: 0.8; font-size: 0.92rem; line-height: 1.6;
+      color: var(--accent); opacity: 0.85; font-size: 0.98rem; line-height: 1.65;
       max-width: 56ch;
     }
     .gg-idle-actions {
-      display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;
+      display: flex; gap: 0.75rem; margin-top: 0.85rem; flex-wrap: wrap;
+    }
+
+    /* — Game preview (a mock of the play layout shown in the idle tile) — */
+    .gg-idle-preview {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      border-radius: 14px; overflow: hidden;
+      background: #0a0c18;
+      border: 1px solid rgba(232,220,196,0.16);
+      box-shadow: 0 18px 50px -10px rgba(0,0,0,0.6);
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    .gg-prev-photo {
+      position: relative; overflow: hidden;
+      border-right: 1px solid rgba(232,220,196,0.12);
+    }
+    .gg-prev-photo img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: saturate(1.05);
+    }
+    .gg-prev-photo::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom right, transparent 60%, rgba(0,0,0,0.35));
+      pointer-events: none;
+    }
+    .gg-prev-tag {
+      position: absolute; top: 0.6rem; left: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: #fff; background: rgba(8,9,14,0.7);
+      backdrop-filter: blur(6px); padding: 0.3rem 0.55rem;
+      border-radius: 999px; border: 1px solid rgba(255,255,255,0.12);
+    }
+    .gg-prev-map {
+      position: relative;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(106,141,181,0.18), transparent 60%),
+        radial-gradient(circle at 70% 65%, rgba(200,120,74,0.10), transparent 60%),
+        linear-gradient(135deg, #0d1228 0%, #050818 100%);
+      overflow: hidden;
+    }
+    /* Continent silhouettes — rough abstract shapes hinting at a world map */
+    .gg-prev-map::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(ellipse 30% 22% at 22% 38%, rgba(232,220,196,0.18) 0%, rgba(232,220,196,0.10) 50%, transparent 70%),
+        radial-gradient(ellipse 18% 28% at 52% 60%, rgba(232,220,196,0.16) 0%, rgba(232,220,196,0.08) 50%, transparent 70%),
+        radial-gradient(ellipse 22% 18% at 78% 35%, rgba(232,220,196,0.14) 0%, rgba(232,220,196,0.07) 50%, transparent 70%),
+        radial-gradient(ellipse 14% 14% at 80% 70%, rgba(232,220,196,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    /* Lat-long grid */
+    .gg-prev-map::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(to right, transparent 0 14.28%, rgba(255,255,255,0.04) 14.28% calc(14.28% + 1px)),
+        repeating-linear-gradient(to bottom, transparent 0 16.66%, rgba(255,255,255,0.04) 16.66% calc(16.66% + 1px));
+      pointer-events: none;
+    }
+    .gg-prev-pin {
+      position: absolute; left: 38%; top: 52%;
+      width: 14px; height: 14px;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+    .gg-prev-pin::before {
+      content: ''; position: absolute; inset: 0;
+      border-radius: 50%; background: var(--c-photo);
+      box-shadow: 0 0 0 3px rgba(200,120,74,0.25), 0 0 14px rgba(200,120,74,0.7);
+      animation: ggPinPulse 1.8s ease-in-out infinite;
+    }
+    .gg-prev-pin::after {
+      content: ''; position: absolute; left: 50%; top: 50%;
+      width: 28px; height: 28px;
+      border: 1.5px dashed rgba(200,120,74,0.5);
+      border-radius: 50%; transform: translate(-50%,-50%);
+      animation: ggPinRing 2.4s ease-out infinite;
+    }
+    @keyframes ggPinPulse {
+      0%,100% { transform: scale(1); }
+      50%     { transform: scale(1.18); }
+    }
+    @keyframes ggPinRing {
+      0%   { transform: translate(-50%,-50%) scale(0.6); opacity: 0.9; }
+      100% { transform: translate(-50%,-50%) scale(1.8); opacity: 0; }
+    }
+    .gg-prev-maptag {
+      position: absolute; bottom: 0.55rem; right: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent); background: rgba(8,9,14,0.72);
+      backdrop-filter: blur(6px); padding: 0.3rem 0.55rem;
+      border-radius: 999px; border: 1px solid rgba(232,220,196,0.15);
+    }
+    .gg-prev-divider {
+      position: absolute; top: 8%; bottom: 8%; left: 50%;
+      width: 1px; background: linear-gradient(to bottom, transparent, rgba(232,220,196,0.18), transparent);
+      pointer-events: none;
     }
     .gg-start {
       background: var(--c-photo); color: #fff;
@@ -1211,11 +1318,23 @@
 
     <!-- IDLE -->
     <div class="gg-idle" id="ggIdle">
-      <h3>Guess the location</h3>
-      <p>Ten random photos from my travels. You guess where each was taken by clicking on the map — the closer your pin, the more points. Top score: 50,000.</p>
-      <div class="gg-idle-actions">
-        <button class="gg-start" id="ggStart" type="button">▶ Start game</button>
-        <button class="gg-leaderboard-btn" id="ggShowLb" type="button">🏆 Leaderboard</button>
+      <div class="gg-idle-text">
+        <h3>Guess the location</h3>
+        <p>Ten random photos from my travels. You guess where each was taken by clicking on the map — the closer your pin, the more points. Top score: 50,000.</p>
+        <div class="gg-idle-actions">
+          <button class="gg-start" id="ggStart" type="button">▶ Start game</button>
+          <button class="gg-leaderboard-btn" id="ggShowLb" type="button">🏆 Leaderboard</button>
+        </div>
+      </div>
+      <div class="gg-idle-preview" aria-hidden="true">
+        <div class="gg-prev-photo">
+          <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/c9edb15b-fc75-4822-a714-3a0a4f26952a/Ngorongoro.jpg" alt="">
+          <span class="gg-prev-tag">Photo 3 / 10</span>
+        </div>
+        <div class="gg-prev-map">
+          <div class="gg-prev-pin"></div>
+          <span class="gg-prev-maptag">Drop a pin</span>
+        </div>
       </div>
     </div>
 

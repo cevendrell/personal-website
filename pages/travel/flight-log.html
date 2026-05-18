@@ -457,12 +457,9 @@
     .globe-stage {
       position: relative;
       width: 100%; height: 620px;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      background:
-        radial-gradient(ellipse at 50% 50%, rgba(106,141,181,0.06), transparent 70%),
-        linear-gradient(135deg, rgba(12,16,40,0.4), rgba(5,7,18,0.6));
-      border: 1px solid var(--line);
+      background: transparent;
+      border: none;
+      overflow: visible;
     }
     @media (max-width: 700px) { .globe-stage { height: 460px; } }
     #flight-globe {
@@ -786,7 +783,7 @@
     <div class="globe-stage">
       <div id="flight-globe"></div>
       <div class="globe-legend">
-        <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg,#ff5f56,#ffb84d,#34d399,#60a5fa,#a78bfa)"></span> Flight route</div>
+        <div class="lg-row"><span class="lg-swatch" style="background:#a8c8ff"></span> Flight route</div>
         <div class="lg-row"><span class="lg-dot" style="background:#ff3344;box-shadow:0 0 6px #ff3344"></span> Airport visited</div>
       </div>
       <div class="globe-hint">Drag · Scroll to zoom</div>
@@ -1197,33 +1194,23 @@
       airportVisits[b] = (airportVisits[b] || 0) + 1;
     });
 
-    // Vibrant palette — one colour per unique route, deterministic by key
-    const PALETTE = [
-      '#ff5f56', '#ffb84d', '#ffe066', '#a3e635', '#34d399',
-      '#22d3ee', '#60a5fa', '#a78bfa', '#e879f9', '#fb7185',
-      '#f97316', '#fbbf24', '#84cc16', '#10b981', '#06b6d4',
-      '#3b82f6', '#8b5cf6', '#d946ef', '#ec4899', '#f43f5e'
-    ];
-    function pickColor(key) {
-      let h = 0;
-      for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
-      return PALETTE[h % PALETTE.length];
-    }
+    // Pale blue for all routes — uniform palette, no rainbow
+    const ARC_BASE = 'rgba(168,200,255,0.55)';   // soft pale blue (always-on line)
+    const ARC_GLOW = '#dcebff';                  // brighter pale blue tip of the moving "aircraft"
 
     const maxRoute = Math.max(...Object.values(routeCounts));
 
     // Two arc entries per route: a SOLID base that's always visible,
-    // and an ANIMATED bright overlay that "travels" along it.
+    // and an ANIMATED bright overlay that "travels" along it like a flying aircraft.
     const arcs = [];
     Object.entries(routeCounts).forEach(([key, count]) => {
       const [a, b] = key.split('-');
       const [latA, lngA] = AIRPORTS[a];
       const [latB, lngB] = AIRPORTS[b];
-      const baseColor = pickColor(key);
       const freq = count / maxRoute;
-      const stroke = 0.35 + 0.7 * freq;
-      const base = { startLat: latA, startLng: lngA, endLat: latB, endLng: lngB, count, stroke, mode: 'solid', color: baseColor };
-      const anim = { startLat: latA, startLng: lngA, endLat: latB, endLng: lngB, count, stroke: stroke * 1.4, mode: 'anim', color: [baseColor, '#ffffff'] };
+      const stroke = 0.3 + 0.5 * freq;
+      const base = { startLat: latA, startLng: lngA, endLat: latB, endLng: lngB, count, stroke, mode: 'solid', color: ARC_BASE };
+      const anim = { startLat: latA, startLng: lngA, endLat: latB, endLng: lngB, count, stroke: stroke * 1.3, mode: 'anim', color: [ARC_GLOW, ARC_GLOW] };
       arcs.push(base, anim);
     });
 
@@ -1242,20 +1229,19 @@
     });
 
     const globe = Globe()(container)
-      .globeImageUrl('../../media/textures/earth-blue-marble-lo.jpg')
-      .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
       .backgroundColor('rgba(0,0,0,0)')
-      .atmosphereColor('#a8c8ff')
-      .atmosphereAltitude(0.18)
-      // ── Arcs: solid base + animated overlay ──
+      .showAtmosphere(true)
+      .atmosphereColor('#6a8db5')
+      .atmosphereAltitude(0.14)
+      // ── Arcs: solid base + animated "aircraft" overlay, all at cruise altitude ──
       .arcsData(arcs)
       .arcColor('color')
       .arcStroke('stroke')
-      .arcAltitudeAutoScale(0.45)
-      .arcDashLength(d => d.mode === 'solid' ? 1 : 0.35)
-      .arcDashGap(d => d.mode === 'solid' ? 0 : 2.5)
-      .arcDashInitialGap(d => d.mode === 'solid' ? 0 : Math.random() * 2.5)
-      .arcDashAnimateTime(d => d.mode === 'solid' ? 0 : 5000)
+      .arcAltitude(0.08)            // FIXED altitude → simulates planes at cruise level
+      .arcDashLength(d => d.mode === 'solid' ? 1 : 0.22)
+      .arcDashGap(d => d.mode === 'solid' ? 0 : 3)
+      .arcDashInitialGap(d => d.mode === 'solid' ? 0 : Math.random() * 3)
+      .arcDashAnimateTime(d => d.mode === 'solid' ? 0 : 5500)
       .arcsTransitionDuration(0)
       .arcLabel(d => `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:rgba(8,9,14,.92);border:1px solid rgba(106,141,181,.4);padding:.45rem .7rem;border-radius:8px;color:#ececea;letter-spacing:.05em"><b>${d.count}×</b> flight${d.count>1?'s':''}</div>`)
       // ── Lollipop pins (red) ──
@@ -1286,13 +1272,34 @@
       })
       .onCustomLayerHover(p => { container.style.cursor = p ? 'pointer' : 'grab'; });
 
-    // Lighting
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
+    // Flat dark ocean — replace the texture with a solid colour so the globe reads as a graphic map
+    const mat = globe.globeMaterial();
+    if (mat) {
+      mat.color = new THREE.Color('#0a1024');     // deep ocean
+      if ('map' in mat) mat.map = null;
+      if ('bumpMap' in mat) mat.bumpMap = null;
+      mat.needsUpdate = true;
+    }
+
+    // Dark flat continents — load country GeoJSON and render as filled polygons
+    fetch('https://unpkg.com/three-globe@2.31.0/example/datasets/ne_110m_admin_0_countries.geojson')
+      .then(r => r.json())
+      .then(data => {
+        globe
+          .polygonsData(data.features)
+          .polygonCapColor(() => 'rgba(36,46,82,1)')      // land — slate navy
+          .polygonSideColor(() => 'rgba(18,24,48,1)')     // extruded sides — slightly darker
+          .polygonStrokeColor(() => 'rgba(100,130,180,0.4)') // crisp coastline outlines
+          .polygonAltitude(0.005);                         // sit just above the ocean to avoid z-fighting
+      })
+      .catch(() => { /* leave the flat globe if offline */ });
+
+    // Soft, even lighting — flat shaded look (no harsh highlight on a "satellite" globe)
+    const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+    globe.scene().add(ambient);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.7);
     keyLight.position.set(100, 120, 80);
     globe.scene().add(keyLight);
-    const fillLight = new THREE.DirectionalLight(0x88aaff, 0.35);
-    fillLight.position.set(-80, -40, -60);
-    globe.scene().add(fillLight);
 
     // Initial view — Europe-centric since most flights are there
     globe.pointOfView({ lat: 30, lng: 25, altitude: 2.2 }, 0);
