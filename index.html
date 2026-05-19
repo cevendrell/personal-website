@@ -543,43 +543,62 @@
     }
     .hobbies-inner { max-width: 1140px; margin: 0 auto; padding: 0 30px; }
 
-    .hobby-wheel-wrap {
-      position: relative; height: 540px; margin-top: 3rem;
-      display: flex; align-items: center; justify-content: center;
-      perspective: 900px;   /* 3-D scene depth */
+    /* ══════════════════════════════════════════════════════════════════
+       ══ HOBBY HONEYCOMB — Apple-Watch-style omnidirectional grid     ══
+       ══   Drag in any direction; icons closer to viewport centre     ══
+       ══   grow larger, those at the edges shrink and fade.           ══
+       ══════════════════════════════════════════════════════════════════ */
+    .honeycomb-stage {
+      position: relative;
+      height: 540px; margin-top: 2.5rem;
+      overflow: hidden;
+      cursor: grab; user-select: none;
+      touch-action: none; -webkit-user-select: none;
+      border-radius: 24px;
+      mask-image: radial-gradient(ellipse at center, #000 55%, rgba(0,0,0,0.65) 78%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse at center, #000 55%, rgba(0,0,0,0.65) 78%, transparent 100%);
     }
-    /* Elliptical orbit track */
-    .hobby-wheel-wrap::before {
-      content: '';
-      position: absolute; top: 50%; left: 50%;
-      width: 580px; height: 264px;
-      max-width: 88%; aspect-ratio: unset;
-      transform: translate(-50%, -50%);
-      border: 1px solid rgba(255,255,255,0.055);
-      border-radius: 50%;
-      pointer-events: none; z-index: 0;
-      box-shadow: 0 0 60px rgba(106,141,181,0.04) inset;
-    }
-    /* Ground-reflection glow beneath the track */
-    .hobby-wheel-wrap::after {
-      content: '';
-      position: absolute; bottom: 11%; left: 50%; transform: translateX(-50%);
-      width: 340px; height: 24px;
-      background: radial-gradient(ellipse, rgba(232,220,196,0.06) 0%, transparent 72%);
-      filter: blur(6px); pointer-events: none; z-index: 0;
-    }
-    .hobby-wheel {
-      position: relative; width: 100%; max-width: 680px; height: 100%;
-      cursor: grab; user-select: none; touch-action: none; z-index: 1;
-    }
-    .hobby-wheel.dragging { cursor: grabbing; }
+    .honeycomb-stage:active { cursor: grabbing; }
 
-    /* ── 3-D glass-sphere orbs ── */
-    .hobby-orb {
+    /* Faint hex-pattern background under the orbs */
+    .honeycomb-stage::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(ellipse at 50% 50%, rgba(106,141,181,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(232,220,196,0.04) 0%, transparent 35%);
+      pointer-events: none;
+    }
+
+    /* Centre pulse */
+    .honeycomb-stage::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%; width: 6px; height: 6px;
+      border-radius: 50%; background: rgba(232,220,196,0.6);
+      transform: translate(-50%,-50%);
+      box-shadow:
+        0 0 0 14px rgba(232,220,196,0.04),
+        0 0 0 32px rgba(232,220,196,0.015),
+        0 0 24px rgba(232,220,196,0.5);
+      animation: pulseDot 3s ease-in-out infinite;
+      pointer-events: none; z-index: 1;
+    }
+    @keyframes pulseDot {
+      0%,100% { box-shadow: 0 0 0 14px rgba(232,220,196,0.04), 0 0 0 32px rgba(232,220,196,0.015), 0 0 24px rgba(232,220,196,0.5); }
+      50%      { box-shadow: 0 0 0 18px rgba(232,220,196,0.03), 0 0 0 42px rgba(232,220,196,0.01),  0 0 36px rgba(232,220,196,0.62); }
+    }
+
+    .honeycomb-grid {
       position: absolute; top: 50%; left: 50%;
-      width: 114px; height: 114px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
-      /* layered radial gradients: highlight at top-left → translucent body */
+      width: 0; height: 0;
+      will-change: transform;
+    }
+
+    /* ── Hex orbs ── */
+    .hex-orb {
+      position: absolute; left: 0; top: 0;
+      width: 112px; height: 112px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem;
       background:
         radial-gradient(circle at 36% 30%, rgba(255,255,255,0.22) 0%,  rgba(255,255,255,0.06) 42%, transparent 62%),
         radial-gradient(circle at 60% 78%, rgba(255,255,255,0.04) 0%,  transparent 55%),
@@ -587,68 +606,78 @@
       backdrop-filter: blur(14px) saturate(180%);
       -webkit-backdrop-filter: blur(14px) saturate(180%);
       border-radius: 50%;
-      /* rim: bright top edge, subtle everywhere else */
       border: 1px solid rgba(255,255,255,0.09);
       border-top: 1px solid rgba(255,255,255,0.28);
       box-shadow:
-        0 14px 48px rgba(0,0,0,0.60),           /* drop shadow */
-        0 2px 0   rgba(255,255,255,0.07) inset, /* inner top sheen */
-        0 -4px 8px rgba(0,0,0,0.45) inset;      /* inner bottom shadow */
-      pointer-events: auto; will-change: transform, opacity;
-      transition: border-color 0.35s, box-shadow 0.35s;
+        0 14px 48px rgba(0,0,0,0.55),
+        0 2px 0  rgba(255,255,255,0.07) inset,
+        0 -4px 8px rgba(0,0,0,0.45) inset;
+      will-change: transform, opacity;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      cursor: pointer; outline: none;
+      padding: 0; font-family: inherit;
     }
-    .hobby-orb .orb-icon {
-      font-size: 1.75rem; filter: grayscale(0.2) drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+    .hex-orb:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(232,220,196,0.4), 0 14px 48px rgba(0,0,0,0.55); }
+    .hex-orb .orb-icon {
+      font-size: 1.75rem;
+      filter: grayscale(0.25) drop-shadow(0 1px 2px rgba(0,0,0,0.6));
       transition: filter 0.3s, transform 0.3s;
     }
-    .hobby-orb .orb-label {
-      font-size: 0.68rem; font-weight: 500; color: rgba(168,169,175,0.85);
+    .hex-orb .orb-label {
+      font-size: 0.66rem; font-weight: 500; color: rgba(168,169,175,0.85);
       letter-spacing: 0.03em; text-align: center; white-space: nowrap;
-      transition: color 0.3s;
+      transition: color 0.3s, opacity 0.3s;
     }
-    /* Focused (front-most) orb */
-    .hobby-orb.focused {
-      background:
-        radial-gradient(circle at 36% 30%, rgba(255,255,255,0.30) 0%,  rgba(255,255,255,0.08) 42%, transparent 62%),
-        radial-gradient(circle at 60% 78%, rgba(255,255,255,0.06) 0%,  transparent 55%),
-        radial-gradient(circle at 50% 50%, rgba(20,22,45,0.65) 0%,    rgba(5,6,18,0.88) 100%);
-      border-color:   var(--orb-color, var(--accent));
+    /* Focused (closest to viewport centre) orb */
+    .hex-orb.focused {
+      border-color: var(--orb-color, var(--accent));
       border-top-color: rgba(255,255,255,0.38);
       box-shadow:
         0 0 0 1.5px var(--orb-color, var(--accent)) inset,
-        0 28px 80px -12px var(--orb-glow, rgba(232,220,196,0.45)),
+        0 28px 80px -12px var(--orb-glow, rgba(232,220,196,0.5)),
         0 14px 48px rgba(0,0,0,0.55),
-        0 2px 0   rgba(255,255,255,0.10) inset,
+        0 2px 0 rgba(255,255,255,0.10) inset,
         0 -4px 8px rgba(0,0,0,0.35) inset;
     }
-    .hobby-orb.focused .orb-icon { filter: grayscale(0) drop-shadow(0 0 6px var(--orb-color, var(--accent))); transform: scale(1.15); }
-    .hobby-orb.focused .orb-label { color: #fff; font-weight: 600; letter-spacing: 0.04em; }
+    .hex-orb.focused .orb-icon {
+      filter: grayscale(0) drop-shadow(0 0 8px var(--orb-color, var(--accent)));
+      transform: scale(1.12);
+    }
+    .hex-orb.focused .orb-label { color: #fff; font-weight: 600; letter-spacing: 0.05em; }
     /* Per-colour accent vars */
-    .hobby-orb[data-color="travel"] { --orb-color: var(--c-travel); --orb-glow: rgba(106,141,181,0.5); }
-    .hobby-orb[data-color="photo"]  { --orb-color: var(--c-photo);  --orb-glow: rgba(200,120,74,0.5);  }
-    .hobby-orb[data-color="tech"]   { --orb-color: var(--c-tech);   --orb-glow: rgba(106,141,181,0.5); }
-    .hobby-orb[data-color="accent"] { --orb-color: var(--accent);   --orb-glow: rgba(232,220,196,0.45); }
+    .hex-orb[data-color="travel"] { --orb-color: var(--c-travel); --orb-glow: rgba(106,141,181,0.5); }
+    .hex-orb[data-color="photo"]  { --orb-color: var(--c-photo);  --orb-glow: rgba(200,120,74,0.5);  }
+    .hex-orb[data-color="tech"]   { --orb-color: var(--c-tech);   --orb-glow: rgba(106,141,181,0.5); }
+    .hex-orb[data-color="accent"] { --orb-color: var(--accent);   --orb-glow: rgba(232,220,196,0.45); }
 
-    /* Centre pivot */
-    .hobby-wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; z-index: 2; }
-    .wheel-axis {
-      width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
-      box-shadow:
-        0 0 0 10px rgba(232,220,196,0.07),
-        0 0 0 28px rgba(232,220,196,0.025),
-        0 0  30px rgba(232,220,196,0.55);
-      animation: pulseDot 3s ease-in-out infinite;
-    }
-    @keyframes pulseDot {
-      0%,100% { box-shadow: 0 0 0 10px rgba(232,220,196,0.07), 0 0 0 28px rgba(232,220,196,0.025), 0 0 30px rgba(232,220,196,0.55); }
-      50%      { box-shadow: 0 0 0 14px rgba(232,220,196,0.05), 0 0 0 38px rgba(232,220,196,0.015), 0 0 44px rgba(232,220,196,0.65); }
-    }
-    .hobby-wheel-hint {
-      position: absolute; bottom: 0.5rem; left: 50%; transform: translateX(-50%);
-      color: var(--mute); font-size: 0.62rem; letter-spacing: 0.18em;
+    /* Pan hint */
+    .honeycomb-hint {
+      position: absolute; bottom: 0.75rem; left: 50%; transform: translateX(-50%);
+      color: var(--mute); font-size: 0.6rem; letter-spacing: 0.18em;
       font-family: 'JetBrains Mono', monospace; text-transform: uppercase;
-      opacity: 0.6; pointer-events: none;
+      opacity: 0.55; pointer-events: none; z-index: 5;
+      transition: opacity 0.4s;
     }
+    .honeycomb-hint::before {
+      content: '◆'; margin-right: 0.45rem; color: var(--accent);
+      animation: hintBlink 2s ease-in-out infinite;
+    }
+    @keyframes hintBlink { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+    .honeycomb-stage.has-panned .honeycomb-hint { opacity: 0; }
+
+    /* "Now focused" pill — shows the centred hobby's name */
+    .honeycomb-now {
+      position: absolute; top: 1rem; left: 50%; transform: translateX(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(8,9,14,0.55); backdrop-filter: blur(10px);
+      border: 1px solid rgba(232,220,196,0.18);
+      padding: 0.45rem 1rem; border-radius: 999px;
+      pointer-events: none; z-index: 5;
+      transition: opacity 0.25s;
+    }
+    .honeycomb-now span { color: #fff; font-weight: 600; margin-left: 0.45rem; }
 
     /* ── FOOTER — slim, copyright + socials only ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
@@ -685,7 +714,7 @@
       .career-tag-date { margin-left: 0; }
       .portfolio_row_top, .portfolio_row_bottom { grid-template-columns: 1fr; }
       .portfolio_row_top .portfolio_thumb { height: 240px; }
-      .hobby-wheel-wrap { height: 440px; }
+      .honeycomb-stage { height: 460px; }
     }
     @media (max-width: 768px) {
       .hero-parallax-img { height: 70vh; opacity: 0.25; }
@@ -697,10 +726,10 @@
       .home-thumb h1 { font-size: 2.5rem; }
       .home-tagline { white-space: normal; font-size: 0.88rem; }
       .cta-wrap { flex-direction: column; }
-      .hobby-wheel-wrap { height: 380px; }
-      .hobby-orb { width: 88px; height: 88px; }
-      .hobby-orb .orb-icon { font-size: 1.4rem; }
-      .hobby-orb .orb-label { font-size: 0.62rem; }
+      .honeycomb-stage { height: 400px; }
+      .hex-orb { width: 90px; height: 90px; }
+      .hex-orb .orb-icon { font-size: 1.4rem; }
+      .hex-orb .orb-label { font-size: 0.62rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -1023,19 +1052,26 @@
   <div class="hobbies-inner">
     <h2 class="melan-h2 wow">Other stuff I love</h2>
 
-    <div class="hobby-wheel-wrap wow d2" style="margin-top:2rem;">
-      <div class="hobby-wheel" id="hobbyWheel">
-        <div class="hobby-orb" data-color="travel"><span class="orb-icon">✈</span><span class="orb-label">Aviation</span></div>
-        <div class="hobby-orb" data-color="photo"><span class="orb-icon">🏎</span><span class="orb-label">Formula 1</span></div>
-        <div class="hobby-orb" data-color="tech"><span class="orb-icon">🔭</span><span class="orb-label">Astronomy</span></div>
-        <div class="hobby-orb" data-color="travel"><span class="orb-icon">🤿</span><span class="orb-label">Scuba Diving</span></div>
-        <div class="hobby-orb" data-color="accent"><span class="orb-icon">📈</span><span class="orb-label">Investing</span></div>
-        <div class="hobby-orb" data-color="photo"><span class="orb-icon">🖨</span><span class="orb-label">3D Printing</span></div>
-        <div class="hobby-orb" data-color="tech"><span class="orb-icon">🤖</span><span class="orb-label">AI &amp; ML</span></div>
-        <div class="hobby-orb" data-color="accent"><span class="orb-icon">🌌</span><span class="orb-label">Space</span></div>
+    <div class="honeycomb-stage wow d2" id="honeycombStage" style="margin-top:2rem;">
+      <div class="honeycomb-now" aria-live="polite">Now focusing<span id="honeycombNow">—</span></div>
+      <div class="honeycomb-grid" id="honeycombGrid">
+        <!-- Hobby tiles. data-q/data-r are axial-hex coordinates (pointy-top).
+             Add a new tile any time: pick a free (q,r) slot and the JS will lay it out. -->
+        <button class="hex-orb" data-q="0"  data-r="0"  data-color="accent" type="button"><span class="orb-icon">🌌</span><span class="orb-label">Space</span></button>
+        <button class="hex-orb" data-q="1"  data-r="0"  data-color="travel" type="button"><span class="orb-icon">✈</span><span class="orb-label">Aviation</span></button>
+        <button class="hex-orb" data-q="0"  data-r="1"  data-color="tech"   type="button"><span class="orb-icon">🤖</span><span class="orb-label">AI &amp; ML</span></button>
+        <button class="hex-orb" data-q="-1" data-r="1"  data-color="travel" type="button"><span class="orb-icon">🤿</span><span class="orb-label">Scuba Diving</span></button>
+        <button class="hex-orb" data-q="-1" data-r="0"  data-color="photo"  type="button"><span class="orb-icon">🏎</span><span class="orb-label">Formula 1</span></button>
+        <button class="hex-orb" data-q="0"  data-r="-1" data-color="tech"   type="button"><span class="orb-icon">🔭</span><span class="orb-label">Astronomy</span></button>
+        <button class="hex-orb" data-q="1"  data-r="-1" data-color="accent" type="button"><span class="orb-icon">📈</span><span class="orb-label">Investing</span></button>
+        <button class="hex-orb" data-q="2"  data-r="-1" data-color="photo"  type="button"><span class="orb-icon">🖨</span><span class="orb-label">3D Printing</span></button>
+        <button class="hex-orb" data-q="2"  data-r="0"  data-color="travel" type="button"><span class="orb-icon">🏃</span><span class="orb-label">Running</span></button>
+        <button class="hex-orb" data-q="1"  data-r="1"  data-color="accent" type="button"><span class="orb-icon">🚴</span><span class="orb-label">Cycling</span></button>
+        <button class="hex-orb" data-q="-2" data-r="1"  data-color="photo"  type="button"><span class="orb-icon">📚</span><span class="orb-label">Reading</span></button>
+        <button class="hex-orb" data-q="-1" data-r="-1" data-color="accent" type="button"><span class="orb-icon">☕</span><span class="orb-label">Coffee</span></button>
+        <button class="hex-orb" data-q="-2" data-r="0"  data-color="tech"   type="button"><span class="orb-icon">🌊</span><span class="orb-label">Open Water</span></button>
       </div>
-      <div class="hobby-wheel-center" aria-hidden="true"><div class="wheel-axis"></div></div>
-      <div class="hobby-wheel-hint">Drag to spin · Scroll to rotate</div>
+      <div class="honeycomb-hint">Drag in any direction</div>
     </div>
   </div>
 </section>
@@ -1126,60 +1162,101 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.wow').forEach(el => revealObserver.observe(el));
 
-  /* ── Hobby rotating wheel ── */
-  (function initHobbyWheel() {
-    const wheel = document.getElementById('hobbyWheel');
-    if (!wheel) return;
-    const orbs = Array.from(wheel.querySelectorAll('.hobby-orb'));
-    const COUNT = orbs.length;
-    let rotation = 0, velocity = 0, isDragging = false;
-    let lastPointerX = 0, lastMoveTime = 0, lastFrame = performance.now();
-    let idle = true, wheelInView = false;
+  /* ── Hobby honeycomb (Apple-Watch-style omnidirectional grid) ── */
+  (function initHobbyHoneycomb() {
+    const stage = document.getElementById('honeycombStage');
+    const grid  = document.getElementById('honeycombGrid');
+    const nowEl = document.getElementById('honeycombNow');
+    if (!stage || !grid) return;
 
-    const io = new IntersectionObserver(([entry]) => {
-      wheelInView = entry.isIntersecting;
-    }, { threshold: 0.1 });
-    io.observe(wheel);
+    const orbs = Array.from(grid.querySelectorAll('.hex-orb'));
+    const HEX_SIZE = 80;   // distance from hex centre to neighbour centre (px)
+    const SQRT3    = Math.sqrt(3);
 
-    function getRadii() {
-      const w = wheel.getBoundingClientRect().width;
-      const rx = Math.min(282, w * 0.42);
-      const ry = Math.min(132, w * 0.20);
-      return { rx, ry };
+    // Pointy-top hex pixel position from axial (q, r) coordinates
+    function hexToPixel(q, r) {
+      return {
+        x: HEX_SIZE * (SQRT3 * q + SQRT3 / 2 * r),
+        y: HEX_SIZE * (3 / 2 * r)
+      };
     }
 
+    // Pre-compute each orb's home pixel position
+    const cells = orbs.map(orb => {
+      const q = parseInt(orb.dataset.q, 10);
+      const r = parseInt(orb.dataset.r, 10);
+      const { x, y } = hexToPixel(q, r);
+      return { orb, q, r, x, y, label: orb.querySelector('.orb-label')?.textContent.trim() || '' };
+    });
+
+    // ── Pan state ──
+    let panX = 0, panY = 0;            // current viewport offset (px)
+    let velX = 0, velY = 0;            // pixels per second
+    let targetPanX = 0, targetPanY = 0; // smoothed target
+    let isDragging = false, didPan = false;
+    let lastX = 0, lastY = 0, lastT = 0;
+    let lastFrame = performance.now();
+    let inView = false;
+
+    const io = new IntersectionObserver(([e]) => { inView = e.isIntersecting; }, { threshold: 0.1 });
+    io.observe(stage);
+
+    // ── Render loop ──
     function render() {
-      const { rx, ry } = getRadii();
-      for (let i = 0; i < COUNT; i++) {
-        const orb = orbs[i];
-        const angle = (i / COUNT) * Math.PI * 2 + rotation;
-        const x = Math.sin(angle) * rx;
-        const y = -Math.cos(angle) * ry;
-        const depth = (-Math.cos(angle) + 1) / 2;   // 0=back, 1=front
+      // Update grid transform — orbs are children, so this translates them all.
+      grid.style.transform = `translate(${panX.toFixed(2)}px, ${panY.toFixed(2)}px)`;
 
-        /* Stronger depth contrast for convincing 3-D illusion */
-        const scale   = 0.36 + depth * 0.74;          // 0.36 → 1.10
-        const opacity = 0.07 + depth * 0.93;           // 0.07 → 1.00
-        const blurPx  = (1 - depth) * 2.8;             // back orbs softly blurred
+      // Per-orb scale & opacity, based on distance from the stage centre
+      // (in pixel space the viewport-centre maps to (−panX, −panY) in grid space).
+      const cx = -panX, cy = -panY;
+      const FOCAL = 220;   // distance at which scale falls below ~0.55
+      const MIN_S = 0.42;
+      let closestIdx = -1, closestD = Infinity;
 
-        orb.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) scale(${scale})`;
-        orb.style.opacity   = opacity;
-        orb.style.filter    = blurPx > 0.25 ? `blur(${blurPx.toFixed(2)}px)` : '';
-        orb.style.zIndex    = Math.round(depth * 100);
-        orb.classList.toggle('focused', depth > 0.92);
+      for (let i = 0; i < cells.length; i++) {
+        const c = cells[i];
+        const dx = c.x - cx, dy = c.y - cy;
+        const d = Math.hypot(dx, dy);
+        if (d < closestD) { closestD = d; closestIdx = i; }
+        const t = Math.min(1, d / (FOCAL * 1.6));
+        const scale = MIN_S + (1 - MIN_S) * Math.pow(1 - t, 1.6);
+        const opacity = 0.32 + 0.68 * Math.pow(1 - t, 1.4);
+        c.orb.style.transform = `translate(calc(-50% + ${c.x}px), calc(-50% + ${c.y}px)) scale(${scale.toFixed(3)})`;
+        c.orb.style.opacity   = opacity.toFixed(3);
+        c.orb.style.zIndex    = Math.round((1 - t) * 100);
       }
+
+      // Mark the closest orb as "focused" and update the now-focused pill
+      cells.forEach((c, i) => c.orb.classList.toggle('focused', i === closestIdx));
+      if (nowEl) nowEl.textContent = closestIdx >= 0 ? cells[closestIdx].label : '—';
     }
 
     function tick(now) {
       const dt = Math.min(0.05, (now - lastFrame) / 1000);
       lastFrame = now;
-      if (wheelInView) {
+
+      if (inView) {
         if (!isDragging) {
-          if (Math.abs(velocity) > 0.0005) {
-            rotation += velocity * dt;
-            velocity *= Math.pow(0.18, dt);
-          } else if (idle) {
-            rotation += 0.18 * dt;
+          // Inertia + magnetic snap toward the nearest hex centre when idle.
+          if (Math.hypot(velX, velY) > 8) {
+            panX += velX * dt;
+            panY += velY * dt;
+            // Exponential decay (5x per second → ~0.007^dt)
+            const decay = Math.pow(0.06, dt);
+            velX *= decay; velY *= decay;
+          } else {
+            // Snap-to-nearest: figure out which cell is closest to viewport
+            // centre and ease the pan toward putting it there.
+            const cx = -panX, cy = -panY;
+            let bestX = 0, bestY = 0, bestD = Infinity;
+            for (const c of cells) {
+              const d = Math.hypot(c.x - cx, c.y - cy);
+              if (d < bestD) { bestD = d; bestX = c.x; bestY = c.y; }
+            }
+            const easing = 1 - Math.pow(0.04, dt);   // smooth, framerate-independent
+            panX += (-bestX - panX) * easing;
+            panY += (-bestY - panY) * easing;
+            velX = velY = 0;
           }
         }
         render();
@@ -1189,47 +1266,78 @@
     render();
     requestAnimationFrame(tick);
 
-    function getX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
+    // ── Pointer / touch handling ──
+    function getXY(e) {
+      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      return { x: e.clientX, y: e.clientY };
+    }
 
     function onDown(e) {
-      isDragging = true; idle = false;
-      wheel.classList.add('dragging');
-      lastPointerX = getX(e); lastMoveTime = performance.now(); velocity = 0;
+      isDragging = true; didPan = false;
+      stage.classList.add('grabbing');
+      const p = getXY(e);
+      lastX = p.x; lastY = p.y; lastT = performance.now();
+      velX = velY = 0;
     }
     function onMove(e) {
       if (!isDragging) return;
-      const x = getX(e);
-      const dx = x - lastPointerX;
+      const p = getXY(e);
+      const dx = p.x - lastX, dy = p.y - lastY;
       const now = performance.now();
-      const dt = Math.max(1, now - lastMoveTime);
-      lastPointerX = x; lastMoveTime = now;
-      rotation += dx * 0.006;
-      velocity = (dx * 0.006) / (dt / 1000) * 0.6;
+      const dt = Math.max(1, now - lastT);
+      lastX = p.x; lastY = p.y; lastT = now;
+      panX += dx;
+      panY += dy;
+      // Track velocity for inertia after release
+      velX = (dx / (dt / 1000)) * 0.85;
+      velY = (dy / (dt / 1000)) * 0.85;
+      if (!didPan && Math.hypot(dx, dy) > 3) {
+        didPan = true;
+        stage.classList.add('has-panned');
+      }
     }
     function onUp() {
       if (!isDragging) return;
       isDragging = false;
-      wheel.classList.remove('dragging');
-      setTimeout(() => { idle = true; }, 2500);
+      stage.classList.remove('grabbing');
     }
 
-    wheel.addEventListener('mousedown', onDown);
+    stage.addEventListener('mousedown', onDown);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
-    wheel.addEventListener('touchstart', onDown, { passive: true });
+    stage.addEventListener('touchstart', onDown, { passive: true });
     window.addEventListener('touchmove', onMove, { passive: true });
     window.addEventListener('touchend', onUp);
+    window.addEventListener('touchcancel', onUp);
 
-    wheel.addEventListener('wheel', (e) => {
+    // Wheel: pan in both axes (shift converts vertical scroll to horizontal pan)
+    stage.addEventListener('wheel', (e) => {
       e.preventDefault();
-      rotation += e.deltaY * 0.003;
-      velocity = e.deltaY * 0.02;
-      idle = false;
-      clearTimeout(wheel._idleTO);
-      wheel._idleTO = setTimeout(() => { idle = true; }, 2500);
+      panX -= e.deltaX;
+      panY -= e.deltaY;
+      stage.classList.add('has-panned');
     }, { passive: false });
 
-    window.addEventListener('resize', render);
+    // Click any visible orb to centre it (Apple-Watch-style "tap to focus")
+    cells.forEach(c => {
+      c.orb.addEventListener('click', () => {
+        if (didPan) { didPan = false; return; }   // don't re-trigger after a drag
+        velX = velY = 0;
+        // Smooth via the idle snap loop — set pan target indirectly by nudging
+        panX = -c.x + (panX - (-c.x)) * 0.0001;
+        panY = -c.y + (panY - (-c.y)) * 0.0001;
+      });
+    });
+
+    // Keyboard panning when stage is focused
+    stage.tabIndex = 0;
+    stage.addEventListener('keydown', (e) => {
+      const STEP = 80;
+      if (e.key === 'ArrowLeft')  { panX += STEP; stage.classList.add('has-panned'); }
+      if (e.key === 'ArrowRight') { panX -= STEP; stage.classList.add('has-panned'); }
+      if (e.key === 'ArrowUp')    { panY += STEP; stage.classList.add('has-panned'); }
+      if (e.key === 'ArrowDown')  { panY -= STEP; stage.classList.add('has-panned'); }
+    });
   })();
 
   /* ── Career tab toggle (Experience / Education) ── */
