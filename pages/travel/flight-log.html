@@ -317,7 +317,7 @@
 
     .radar-svg {
       position: absolute; inset: 0; width: 100%; height: 100%;
-      pointer-events: none;
+      pointer-events: none; z-index: 3;
     }
     .radar-svg .ring-label {
       font-family: 'JetBrains Mono', monospace;
@@ -1400,6 +1400,9 @@
   const RADAR_MAX_KM      = 300;    // outer ring distance
   // Fallback receiver location (Billund) if /receiver.json is unreachable
   const FALLBACK_RX       = { lat: 55.7403, lon: 9.1518 };
+  // Append ?demo=1 to the URL to render a synthetic aircraft picture (handy for
+  // verifying the radar/table without being on the LAN).
+  const DEMO_MODE         = new URLSearchParams(location.search).has('demo');
 
   // ─── Helpers ───────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
@@ -1410,11 +1413,34 @@
     try {
       const r = await fetch(FEEDER_BASE + path, {
         cache: 'no-store', mode: 'cors', signal: ctrl.signal,
-        // tar1090 typically returns plain JSON without auth
       });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return await r.json();
     } finally { clearTimeout(t); }
+  }
+
+  // ── Demo data — synthesised aircraft so the radar/table render even when the
+  //    receiver is unreachable (browse with ?demo=1 to enable). ──
+  function buildDemoData() {
+    const planes = [
+      { hex:'4ca4fe', flight:'RYR9842', lat:55.6, lon:9.4, alt_baro:8200,  gs:265, track:120, rssi:-22.4 },
+      { hex:'400b1c', flight:'BAW819 ', lat:55.9, lon:8.6, alt_baro:34000, gs:480, track:210, rssi:-26.1 },
+      { hex:'3c66c2', flight:'DLH4LF ', lat:55.2, lon:10.2,alt_baro:38000, gs:495, track:265, rssi:-30.7 },
+      { hex:'4ca7d3', flight:'EIN67G ', lat:56.2, lon:9.9, alt_baro:24500, gs:430, track:90,  rssi:-24.0 },
+      { hex:'4cad12', flight:'NAX4WT ', lat:55.5, lon:9.0, alt_baro:1500,  gs:170, track:330, rssi:-19.3 },
+      { hex:'448bfa', flight:'SAS21K ', lat:56.6, lon:9.7, alt_baro:29000, gs:455, track:185, rssi:-28.8 },
+      { hex:'4006fe', flight:'EZY32CW', lat:54.9, lon:10.5,alt_baro:36000, gs:470, track:60,  rssi:-31.4 },
+      { hex:'4ca8a1', flight:'WZZ1HV ', lat:55.0, lon:9.2, alt_baro:14000, gs:380, track:340, rssi:-25.6 },
+      { hex:'4ca800', flight:'AAL93  ', lat:56.9, lon:7.4, alt_baro:41000, gs:510, track:285, rssi:-33.2 },
+      { hex:'3c66de', flight:'DLH456 ', lat:54.5, lon:11.1,alt_baro:9500,  gs:300, track:160, rssi:-27.9 },
+    ];
+    return { aircraft: planes, now: Date.now()/1000 };
+  }
+  function buildDemoStats() {
+    return {
+      latest: { messages: 18420, start: 0, end: 60, local: { signal: -24.6 } },
+      total:  { start: 0, end: 86400 * 17 + 3600 * 5, messages: 99e6 }
+    };
   }
 
   function haversineKm(lat1, lon1, lat2, lon2) {
@@ -1642,7 +1668,7 @@
 
   async function tickAircraft() {
     try {
-      const data = await fetchJSON('aircraft.json');
+      const data = DEMO_MODE ? buildDemoData() : await fetchJSON('aircraft.json');
       if (!connected) markConnected();
       const now = Date.now();
       lastAircraftAt = now;
@@ -1656,16 +1682,18 @@
       aapMeta.textContent = planes.length;
       tick.innerHTML = `Updated · <strong>${fmtTimeHHMMSS(new Date(now))}</strong>`;
 
-      drawAircraft(planes);
+      const drawn = drawAircraft(planes);
       renderTable(planes);
+      console.debug('[adsb] aircraft.json:', planes.length, 'planes total ·', withPos.length, 'with pos ·', drawn, 'drawn on radar');
     } catch (err) {
+      console.error('[adsb] aircraft.json fetch failed:', err);
       handleError(err);
     }
   }
 
   async function tickStats() {
     try {
-      const data = await fetchJSON('stats.json');
+      const data = DEMO_MODE ? buildDemoStats() : await fetchJSON('stats.json');
       if (!connected) markConnected();
       lastStatsAt = Date.now();
       const latest = data.latest || data.last1min || {};
@@ -1692,8 +1720,11 @@
 
   function markConnected() {
     connected = true; firstError = true;
-    setStatus('live', 'Feeding live',
-      `Polling ${new URL(FEEDER_BASE).host} · aircraft every ${AIRCRAFT_POLL_MS/1000}s · stats every ${STATS_POLL_MS/1000}s`);
+    const where = DEMO_MODE ? 'demo data' : new URL(FEEDER_BASE).host;
+    setStatus('live', DEMO_MODE ? 'Demo mode' : 'Feeding live',
+      DEMO_MODE
+        ? 'Synthetic aircraft injected — append ?demo=1 to the URL to use this mode. Remove it to poll the real receiver.'
+        : `Polling ${where} · aircraft every ${AIRCRAFT_POLL_MS/1000}s · stats every ${STATS_POLL_MS/1000}s`);
   }
 
   function handleError(err, silent) {
@@ -1712,6 +1743,14 @@
   // ─── Lifecycle ─────────────────────────────────────────────────
   function start() {
     drawRingLabels();
+    if (DEMO_MODE) {
+      rx = FALLBACK_RX;
+      subtitle.textContent = 'Demo mode · synthetic data · Billund, Denmark';
+      tickAircraft(); tickStats();
+      aircraftTimer = setInterval(tickAircraft, AIRCRAFT_POLL_MS);
+      statsTimer = setInterval(tickStats, STATS_POLL_MS);
+      return;
+    }
     // Try to fetch receiver position first, then start the loops
     fetchJSON('receiver.json').then(rxData => {
       if (rxData.lat != null && rxData.lon != null) {
@@ -1784,23 +1823,65 @@
     });
 
     // Pale blue for all routes — uniform palette, no rainbow
-    const ARC_BASE = 'rgba(168,200,255,0.55)';   // soft pale blue (always-on line)
-    const ARC_GLOW = '#dcebff';                  // brighter pale blue tip of the moving "aircraft"
+    const ARC_BASE = 'rgba(168,200,255,0.55)';   // always-on pale blue
+    const ARC_GLOW = '#e6f0ff';                  // brighter "aircraft moving" overlay
 
-    const maxRoute = Math.max(...Object.values(routeCounts));
+    // ── Build trapezoidal-profile flight paths ──
+    // Each route is rendered as a great-circle line of waypoints with a flat
+    // cruise altitude in the middle and sharp climb/descent at the endpoints —
+    // resembling a real flight profile (no smooth sinusoidal hump).
+    const CRUISE_ALT  = 0.045;   // cruise altitude (globe radius units)
+    const CLIMB_FRAC  = 0.07;    // first 7% of the journey is the climb
+    const SAMPLES     = 64;      // waypoints per route
 
-    // Two arc entries per route: a SOLID base that's always visible,
-    // and an ANIMATED bright overlay that "travels" along it like a flying aircraft.
-    const arcs = [];
+    // Great-circle interpolation (spherical linear) between two lat/lon points
+    function interpolateGC(lat1, lon1, lat2, lon2, t) {
+      const toRad = d => d * Math.PI / 180;
+      const φ1 = toRad(lat1), φ2 = toRad(lat2);
+      const λ1 = toRad(lon1), λ2 = toRad(lon2);
+      const Δφ = φ2 - φ1, Δλ = λ2 - λ1;
+      const d = 2 * Math.asin(Math.sqrt(
+        Math.sin(Δφ/2)**2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2)**2
+      ));
+      if (d === 0) return [lat1, lon1];
+      const A = Math.sin((1 - t) * d) / Math.sin(d);
+      const B = Math.sin(t * d) / Math.sin(d);
+      const x = A * Math.cos(φ1) * Math.cos(λ1) + B * Math.cos(φ2) * Math.cos(λ2);
+      const y = A * Math.cos(φ1) * Math.sin(λ1) + B * Math.cos(φ2) * Math.sin(λ2);
+      const z = A * Math.sin(φ1) + B * Math.sin(φ2);
+      const φ = Math.atan2(z, Math.sqrt(x*x + y*y));
+      const λ = Math.atan2(y, x);
+      return [φ * 180 / Math.PI, λ * 180 / Math.PI];
+    }
+
+    // Build the points list for a single route, with trapezoidal altitude profile.
+    function buildFlightPath(latA, lonA, latB, lonB) {
+      const pts = [];
+      for (let i = 0; i <= SAMPLES; i++) {
+        const t = i / SAMPLES;
+        const [lat, lon] = interpolateGC(latA, lonA, latB, lonB, t);
+        // Trapezoidal vertical profile:
+        //   t ∈ [0, CLIMB_FRAC]            → linear climb 0 → 1
+        //   t ∈ [CLIMB_FRAC, 1−CLIMB_FRAC] → cruise = 1
+        //   t ∈ [1−CLIMB_FRAC, 1]          → linear descent 1 → 0
+        let frac;
+        if (t < CLIMB_FRAC)        frac = t / CLIMB_FRAC;
+        else if (t > 1 - CLIMB_FRAC) frac = (1 - t) / CLIMB_FRAC;
+        else                         frac = 1;
+        pts.push([lat, lon, CRUISE_ALT * frac]);
+      }
+      return pts;
+    }
+
+    const paths = [];
     Object.entries(routeCounts).forEach(([key, count]) => {
       const [a, b] = key.split('-');
       const [latA, lngA] = AIRPORTS[a];
       const [latB, lngB] = AIRPORTS[b];
-      const freq = count / maxRoute;
-      const stroke = 0.3 + 0.5 * freq;
-      const base = { startLat: latA, startLng: lngA, endLat: latB, endLng: lngB, count, stroke, mode: 'solid', color: ARC_BASE };
-      const anim = { startLat: latA, startLng: lngA, endLat: latB, endLng: lngB, count, stroke: stroke * 1.3, mode: 'anim', color: [ARC_GLOW, ARC_GLOW] };
-      arcs.push(base, anim);
+      const pts = buildFlightPath(latA, lngA, latB, lngB);
+      // Two layers per route: solid base + animated overlay (the "aircraft")
+      paths.push({ points: pts, count, mode: 'solid' });
+      paths.push({ points: pts, count, mode: 'anim' });
     });
 
     // Airport pins — lollipop style copied from travel-map, in red
@@ -1822,17 +1903,20 @@
       .showAtmosphere(true)
       .atmosphereColor('#6a8db5')
       .atmosphereAltitude(0.14)
-      // ── Arcs: solid base + animated "aircraft" overlay, all at cruise altitude ──
-      .arcsData(arcs)
-      .arcColor('color')
-      .arcStroke('stroke')
-      .arcAltitude(0.08)            // FIXED altitude → simulates planes at cruise level
-      .arcDashLength(d => d.mode === 'solid' ? 1 : 0.22)
-      .arcDashGap(d => d.mode === 'solid' ? 0 : 3)
-      .arcDashInitialGap(d => d.mode === 'solid' ? 0 : Math.random() * 3)
-      .arcDashAnimateTime(d => d.mode === 'solid' ? 0 : 5500)
-      .arcsTransitionDuration(0)
-      .arcLabel(d => `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:rgba(8,9,14,.92);border:1px solid rgba(106,141,181,.4);padding:.45rem .7rem;border-radius:8px;color:#ececea;letter-spacing:.05em"><b>${d.count}×</b> flight${d.count>1?'s':''}</div>`)
+      // ── Flight paths: solid base + animated "aircraft" overlay, with a
+      //    trapezoidal climb→cruise→descent altitude profile ──
+      .pathsData(paths)
+      .pathPointLat(p => p[0])
+      .pathPointLng(p => p[1])
+      .pathPointAlt(p => p[2])
+      .pathColor(d => d.mode === 'solid' ? ARC_BASE : ARC_GLOW)
+      .pathStroke(d => d.mode === 'solid' ? 0.8 : 1.4)
+      .pathDashLength(d => d.mode === 'solid' ? 1 : 0.18)
+      .pathDashGap(d => d.mode === 'solid' ? 0 : 4)
+      .pathDashInitialGap(() => Math.random() * 4)
+      .pathDashAnimateTime(d => d.mode === 'solid' ? 0 : 6000)
+      .pathTransitionDuration(0)
+      .pathLabel(d => `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:rgba(8,9,14,.92);border:1px solid rgba(106,141,181,.4);padding:.45rem .7rem;border-radius:8px;color:#ececea;letter-spacing:.05em"><b>${d.count}×</b> flight${d.count>1?'s':''}</div>`)
       // ── Lollipop pins (red) ──
       .customLayerData(pins)
       .customThreeObject(d => {
@@ -1871,7 +1955,7 @@
     }
 
     // Dark flat continents — load country GeoJSON and render as filled polygons
-    fetch('https://unpkg.com/three-globe@2.31.0/example/datasets/ne_110m_admin_0_countries.geojson')
+    fetch('https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_110m_admin_0_countries.geojson')
       .then(r => r.json())
       .then(data => {
         globe

@@ -158,6 +158,194 @@
       color: var(--mute); transition: all 0.3s;
     }
     .footer-socials li a:hover { background: var(--accent); color: #111; border-color: var(--accent); }
+
+    /* ── PAGE LAYOUT ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.75; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    .container { max-width: 1140px; margin: 0 auto; padding: 8rem 2rem 5rem; position: relative; z-index: 2; }
+    .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; }
+
+    /* ── PAGE HEADER ── */
+    .page-eyebrow { color: var(--c-tech); margin-bottom: 0.75rem; }
+    .page-header { margin-bottom: 2.75rem; max-width: 720px; }
+    .page-header h1 { font-size: clamp(2.4rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.75rem; }
+    .page-header p { font-size: 1rem; color: var(--text-dim); line-height: 1.8; }
+
+    /* ── STATS STRIP ── */
+    .tv-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+      margin-bottom: 2.75rem; padding: 1.5rem 1.75rem;
+      background: linear-gradient(135deg, rgba(12,16,40,0.5), rgba(8,9,14,0.3));
+      border: 1px solid var(--line); border-radius: var(--radius);
+      position: relative; overflow: hidden;
+    }
+    .tv-stats::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 0% 0%, rgba(106,141,181,0.08), transparent 60%);
+      pointer-events: none;
+    }
+    .tv-stat { position: relative; z-index: 1; }
+    .tv-stat-num {
+      font-size: clamp(1.6rem, 2.4vw, 2.2rem); font-weight: 800;
+      letter-spacing: -0.04em; line-height: 1; color: var(--text);
+      background: linear-gradient(135deg, var(--accent), var(--c-tech));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .tv-stat-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; color: var(--c-tech); text-transform: uppercase; margin-top: 0.3rem; }
+    .tv-stat-lbl { font-size: 0.74rem; color: var(--mute); margin-top: 0.3rem; line-height: 1.3; }
+    @media (max-width: 700px) { .tv-stats { grid-template-columns: repeat(2, 1fr); } }
+
+    /* ── PROFILE CTA ── */
+    .tv-cta {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      font-size: 0.82rem; font-weight: 600; letter-spacing: 0.04em;
+      padding: 0.85rem 1.5rem;
+      background: rgba(106,141,181,0.1); border: 1px solid rgba(106,141,181,0.4);
+      color: var(--c-tech); border-radius: 999px;
+      transition: all 0.25s; margin-bottom: 3.5rem;
+    }
+    .tv-cta:hover { background: var(--c-tech); color: #fff; transform: translateY(-1px); }
+
+    /* ── SECTION ── */
+    .tv-section { margin-bottom: 4rem; }
+    .tv-section-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+    .tv-section-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c-photo);
+    }
+    .tv-section h2 {
+      font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .tv-section-count {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      color: var(--mute); letter-spacing: 0.1em;
+      margin-left: auto;
+    }
+
+    /* ── DESIGN GRID ── */
+    .designs-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.4rem;
+    }
+    .design-card {
+      position: relative; display: flex; flex-direction: column;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.25s, box-shadow 0.3s;
+    }
+    .design-card:hover {
+      transform: translateY(-4px); border-color: rgba(106,141,181,0.35);
+      box-shadow: 0 20px 60px -20px rgba(0,0,0,0.65), 0 0 0 1px rgba(106,141,181,0.18);
+    }
+    .design-thumb {
+      position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+      background: var(--bg-elevated);
+    }
+    .design-thumb img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center;
+      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), filter 0.4s;
+    }
+    .design-card:hover .design-thumb img { transform: scale(1.06); filter: brightness(1.05); }
+    .design-thumb::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 35%);
+      pointer-events: none;
+    }
+    .design-badge {
+      position: absolute; top: 0.75rem; left: 0.75rem; z-index: 2;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.55rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent); background: rgba(8,9,14,0.75);
+      backdrop-filter: blur(8px); padding: 0.3rem 0.55rem;
+      border-radius: 999px; border: 1px solid rgba(232,220,196,0.18);
+    }
+    .design-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(8,9,14,0.55); backdrop-filter: blur(2px);
+      opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .design-card:hover .design-overlay { opacity: 1; }
+    .design-overlay-btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #fff; padding: 0.65rem 1.1rem;
+      background: var(--c-tech); border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .design-body {
+      padding: 1.25rem 1.25rem 1.35rem;
+      display: flex; flex-direction: column; gap: 0.55rem; flex: 1;
+    }
+    .design-title {
+      font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text);
+      line-height: 1.3;
+    }
+    .design-desc {
+      font-size: 0.85rem; color: var(--text-dim); line-height: 1.55;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .design-meta {
+      display: flex; align-items: center; gap: 0.65rem; margin-top: 0.4rem;
+      padding-top: 0.85rem; border-top: 1px solid var(--line);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: var(--mute);
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .design-meta-id {
+      color: var(--c-tech);
+    }
+    .design-meta-link {
+      margin-left: auto; color: var(--accent);
+      transition: color 0.2s;
+    }
+    .design-meta-link:hover { color: #fff; }
+
+    /* ── MAKES — shared row with smaller card ── */
+    .makes-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.4rem;
+    }
+    .make-card {
+      position: relative; display: flex; gap: 1rem; align-items: center;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1rem; overflow: hidden;
+      transition: transform 0.3s, border-color 0.25s;
+    }
+    .make-card:hover { transform: translateY(-3px); border-color: rgba(200,120,74,0.35); }
+    .make-thumb {
+      width: 88px; height: 88px; flex-shrink: 0;
+      border-radius: 12px; overflow: hidden;
+      background: linear-gradient(135deg, rgba(200,120,74,0.18), rgba(106,141,181,0.10));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.1rem; color: var(--c-photo);
+    }
+    .make-body { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; min-width: 0; }
+    .make-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--c-photo);
+    }
+    .make-title { font-size: 0.92rem; font-weight: 600; color: var(--text); }
+    .make-link {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.66rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-top: 0.3rem;
+      display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+    .make-link:hover { color: #fff; }
+
+    /* ── REVEAL ── */
+    .wow { opacity: 0; transform: translateY(20px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+    .wow.visible { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: 0.08s; }
+    .d2 { transition-delay: 0.16s; }
+    .d3 { transition-delay: 0.24s; }
   </style>
 
 </head>
@@ -227,12 +415,147 @@
 </nav>
 
 <main>
-  <h1>3D Printing</h1>
-  <p>This page is a dedicated space for my 3D printing experiments, ideas, and tools. It is meant to be part of the Tech section alongside XR, reality capture, and AI.</p>
-  <h2>What to expect</h2>
-  <p>Contents can include project files, print galleries, material notes, and examples of how 3D printing supports prototyping, physical product development, and rapid experimentation.</p>
-  <p>For now, this page is a placeholder that holds the new menu item and keeps the site structure aligned with the category layout.</p>
-  <div class="note">Note: If you'd like, I can also add a 3D Printing project page with actual print descriptions, photos, and resources.</div>
+  <div class="container">
+
+    <div class="page-eyebrow mono">Tech · Maker</div>
+    <div class="page-header wow">
+      <h1>3D Printing</h1>
+      <p>Every model I've designed and uploaded to Thingiverse — small functional prints and a few experiments. Click any tile to open the design page, view photos, or download the STLs.</p>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="tv-stats wow d1">
+      <div class="tv-stat">
+        <div class="tv-stat-num">3</div>
+        <div class="tv-stat-unit">designs</div>
+        <div class="tv-stat-lbl">Original models published</div>
+      </div>
+      <div class="tv-stat">
+        <div class="tv-stat-num">1</div>
+        <div class="tv-stat-unit">make</div>
+        <div class="tv-stat-lbl">Print of a remixed design</div>
+      </div>
+      <div class="tv-stat">
+        <div class="tv-stat-num">2020</div>
+        <div class="tv-stat-unit">first upload</div>
+        <div class="tv-stat-lbl">Active on Thingiverse since</div>
+      </div>
+      <div class="tv-stat">
+        <div class="tv-stat-num">FDM</div>
+        <div class="tv-stat-unit">printer type</div>
+        <div class="tv-stat-lbl">PLA · 0.2 mm layer height</div>
+      </div>
+    </div>
+
+    <a href="https://www.thingiverse.com/cvendrell/designs" target="_blank" rel="noopener" class="tv-cta wow d2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      View profile on Thingiverse
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+
+    <!-- ══ DESIGNS ══ -->
+    <section class="tv-section wow">
+      <div class="tv-section-head">
+        <span class="tv-section-eyebrow">My designs</span>
+        <h2>Models I've made</h2>
+        <span class="tv-section-count">3 things</span>
+      </div>
+
+      <div class="designs-grid">
+
+        <!-- thing:4713612 -->
+        <a class="design-card" href="https://www.thingiverse.com/thing:4713612" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Design</span>
+            <img src="https://cdn.thingiverse.com/assets/0c/52/89/3d/7b/IMG_0170.jpg" alt="Suspension Bridge Phone Stand" loading="lazy"
+                 onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Suspension Bridge Phone Stand</h3>
+            <p class="design-desc">A phone stand modeled after the Golden Gate Bridge — with a little design freedom for the missing details. Multi-part print: the roads click onto the main frame and can be printed in a contrasting colour for a realistic feel.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">thing:4713612</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- thing:4706897 -->
+        <a class="design-card" href="https://www.thingiverse.com/thing:4706897" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Design</span>
+            <img src="https://cdn.thingiverse.com/assets/d7/fe/3b/87/a2/Nikon_55mm.jpeg" alt="Nikon Lens Cap Holder" loading="lazy"
+                 onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Nikon Lens Cap Holder</h3>
+            <p class="design-desc">A scaled remix of the popular 52 mm lens cap holder — relabeled for 55 mm and 58 mm caps so it matches the lens diameters I actually shoot with.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">thing:4706897</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- thing:4706807 -->
+        <a class="design-card" href="https://www.thingiverse.com/thing:4706807" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Design</span>
+            <img src="https://cdn.thingiverse.com/assets/c4/e6/fb/a3/b4/KobeKeyringPicture.jpg" alt="Kobe Bryant Keyring" loading="lazy"
+                 onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Kobe Bryant Keyring</h3>
+            <p class="design-desc">Two-part keyring with a tight, glue-friendly fit so the silhouette can be printed in contrasting colours. The inner part scales to ~98 % to slot cleanly into the outer.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">thing:4706807</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ══ MAKES ══ -->
+    <section class="tv-section wow">
+      <div class="tv-section-head">
+        <span class="tv-section-eyebrow">My makes</span>
+        <h2>Prints of other designers' models</h2>
+        <span class="tv-section-count">1 make</span>
+      </div>
+
+      <div class="makes-grid">
+        <a class="make-card" href="https://www.thingiverse.com/make:885729" target="_blank" rel="noopener">
+          <div class="make-thumb" aria-hidden="true">🔑</div>
+          <div class="make-body">
+            <span class="make-eyebrow">Make · remix</span>
+            <span class="make-title">Customized Key / Luggage Tag</span>
+            <span class="make-link">View on Thingiverse ↗</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </div>
 </main>
 
 <footer>
@@ -284,6 +607,26 @@
       if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
     }, { passive: true });
   }
+
+  /* ── Reveal on scroll ── */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.wow').forEach(el => revealObserver.observe(el));
+
+  /* ── Reveal design cards as they scroll in ── */
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); cardObserver.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.design-card, .make-card').forEach((el, i) => {
+    el.classList.add('wow');
+    el.style.transitionDelay = (i * 0.06) + 's';
+    cardObserver.observe(el);
+  });
 </script>
 </body>
 </html>
