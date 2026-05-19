@@ -458,6 +458,19 @@
     #globe-svg .conn-origin.lived { fill: var(--accent); }
     #globe-svg .conn-origin.visible { opacity: 1; }
 
+    /* ── Flight path lines (animated) ── */
+    #globe-svg .flight-path {
+      stroke: rgba(232,220,196,0.95);
+      stroke-width: 1.6; fill: none; stroke-linecap: round;
+      stroke-dasharray: 12 8; filter: drop-shadow(0 0 6px rgba(232,220,196,0.12));
+      opacity: 0.95; transform-origin: center;
+      animation: fly 3.6s linear infinite;
+    }
+    @keyframes fly { to { stroke-dashoffset: -1000; } }
+    #globe-svg .flight-dot { fill: var(--c-photo); opacity: 0.95; filter: drop-shadow(0 0 6px rgba(200,120,74,0.25)); }
+    #globe-svg .flight-dot.target { r: 6; }
+    #globe-svg .flight-dot.origin { r: 4; }
+
     /* ── Fullscreen photo lightbox ── */
     .imap-lightbox {
       position: fixed; inset: 0; z-index: 9000;
@@ -2080,6 +2093,86 @@ function runGlobeInit() {
 
   // Done loading
   setTimeout(() => document.getElementById('imapLoading').classList.add('done'), 400);
+
+  // ──────────────────────────────────────────────────────────
+  // Flight path overlay: build a few animated SVG arcs between notable cities
+  // ──────────────────────────────────────────────────────────
+  const FLIGHT_ROUTES = [
+    ['London','Singapore'],
+    ['Copenhagen','Hanoi'],
+    ['Barcelona','New Delhi'],
+    ['Houston','Zurich'],
+    ['Oslo','Reykjavík'],
+    ['Singapore','Kuala Lumpur']
+  ];
+
+  const flightGroup = document.createElementNS('http://www.w3.org/2000/svg','g');
+  flightGroup.setAttribute('id','flight-group');
+  svg.appendChild(flightGroup);
+
+  const routes = FLIGHT_ROUTES.map(pair => {
+    const [a,b] = pair;
+    const from = DATA.find(d => d.n === a) || DATA.find(d => d.c === a) || null;
+    const to   = DATA.find(d => d.n === b) || DATA.find(d => d.c === b) || null;
+    if (!from || !to) return null;
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.classList.add('flight-path');
+    const oDot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    oDot.classList.add('flight-dot','origin');
+    const tDot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    tDot.classList.add('flight-dot','target');
+    flightGroup.appendChild(path);
+    flightGroup.appendChild(oDot);
+    flightGroup.appendChild(tDot);
+    return { from, to, path, oDot, tDot };
+  }).filter(Boolean);
+
+  // Update function computes on-screen bezier and positions dots
+  function updateFlightRoutes() {
+    if (!routes.length) return;
+    const rect = stage.getBoundingClientRect();
+    routes.forEach(r => {
+      const p1 = globe.getScreenCoords(r.from.lat, r.from.lon, 0.035);
+      const p2 = globe.getScreenCoords(r.to.lat,   r.to.lon,   0.035);
+      // Visibility: check if either endpoint is on the visible hemisphere
+      const cam = globe.camera();
+      const c1 = globe.getCoords(r.from.lat, r.from.lon, 0.035);
+      const c2 = globe.getCoords(r.to.lat,   r.to.lon,   0.035);
+      const camLen = Math.hypot(cam.position.x, cam.position.y, cam.position.z);
+      const dot1 = (cam.position.x * c1.x + cam.position.y * c1.y + cam.position.z * c1.z) / (camLen * Math.hypot(c1.x,c1.y,c1.z));
+      const dot2 = (cam.position.x * c2.x + cam.position.y * c2.y + cam.position.z * c2.z) / (camLen * Math.hypot(c2.x,c2.y,c2.z));
+      const isVisible = (dot1 > 0) || (dot2 > 0);
+      if (!isVisible) {
+        r.path.setAttribute('d','');
+        r.oDot.setAttribute('cx', -9999); r.oDot.setAttribute('cy', -9999);
+        r.tDot.setAttribute('cx', -9999); r.tDot.setAttribute('cy', -9999);
+        r.path.style.opacity = 0;
+        return;
+      }
+
+      // Midpoint + perpendicular offset for quadratic control point
+      const mx = (p1.x + p2.x) / 2;
+      const my = (p1.y + p2.y) / 2;
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len; const ny = dx / len;
+      const offset = Math.min(300, len * 0.22);
+      const cx = mx + nx * offset;
+      const cy = my + ny * offset;
+      const d = `M ${p1.x} ${p1.y} Q ${cx} ${cy} ${p2.x} ${p2.y}`;
+      r.path.setAttribute('d', d);
+      r.oDot.setAttribute('cx', p1.x); r.oDot.setAttribute('cy', p1.y);
+      r.tDot.setAttribute('cx', p2.x); r.tDot.setAttribute('cy', p2.y);
+      r.path.style.opacity = 0.95;
+    });
+  }
+
+  // RAF loop to keep paths in sync with globe motion
+  let routesRAF = null;
+  function routesLoop() { updateFlightRoutes(); routesRAF = requestAnimationFrame(routesLoop); }
+  routesLoop();
+
 
   // ──────────────────────────────────────────────────────────
   // Pin click → open comm-card + draw connector line
