@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="176 flights across 40 countries — a log of every flight taken by Carlos Ebrahim Vendrell, with live ADS-B radar feed from Billund.">
+  <meta name="description" content="176 flights across 40 countries — a log of every flight taken by Carlos Ebrahim Vendrell, with live ADS-B radar feed from Aarhus.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cevendrell.github.io/personal-website/pages/travel/flight-log.html">
   <meta property="og:title" content="Flight Log — Carlos Ebrahim Vendrell">
-  <meta property="og:description" content="176 flights across 40 countries — a log of every flight taken by Carlos Ebrahim Vendrell, with live ADS-B radar feed from Billund.">
+  <meta property="og:description" content="176 flights across 40 countries — a log of every flight taken by Carlos Ebrahim Vendrell, with live ADS-B radar feed from Aarhus.">
   <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Flight Log — Carlos Ebrahim Vendrell">
@@ -856,7 +856,7 @@
   <div class="page-eyebrow mono">Travel · Aviation</div>
   <div class="page-header">
     <h1>Flight Log</h1>
-    <p>176 flights logged since 2000 — every boarding pass, every aircraft type, every airport. Tracked on FlightRadar24 and mirrored here. Below: live ADS-B feed from my receiver in Billund, plus the full lifetime ledger.</p>
+    <p>176 flights logged since 2000 — every boarding pass, every aircraft type, every airport. Tracked on FlightRadar24 and mirrored here. Below: live ADS-B feed from my receiver in Aarhus, plus the full lifetime ledger.</p>
   </div>
 
   <!-- ══ HERO STATS ══ -->
@@ -902,7 +902,7 @@
       </div>
       <div class="adsb-id">
         <h2>T-EKAC94</h2>
-        <p id="feedSubtitle">tar1090 · readsb · Billund, Denmark</p>
+        <p id="feedSubtitle">tar1090 · readsb · Aarhus, Denmark</p>
       </div>
       <span class="adsb-tick" id="feedTick">—</span>
       <a class="adsb-fr24-link" href="https://my.flightradar24.com/carlosebrahim" target="_blank" rel="noopener">
@@ -1011,7 +1011,7 @@
     <div class="globe-stage">
       <div id="flight-globe"></div>
       <div class="globe-legend">
-        <div class="lg-row"><span class="lg-swatch" style="background:#a8c8ff"></span> Flight route</div>
+        <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg,#ffe2a8,#fff4d0)"></span> Flight route</div>
         <div class="lg-row"><span class="lg-dot" style="background:#ff3344;box-shadow:0 0 6px #ff3344"></span> Airport visited</div>
       </div>
       <div class="globe-hint">Drag · Scroll to zoom</div>
@@ -1400,14 +1400,14 @@
   // Public fallback: airplanes.live aggregates the global ADS-B network
   // (CORS-enabled). Used automatically when the private feeder is unreachable
   // — e.g. from outside the LAN, over HTTPS, or when CORS isn't set up.
-  // Centred on Billund, 250 nautical-mile radius.
-  const PUBLIC_BASE_AC    = 'https://api.airplanes.live/v2/point/55.74/9.15/250';
+  // Centred on Aarhus, 250 nautical-mile radius.
+  const PUBLIC_BASE_AC    = 'https://api.airplanes.live/v2/point/56.16/10.20/250';
   const AIRCRAFT_POLL_MS  = 3000;   // tar1090 default refresh is ~1s; airplanes.live caches ~5s
   const STATS_POLL_MS     = 10000;
   const FETCH_TIMEOUT_MS  = 4500;
   const RADAR_MAX_KM      = 300;    // outer ring distance
-  // Fallback receiver location (Billund) if /receiver.json is unreachable
-  const FALLBACK_RX       = { lat: 55.7403, lon: 9.1518 };
+  // Fallback receiver location (Aarhus) if /receiver.json is unreachable
+  const FALLBACK_RX       = { lat: 56.1629, lon: 10.2039 };
   // Append ?demo=1 to the URL to render a synthetic aircraft picture (handy for
   // verifying the radar/table without being on the LAN or polling external APIs).
   const DEMO_MODE         = new URLSearchParams(location.search).has('demo');
@@ -1766,18 +1766,18 @@
     if (currentSource === 'demo') {
       setStatus('live', 'Demo mode',
         'Synthetic aircraft injected. Remove <code>?demo=1</code> from the URL to use real data.');
-      subtitle.textContent = 'Demo mode · synthetic data · Billund, Denmark';
+      subtitle.textContent = 'Demo mode · synthetic data · Aarhus, Denmark';
     } else if (currentSource === 'local') {
       setStatus('live', 'Feeding live',
         `Live from your own ADS-B receiver at ${new URL(FEEDER_BASE).host} · aircraft every ${AIRCRAFT_POLL_MS/1000}s`);
-      subtitle.textContent = 'tar1090 · readsb · Billund, Denmark';
+      subtitle.textContent = 'tar1090 · readsb · Aarhus, Denmark';
     } else if (currentSource === 'public') {
       const isMixed = window.location.protocol === 'https:' && FEEDER_BASE.startsWith('http:');
       setStatus('live', 'Live · community network',
         isMixed
           ? `Local receiver isn't reachable over HTTPS (mixed-content block). Showing aggregated data from <a href="https://airplanes.live" target="_blank" rel="noopener">airplanes.live</a> instead — your station still contributes to this network. Append <code>?source=local</code> from inside the LAN.`
           : `Couldn't reach <code>${new URL(FEEDER_BASE).host}</code> (off-LAN or CORS). Showing aggregated data from <a href="https://airplanes.live" target="_blank" rel="noopener">airplanes.live</a> — your station still contributes to this network.`);
-      subtitle.textContent = 'airplanes.live · community ADS-B network · centred on Billund';
+      subtitle.textContent = 'airplanes.live · community ADS-B network · centred on Aarhus';
     }
   }
 
@@ -1865,8 +1865,11 @@
     });
 
     // Pale blue for all routes — uniform palette, no rainbow
-    const ARC_BASE = 'rgba(168,200,255,0.55)';   // always-on pale blue
-    const ARC_GLOW = '#e6f0ff';                  // brighter "aircraft moving" overlay
+    // Tuned to read well on the Blue Marble texture: warm cream base so the
+    // line never fades into the oceans, and a bright punchy glow for the
+    // animated streak that travels along it.
+    const ARC_BASE = 'rgba(255, 226, 168, 0.45)';   // soft amber/cream — always-on
+    const ARC_GLOW = '#fff4d0';                      // bright cream — animated overlay
 
     // ── Build trapezoidal-profile flight paths ──
     // Each route is rendered as a great-circle line of waypoints with a flat
@@ -1941,22 +1944,30 @@
     });
 
     const globe = Globe()(container)
+      // Realistic Blue Marble texture — restored. Continent / ocean tones come
+      // from the JPG; the bump map adds subtle terrain relief.
+      .globeImageUrl('../../media/textures/earth-blue-marble-lo.jpg')
+      .bumpImageUrl('https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png')
       .backgroundColor('rgba(0,0,0,0)')
       .showAtmosphere(true)
-      .atmosphereColor('#6a8db5')
-      .atmosphereAltitude(0.14)
-      // ── Flight paths: solid base + animated "aircraft" overlay, with a
-      //    trapezoidal climb→cruise→descent altitude profile ──
+      .atmosphereColor('#a8c8ff')
+      .atmosphereAltitude(0.18)
+      // ── Flight paths: solid base + animated overlay, with a trapezoidal
+      //    climb → cruise → descent altitude profile. `pathDashAnimateTime`
+      //    is a per-layer setting (not per-path), so we use a single value
+      //    here. The solid base keeps the same timing but stays visually
+      //    static because dashLength=1 / gap=0 means one dash spans the
+      //    entire path — no visible motion. ──
       .pathsData(paths)
       .pathPointLat(p => p[0])
       .pathPointLng(p => p[1])
       .pathPointAlt(p => p[2])
       .pathColor(d => d.mode === 'solid' ? ARC_BASE : ARC_GLOW)
-      .pathStroke(d => d.mode === 'solid' ? 0.8 : 1.4)
-      .pathDashLength(d => d.mode === 'solid' ? 1 : 0.18)
+      .pathStroke(d => d.mode === 'solid' ? 0.6 : 1.3)
+      .pathDashLength(d => d.mode === 'solid' ? 1 : 0.14)
       .pathDashGap(d => d.mode === 'solid' ? 0 : 4)
       .pathDashInitialGap(() => Math.random() * 4)
-      .pathDashAnimateTime(d => d.mode === 'solid' ? 0 : 6000)
+      .pathDashAnimateTime(4500)
       .pathTransitionDuration(0)
       .pathLabel(d => `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:rgba(8,9,14,.92);border:1px solid rgba(106,141,181,.4);padding:.45rem .7rem;border-radius:8px;color:#ececea;letter-spacing:.05em"><b>${d.count}×</b> flight${d.count>1?'s':''}</div>`)
       // ── Lollipop pins (red) ──
@@ -1987,34 +1998,31 @@
       })
       .onCustomLayerHover(p => { container.style.cursor = p ? 'pointer' : 'grab'; });
 
-    // Flat dark ocean — replace the texture with a solid colour so the globe reads as a graphic map
-    const mat = globe.globeMaterial();
-    if (mat) {
-      mat.color = new THREE.Color('#0a1024');     // deep ocean
-      if ('map' in mat) mat.map = null;
-      if ('bumpMap' in mat) mat.bumpMap = null;
-      mat.needsUpdate = true;
+    // Crisp the marble texture at oblique viewing angles (anisotropic filtering)
+    function bumpAnisotropy() {
+      const m = globe.globeMaterial && globe.globeMaterial();
+      const r = globe.renderer();
+      if (!m || !r) return false;
+      const maxA = r.capabilities.getMaxAnisotropy();
+      ['map', 'bumpMap', 'normalMap', 'specularMap'].forEach(k => {
+        if (m[k]) { m[k].anisotropy = maxA; m[k].needsUpdate = true; }
+      });
+      return !!m.map;
     }
+    let anisoTries = 0;
+    (function applyWhenReady() {
+      if (bumpAnisotropy() || ++anisoTries > 40) return;
+      setTimeout(applyWhenReady, 100);
+    })();
 
-    // Dark flat continents — load country GeoJSON and render as filled polygons
-    fetch('https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_110m_admin_0_countries.geojson')
-      .then(r => r.json())
-      .then(data => {
-        globe
-          .polygonsData(data.features)
-          .polygonCapColor(() => 'rgba(36,46,82,1)')      // land — slate navy
-          .polygonSideColor(() => 'rgba(18,24,48,1)')     // extruded sides — slightly darker
-          .polygonStrokeColor(() => 'rgba(100,130,180,0.4)') // crisp coastline outlines
-          .polygonAltitude(0.005);                         // sit just above the ocean to avoid z-fighting
-      })
-      .catch(() => { /* leave the flat globe if offline */ });
-
-    // Soft, even lighting — flat shaded look (no harsh highlight on a "satellite" globe)
-    const ambient = new THREE.AmbientLight(0xffffff, 0.85);
-    globe.scene().add(ambient);
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    // Lighting tuned for the marble: a strong key + cool fill so continents
+    // and oceans both read clearly without blowing out highlights.
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
     keyLight.position.set(100, 120, 80);
     globe.scene().add(keyLight);
+    const fillLight = new THREE.DirectionalLight(0x88aaff, 0.4);
+    fillLight.position.set(-80, -40, -60);
+    globe.scene().add(fillLight);
 
     // Initial view — Europe-centric since most flights are there
     globe.pointOfView({ lat: 30, lng: 25, altitude: 2.2 }, 0);
