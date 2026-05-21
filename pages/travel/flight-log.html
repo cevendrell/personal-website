@@ -1959,6 +1959,10 @@
       //    static because dashLength=1 / gap=0 means one dash spans the
       //    entire path — no visible motion. ──
       .pathsData(paths)
+      // Our path objects are wrappers — `points` holds the actual [lat, lon, alt]
+      // tuples. Without this accessor globe.gl treats the wrapper itself as the
+      // points array, finds nothing iterable, and silently draws no line.
+      .pathPoints(d => d.points)
       .pathPointLat(p => p[0])
       .pathPointLng(p => p[1])
       .pathPointAlt(p => p[2])
