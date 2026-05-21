@@ -787,6 +787,20 @@
     /* ── REVEAL ── */
     .wow { opacity: 0; transform: translateY(20px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
     .wow.visible { opacity: 1; transform: translateY(0); }
+    /* ── Mobile sanity (consistent across pages) ── */
+    @media (max-width: 768px) {
+      .container { padding: 7rem 1.5rem 3rem; }
+      .page-header { margin-bottom: 2rem; }
+      .page-header p { font-size: 0.95rem; }
+      .footer-slim {
+        flex-direction: column; text-align: center; gap: 0.85rem;
+      }
+    }
+    @media (max-width: 420px) {
+      .container { padding: 6.5rem 1rem 2.5rem; }
+      .page-header h1 { font-size: clamp(2rem, 8vw, 2.6rem); }
+    }
+
   </style>
 </head>
 <body>
