@@ -234,25 +234,16 @@
       display: flex; flex-direction: column; align-items: center;
       padding-top: 1.5rem; gap: 0.5rem; position: relative; z-index: 1;
     }
-    .vol-dot {
-      width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
-      background: var(--c-photo);
-      box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(139,84,56,0.25);
-    }
-    .vol-entry.is-recent .vol-dot {
-      background: var(--c-photo);
-      box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(139,84,56,0.35), 0 0 16px rgba(139,84,56,0.3);
-    }
-    /* Year pill — background masks the line, creating a clean break */
+    /* Year badge — large, brown bg, white text, masks the line behind it */
     .vol-year {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.63rem; letter-spacing: 0.1em;
-      color: var(--mute); text-align: center;
-      background: var(--bg);
-      border: 1px solid var(--line);
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em;
+      color: #fff; text-align: center;
+      background: var(--c-photo);
       border-radius: 999px;
-      padding: 0.2rem 0.55rem;
+      padding: 0.35rem 0.85rem;
       position: relative; z-index: 2;
+      box-shadow: 0 2px 12px rgba(139,84,56,0.35);
     }
 
     /* Text body */
@@ -441,7 +432,7 @@
                  alt="Typhoon Relief, Philippines 2024" loading="lazy">
           </div>
           <div class="vol-center">
-            <div class="vol-dot"></div>
+  
             <span class="vol-year">2024</span>
           </div>
           <div class="vol-body">
@@ -450,7 +441,7 @@
             <span class="vol-date">November 2024</span>
             <p>Back with All Hands and Hearts, this time helping families and schools recover from successive typhoons in the southern Philippines. Building back stronger — disaster-resilient schools designed to weather the next storm.</p>
             <div class="vol-links">
-              <a class="vol-link-btn" href="https://www.allhandsandhearts.org/programs/philippines-typhoon-response/" target="_blank" rel="noopener">Learn more &nbsp;↗</a>
+              <a class="vol-link-btn" href="https://allhandsandhearts.org/our-work/programs/back-to-school-philippines" target="_blank" rel="noopener">Learn more &nbsp;↗</a>
             </div>
           </div>
         </article>
@@ -463,11 +454,11 @@
             <span class="vol-date">April 2023</span>
             <p>My first deployment with All Hands and Hearts — rebuilding earthquake-damaged schools in rural Nepal. Hard work at altitude, an extraordinary team, and lifelong friendships with locals and volunteers from across the world.</p>
             <div class="vol-links">
-              <a class="vol-link-btn" href="https://www.allhandsandhearts.org/programs/nepal-earthquake-relief/" target="_blank" rel="noopener">Learn more &nbsp;↗</a>
+              <a class="vol-link-btn" href="https://allhandsandhearts.org/our-work/programs/nepal-earthquake-relief" target="_blank" rel="noopener">Learn more &nbsp;↗</a>
             </div>
           </div>
           <div class="vol-center">
-            <div class="vol-dot"></div>
+  
             <span class="vol-year">2023</span>
           </div>
           <div class="vol-photo">
@@ -483,7 +474,7 @@
                  alt="Nature Conservation, Austria 2016" loading="lazy">
           </div>
           <div class="vol-center">
-            <div class="vol-dot"></div>
+  
             <span class="vol-year">2016</span>
           </div>
           <div class="vol-body">
@@ -503,7 +494,7 @@
             <p>A small town on the Elbe with a long industrial past. Two weeks restoring public spaces alongside German and international volunteers — concrete, paint, sweat, and surprisingly good currywurst.</p>
           </div>
           <div class="vol-center">
-            <div class="vol-dot"></div>
+  
             <span class="vol-year">2015</span>
           </div>
           <div class="vol-photo">
@@ -519,7 +510,7 @@
                  alt="Roman Archaeology, Spain 2011" loading="lazy">
           </div>
           <div class="vol-center">
-            <div class="vol-dot"></div>
+  
             <span class="vol-year">2011</span>
           </div>
           <div class="vol-body">
@@ -539,7 +530,7 @@
             <p>Two weeks excavating medieval ruins in the Catalan Pyrenees as a teenager. My first taste of "volunteering as travel" — sleeping in dorms, eating with the team, and getting my hands dirty under a 12th-century church.</p>
           </div>
           <div class="vol-center">
-            <div class="vol-dot"></div>
+  
             <span class="vol-year">2010</span>
           </div>
           <div class="vol-photo">
