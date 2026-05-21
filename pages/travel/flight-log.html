@@ -1011,7 +1011,7 @@
     <div class="globe-stage">
       <div id="flight-globe"></div>
       <div class="globe-legend">
-        <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg,#ffe2a8,#fff4d0)"></span> Flight route</div>
+        <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg, rgba(255,204,132,0.3), rgba(255,232,184,0.6), rgba(255,248,224,0.9), #ffffff)"></span> Flight route</div>
         <div class="lg-row"><span class="lg-dot" style="background:#ff3344;box-shadow:0 0 6px #ff3344"></span> Airport visited</div>
       </div>
       <div class="globe-hint">Drag · Scroll to zoom</div>
@@ -1864,20 +1864,21 @@
       airportVisits[b] = (airportVisits[b] || 0) + 1;
     });
 
-    // Pale blue for all routes — uniform palette, no rainbow
-    // Tuned to read well on the Blue Marble texture: warm cream base so the
-    // line never fades into the oceans, and a bright punchy glow for the
-    // animated streak that travels along it.
-    const ARC_BASE = 'rgba(255, 226, 168, 0.45)';   // soft amber/cream — always-on
-    const ARC_GLOW = '#fff4d0';                      // bright cream — animated overlay
+    // ── Flight-line colour palette (warm cream on Blue Marble) ──
+    // Comet layering: each route renders as a solid background line, plus a
+    // sequence of overlapping animated "head" + tail segments. Together the
+    // overlapping layers fake a gradient — bright at the front, fading behind.
+    const ARC_BASE = 'rgba(255, 226, 168, 0.4)';   // always-on background trace
 
-    // ── Build trapezoidal-profile flight paths ──
-    // Each route is rendered as a great-circle line of waypoints with a flat
-    // cruise altitude in the middle and sharp climb/descent at the endpoints —
-    // resembling a real flight profile (no smooth sinusoidal hump).
-    const CRUISE_ALT  = 0.045;   // cruise altitude (globe radius units)
-    const CLIMB_FRAC  = 0.07;    // first 7% of the journey is the climb
-    const SAMPLES     = 64;      // waypoints per route
+    // ── Build smooth-profile flight paths ──
+    // Each route is a great-circle line of waypoints. Altitude follows a
+    // smoother S-curve into and out of cruise (smootherstep — Perlin's quintic
+    // ease, zero first AND second derivative at the endpoints), so the
+    // transitions read as gentle climbs/descents instead of sharp corners
+    // on a trapezoid.
+    const CRUISE_ALT  = 0.05;    // cruise altitude (globe radius units)
+    const CLIMB_FRAC  = 0.18;    // first 18% of the journey is the climb (gentler arc)
+    const SAMPLES     = 96;      // more waypoints → smoother curve visually
 
     // Great-circle interpolation (spherical linear) between two lat/lon points
     function interpolateGC(lat1, lon1, lat2, lon2, t) {
@@ -1899,24 +1900,38 @@
       return [φ * 180 / Math.PI, λ * 180 / Math.PI];
     }
 
-    // Build the points list for a single route, with trapezoidal altitude profile.
+    // Smootherstep (Perlin): 0→1 with zero slope AND zero curvature at both
+    // ends — joins seamlessly with the flat cruise plateau (no visible corner).
+    const smootherstep = u => u * u * u * (u * (u * 6 - 15) + 10);
+
+    // Build the points list for a single route, with a smooth climb→cruise→descent profile.
     function buildFlightPath(latA, lonA, latB, lonB) {
       const pts = [];
       for (let i = 0; i <= SAMPLES; i++) {
         const t = i / SAMPLES;
         const [lat, lon] = interpolateGC(latA, lonA, latB, lonB, t);
-        // Trapezoidal vertical profile:
-        //   t ∈ [0, CLIMB_FRAC]            → linear climb 0 → 1
-        //   t ∈ [CLIMB_FRAC, 1−CLIMB_FRAC] → cruise = 1
-        //   t ∈ [1−CLIMB_FRAC, 1]          → linear descent 1 → 0
         let frac;
-        if (t < CLIMB_FRAC)        frac = t / CLIMB_FRAC;
-        else if (t > 1 - CLIMB_FRAC) frac = (1 - t) / CLIMB_FRAC;
-        else                         frac = 1;
+        if (t < CLIMB_FRAC)            frac = smootherstep(t / CLIMB_FRAC);
+        else if (t > 1 - CLIMB_FRAC)   frac = smootherstep((1 - t) / CLIMB_FRAC);
+        else                            frac = 1;
         pts.push([lat, lon, CRUISE_ALT * frac]);
       }
       return pts;
     }
+
+    // ── Comet layer config ──
+    // 1 solid base + 4 stacked head/tail layers. All comet layers share the
+    // same dashLength + gap cycle (= 1.0 path-length) so they travel at the
+    // same speed; their dashInitialGap differs so they appear strung out
+    // behind the head like the tail of a comet. Each successive layer has a
+    // longer/darker dash → fades from a bright white head into a warm amber
+    // tail. Shared animateTime drives them all together.
+    const COMET_LAYERS = [
+      { mode: 'head',  color: '#ffffff',                     stroke: 2.6, dash: 0.022, offset: 0.00 },
+      { mode: 'tail1', color: 'rgba(255, 248, 224, 0.85)',   stroke: 2.2, dash: 0.030, offset: 0.025 },
+      { mode: 'tail2', color: 'rgba(255, 232, 184, 0.55)',   stroke: 1.8, dash: 0.045, offset: 0.060 },
+      { mode: 'tail3', color: 'rgba(255, 204, 132, 0.30)',   stroke: 1.5, dash: 0.070, offset: 0.110 }
+    ];
 
     const paths = [];
     Object.entries(routeCounts).forEach(([key, count]) => {
@@ -1924,9 +1939,23 @@
       const [latA, lngA] = AIRPORTS[a];
       const [latB, lngB] = AIRPORTS[b];
       const pts = buildFlightPath(latA, lngA, latB, lngB);
-      // Two layers per route: solid base + animated overlay (the "aircraft")
+      // Random per-route phase so different comets aren't synchronised
+      const phase = Math.random();
+      // Solid background line
       paths.push({ points: pts, count, mode: 'solid' });
-      paths.push({ points: pts, count, mode: 'anim' });
+      // Layered comet (head → tail3). `initGap` positions each layer along
+      // the cycle; identical cycle length keeps them moving in lockstep.
+      COMET_LAYERS.forEach(layer => {
+        paths.push({
+          points: pts, count,
+          mode: layer.mode,
+          color: layer.color,
+          stroke: layer.stroke,
+          dashLen: layer.dash,
+          dashGap: 1 - layer.dash,          // total cycle = 1 path-length
+          initGap: (phase + layer.offset) % 1
+        });
+      });
     });
 
     // Airport pins — lollipop style copied from travel-map, in red
@@ -1952,12 +1981,14 @@
       .showAtmosphere(true)
       .atmosphereColor('#a8c8ff')
       .atmosphereAltitude(0.18)
-      // ── Flight paths: solid base + animated overlay, with a trapezoidal
-      //    climb → cruise → descent altitude profile. `pathDashAnimateTime`
-      //    is a per-layer setting (not per-path), so we use a single value
-      //    here. The solid base keeps the same timing but stays visually
-      //    static because dashLength=1 / gap=0 means one dash spans the
-      //    entire path — no visible motion. ──
+      // ── Flight paths: solid background trace + multi-layered comet ──
+      //   * `pathDashAnimateTime` is a per-LAYER (not per-path) setting in
+      //     three-globe, so all comet layers share the same timing here.
+      //   * Solid base uses dashLength=1, gap=0 → one dash spans the whole
+      //     path → no visible motion.
+      //   * Comet layers share cycle = dashLength + gap = 1.0 path-length,
+      //     so they travel at identical speed; their `initGap` differs so
+      //     they stay strung out behind the head as a fading tail.
       .pathsData(paths)
       // Our path objects are wrappers — `points` holds the actual [lat, lon, alt]
       // tuples. Without this accessor globe.gl treats the wrapper itself as the
@@ -1966,12 +1997,12 @@
       .pathPointLat(p => p[0])
       .pathPointLng(p => p[1])
       .pathPointAlt(p => p[2])
-      .pathColor(d => d.mode === 'solid' ? ARC_BASE : ARC_GLOW)
-      .pathStroke(d => d.mode === 'solid' ? 0.6 : 1.3)
-      .pathDashLength(d => d.mode === 'solid' ? 1 : 0.14)
-      .pathDashGap(d => d.mode === 'solid' ? 0 : 4)
-      .pathDashInitialGap(() => Math.random() * 4)
-      .pathDashAnimateTime(4500)
+      .pathColor(d => d.mode === 'solid' ? ARC_BASE : d.color)
+      .pathStroke(d => d.mode === 'solid' ? 1.2 : d.stroke)
+      .pathDashLength(d => d.mode === 'solid' ? 1 : d.dashLen)
+      .pathDashGap(d => d.mode === 'solid' ? 0 : d.dashGap)
+      .pathDashInitialGap(d => d.initGap ?? 0)
+      .pathDashAnimateTime(5500)
       .pathTransitionDuration(0)
       .pathLabel(d => `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:rgba(8,9,14,.92);border:1px solid rgba(106,141,181,.4);padding:.45rem .7rem;border-radius:8px;color:#ececea;letter-spacing:.05em"><b>${d.count}×</b> flight${d.count>1?'s':''}</div>`)
       // ── Lollipop pins (red) ──
