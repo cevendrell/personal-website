@@ -121,14 +121,23 @@
     body.nav-open .hamburger span:nth-child(2) { opacity: 0; }
     body.nav-open .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(4.5px,-4.5px); }
 
-    /* ── PAGE LAYOUT ── */
-    .container { max-width: 1040px; margin: 0 auto; padding: 8rem 2rem 6rem; position: relative; z-index: 2; }
-
-    /* ── HERO ── */
+    /* ── HERO SECTION (dark) ── */
+    .hero-section {
+      position: relative; z-index: 2;
+      background: var(--bg);
+    }
+    .hero-container {
+      max-width: 1040px; margin: 0 auto; padding: 8rem 2rem 5rem;
+    }
     .hero {
       display: grid;
       grid-template-columns: minmax(0,1.1fr) minmax(300px,0.9fr);
-      gap: 3rem; align-items: center; margin-bottom: 6rem;
+      gap: 3rem; align-items: center;
+    }
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c-photo); margin-bottom: 0.75rem; display: block;
     }
     .hero-text h1 {
       font-size: clamp(2.6rem,4vw,4rem); font-weight: 800;
@@ -146,28 +155,42 @@
     }
     .hero-text .button:hover { transform: translateY(-2px); background: #d68a5a; box-shadow: 0 14px 36px -6px rgba(200,120,74,0.55); }
     .hero-image { width: 100%; border-radius: 1.25rem; overflow: hidden; box-shadow: 0 30px 90px rgba(0,0,0,0.4); }
-    .hero-image img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .hero-image img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
 
-    /* ── TIMELINE SECTION HEADER ── */
-    .vol-timeline-section { margin-top: 0; }
-    .section-eyebrow {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--c-photo); margin-bottom: 0.6rem; display: block;
+    /* ── EXPERIENCES SECTION (light) ── */
+    .vol-experiences-section {
+      position: relative; z-index: 2;
+      background: #f7f5f1;
+      padding: 5rem 0 6rem;
+
+      /* override CSS vars for light context */
+      --text:         #1c1a18;
+      --dim:          #5a5754;
+      --mute:         #9b9893;
+      --accent:       #7a5c3c;
+      --accent-bright:#1c1a18;
+      --bg:           #f7f5f1;
+      --bg-elevated:  #edeae4;
+      --line:         rgba(0,0,0,0.1);
+      --line-strong:  rgba(0,0,0,0.18);
+      --surface:      rgba(0,0,0,0.03);
+      --c-photo:      #8b5438;
     }
+    .experiences-inner {
+      max-width: 1040px; margin: 0 auto; padding: 0 2rem;
+    }
+
+    /* ── TIMELINE HEADER ── */
     .vol-timeline-section h2 {
       font-size: clamp(1.8rem,3.5vw,2.5rem); font-weight: 800;
-      letter-spacing: -0.03em; color: var(--accent-bright);
+      letter-spacing: -0.03em; color: var(--text);
       margin-bottom: 0.6rem; line-height: 1.1;
     }
     .vol-sub { color: var(--dim); font-size: 0.95rem; max-width: 56ch; margin-bottom: 4rem; }
 
     /* ── ALTERNATING TIMELINE ── */
-    .vol-timeline {
-      position: relative;
-    }
+    .vol-timeline { position: relative; }
 
-    /* Center rail — sits at 50% horizontally */
     .vol-timeline::before {
       content: '';
       position: absolute;
@@ -176,27 +199,28 @@
       width: 2px;
       background: linear-gradient(to bottom,
         transparent 0%,
-        rgba(200,120,74,0.4) 5%,
-        rgba(232,220,196,0.35) 50%,
-        rgba(200,120,74,0.4) 95%,
+        rgba(139,84,56,0.3) 5%,
+        rgba(139,84,56,0.25) 50%,
+        rgba(139,84,56,0.3) 95%,
         transparent 100%);
     }
 
     .vol-entry {
       display: grid;
-      grid-template-columns: 1fr 72px 1fr;
+      grid-template-columns: 1fr 80px 1fr;
+      column-gap: 2rem;
       align-items: start;
       margin-bottom: 5rem;
       position: relative;
     }
     .vol-entry:last-child { margin-bottom: 0; }
 
-    /* Photo — uniform size via aspect-ratio */
+    /* Photo — landscape, no inner padding so no stripe */
     .vol-photo {
-      aspect-ratio: 4/3;
+      aspect-ratio: 16/9;
       overflow: hidden;
       border-radius: var(--radius);
-      border: 1px solid rgba(232,220,196,0.12);
+      border: 1px solid rgba(0,0,0,0.08);
       background: var(--bg-elevated);
     }
     .vol-photo img {
@@ -205,7 +229,7 @@
     }
     .vol-entry:hover .vol-photo img { transform: scale(1.04); }
 
-    /* Center column: dot + year, stacked vertically */
+    /* Center column: dot + year pill */
     .vol-center {
       display: flex; flex-direction: column; align-items: center;
       padding-top: 1.5rem; gap: 0.5rem; position: relative; z-index: 1;
@@ -213,60 +237,61 @@
     .vol-dot {
       width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
       background: var(--c-photo);
-      box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px rgba(200,120,74,0.3), 0 0 18px rgba(200,120,74,0.45);
+      box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(139,84,56,0.25);
     }
     .vol-entry.is-recent .vol-dot {
-      background: var(--accent);
-      box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px rgba(232,220,196,0.3), 0 0 18px rgba(232,220,196,0.45);
+      background: var(--c-photo);
+      box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px rgba(139,84,56,0.35), 0 0 16px rgba(139,84,56,0.3);
     }
+    /* Year pill — background masks the line, creating a clean break */
     .vol-year {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem; letter-spacing: 0.1em;
-      color: var(--accent); opacity: 0.65; text-align: center;
+      font-size: 0.63rem; letter-spacing: 0.1em;
+      color: var(--mute); text-align: center;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.2rem 0.55rem;
+      position: relative; z-index: 2;
     }
 
     /* Text body */
-    .vol-body { display: flex; flex-direction: column; gap: 0.5rem; }
+    .vol-body { display: flex; flex-direction: column; gap: 0.45rem; }
     .vol-body h3 {
-      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;
-      color: var(--accent-bright); line-height: 1.2;
+      font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em;
+      color: var(--text); line-height: 1.2;
     }
-    .vol-meta {
+    .vol-location {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--c-photo);
+      color: var(--c-photo); display: block;
     }
-    .vol-body p { color: var(--dim); font-size: 0.95rem; line-height: 1.7; max-width: 44ch; }
-    .vol-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.25rem; }
-    .vol-org {
-      display: inline-flex; align-items: center; gap: 0.4rem;
+    .vol-date {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--accent); padding: 0.3rem 0.7rem; border-radius: 999px;
-      background: rgba(232,220,196,0.06); border: 1px solid rgba(232,220,196,0.18);
-      transition: background 0.2s, border-color 0.2s;
+      font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--mute); display: block; margin-top: 0.1rem;
     }
-    .vol-org::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--c-photo); }
-    .vol-org:hover { background: rgba(232,220,196,0.1); border-color: rgba(232,220,196,0.3); }
+    .vol-body p { color: var(--dim); font-size: 0.95rem; line-height: 1.7; max-width: 44ch; margin-top: 0.25rem; }
+    .vol-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
     .vol-link-btn {
       display: inline-flex; align-items: center; gap: 0.35rem;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--c-photo); padding: 0.3rem 0.7rem; border-radius: 999px;
-      background: rgba(200,120,74,0.08); border: 1px solid rgba(200,120,74,0.3);
+      color: var(--c-photo); padding: 0.35rem 0.8rem; border-radius: 999px;
+      background: rgba(139,84,56,0.08); border: 1px solid rgba(139,84,56,0.28);
       transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
     .vol-link-btn:hover { background: var(--c-photo); color: #fff; border-color: var(--c-photo); }
 
-    /* ── Odd entries (1st, 3rd, 5th): photo on LEFT, text on RIGHT ── */
-    .vol-entry:nth-child(odd) .vol-photo  { grid-column: 1; padding-right: 2rem; }
+    /* Placement — odd: photo LEFT, body RIGHT */
+    .vol-entry:nth-child(odd) .vol-photo  { grid-column: 1; }
     .vol-entry:nth-child(odd) .vol-center { grid-column: 2; }
-    .vol-entry:nth-child(odd) .vol-body   { grid-column: 3; padding-left: 2rem; }
+    .vol-entry:nth-child(odd) .vol-body   { grid-column: 3; }
 
-    /* ── Even entries (2nd, 4th, 6th): text on LEFT, photo on RIGHT ── */
-    .vol-entry:nth-child(even) .vol-body   { grid-column: 1; padding-right: 2rem; }
+    /* Placement — even: body LEFT, photo RIGHT */
+    .vol-entry:nth-child(even) .vol-body   { grid-column: 1; }
     .vol-entry:nth-child(even) .vol-center { grid-column: 2; }
-    .vol-entry:nth-child(even) .vol-photo  { grid-column: 3; padding-left: 2rem; }
+    .vol-entry:nth-child(even) .vol-photo  { grid-column: 3; }
 
     /* ── REVEAL ── */
     .wow { opacity: 0; transform: translateY(24px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
@@ -288,34 +313,32 @@
       width: 36px; height: 36px; background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      color: var(--mute); transition: all 0.3s;
+      color: rgba(255,255,255,0.4); transition: all 0.3s;
     }
-    .footer-socials li a:hover { background: var(--accent); color: #111; border-color: var(--accent); }
+    .footer-socials li a:hover { background: var(--c-photo); color: #fff; border-color: var(--c-photo); }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .hero { grid-template-columns: 1fr; gap: 2rem; }
     }
     @media (max-width: 700px) {
-      /* Stack timeline: image on top, then text */
       .vol-timeline::before { left: 20px; transform: none; }
       .vol-entry {
-        grid-template-columns: 40px 1fr;
+        grid-template-columns: 44px 1fr;
         grid-template-rows: auto auto;
+        column-gap: 0;
       }
-      /* All entries: center (dot) left, photo full width, body below */
       .vol-entry:nth-child(odd) .vol-center,
       .vol-entry:nth-child(even) .vol-center { grid-column: 1; grid-row: 1; padding-top: 1rem; }
-
       .vol-entry:nth-child(odd) .vol-photo,
       .vol-entry:nth-child(even) .vol-photo  { grid-column: 2; grid-row: 1; padding: 0 0 1rem 1rem; }
-
       .vol-entry:nth-child(odd) .vol-body,
       .vol-entry:nth-child(even) .vol-body   { grid-column: 2; grid-row: 2; padding: 0 0 0 1rem; }
     }
     @media (max-width: 480px) {
-      .container { padding: 7rem 1.25rem 4rem; }
+      .hero-container { padding: 7rem 1.25rem 4rem; }
       .hero-text h1 { font-size: 2.4rem; }
+      .experiences-inner { padding: 0 1.25rem; }
       .footer-slim { flex-direction: column; text-align: center; gap: 0.85rem; }
     }
   </style>
@@ -382,144 +405,153 @@
   </button>
 </nav>
 
-<main class="container">
+<!-- ── HERO (dark background) ── -->
+<div class="hero-section">
+  <div class="hero-container">
+    <section class="hero">
+      <div class="hero-text wow">
+        <span class="hero-eyebrow">Travel</span>
+        <h1>Volunteering</h1>
+        <p>Since I was a teenager, I've used volunteering opportunities as a way to help out in ways I'm not used to, meet people from very diverse backgrounds, and lately, as a way to travel and experience countries beyond conventional tourism.</p>
+        <p>For the last two years, I've been volunteering with <strong>All Hands and Hearts</strong>, a disaster relief organisation that works alongside local residents to help families and communities recover by building safe, resilient schools, homes, and community infrastructure.</p>
+        <a class="button" href="https://give.allhandsandhearts.org/fundraiser/5923378" target="_blank" rel="noopener">
+          My Fundraising Page &nbsp;→
+        </a>
+      </div>
+      <div class="hero-image wow d1">
+        <img src="../../media/travel/volunteering/vol-hero.jpg" alt="Volunteering" loading="lazy">
+      </div>
+    </section>
+  </div>
+</div>
 
-  <!-- ── HERO ── -->
-  <section class="hero">
-    <div class="hero-text wow">
-      <h1>Volunteering</h1>
-      <p>Since I was a teenager, I've used volunteering opportunities as a way to help out in ways I'm not used to, meet people from very diverse backgrounds, and lately, as a way to travel and experience countries beyond conventional tourism.</p>
-      <p>For the last two years, I've been volunteering with <strong>All Hands and Hearts</strong>, a disaster relief organisation that works alongside local residents to help families and communities recover by building safe, resilient schools, homes, and community infrastructure.</p>
-      <a class="button" href="https://give.allhandsandhearts.org/fundraiser/5923378" target="_blank" rel="noopener">
-        My Fundraising Page &nbsp;→
-      </a>
-    </div>
-    <div class="hero-image wow d1">
-      <img src="../../media/travel/volunteering/vol-hero.jpg" alt="Volunteering" loading="lazy">
-    </div>
-  </section>
+<!-- ── TIMELINE (light background) ── -->
+<section class="vol-experiences-section">
+  <div class="experiences-inner">
+    <section class="vol-timeline-section">
+      <h2 class="wow">Where I've helped out</h2>
+      <p class="vol-sub wow d1">From medieval ruins in the Pyrenees as a teen, to typhoon recovery in the Philippines. Each project shaped the next.</p>
 
-  <!-- ── TIMELINE ── -->
-  <section class="vol-timeline-section">
-    <span class="section-eyebrow wow">Experiences</span>
-    <h2 class="wow d1">Where I've helped out</h2>
-    <p class="vol-sub wow d2">From medieval ruins in the Pyrenees as a teen, to typhoon recovery in the Philippines. Each project shaped the next.</p>
+      <div class="vol-timeline">
 
-    <div class="vol-timeline">
-
-      <!-- 1 — odd → photo LEFT, text RIGHT -->
-      <article class="vol-entry is-recent wow">
-        <div class="vol-photo">
-          <img src="../../media/volunteering/WhatsApp+Image+2024-11-08+at+20.44.20+(1).jpeg.webp"
-               alt="Typhoon Relief, Philippines 2024" loading="lazy">
-        </div>
-        <div class="vol-center">
-          <div class="vol-dot"></div>
-          <span class="vol-year">2024</span>
-        </div>
-        <div class="vol-body">
-          <h3>Typhoon Relief</h3>
-          <p class="vol-meta">Southern Leyte, Philippines · November 2024</p>
-          <p>Back with All Hands and Hearts, this time helping families and schools recover from successive typhoons in the southern Philippines. Building back stronger — disaster-resilient schools designed to weather the next storm.</p>
-          <div class="vol-links">
-            <a class="vol-org" href="https://give.allhandsandhearts.org/fundraiser/5923378" target="_blank" rel="noopener">All Hands and Hearts</a>
+        <!-- 1 — odd → photo LEFT, text RIGHT -->
+        <article class="vol-entry is-recent wow">
+          <div class="vol-photo">
+            <img src="../../media/volunteering/WhatsApp+Image+2024-11-08+at+20.44.20+(1).jpeg.webp"
+                 alt="Typhoon Relief, Philippines 2024" loading="lazy">
           </div>
-        </div>
-      </article>
-
-      <!-- 2 — even → text LEFT, photo RIGHT -->
-      <article class="vol-entry is-recent wow">
-        <div class="vol-body">
-          <h3>Earthquake Relief</h3>
-          <p class="vol-meta">Hariharpur Gadhi, Nepal · April 2023</p>
-          <p>My first deployment with All Hands and Hearts — rebuilding earthquake-damaged schools in rural Nepal. Hard work at altitude, an extraordinary team, and lifelong friendships with locals and volunteers from across the world.</p>
-          <div class="vol-links">
-            <a class="vol-org" href="https://give.allhandsandhearts.org/fundraiser/5923378" target="_blank" rel="noopener">All Hands and Hearts</a>
-            <a class="vol-link-btn" href="https://www.allhandsandhearts.org/programs/nepal-earthquake-relief/" target="_blank" rel="noopener">Nepal project ↗</a>
+          <div class="vol-center">
+            <div class="vol-dot"></div>
+            <span class="vol-year">2024</span>
           </div>
-        </div>
-        <div class="vol-center">
-          <div class="vol-dot"></div>
-          <span class="vol-year">2023</span>
-        </div>
-        <div class="vol-photo">
-          <img src="../../media/volunteering/Hariharpur+Ghadi.jpg.webp"
-               alt="Earthquake Relief, Nepal 2023" loading="lazy">
-        </div>
-      </article>
+          <div class="vol-body">
+            <h3>Typhoon Relief</h3>
+            <span class="vol-location">Southern Leyte, Philippines</span>
+            <span class="vol-date">November 2024</span>
+            <p>Back with All Hands and Hearts, this time helping families and schools recover from successive typhoons in the southern Philippines. Building back stronger — disaster-resilient schools designed to weather the next storm.</p>
+            <div class="vol-links">
+              <a class="vol-link-btn" href="https://www.allhandsandhearts.org/programs/philippines-typhoon-response/" target="_blank" rel="noopener">Learn more &nbsp;↗</a>
+            </div>
+          </div>
+        </article>
 
-      <!-- 3 — odd → photo LEFT, text RIGHT -->
-      <article class="vol-entry wow">
-        <div class="vol-photo">
-          <img src="../../media/volunteering/Hainburg+an+der+Donau.jpg.webp"
-               alt="Nature Conservation, Austria 2016" loading="lazy">
-        </div>
-        <div class="vol-center">
-          <div class="vol-dot"></div>
-          <span class="vol-year">2016</span>
-        </div>
-        <div class="vol-body">
-          <h3>Nature Conservation</h3>
-          <p class="vol-meta">Eckartsau, Austria · July 2016</p>
-          <p>Conservation work in the floodplain forests east of Vienna — clearing invasive species, maintaining trails, and protecting one of Central Europe's last large wetland ecosystems.</p>
-        </div>
-      </article>
+        <!-- 2 — even → text LEFT, photo RIGHT -->
+        <article class="vol-entry is-recent wow">
+          <div class="vol-body">
+            <h3>Earthquake Relief</h3>
+            <span class="vol-location">Hariharpur Gadhi, Nepal</span>
+            <span class="vol-date">April 2023</span>
+            <p>My first deployment with All Hands and Hearts — rebuilding earthquake-damaged schools in rural Nepal. Hard work at altitude, an extraordinary team, and lifelong friendships with locals and volunteers from across the world.</p>
+            <div class="vol-links">
+              <a class="vol-link-btn" href="https://www.allhandsandhearts.org/programs/nepal-earthquake-relief/" target="_blank" rel="noopener">Learn more &nbsp;↗</a>
+            </div>
+          </div>
+          <div class="vol-center">
+            <div class="vol-dot"></div>
+            <span class="vol-year">2023</span>
+          </div>
+          <div class="vol-photo">
+            <img src="../../media/volunteering/Hariharpur+Ghadi.jpg.webp"
+                 alt="Earthquake Relief, Nepal 2023" loading="lazy">
+          </div>
+        </article>
 
-      <!-- 4 — even → text LEFT, photo RIGHT -->
-      <article class="vol-entry wow">
-        <div class="vol-body">
-          <h3>Urban Restoration</h3>
-          <p class="vol-meta">Prettin, Germany · July 2015</p>
-          <p>A small town on the Elbe with a long industrial past. Two weeks restoring public spaces alongside German and international volunteers — concrete, paint, sweat, and surprisingly good currywurst.</p>
-        </div>
-        <div class="vol-center">
-          <div class="vol-dot"></div>
-          <span class="vol-year">2015</span>
-        </div>
-        <div class="vol-photo">
-          <img src="../../media/volunteering/220317_Kooperationsprojekt_Visionen_f-r_die_Lichtenburg_erfolgreich_gestartet.jpg.webp"
-               alt="Urban Restoration, Germany 2015" loading="lazy">
-        </div>
-      </article>
+        <!-- 3 — odd → photo LEFT, text RIGHT -->
+        <article class="vol-entry wow">
+          <div class="vol-photo">
+            <img src="../../media/volunteering/Hainburg+an+der+Donau.jpg.webp"
+                 alt="Nature Conservation, Austria 2016" loading="lazy">
+          </div>
+          <div class="vol-center">
+            <div class="vol-dot"></div>
+            <span class="vol-year">2016</span>
+          </div>
+          <div class="vol-body">
+            <h3>Nature Conservation</h3>
+            <span class="vol-location">Eckartsau, Austria</span>
+            <span class="vol-date">July 2016</span>
+            <p>Conservation work in the floodplain forests east of Vienna — clearing invasive species, maintaining trails, and protecting one of Central Europe's last large wetland ecosystems.</p>
+          </div>
+        </article>
 
-      <!-- 5 — odd → photo LEFT, text RIGHT -->
-      <article class="vol-entry wow">
-        <div class="vol-photo">
-          <img src="../../media/volunteering/Ruta_del_patrimoni_cultural._Cabrera_de_Mar-0999_1.jpg.webp"
-               alt="Roman Archaeology, Spain 2011" loading="lazy">
-        </div>
-        <div class="vol-center">
-          <div class="vol-dot"></div>
-          <span class="vol-year">2011</span>
-        </div>
-        <div class="vol-body">
-          <h3>Roman Archaeology</h3>
-          <p class="vol-meta">Cabrera de Mar, Spain · July 2011</p>
-          <p>The following summer, a Roman-era dig on the Mediterranean coast — uncovering pottery, mosaics, and the bones of a 2,000-year-old wine industry that turned out to be one of the largest of Hispania Citerior.</p>
-        </div>
-      </article>
+        <!-- 4 — even → text LEFT, photo RIGHT -->
+        <article class="vol-entry wow">
+          <div class="vol-body">
+            <h3>Urban Restoration</h3>
+            <span class="vol-location">Prettin, Germany</span>
+            <span class="vol-date">July 2015</span>
+            <p>A small town on the Elbe with a long industrial past. Two weeks restoring public spaces alongside German and international volunteers — concrete, paint, sweat, and surprisingly good currywurst.</p>
+          </div>
+          <div class="vol-center">
+            <div class="vol-dot"></div>
+            <span class="vol-year">2015</span>
+          </div>
+          <div class="vol-photo">
+            <img src="../../media/volunteering/220317_Kooperationsprojekt_Visionen_f-r_die_Lichtenburg_erfolgreich_gestartet.jpg.webp"
+                 alt="Urban Restoration, Germany 2015" loading="lazy">
+          </div>
+        </article>
 
-      <!-- 6 — even → text LEFT, photo RIGHT -->
-      <article class="vol-entry wow">
-        <div class="vol-body">
-          <h3>Medieval Archaeology</h3>
-          <p class="vol-meta">Guardiola de Berguedà, Spain · July 2010</p>
-          <p>Two weeks excavating medieval ruins in the Catalan Pyrenees as a teenager. My first taste of "volunteering as travel" — sleeping in dorms, eating with the team, and getting my hands dirty under a 12th-century church.</p>
-        </div>
-        <div class="vol-center">
-          <div class="vol-dot"></div>
-          <span class="vol-year">2010</span>
-        </div>
-        <div class="vol-photo">
-          <img src="../../media/volunteering/castell+guardiola.jpg.webp"
-               alt="Medieval Archaeology, Spain 2010" loading="lazy">
-        </div>
-      </article>
+        <!-- 5 — odd → photo LEFT, text RIGHT -->
+        <article class="vol-entry wow">
+          <div class="vol-photo">
+            <img src="../../media/volunteering/Ruta_del_patrimoni_cultural._Cabrera_de_Mar-0999_1.jpg.webp"
+                 alt="Roman Archaeology, Spain 2011" loading="lazy">
+          </div>
+          <div class="vol-center">
+            <div class="vol-dot"></div>
+            <span class="vol-year">2011</span>
+          </div>
+          <div class="vol-body">
+            <h3>Roman Archaeology</h3>
+            <span class="vol-location">Cabrera de Mar, Spain</span>
+            <span class="vol-date">July 2011</span>
+            <p>The following summer, a Roman-era dig on the Mediterranean coast — uncovering pottery, mosaics, and the bones of a 2,000-year-old wine industry that turned out to be one of the largest of Hispania Citerior.</p>
+          </div>
+        </article>
 
-    </div>
-  </section>
+        <!-- 6 — even → text LEFT, photo RIGHT -->
+        <article class="vol-entry wow">
+          <div class="vol-body">
+            <h3>Medieval Archaeology</h3>
+            <span class="vol-location">Guardiola de Berguedà, Spain</span>
+            <span class="vol-date">July 2010</span>
+            <p>Two weeks excavating medieval ruins in the Catalan Pyrenees as a teenager. My first taste of "volunteering as travel" — sleeping in dorms, eating with the team, and getting my hands dirty under a 12th-century church.</p>
+          </div>
+          <div class="vol-center">
+            <div class="vol-dot"></div>
+            <span class="vol-year">2010</span>
+          </div>
+          <div class="vol-photo">
+            <img src="../../media/volunteering/castell+guardiola.jpg.webp"
+                 alt="Medieval Archaeology, Spain 2010" loading="lazy">
+          </div>
+        </article>
 
-</main>
+      </div>
+    </section>
+  </div>
+</section>
 
 <footer>
   <div class="footer-slim">
