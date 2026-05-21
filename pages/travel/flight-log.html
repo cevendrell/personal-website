@@ -126,6 +126,21 @@
     }
     .hs-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; color: var(--c-travel); text-transform: uppercase; margin-top: 0.3rem; }
     .hs-lbl { font-size: 0.78rem; color: var(--mute); margin-top: 0.3rem; line-height: 1.3; }
+    /* ── STATS + GLOBE side-by-side row ── */
+    .stats-globe-row {
+      display: flex; gap: 2.5rem; align-items: flex-start; margin-bottom: 4rem;
+    }
+    .sgr-left { flex: 0 0 300px; }
+    .sgr-right { flex: 1; min-width: 0; }
+    .sgr-left .hero-stats {
+      grid-template-columns: repeat(2, 1fr);
+      margin-bottom: 0;
+    }
+    @media (max-width: 1000px) {
+      .stats-globe-row { flex-direction: column; }
+      .sgr-left { flex: none; width: 100%; }
+      .sgr-left .hero-stats { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (max-width: 900px) { .hero-stats { grid-template-columns: repeat(3, 1fr); gap: 1.5rem 1rem; } }
     @media (max-width: 480px) { .hero-stats { grid-template-columns: repeat(2, 1fr); padding: 1.5rem; } }
 
@@ -671,11 +686,12 @@
     @keyframes hintPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
     .globe-hint.fade { opacity: 0; }
     .globe-legend {
-      position: absolute; top: 1rem; right: 1rem; z-index: 5;
-      display: flex; flex-direction: column; gap: 0.45rem;
+      display: flex; flex-direction: row; gap: 1.25rem;
+      align-items: center;
+      margin-top: 0.75rem;
+      padding: 0.6rem 0.9rem;
       background: rgba(8,9,14,0.65); backdrop-filter: blur(12px);
-      border: 1px solid var(--line); border-radius: 12px;
-      padding: 0.8rem 0.95rem;
+      border: 1px solid var(--line); border-radius: 10px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--text-dim);
@@ -873,54 +889,54 @@
     <p>176 flights logged since 2000 — every boarding pass, every aircraft type, every airport. Tracked on FlightRadar24 and mirrored here. Below: live ADS-B feed from my receiver in Aarhus, plus the full lifetime ledger.</p>
   </div>
 
-  <!-- ══ HERO STATS ══ -->
-  <div class="hero-stats wow">
-    <div class="hs-cell">
-      <div class="hs-num" data-target="176">0</div>
-      <div class="hs-unit">flights</div>
-      <div class="hs-lbl">Logged since 2000</div>
+  <!-- ══ STATS + GLOBE ══ -->
+  <div class="stats-globe-row wow">
+    <div class="sgr-left">
+      <div class="hero-stats">
+        <div class="hs-cell">
+          <div class="hs-num" data-target="176">0</div>
+          <div class="hs-unit">flights</div>
+          <div class="hs-lbl">Logged since 2000</div>
+        </div>
+        <div class="hs-cell">
+          <div class="hs-num" data-target="491">0</div>
+          <div class="hs-unit">hours airborne</div>
+          <div class="hs-lbl">≈ 20.5 days in the sky</div>
+        </div>
+        <div class="hs-cell">
+          <div class="hs-num" data-target="40">0</div>
+          <div class="hs-unit">countries</div>
+          <div class="hs-lbl">4 continents touched</div>
+        </div>
+        <div class="hs-cell">
+          <div class="hs-num" data-target="71">0</div>
+          <div class="hs-unit">airports</div>
+          <div class="hs-lbl">Unique IATA codes</div>
+        </div>
+        <div class="hs-cell">
+          <div class="hs-num" data-target="43">0</div>
+          <div class="hs-unit">airlines</div>
+          <div class="hs-lbl">From flag-carriers to LCCs</div>
+        </div>
+        <div class="hs-cell">
+          <div class="hs-num" data-target="36">0</div>
+          <div class="hs-unit">aircraft types</div>
+          <div class="hs-lbl">A380s to Twin Otters</div>
+        </div>
+      </div>
     </div>
-    <div class="hs-cell">
-      <div class="hs-num" data-target="491">0</div>
-      <div class="hs-unit">hours airborne</div>
-      <div class="hs-lbl">≈ 20.5 days in the sky</div>
-    </div>
-    <div class="hs-cell">
-      <div class="hs-num" data-target="40">0</div>
-      <div class="hs-unit">countries</div>
-      <div class="hs-lbl">4 continents touched</div>
-    </div>
-    <div class="hs-cell">
-      <div class="hs-num" data-target="71">0</div>
-      <div class="hs-unit">airports</div>
-      <div class="hs-lbl">Unique IATA codes</div>
-    </div>
-    <div class="hs-cell">
-      <div class="hs-num" data-target="43">0</div>
-      <div class="hs-unit">airlines</div>
-      <div class="hs-lbl">From flag-carriers to LCCs</div>
-    </div>
-    <div class="hs-cell">
-      <div class="hs-num" data-target="36">0</div>
-      <div class="hs-unit">aircraft types</div>
-      <div class="hs-lbl">A380s to Twin Otters</div>
-    </div>
-  </div>
-
-  <!-- ══ GLOBE — flight routes ══ -->
-  <section class="section wow">
-    <div class="section-eyebrow">Worldview</div>
-    <h2>Routes around the world</h2>
-    <div class="globe-stage">
-      <div id="flight-globe"></div>
+    <div class="sgr-right">
+      <div class="globe-stage">
+        <div id="flight-globe"></div>
+        <div class="globe-hint">Drag · Scroll to zoom</div>
+        <div class="globe-loading" id="globeLoading"><div class="spinner"></div><p>Initialising globe…</p></div>
+      </div>
       <div class="globe-legend">
         <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg, rgba(255,204,132,0.3), rgba(255,232,184,0.6), rgba(255,248,224,0.9), #ffffff)"></span> Flight route</div>
         <div class="lg-row"><span class="lg-dot" style="background:#ff3344;box-shadow:0 0 6px #ff3344"></span> Airport visited</div>
       </div>
-      <div class="globe-hint">Drag · Scroll to zoom</div>
-      <div class="globe-loading" id="globeLoading"><div class="spinner"></div><p>Initialising globe…</p></div>
     </div>
-  </section>
+  </div>
 
   <!-- ══ TOP BREAKDOWN ══ -->
   <section class="section wow">
@@ -1894,6 +1910,21 @@
     const CLIMB_FRAC  = 0.18;    // first 18% of the journey is the climb (gentler arc)
     const SAMPLES     = 96;      // more waypoints → smoother curve visually
 
+    // Speed constant: animTime scales linearly with great-circle angle so every
+    // comet travels at the same angular speed regardless of route length.
+    const GC_SPEED_MS = 11000; // ms per radian of arc
+    const MIN_ANIM_MS = 2800;  // floor so very short hops still look clean
+
+    function gcAngleRad(latA, lonA, latB, lonB) {
+      const toRad = d => d * Math.PI / 180;
+      const φ1 = toRad(latA), φ2 = toRad(latB);
+      const λ1 = toRad(lonA), λ2 = toRad(lonB);
+      const Δφ = φ2 - φ1, Δλ = λ2 - λ1;
+      return 2 * Math.asin(Math.sqrt(
+        Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2
+      ));
+    }
+
     // Great-circle interpolation (spherical linear) between two lat/lon points
     function interpolateGC(lat1, lon1, lat2, lon2, t) {
       const toRad = d => d * Math.PI / 180;
@@ -1940,12 +1971,24 @@
     // behind the head like the tail of a comet. Each successive layer has a
     // longer/darker dash → fades from a bright white head into a warm amber
     // tail. Shared animateTime drives them all together.
-    const COMET_LAYERS = [
-      { mode: 'head',  color: '#ffffff',                     stroke: 2.6, dash: 0.022, offset:  0.000 },
-      { mode: 'tail1', color: 'rgba(255, 248, 224, 0.85)',   stroke: 2.2, dash: 0.030, offset: -0.025 },
-      { mode: 'tail2', color: 'rgba(255, 232, 184, 0.55)',   stroke: 1.8, dash: 0.045, offset: -0.060 },
-      { mode: 'tail3', color: 'rgba(255, 204, 132, 0.30)',   stroke: 1.5, dash: 0.070, offset: -0.110 }
-    ];
+    // 14-layer smooth comet — values interpolated so there are no visible
+    // "bands"; opacity uses a squared ease so the fade is gentle near the head
+    // and accelerates toward the tail end.
+    const N_COMET = 14;
+    const COMET_LAYERS = Array.from({ length: N_COMET }, (_, i) => {
+      const t = i / (N_COMET - 1);            // 0 = head … 1 = tail tip
+      const ease = t * t * (3 - 2 * t);       // smoothstep opacity decay
+      const opacity = Math.max(0, 1 - ease);
+      const g = Math.round(255 - t * 80);     // 255 → 175
+      const b = Math.round(255 - t * 185);    // 255 → 70
+      return {
+        mode:   i === 0 ? 'head' : `tail${i}`,
+        color:  i === 0 ? '#ffffff' : `rgba(255,${g},${b},${opacity.toFixed(3)})`,
+        stroke: 2.8 - t * 1.9,                // 2.8 → 0.9
+        dash:   0.016 + t * 0.040,            // 0.016 → 0.056
+        offset: -(t * 0.20)                   // 0 → −0.20
+      };
+    });
 
     const paths = [];
     Object.entries(routeCounts).forEach(([key, count]) => {
@@ -1953,21 +1996,23 @@
       const [latA, lngA] = AIRPORTS[a];
       const [latB, lngB] = AIRPORTS[b];
       const pts = buildFlightPath(latA, lngA, latB, lngB);
+      const animTime = Math.max(MIN_ANIM_MS, GC_SPEED_MS * gcAngleRad(latA, lngA, latB, lngB));
+      const strokeScale = Math.pow(count, 0.4);
       // Random per-route phase so different comets aren't synchronised
       const phase = Math.random();
       // Solid background line
-      paths.push({ points: pts, count, mode: 'solid' });
-      // Layered comet (head → tail3). `initGap` positions each layer along
-      // the cycle; identical cycle length keeps them moving in lockstep.
+      paths.push({ points: pts, count, mode: 'solid', strokeScale, animTime });
+      // Layered comet — all layers share animTime so they stay in lockstep.
       COMET_LAYERS.forEach(layer => {
         paths.push({
           points: pts, count,
           mode: layer.mode,
           color: layer.color,
-          stroke: layer.stroke,
+          stroke: layer.stroke * strokeScale,
           dashLen: layer.dash,
-          dashGap: 1 - layer.dash,          // total cycle = 1 path-length
-          initGap: ((phase + layer.offset) % 1 + 1) % 1
+          dashGap: 1 - layer.dash,
+          initGap: ((phase + layer.offset) % 1 + 1) % 1,
+          animTime
         });
       });
     });
@@ -2012,11 +2057,11 @@
       .pathPointLng(p => p[1])
       .pathPointAlt(p => p[2])
       .pathColor(d => d.mode === 'solid' ? ARC_BASE : d.color)
-      .pathStroke(d => d.mode === 'solid' ? 1.2 : d.stroke)
+      .pathStroke(d => d.mode === 'solid' ? 1.2 * d.strokeScale : d.stroke)
       .pathDashLength(d => d.mode === 'solid' ? 1 : d.dashLen)
       .pathDashGap(d => d.mode === 'solid' ? 0 : d.dashGap)
       .pathDashInitialGap(d => d.initGap ?? 0)
-      .pathDashAnimateTime(5500)
+      .pathDashAnimateTime(d => d.animTime ?? MIN_ANIM_MS)
       .pathTransitionDuration(0)
       .pathLabel(d => `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:rgba(8,9,14,.92);border:1px solid rgba(106,141,181,.4);padding:.45rem .7rem;border-radius:8px;color:#ececea;letter-spacing:.05em"><b>${d.count}×</b> flight${d.count>1?'s':''}</div>`)
       // ── Lollipop pins (red) ──
