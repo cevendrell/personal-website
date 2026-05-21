@@ -453,26 +453,30 @@
       content: '·'; position: absolute; left: 0.15rem; top: -0.15em;
       color: var(--c-photo); font-size: 1.4em; line-height: 1;
     }
-    .career-tag-row {
-      display: flex; align-items: center; gap: 1.25rem;
-      padding-top: 2rem; border-top: 1px solid var(--line); flex-wrap: wrap;
+    /* ── Company header (sits above the career image) ── */
+    .career-img-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--line);
     }
     .career-company-logo {
-      height: 80px; width: auto; max-width: 360px;
-      object-fit: contain; filter: brightness(0) invert(1);
-      opacity: 0.85;
+      height: 56px; width: auto; max-width: 220px;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      opacity: 0.9;
     }
-    .career-tag-name {
-      font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em;
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-    .career-tag-name::before {
-      content: ''; width: 8px; height: 8px; border-radius: 50%;
-      background: var(--c-photo); box-shadow: 0 0 10px var(--c-photo);
-    }
-    .career-tag-date {
+    .career-company-date {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem; color: var(--mute); margin-left: auto;
+      font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--dim);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .career-company-date::before {
+      content: ''; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--c-photo);
+      box-shadow: 0 0 10px var(--c-photo);
     }
     .career-img-col { position: relative; }
     .career-img-frame {
@@ -738,7 +742,7 @@
       }
       .career-img-frame { aspect-ratio: 16/9; }
       .career-list { grid-template-columns: 1fr; }
-      .career-tag-date { margin-left: 0; }
+      .career-img-header { gap: 0.5rem; }
       .portfolio_row_top, .portfolio_row_bottom { grid-template-columns: 1fr; }
       .portfolio_row_top .portfolio_thumb { height: 240px; }
       .reel-stage { height: 420px; }
@@ -786,7 +790,8 @@
       .portfolio_inner, .testimonial_inner { padding: 0 20px; }
       .career-grid-melan { gap: 40px; }
       .career-img-frame { aspect-ratio: 16/10; }
-      .career-company-logo { height: 56px; }
+      .career-company-logo { height: 44px; }
+      .career-company-date { font-size: 0.72rem; }
       .portfolio_row_top, .portfolio_row_bottom { grid-template-columns: 1fr; }
       .portfolio_row_top .portfolio_thumb { height: 220px; }
     }
@@ -828,7 +833,7 @@
     <li class="nav-item">
       <a href="index.html">Home</a>
       <ul class="dropdown">
-        <li><a href="index.html#career">About me</a></li>
+        <li><a href="index.html#service">About me</a></li>
         <li><a href="pages/about/contact.html">Contact</a></li>
       </ul>
     </li>
@@ -888,7 +893,7 @@
         <p class="home-tagline">Welcome to my <span class="tagline-em">unapologetically diverse</span> site.</p>
         <p class="lead">From Barcelona, living in Denmark for the past 7 years. Senior AI Project Manager at GRUNDFOS, passionate traveller, photographer, and perpetual rabbit-hole explorer.</p>
         <div class="cta-wrap">
-          <a href="#service" class="btn btn-dark">Explore my world &nbsp;→</a>
+          <a href="#service" class="btn btn-dark">About me &nbsp;→</a>
           <a href="pages/about/contact.html" class="btn btn-outline">Get in touch</a>
         </div>
       </div>
@@ -976,9 +981,6 @@
 
             <!-- ─── Experience panel ─── -->
             <div class="career-tab-panel active" id="career-panel-exp" role="tabpanel">
-                <div class="career-tag-row wow d4">
-                  <img src="media/shared/grundfos-logo.png" alt="GRUNDFOS" class="career-company-logo">
-                </div>
                 <ul class="career-timeline">
                   <li class="is-current">
                     <span class="ce-date">2026 - Present</span>
@@ -1038,6 +1040,12 @@
         </div><!-- /career-tab-stack -->
 
         <div class="career-img-col wow d2">
+          <!-- Company logo + tenure sit on top of the photo, framing it as
+               "this is where I've been since 2019". -->
+          <div class="career-img-header">
+            <img src="media/shared/grundfos-logo.png" alt="GRUNDFOS" class="career-company-logo">
+            <span class="career-company-date">2019 – Present</span>
+          </div>
           <div class="career-img-frame">
             <img src="media/home/career.jpg" alt="Career at GRUNDFOS"
                  onerror="this.style.display='none'">
