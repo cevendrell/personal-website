@@ -252,14 +252,14 @@
 
     /* ── CLOSING VIDEO ── */
     .closing-video {
-      margin-top: 1rem;
-      border-radius: 16px;
+      position: relative;
+      width: 100%;
+      height: clamp(420px, 75vh, 720px);
       overflow: hidden;
       background: #000;
-      aspect-ratio: 16/9;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.55);
     }
     .closing-video video {
+      position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover; display: block;
       transform: translate3d(0,0,0);
@@ -490,14 +490,14 @@
       <img src="https://images.squarespace-cdn.com/content/v1/5ec321c2af33de48734cc929/ca914dc2-0179-4932-8225-63291f8238e4/20140228_Trade+151_0046+1.jpg" alt="Northern lights" loading="lazy">
     </div>
   </div>
+</div>
 
-  <!-- Closing video -->
-  <div class="closing-video">
-    <video autoplay muted loop playsinline preload="auto">
-      <source src="../../media/photography/northern-lights.mp4" type="video/mp4">
-      <source src="../../media/photography/northern-lights.mov" type="video/quicktime">
-    </video>
-  </div>
+<!-- Closing video — full width -->
+<div class="closing-video">
+  <video autoplay muted loop playsinline preload="auto">
+    <source src="../../media/photography/northern-lights.mp4" type="video/mp4">
+    <source src="../../media/photography/northern-lights.mov" type="video/quicktime">
+  </video>
 </div>
 
 <footer>

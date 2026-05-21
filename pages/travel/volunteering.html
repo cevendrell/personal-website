@@ -125,15 +125,39 @@
     .hero-section {
       position: relative; z-index: 2;
       background: var(--bg);
+      min-height: 100vh; overflow: hidden;
+      display: flex; align-items: center;
+    }
+    /* Gradient: solid dark left → transparent right (lets image show through on right) */
+    .hero-section::before {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(
+        to right,
+        rgba(8,9,14,1)    0%,
+        rgba(8,9,14,0.98) 40%,
+        rgba(8,9,14,0.72) 60%,
+        rgba(8,9,14,0.1)  80%,
+        rgba(8,9,14,0)    100%
+      );
+    }
+    /* Parallax image layer */
+    .hero-img-wrap {
+      position: absolute; inset: 0;
+      overflow: hidden; pointer-events: none; z-index: 0;
+      will-change: transform;
+    }
+    .hero-img-center {
+      position: absolute; right: 5vw; bottom: 0;
+    }
+    .hero-parallax-img {
+      display: block; height: 90vh; width: auto; max-width: none;
+      user-select: none; object-fit: cover;
     }
     .hero-container {
-      max-width: 1040px; margin: 0 auto; padding: 8rem 2rem 5rem;
+      position: relative; z-index: 2;
+      max-width: 1040px; margin: 0 auto; padding: 8rem 2rem 5rem; width: 100%;
     }
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0,1.1fr) minmax(300px,0.9fr);
-      gap: 3rem; align-items: center;
-    }
+    .hero { max-width: 560px; }
     .hero-eyebrow {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -154,8 +178,6 @@
       box-shadow: 0 10px 28px -6px rgba(200,120,74,0.45);
     }
     .hero-text .button:hover { transform: translateY(-2px); background: #d68a5a; box-shadow: 0 14px 36px -6px rgba(200,120,74,0.55); }
-    .hero-image { width: 100%; border-radius: 1.25rem; overflow: hidden; box-shadow: 0 30px 90px rgba(0,0,0,0.4); }
-    .hero-image img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
 
     /* ── EXPERIENCES SECTION (light) ── */
     .vol-experiences-section {
@@ -309,8 +331,10 @@
     .footer-socials li a:hover { background: var(--c-photo); color: #fff; border-color: var(--c-photo); }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; gap: 2rem; }
+    @media (max-width: 768px) {
+      .hero-img-wrap { will-change: auto; }
+      .hero-img-center { right: -5vw; }
+      .hero-parallax-img { height: 60vh; opacity: 0.35; }
     }
     @media (max-width: 700px) {
       .vol-timeline::before { left: 20px; transform: none; }
@@ -398,8 +422,13 @@
 
 <!-- ── HERO (dark background) ── -->
 <div class="hero-section">
+  <div class="hero-img-wrap" aria-hidden="true">
+    <div class="hero-img-center">
+      <img src="../../media/volunteering/wheelbarrow.png" alt="" class="hero-parallax-img">
+    </div>
+  </div>
   <div class="hero-container">
-    <section class="hero">
+    <div class="hero">
       <div class="hero-text wow">
         <span class="hero-eyebrow">Travel</span>
         <h1>Volunteering</h1>
@@ -409,10 +438,7 @@
           My Fundraising Page &nbsp;→
         </a>
       </div>
-      <div class="hero-image wow d1">
-        <img src="../../media/travel/volunteering/vol-hero.jpg" alt="Volunteering" loading="lazy">
-      </div>
-    </section>
+    </div>
   </div>
 </div>
 
@@ -587,6 +613,23 @@
     window.addEventListener('scroll', () => {
       const total = document.documentElement.scrollHeight - window.innerHeight;
       if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
+    }, { passive: true });
+  }
+
+  /* ── Hero parallax ── */
+  const heroWrap = document.querySelector('.hero-img-wrap');
+  if (heroWrap) {
+    const mq = window.matchMedia('(max-width: 768px)');
+    let rafId = null, lastY = 0;
+    window.addEventListener('scroll', () => {
+      lastY = window.scrollY;
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        if (!mq.matches) {
+          heroWrap.style.transform = 'translateY(' + (lastY * 0.45) + 'px)';
+        }
+        rafId = null;
+      });
     }, { passive: true });
   }
 
