@@ -130,16 +130,12 @@
     .ocean-fx {
       position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
     }
-    /* Caustics: cross-hatched white lines simulating sun through water.
-       JS dims this layer as you descend. */
+    /* Caustics: removed cross-hatch for a cleaner look; keep layer off by default
+       — realistic impression is conveyed via bubbles only. JS may adjust opacity. */
     .caustics {
       position: absolute; inset: 0;
-      opacity: 0.55;
-      background-image:
-        repeating-linear-gradient( 38deg, transparent 0 110px, rgba(255,255,255,0.06) 110px 132px, rgba(255,255,255,0.12) 132px 138px, rgba(255,255,255,0.06) 138px 160px, transparent 160px 260px),
-        repeating-linear-gradient(-44deg, transparent 0 130px, rgba(255,255,255,0.04) 130px 150px, rgba(255,255,255,0.10) 150px 156px, rgba(255,255,255,0.04) 156px 176px, transparent 176px 290px);
-      mix-blend-mode: overlay;
-      animation: causticsDrift 16s ease-in-out infinite alternate;
+      opacity: 0; /* intentionally hidden to avoid criss-cross pattern */
+      pointer-events: none;
       transition: opacity 0.4s linear;
     }
     @keyframes causticsDrift {
@@ -403,6 +399,37 @@
       color: #fff;
       margin-bottom: 0.55rem;
     }
+    /* ── Media gallery (square tiles) ── */
+    .dive-media {
+      max-width: 1140px; margin: 2.5rem auto; padding: 1rem 2rem 3rem; z-index: 2;
+    }
+    .dive-media-grid {
+      display: grid; gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      align-items: stretch;
+    }
+    .dive-tile {
+      position: relative; overflow: hidden; border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+      aspect-ratio: 1 / 1;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+    }
+    .dive-tile img, .dive-tile video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .dive-tile .tile-caption {
+      position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 6px 10px; border-radius: 999px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); color: #fff;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px; justify-content: space-between;
+    }
+    .dive-tile .tile-caption .loc { opacity: 0.95; }
+    .dive-tile .tile-caption .type { opacity: 0.7; font-size: 0.62rem; }
+    .dive-tile .play-icon {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); opacity: 0.92;
+      width: 54px; height: 54px; border-radius: 50%; background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center; pointer-events: none;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.55);
+    }
+    .dive-tile .play-icon svg { width: 20px; height: 20px; fill: #fff; }
     .dive-sub {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
@@ -699,6 +726,12 @@
 
 </main>
 
+<!-- ══════════ DIVE MEDIA GALLERY ══════════ -->
+<section class="dive-media" id="diveMedia">
+  <h2 style="text-align:center;color:#fff;margin-bottom:12px;font-size:1.6rem;font-weight:800">Dive Photos & Videos</h2>
+  <div class="dive-media-grid" id="diveMediaGrid" aria-live="polite"></div>
+</section>
+
 <!-- ══════════ BOTTOM MARKER ══════════ -->
 <section class="dive-bottom">
   <div class="marker">End of log · 40 m</div>
@@ -752,21 +785,25 @@
   }, { passive: true });
 
   /* ── Spawn ambient bubbles ── */
-  (function spawnBubbles() {
+    (function spawnBubbles() {
     const layer = document.getElementById('bubblesLayer');
     if (!layer) return;
-    const N = 26;
+    const N = 40; // more bubbles for a livelier underwater look
     for (let i = 0; i < N; i++) {
       const b = document.createElement('span');
       b.className = 'bubble';
-      const size = 4 + Math.random() * 18;          // 4–22 px
-      const duration = 9 + Math.random() * 14;      // 9–23 s rise
+      // size distribution: many small, a few big
+      const r = Math.random();
+      const size = r < 0.75 ? (4 + Math.random() * 10) : (12 + Math.random() * 38); // 4–14 small, 12–50 big
+      const duration = 8 + Math.random() * 18;      // 8–26 s rise
       const delay = -Math.random() * duration;      // negative so they're mid-flight on load
-      const drift = (Math.random() - 0.5) * 90;     // horizontal drift in px
+      const drift = (Math.random() - 0.5) * 140;    // horizontal drift in px
+      const opacity = 0.35 + Math.random() * 0.5;   // variable sheen
       b.style.setProperty('--s', size + 'px');
       b.style.setProperty('--d', duration + 's');
       b.style.setProperty('--delay', delay + 's');
       b.style.setProperty('--drift', drift + 'px');
+      b.style.opacity = opacity.toFixed(2);
       b.style.left = (Math.random() * 100) + 'vw';
       layer.appendChild(b);
     }
@@ -813,6 +850,112 @@
     update();
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
+  })();
+
+  /* ── Build randomized media gallery from media/Dive/ — limit to 50 items ── */
+  (function buildDiveGallery() {
+    const grid = document.getElementById('diveMediaGrid');
+    if (!grid) return;
+    const MEDIA_DIR = '../../media/Dive/';
+    const files = [
+      "2b97191a-9703-498a-ba86-aacb26fee0bb.JPG",
+      "64469a77-bbeb-4087-9377-c6d055a499d9.JPG",
+      "6fdf1088-c83a-4dc4-9316-f1f28d670c10.JPG",
+      "72f779f9-ca9c-4a6f-bd21-760199ddffe3.JPG",
+      "8bb52a20-236d-4657-a5b2-203f43039dec.JPG",
+      "G0042849.JPG",
+      "GOPR2790.JPG",
+      "GOPR2872.JPG",
+      "GOPR2875.JPG",
+      "GOPR2892.JPG",
+      "GPTempDownload 10.jpg",
+      "GPTempDownload 11.JPG",
+      "GPTempDownload 12.JPG",
+      "GPTempDownload 13.jpg",
+      "GPTempDownload 14.jpg",
+      "GPTempDownload 15.jpg",
+      "GPTempDownload 16.jpg",
+      "GPTempDownload 17.jpg",
+      "GPTempDownload 2.jpg",
+      "GPTempDownload 3.jpg",
+      "GPTempDownload 4.jpg",
+      "GPTempDownload 5.JPG",
+      "GPTempDownload 6.JPG",
+      "GPTempDownload 7.JPG",
+      "GPTempDownload 8.jpg",
+      "GPTempDownload 9.jpg",
+      "GPTempDownload.JPG",
+      "GX010118.mov",
+      "GX010156.mov",
+      "GX010184.mov",
+      "GX010224.mov",
+      "GX010280.MP4",
+      "GX010344.mov",
+      "GX010477.mov",
+      "GX010490.mov",
+      "GX010494.MP4",
+      "GX010530.mov",
+      "GX010531.MP4",
+      "GX010565.MP4",
+      "GX010679.mov",
+      "GX010943.mov",
+      "IMG_4934.HEIC",
+      "IMG_5115.JPG",
+      "IMG_5169.HEIC",
+      "IMG_5245.HEIC",
+      "IMG_5256.HEIC",
+      "IMG_5293.HEIC",
+      "IMG_6187.HEIC",
+      "IMG_7305.HEIC",
+      "IMG_7306.HEIC",
+      "P7200325.JPG",
+      "P7200369.JPG",
+      "P7200380.JPG",
+      "af220118-af02-49ca-b8c0-58815c054cb0.JPG"
+    ];
+
+    // Shuffle
+    for (let i = files.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [files[i], files[j]] = [files[j], files[i]];
+    }
+
+    const limit = 50;
+    const chosen = files.slice(0, Math.min(limit, files.length));
+
+    const guessedLocations = [
+      'Indonesia','Thailand','Malaysia','Cyprus','Grenada','Tanzania','St Lucia','Philippines','Mexico','Belize','Malta','Jordan','Spain','Norway','USA'
+    ];
+
+    chosen.forEach((fn, idx) => {
+      const ext = fn.split('.').pop().toLowerCase();
+      const tile = document.createElement('div');
+      tile.className = 'dive-tile';
+      const src = MEDIA_DIR + encodeURI(fn);
+
+      if (['mp4','mov','m4v','webm','mp4'].includes(ext)) {
+        const v = document.createElement('video');
+        v.src = src; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata';
+        v.setAttribute('playsinline',''); v.setAttribute('muted','');
+        tile.appendChild(v);
+        const play = document.createElement('div'); play.className = 'play-icon';
+        play.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v18l15-9z"></path></svg>';
+        tile.appendChild(play);
+        // play on hover
+        tile.addEventListener('mouseenter', () => { v.play().catch(()=>{}); });
+        tile.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+      } else {
+        const img = document.createElement('img');
+        img.src = src; img.loading = 'lazy'; img.alt = 'Dive photo';
+        tile.appendChild(img);
+      }
+
+      const cap = document.createElement('div'); cap.className = 'tile-caption';
+      const loc = guessedLocations[idx % guessedLocations.length];
+      cap.innerHTML = `<span class="loc">${loc}</span><span class="type">${ext.toUpperCase()}</span>`;
+      tile.appendChild(cap);
+      grid.appendChild(tile);
+    });
   })();
 </script>
 

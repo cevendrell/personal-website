@@ -880,9 +880,9 @@
           <div class="hs-lbl">≈ 20.5 days in the sky</div>
         </div>
         <div class="hs-cell">
-          <div class="hs-num" data-target="40">0</div>
-          <div class="hs-unit">countries</div>
-          <div class="hs-lbl">4 continents touched</div>
+          <div class="hs-num" id="hsWindowPct" data-target="0">0</div>
+          <div class="hs-unit">% window seats</div>
+          <div class="hs-lbl" id="hsWindowLbl">of flights with recorded seats</div>
         </div>
         <div class="hs-cell">
           <div class="hs-num" data-target="71">0</div>
@@ -1223,6 +1223,23 @@
 
   /* ── Load flight data ── */
   const FLIGHTS = JSON.parse(document.getElementById('flightData').textContent);
+
+  // ── Compute percentage of window seats (from seat letters in the data) ──
+  (function computeWindowPct() {
+    const el = document.getElementById('hsWindowPct');
+    const lbl = document.getElementById('hsWindowLbl');
+    if (!el) return;
+    const rowsWithSeat = FLIGHTS.filter(f => f.seat && String(f.seat).trim() !== '');
+    const windowLetters = new Set(['A','K']);
+    const windowCount = rowsWithSeat.reduce((acc, f) => {
+      const m = String(f.seat).trim().toUpperCase().match(/[A-Z]$/);
+      return acc + (m && windowLetters.has(m[0]) ? 1 : 0);
+    }, 0);
+    const total = rowsWithSeat.length || 1;
+    const pct = Math.round(windowCount / total * 100);
+    el.dataset.target = pct;
+    if (lbl) lbl.textContent = `${windowCount} / ${total} flights have A/K (window) seats`;
+  })();
 
   /* ── Compute breakdowns ── */
   function topN(arr, key, n) {
