@@ -1230,7 +1230,7 @@
     const lbl = document.getElementById('hsWindowLbl');
     if (!el) return;
     const rowsWithSeat = FLIGHTS.filter(f => f.seat && String(f.seat).trim() !== '');
-    const windowLetters = new Set(['A','K']);
+    const windowLetters = new Set(['A','F','K']);
     const windowCount = rowsWithSeat.reduce((acc, f) => {
       const m = String(f.seat).trim().toUpperCase().match(/[A-Z]$/);
       return acc + (m && windowLetters.has(m[0]) ? 1 : 0);
@@ -1238,7 +1238,7 @@
     const total = rowsWithSeat.length || 1;
     const pct = Math.round(windowCount / total * 100);
     el.dataset.target = pct;
-    if (lbl) lbl.textContent = `${windowCount} / ${total} flights have A/K (window) seats`;
+    if (lbl) lbl.textContent = `${windowCount} / ${total} flights have A/F/K (window) seats`;
   })();
 
   /* ── Compute breakdowns ── */
