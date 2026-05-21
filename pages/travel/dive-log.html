@@ -857,6 +857,7 @@
     const grid = document.getElementById('diveMediaGrid');
     if (!grid) return;
     const MEDIA_DIR = '../../media/Dive/';
+    // Only include files that are present in the repo to avoid 404s
     const files = [
       "2b97191a-9703-498a-ba86-aacb26fee0bb.JPG",
       "64469a77-bbeb-4087-9377-c6d055a499d9.JPG",
@@ -885,18 +886,11 @@
       "GPTempDownload 8.jpg",
       "GPTempDownload 9.jpg",
       "GPTempDownload.JPG",
-      "GX010118.mov",
-      "GX010156.mov",
       "GX010184.mov",
       "GX010224.mov",
-      "GX010280.MP4",
-      "GX010344.mov",
       "GX010477.mov",
       "GX010490.mov",
-      "GX010494.MP4",
-      "GX010530.mov",
       "GX010531.MP4",
-      "GX010565.MP4",
       "GX010679.mov",
       "GX010943.mov",
       "IMG_4934.HEIC",
