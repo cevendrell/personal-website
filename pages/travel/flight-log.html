@@ -96,53 +96,33 @@
     .page-header h1 { font-size: clamp(2.4rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.75rem; }
     .page-header p { font-size: 1rem; color: var(--text-dim); line-height: 1.8; }
 
-    /* ── HERO STATS — big-number grid at top ── */
+    /* ── HERO STATS — bare numbers, single column ── */
     .hero-stats {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 1rem;
-      margin-bottom: 4rem;
-      padding: 2rem 2.25rem;
-      background: linear-gradient(135deg, rgba(12,16,40,0.6), rgba(8,9,14,0.4));
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      position: relative;
-      overflow: hidden;
+      grid-template-columns: 1fr;
+      gap: 1.6rem;
     }
-    .hero-stats::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 0% 0%, rgba(106,141,181,0.08), transparent 50%),
-                  radial-gradient(circle at 100% 100%, rgba(200,120,74,0.06), transparent 50%);
-      pointer-events: none;
-    }
-    .hs-cell { position: relative; z-index: 1; padding: 0.25rem 0; }
+    .hs-cell { padding: 0; }
     .hs-num {
-      font-size: clamp(1.6rem, 2.6vw, 2.6rem); font-weight: 800; letter-spacing: -0.04em;
-      line-height: 1; color: var(--text);
+      font-size: clamp(1.8rem, 2.8vw, 2.8rem); font-weight: 800; letter-spacing: -0.04em;
+      line-height: 1;
       background: linear-gradient(135deg, var(--accent), var(--c-travel));
       -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
     .hs-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; color: var(--c-travel); text-transform: uppercase; margin-top: 0.3rem; }
-    .hs-lbl { font-size: 0.78rem; color: var(--mute); margin-top: 0.3rem; line-height: 1.3; }
+    .hs-lbl { font-size: 0.78rem; color: var(--mute); margin-top: 0.25rem; line-height: 1.3; }
     /* ── STATS + GLOBE side-by-side row ── */
     .stats-globe-row {
-      display: flex; gap: 2.5rem; align-items: flex-start; margin-bottom: 4rem;
+      display: flex; gap: 3rem; align-items: center; margin-bottom: 4rem;
     }
-    .sgr-left { flex: 0 0 300px; }
+    .sgr-left { flex: 0 0 190px; }
     .sgr-right { flex: 1; min-width: 0; }
-    .sgr-left .hero-stats {
-      grid-template-columns: repeat(2, 1fr);
-      margin-bottom: 0;
-    }
-    @media (max-width: 1000px) {
-      .stats-globe-row { flex-direction: column; }
+    @media (max-width: 900px) {
+      .stats-globe-row { flex-direction: column; align-items: flex-start; gap: 2rem; }
       .sgr-left { flex: none; width: 100%; }
-      .sgr-left .hero-stats { grid-template-columns: repeat(3, 1fr); }
+      .hero-stats { grid-template-columns: repeat(3, 1fr); gap: 1.25rem 2rem; }
     }
-    @media (max-width: 900px) { .hero-stats { grid-template-columns: repeat(3, 1fr); gap: 1.5rem 1rem; } }
-    @media (max-width: 480px) { .hero-stats { grid-template-columns: repeat(2, 1fr); padding: 1.5rem; } }
+    @media (max-width: 480px) { .hero-stats { grid-template-columns: repeat(2, 1fr); } }
 
     /* ── SECTION SHELL ── */
     .section {
@@ -686,12 +666,8 @@
     @keyframes hintPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
     .globe-hint.fade { opacity: 0; }
     .globe-legend {
-      display: flex; flex-direction: row; gap: 1.25rem;
-      align-items: center;
-      margin-top: 0.75rem;
-      padding: 0.6rem 0.9rem;
-      background: rgba(8,9,14,0.65); backdrop-filter: blur(12px);
-      border: 1px solid var(--line); border-radius: 10px;
+      position: absolute; top: 1rem; right: 1rem; z-index: 5;
+      display: flex; flex-direction: column; gap: 0.45rem;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--text-dim);
@@ -883,7 +859,7 @@
 </nav>
 
 <div class="container">
-  <div class="page-eyebrow mono">Travel · Aviation</div>
+  <div class="page-eyebrow mono">Travel</div>
   <div class="page-header">
     <h1>Flight Log</h1>
     <p>176 flights logged since 2000 — every boarding pass, every aircraft type, every airport. Tracked on FlightRadar24 and mirrored here. Below: live ADS-B feed from my receiver in Aarhus, plus the full lifetime ledger.</p>
@@ -928,12 +904,12 @@
     <div class="sgr-right">
       <div class="globe-stage">
         <div id="flight-globe"></div>
+        <div class="globe-legend">
+          <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg, rgba(255,204,132,0.3), rgba(255,232,184,0.6), rgba(255,248,224,0.9), #ffffff)"></span> Flight route</div>
+          <div class="lg-row"><span class="lg-dot" style="background:#ff3344;box-shadow:0 0 6px #ff3344"></span> Airport visited</div>
+        </div>
         <div class="globe-hint">Drag · Scroll to zoom</div>
         <div class="globe-loading" id="globeLoading"><div class="spinner"></div><p>Initialising globe…</p></div>
-      </div>
-      <div class="globe-legend">
-        <div class="lg-row"><span class="lg-swatch" style="background:linear-gradient(90deg, rgba(255,204,132,0.3), rgba(255,232,184,0.6), rgba(255,248,224,0.9), #ffffff)"></span> Flight route</div>
-        <div class="lg-row"><span class="lg-dot" style="background:#ff3344;box-shadow:0 0 6px #ff3344"></span> Airport visited</div>
       </div>
     </div>
   </div>
