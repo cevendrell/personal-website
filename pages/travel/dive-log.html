@@ -44,18 +44,18 @@
          Long vertical gradient spanning the entire document. The body element
          grows to the height of its content, so this gradient stretches across
          the full page — scrolling visually becomes descending through water. */
+      /* extended surface → deeper seabed gradient; shallower max depth changed to 20m
+         The bottom is darker to allow an ocean-bed visual. */
       background:
         linear-gradient(to bottom,
-          #6fdcec  0%,             /* tropical surface */
-          #4cc3df  6%,
-          #2ea7c8  14%,
-          #1a8aae  24%,
-          #136d92  36%,
-          #0c5377  48%,
-          #093f5e  60%,
-          #062f4a  72%,
-          #042036  84%,
-          #02141f 100%              /* abyss */
+          #8feff4  0%,
+          #6fdcec  6%,
+          #4cc3df  14%,
+          #2ea7c8  26%,
+          #1a8aae  42%,
+          #0c5377  62%,
+          #062f4a  82%,
+          #02141f 100%
         );
       background-attachment: scroll;
     }
@@ -331,7 +331,7 @@
     /* Photo placeholder — gradient hue derived from --depth */
     .dive-photo {
       position: relative;
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 1 / 1;
       border-radius: var(--radius-lg);
       overflow: hidden;
       box-shadow:
@@ -343,6 +343,11 @@
       transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
     }
     .dive-card:hover .dive-photo { transform: translateY(-4px) scale(1.01); }
+
+    .dive-photo img,
+    .dive-photo video {
+      width: 100%; height: 100%; display: block; object-fit: cover;
+    }
 
     /* Subtle inner caustic shimmer */
     .dive-photo::before {
@@ -591,10 +596,10 @@
 <aside class="depth-meter" aria-hidden="true">
   <div class="dm-rail">
     <span class="dm-tick" style="top: 0%">0 m</span>
-    <span class="dm-tick" style="top: 25%">10 m</span>
-    <span class="dm-tick" style="top: 50%">20 m</span>
-    <span class="dm-tick" style="top: 75%">30 m</span>
-    <span class="dm-tick" style="top: 100%">40 m</span>
+    <span class="dm-tick" style="top: 25%">5 m</span>
+    <span class="dm-tick" style="top: 50%">10 m</span>
+    <span class="dm-tick" style="top: 75%">15 m</span>
+    <span class="dm-tick" style="top: 100%">20 m</span>
     <div class="dm-needle" id="dmNeedle" style="top: 0%"></div>
   </div>
   <div class="dm-readout"><strong id="dmValue">0</strong>m · depth</div>
@@ -618,123 +623,14 @@
      placeholder `<div class="dive-photo">…</div>` block with an `<img>`
      when you have a real photo. -->
 <main class="dive-stream" id="diveStream">
-
-  <!-- 6 m — INDONESIA, 2022 -->
-  <article class="dive-card" data-side="left" style="--depth: 6;">
-    <div class="dive-photo">
-      <span class="depth-badge">6 m</span>
-      <span class="placeholder-icon">🐠</span>
-      <span class="placeholder-hint">photo · indonesia</span>
-    </div>
-    <div class="dive-info">
-      <div class="dive-meta"><span>2022</span><span class="dot"></span><span>06 m</span></div>
-      <h2>Indonesia</h2>
-      <p class="dive-sub">Bali · Gili Islands · Komodo</p>
-      <p class="dive-note">Tropical reefs at near-zero depth — anthias swarms, butterflyfish, and the occasional reef tip drifting just at the edge of visibility.</p>
-    </div>
-  </article>
-
-  <!-- 12 m — THAILAND, 2022 -->
-  <article class="dive-card" data-side="right" style="--depth: 12;">
-    <div class="dive-photo">
-      <span class="depth-badge">12 m</span>
-      <span class="placeholder-icon">🪸</span>
-      <span class="placeholder-hint">photo · thailand</span>
-    </div>
-    <div class="dive-info">
-      <div class="dive-meta"><span>12 m</span><span class="dot"></span><span>2022</span></div>
-      <h2>Thailand</h2>
-      <p class="dive-sub">Phi Phi · Krabi · Andaman Sea</p>
-      <p class="dive-note">Limestone pinnacles dressed in soft corals, with leopard sharks resting on the sandy bottoms. Some of the clearest water of the trip.</p>
-    </div>
-  </article>
-
-  <!-- 18 m — ST LUCIA, 2024 -->
-  <article class="dive-card" data-side="left" style="--depth: 18;">
-    <div class="dive-photo">
-      <span class="depth-badge">18 m</span>
-      <span class="placeholder-icon">🐢</span>
-      <span class="placeholder-hint">photo · st lucia</span>
-    </div>
-    <div class="dive-info">
-      <div class="dive-meta"><span>2024</span><span class="dot"></span><span>18 m</span></div>
-      <h2>St Lucia</h2>
-      <p class="dive-sub">Caribbean Sea · Pinnacles</p>
-      <p class="dive-note">Volcanic pinnacles rising from the deep — eagle rays cruising along the walls and hawksbill turtles working the coral heads.</p>
-    </div>
-  </article>
-
-  <!-- 22 m — MALAYSIA, 2022 -->
-  <article class="dive-card" data-side="right" style="--depth: 22;">
-    <div class="dive-photo">
-      <span class="depth-badge">22 m</span>
-      <span class="placeholder-icon">🐡</span>
-      <span class="placeholder-hint">photo · malaysia</span>
-    </div>
-    <div class="dive-info">
-      <div class="dive-meta"><span>22 m</span><span class="dot"></span><span>2022</span></div>
-      <h2>Malaysia</h2>
-      <p class="dive-sub">Kuching · Borneo</p>
-      <p class="dive-note">Drift dives along the Borneo shelf — green turtles, schools of jacks, and the colour palette shifting visibly into deeper blue.</p>
-    </div>
-  </article>
-
-  <!-- 28 m — CYPRUS, 2023 -->
-  <article class="dive-card" data-side="left" style="--depth: 28;">
-    <div class="dive-photo">
-      <span class="depth-badge">28 m</span>
-      <span class="placeholder-icon">🦑</span>
-      <span class="placeholder-hint">photo · cyprus</span>
-    </div>
-    <div class="dive-info">
-      <div class="dive-meta"><span>2023</span><span class="dot"></span><span>28 m</span></div>
-      <h2>Cyprus</h2>
-      <p class="dive-sub">Larnaca · Mediterranean</p>
-      <p class="dive-note">Visibility-for-days dives along the Zenobia wreck — octopus tucked into the cargo holds and Mediterranean groupers patrolling the upper decks.</p>
-    </div>
-  </article>
-
-  <!-- 32 m — GRENADA, 2024 -->
-  <article class="dive-card" data-side="right" style="--depth: 32;">
-    <div class="dive-photo">
-      <span class="depth-badge">32 m</span>
-      <span class="placeholder-icon">🦈</span>
-      <span class="placeholder-hint">photo · grenada</span>
-    </div>
-    <div class="dive-info">
-      <div class="dive-meta"><span>32 m</span><span class="dot"></span><span>2024</span></div>
-      <h2>Grenada</h2>
-      <p class="dive-sub">Caribbean Sea · Bianca C wreck</p>
-      <p class="dive-note">"Titanic of the Caribbean" — 180 m of cruise liner overgrown with coral, patrolled by silvery barracuda and the occasional reef shark in the gloom.</p>
-    </div>
-  </article>
-
-  <!-- 40 m — TANZANIA, 2023 -->
-  <article class="dive-card" data-side="left" style="--depth: 40;">
-    <div class="dive-photo">
-      <span class="depth-badge">40 m</span>
-      <span class="placeholder-icon">🐋</span>
-      <span class="placeholder-hint">photo · tanzania</span>
-    </div>
-    <div class="dive-info">
-      <div class="dive-meta"><span>2023</span><span class="dot"></span><span>40 m</span></div>
-      <h2>Tanzania</h2>
-      <p class="dive-sub">Mnemba Atoll · Zanzibar</p>
-      <p class="dive-note">The deepest of the bunch — drop-offs into open blue, schooling spinner dolphins on the surface intervals and surge-driven drift back into shallower water.</p>
-    </div>
-  </article>
-
+  <!-- Media-driven dive stream: populated dynamically with images/videos -->
 </main>
 
-<!-- ══════════ DIVE MEDIA GALLERY ══════════ -->
-<section class="dive-media" id="diveMedia">
-  <h2 style="text-align:center;color:#fff;margin-bottom:12px;font-size:1.6rem;font-weight:800">Dive Photos & Videos</h2>
-  <div class="dive-media-grid" id="diveMediaGrid" aria-live="polite"></div>
-</section>
+<!-- gallery removed — media now populates the main dive stream -->
 
 <!-- ══════════ BOTTOM MARKER ══════════ -->
 <section class="dive-bottom">
-  <div class="marker">End of log · 40 m</div>
+  <div class="marker">End of log · 20 m</div>
   <br>
   <a href="#">Resurface ↑</a>
 </section>
@@ -830,7 +726,7 @@
     const caustics   = document.getElementById('causticsLayer');
     if (!stream || !needle || !valueEl) return;
 
-    const MAX_DEPTH = 40;
+    const MAX_DEPTH = 20;
     function update() {
       const rect = stream.getBoundingClientRect();
       const top  = rect.top + window.scrollY;
@@ -841,9 +737,9 @@
       const depth = Math.round(t * MAX_DEPTH);
       needle.style.top = (t * 100) + '%';
       valueEl.textContent = depth;
-      // Caustics dim as we go deeper — fully gone by 25 m
+      // Caustics dim as we go deeper — fully gone by ~12 m for stronger effect
       if (caustics) {
-        const causticsOpacity = Math.max(0, 0.55 * (1 - depth / 25));
+        const causticsOpacity = Math.max(0, 0.6 * (1 - depth / 12));
         caustics.style.opacity = causticsOpacity.toFixed(2);
       }
     }
@@ -852,12 +748,11 @@
     window.addEventListener('resize', update);
   })();
 
-  /* ── Build randomized media gallery from media/Dive/ — limit to 50 items ── */
-  (function buildDiveGallery() {
-    const grid = document.getElementById('diveMediaGrid');
-    if (!grid) return;
+  /* ── Build media-driven dive stream from media/Dive/ — limit to 50 items ── */
+  (function buildDiveStream() {
+    const stream = document.getElementById('diveStream');
+    if (!stream) return;
     const MEDIA_DIR = '../../media/Dive/';
-    // Only include files that are present in the repo to avoid 404s
     const files = [
       "2b97191a-9703-498a-ba86-aacb26fee0bb.JPG",
       "64469a77-bbeb-4087-9377-c6d055a499d9.JPG",
@@ -908,12 +803,11 @@
       "af220118-af02-49ca-b8c0-58815c054cb0.JPG"
     ];
 
-    // Shuffle
+    // Shuffle and limit
     for (let i = files.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [files[i], files[j]] = [files[j], files[i]];
     }
-
     const limit = 50;
     const chosen = files.slice(0, Math.min(limit, files.length));
 
@@ -921,34 +815,64 @@
       'Indonesia','Thailand','Malaysia','Cyprus','Grenada','Tanzania','St Lucia','Philippines','Mexico','Belize','Malta','Jordan','Spain','Norway','USA'
     ];
 
+    const MAX_DEPTH_STREAM = 20;
+
+    // IntersectionObserver to autoplay/pause videos when visible
+    const vidObserver = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        const v = en.target.querySelector('video');
+        if (!v) return;
+        if (en.isIntersecting) { v.play().catch(()=>{}); } else { v.pause(); }
+      });
+    }, { threshold: 0.5 });
+
     chosen.forEach((fn, idx) => {
       const ext = fn.split('.').pop().toLowerCase();
-      const tile = document.createElement('div');
-      tile.className = 'dive-tile';
-      const src = MEDIA_DIR + encodeURI(fn);
+      const depth = Math.round((idx / Math.max(1, chosen.length - 1)) * MAX_DEPTH_STREAM);
+      const side = (idx % 2 === 0) ? 'left' : 'right';
 
+      const article = document.createElement('article');
+      article.className = 'dive-card';
+      article.setAttribute('data-side', side);
+      article.style.setProperty('--depth', depth + '');
+
+      const photo = document.createElement('div'); photo.className = 'dive-photo';
+      const badge = document.createElement('span'); badge.className = 'depth-badge'; badge.textContent = depth + ' m';
+      photo.appendChild(badge);
+
+      const src = MEDIA_DIR + encodeURI(fn);
       if (['mp4','mov','m4v','webm','mp4'].includes(ext)) {
         const v = document.createElement('video');
-        v.src = src; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata';
+        v.src = src; v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata';
         v.setAttribute('playsinline',''); v.setAttribute('muted','');
-        tile.appendChild(v);
-        const play = document.createElement('div'); play.className = 'play-icon';
-        play.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v18l15-9z"></path></svg>';
-        tile.appendChild(play);
-        // play on hover
-        tile.addEventListener('mouseenter', () => { v.play().catch(()=>{}); });
-        tile.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+        photo.appendChild(v);
       } else {
         const img = document.createElement('img');
         img.src = src; img.loading = 'lazy'; img.alt = 'Dive photo';
-        tile.appendChild(img);
+        photo.appendChild(img);
       }
 
-      const cap = document.createElement('div'); cap.className = 'tile-caption';
+      const hint = document.createElement('span'); hint.className = 'placeholder-hint';
       const loc = guessedLocations[idx % guessedLocations.length];
-      cap.innerHTML = `<span class="loc">${loc}</span><span class="type">${ext.toUpperCase()}</span>`;
-      tile.appendChild(cap);
-      grid.appendChild(tile);
+      hint.textContent = loc;
+      photo.appendChild(hint);
+
+      const info = document.createElement('div'); info.className = 'dive-info';
+      const meta = document.createElement('div'); meta.className = 'dive-meta';
+      meta.innerHTML = `<span>${depth} m</span><span class="dot"></span><span>unknown</span>`;
+      const h2 = document.createElement('h2'); h2.textContent = loc;
+      const sub = document.createElement('p'); sub.className = 'dive-sub'; sub.textContent = 'Location · guessed';
+      const note = document.createElement('p'); note.className = 'dive-note'; note.textContent = 'Photo or video from the dive stream.';
+      info.appendChild(meta); info.appendChild(h2); info.appendChild(sub); info.appendChild(note);
+
+      article.appendChild(photo);
+      article.appendChild(info);
+
+      stream.appendChild(article);
+
+      // Observe for reveal and video autoplay
+      try { cardObserver.observe(article); } catch(e) {}
+      vidObserver.observe(article);
     });
   })();
 </script>
