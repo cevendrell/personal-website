@@ -907,117 +907,6 @@
     </div>
   </div>
 
-  <!-- ══ LIVE ADS-B FEEDER DASHBOARD ══ -->
-  <div class="adsb-section wow" id="adsbDashboard">
-    <div class="adsb-header">
-      <div class="adsb-status">
-        <span class="status-dot" id="feedDot" data-state="loading"></span>
-        <span class="status-label" id="feedStatus" data-state="loading">Connecting…</span>
-      </div>
-      <div class="adsb-id">
-        <h2>T-EKAC94</h2>
-        <p id="feedSubtitle">tar1090 · readsb · Aarhus, Denmark</p>
-      </div>
-      <span class="adsb-tick" id="feedTick">—</span>
-      <a class="adsb-fr24-link" href="https://my.flightradar24.com/carlosebrahim" target="_blank" rel="noopener">
-        FR24 profile
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      </a>
-    </div>
-
-    <!-- Live KPI bar -->
-    <div class="adsb-toprow">
-      <div class="kpi" data-tone="green">
-        <div class="kpi-num" id="kpiAircraft">—</div>
-        <div class="kpi-lbl">aircraft tracked</div>
-      </div>
-      <div class="kpi" data-tone="blue">
-        <div class="kpi-num" id="kpiWithPos">—</div>
-        <div class="kpi-lbl">with position</div>
-      </div>
-      <div class="kpi" data-tone="amber">
-        <div class="kpi-num" id="kpiMaxRange">—</div>
-        <div class="kpi-lbl">max range now</div>
-      </div>
-      <div class="kpi" data-tone="green">
-        <div class="kpi-num" id="kpiMsgRate">—</div>
-        <div class="kpi-lbl">msgs / sec</div>
-      </div>
-      <div class="kpi" data-tone="blue">
-        <div class="kpi-num" id="kpiSignal">—</div>
-        <div class="kpi-lbl">avg signal (dBFS)</div>
-      </div>
-      <div class="kpi" data-tone="amber">
-        <div class="kpi-num" id="kpiUptime">—</div>
-        <div class="kpi-lbl">uptime</div>
-      </div>
-    </div>
-
-    <!-- Radar + aircraft table -->
-    <div class="adsb-body">
-      <div class="radar-panel">
-        <div class="radar-wrap">
-          <div class="radar-bg">
-            <div class="radar-rings"></div>
-            <div class="radar-cross"></div>
-            <div class="radar-sweep"></div>
-            <span class="radar-card n">N</span>
-            <span class="radar-card s">S</span>
-            <span class="radar-card e">E</span>
-            <span class="radar-card w">W</span>
-            <svg class="radar-svg" id="radarSvg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
-              <!-- range ring labels drawn by JS -->
-              <g id="radarRingLabels"></g>
-              <!-- aircraft drawn by JS -->
-              <g id="radarAircraft"></g>
-            </svg>
-            <div class="radar-center" title="Receiver"></div>
-          </div>
-        </div>
-        <p class="radar-meta">
-          range: <b id="radarRange">300 km</b> · rings every <b id="radarRingStep">75 km</b>
-        </p>
-        <div class="alt-legend">
-          <span class="alt-key">Altitude (ft)</span>
-          <span class="alt-row"><span class="alt-sw" style="background:#ff4444;color:#ff4444"></span> &lt;5k</span>
-          <span class="alt-row"><span class="alt-sw" style="background:#ff8c1a;color:#ff8c1a"></span> 5–10k</span>
-          <span class="alt-row"><span class="alt-sw" style="background:#ffd633;color:#ffd633"></span> 10–20k</span>
-          <span class="alt-row"><span class="alt-sw" style="background:#66cc44;color:#66cc44"></span> 20–30k</span>
-          <span class="alt-row"><span class="alt-sw" style="background:#33cccc;color:#33cccc"></span> 30–40k</span>
-          <span class="alt-row"><span class="alt-sw" style="background:#4488ff;color:#4488ff"></span> &gt;40k</span>
-        </div>
-      </div>
-
-      <div class="aap-panel">
-        <div class="aap-header">
-          <h3>Live aircraft</h3>
-          <span class="aap-meta"><strong id="aapMeta">—</strong> visible · sorted by distance</span>
-        </div>
-        <div class="aap-scroll">
-          <table class="aap-table">
-            <thead>
-              <tr>
-                <th>Flight</th>
-                <th>Hex</th>
-                <th>Alt</th>
-                <th>Spd</th>
-                <th>Dist</th>
-                <th>RSSI</th>
-              </tr>
-            </thead>
-            <tbody id="aapBody">
-              <tr><td colspan="6" class="aap-empty">Waiting for first message…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="adsb-foot">
-      <span class="feed-foot-status" id="feedFootMsg">Polling local receiver…</span>
-    </div>
-  </div>
-
   <!-- ══ GLOBE — flight routes ══ -->
   <section class="section wow">
     <div class="section-eyebrow">Worldview</div>
@@ -1149,6 +1038,117 @@
       </div>
     </div>
   </section>
+
+  <!-- ══ LIVE ADS-B FEEDER DASHBOARD ══ -->
+  <div class="adsb-section wow" id="adsbDashboard">
+    <div class="adsb-header">
+      <div class="adsb-status">
+        <span class="status-dot" id="feedDot" data-state="loading"></span>
+        <span class="status-label" id="feedStatus" data-state="loading">Connecting…</span>
+      </div>
+      <div class="adsb-id">
+        <h2>T-EKAC94</h2>
+        <p id="feedSubtitle">tar1090 · readsb · Aarhus, Denmark</p>
+      </div>
+      <span class="adsb-tick" id="feedTick">—</span>
+      <a class="adsb-fr24-link" href="https://my.flightradar24.com/carlosebrahim" target="_blank" rel="noopener">
+        FR24 profile
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+
+    <!-- Live KPI bar -->
+    <div class="adsb-toprow">
+      <div class="kpi" data-tone="green">
+        <div class="kpi-num" id="kpiAircraft">—</div>
+        <div class="kpi-lbl">aircraft tracked</div>
+      </div>
+      <div class="kpi" data-tone="blue">
+        <div class="kpi-num" id="kpiWithPos">—</div>
+        <div class="kpi-lbl">with position</div>
+      </div>
+      <div class="kpi" data-tone="amber">
+        <div class="kpi-num" id="kpiMaxRange">—</div>
+        <div class="kpi-lbl">max range now</div>
+      </div>
+      <div class="kpi" data-tone="green">
+        <div class="kpi-num" id="kpiMsgRate">—</div>
+        <div class="kpi-lbl">msgs / sec</div>
+      </div>
+      <div class="kpi" data-tone="blue">
+        <div class="kpi-num" id="kpiSignal">—</div>
+        <div class="kpi-lbl">avg signal (dBFS)</div>
+      </div>
+      <div class="kpi" data-tone="amber">
+        <div class="kpi-num" id="kpiUptime">—</div>
+        <div class="kpi-lbl">uptime</div>
+      </div>
+    </div>
+
+    <!-- Radar + aircraft table -->
+    <div class="adsb-body">
+      <div class="radar-panel">
+        <div class="radar-wrap">
+          <div class="radar-bg">
+            <div class="radar-rings"></div>
+            <div class="radar-cross"></div>
+            <div class="radar-sweep"></div>
+            <span class="radar-card n">N</span>
+            <span class="radar-card s">S</span>
+            <span class="radar-card e">E</span>
+            <span class="radar-card w">W</span>
+            <svg class="radar-svg" id="radarSvg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+              <!-- range ring labels drawn by JS -->
+              <g id="radarRingLabels"></g>
+              <!-- aircraft drawn by JS -->
+              <g id="radarAircraft"></g>
+            </svg>
+            <div class="radar-center" title="Receiver"></div>
+          </div>
+        </div>
+        <p class="radar-meta">
+          range: <b id="radarRange">300 km</b> · rings every <b id="radarRingStep">75 km</b>
+        </p>
+        <div class="alt-legend">
+          <span class="alt-key">Altitude (ft)</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#ff4444;color:#ff4444"></span> &lt;5k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#ff8c1a;color:#ff8c1a"></span> 5–10k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#ffd633;color:#ffd633"></span> 10–20k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#66cc44;color:#66cc44"></span> 20–30k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#33cccc;color:#33cccc"></span> 30–40k</span>
+          <span class="alt-row"><span class="alt-sw" style="background:#4488ff;color:#4488ff"></span> &gt;40k</span>
+        </div>
+      </div>
+
+      <div class="aap-panel">
+        <div class="aap-header">
+          <h3>Live aircraft</h3>
+          <span class="aap-meta"><strong id="aapMeta">—</strong> visible · sorted by distance</span>
+        </div>
+        <div class="aap-scroll">
+          <table class="aap-table">
+            <thead>
+              <tr>
+                <th>Flight</th>
+                <th>Hex</th>
+                <th>Alt</th>
+                <th>Spd</th>
+                <th>Dist</th>
+                <th>RSSI</th>
+              </tr>
+            </thead>
+            <tbody id="aapBody">
+              <tr><td colspan="6" class="aap-empty">Waiting for first message…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="adsb-foot">
+      <span class="feed-foot-status" id="feedFootMsg">Polling local receiver…</span>
+    </div>
+  </div>
 
 </div>
 
@@ -1890,7 +1890,7 @@
     // ease, zero first AND second derivative at the endpoints), so the
     // transitions read as gentle climbs/descents instead of sharp corners
     // on a trapezoid.
-    const CRUISE_ALT  = 0.05;    // cruise altitude (globe radius units)
+    const CRUISE_ALT  = 0.001674; // cruise altitude (globe radius units) — 35,000 ft / 6371 km
     const CLIMB_FRAC  = 0.18;    // first 18% of the journey is the climb (gentler arc)
     const SAMPLES     = 96;      // more waypoints → smoother curve visually
 
@@ -1941,10 +1941,10 @@
     // longer/darker dash → fades from a bright white head into a warm amber
     // tail. Shared animateTime drives them all together.
     const COMET_LAYERS = [
-      { mode: 'head',  color: '#ffffff',                     stroke: 2.6, dash: 0.022, offset: 0.00 },
-      { mode: 'tail1', color: 'rgba(255, 248, 224, 0.85)',   stroke: 2.2, dash: 0.030, offset: 0.025 },
-      { mode: 'tail2', color: 'rgba(255, 232, 184, 0.55)',   stroke: 1.8, dash: 0.045, offset: 0.060 },
-      { mode: 'tail3', color: 'rgba(255, 204, 132, 0.30)',   stroke: 1.5, dash: 0.070, offset: 0.110 }
+      { mode: 'head',  color: '#ffffff',                     stroke: 2.6, dash: 0.022, offset:  0.000 },
+      { mode: 'tail1', color: 'rgba(255, 248, 224, 0.85)',   stroke: 2.2, dash: 0.030, offset: -0.025 },
+      { mode: 'tail2', color: 'rgba(255, 232, 184, 0.55)',   stroke: 1.8, dash: 0.045, offset: -0.060 },
+      { mode: 'tail3', color: 'rgba(255, 204, 132, 0.30)',   stroke: 1.5, dash: 0.070, offset: -0.110 }
     ];
 
     const paths = [];
@@ -1967,7 +1967,7 @@
           stroke: layer.stroke,
           dashLen: layer.dash,
           dashGap: 1 - layer.dash,          // total cycle = 1 path-length
-          initGap: (phase + layer.offset) % 1
+          initGap: ((phase + layer.offset) % 1 + 1) % 1
         });
       });
     });
