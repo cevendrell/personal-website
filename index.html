@@ -291,47 +291,59 @@
     .pw-tech   { color: var(--c-tech); }       /* slate blue — clearly blue, not near-black */
     .pw-sep { color: var(--cream-dim); font-size: clamp(1.6rem, 3.5vw, 2.8rem); font-weight: 300; align-self: center; line-height: 1; }
 
-    /* Photo tiles */
-    .passion-tiles {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      grid-template-rows: repeat(2, minmax(140px, 1fr));
-      gap: 20px;
-      align-items: stretch;
+    /* Photo tiles — three equal columns, colour overlay matches the word colour */
+    .passion-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .passion-tile {
+      border-radius: 8px; overflow: hidden; position: relative;
+      aspect-ratio: 4/3; display: block; background: var(--surface);
     }
-    .passion-tiles > a:first-child { grid-row: 1 / span 2; }
-    .passion-tile { border-radius: 12px; overflow: hidden; position: relative; display: block; background: var(--surface); box-shadow: 0 18px 40px rgba(0,0,0,0.45); }
     .passion-tile-bg { position: absolute; inset: 0; overflow: hidden; }
-    .passion-tile-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); transform-origin: center; }
-    .passion-tile:hover .passion-tile-bg img { transform: scale(1.08) translateY(-3%); }
+    .passion-tile-bg img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center;
+      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+    .passion-tile:hover .passion-tile-bg img { transform: scale(1.06); }
     .passion-tile-overlay {
-      position: absolute; left: 0; right: 0; bottom: 0;
+      position: absolute; inset: 0;
       display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;
-      padding: 28px 26px; opacity: 0.98; color: #fff;
-      background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(8,9,14,0.55) 45%, rgba(8,9,14,0.85) 100%);
-      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
+      padding: 36px 32px; opacity: 0; transition: opacity 0.4s; text-align: left;
     }
-    .passion-tile--travel .passion-tile-overlay { background: linear-gradient(180deg, rgba(200,120,74,0.03) 0%, rgba(8,9,14,0.55) 45%, rgba(8,9,14,0.85) 100%); }
-    .passion-tile--photo  .passion-tile-overlay { background: linear-gradient(180deg, rgba(8,9,14,0.12) 0%, rgba(8,9,14,0.55) 45%, rgba(8,9,14,0.85) 100%); }
-    .passion-tile--tech   .passion-tile-overlay { background: linear-gradient(180deg, rgba(106,141,181,0.05) 0%, rgba(8,9,14,0.55) 45%, rgba(8,9,14,0.85) 100%); }
-    .passion-tile-overlay .pt-label {
-      display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.85); margin-bottom: 6px;
+    /* Solid colour overlays — same hue as each topic word in the heading above */
+    .passion-tile--travel .passion-tile-overlay { background: rgba(140,68,30,0.92); }   /* amber — matches Travel */
+    .passion-tile--photo  .passion-tile-overlay { background: rgba(20,14,6,0.92); }     /* near-black — matches Photography */
+    .passion-tile--tech   .passion-tile-overlay { background: rgba(50,80,128,0.92); }   /* slate blue — matches Tech */
+    .passion-tile:hover .passion-tile-overlay { opacity: 1; }
+    .passion-tile-overlay .pt-label { display: none; }
+    .passion-tile-overlay .pt-title {
+      font-size: 1.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; margin: 0;
     }
-    .passion-tile-overlay .pt-title { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; margin: 0; }
-    .passion-tile:hover .passion-tile-overlay { transform: translateY(-6px); box-shadow: 0 28px 60px rgba(0,0,0,0.5); }
 
     /* ── CAREER (Melan format) — dark blue ── */
     #career {
       background: var(--bg-alt); padding: 70px 0 100px;
       position: relative; overflow: hidden; z-index: 2;
     }
-    .career-text-col h2 { margin-bottom: 2.25rem; }
     .career-inner {
       max-width: 1140px; margin: 0 auto; padding: 0 30px;
       position: relative; z-index: 1;
     }
-    .career-grid-melan { display: grid; grid-template-columns: 1.1fr 1fr; gap: 80px; align-items: center; }
-    .career-text-col h2 {
+    /* 2-column grid with named areas so the image lines up with the break
+       below the Experience/Education tabs (start of `.career-tab-stack`). */
+    .career-grid-melan {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        "head    ."
+        "stack   image";
+      gap: 0 80px;
+      align-items: start;
+    }
+    .career-head      { grid-area: head; }
+    .career-tab-stack { grid-area: stack; }
+    .career-img-col   { grid-area: image; align-self: start; }
+    .career-head h2 { margin-bottom: 2.25rem; }
+    .career-head h2 {
       font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 800;
       letter-spacing: -0.04em; color: #fff; margin-bottom: 1.25rem; margin-top: 1rem;
     }
@@ -341,7 +353,7 @@
       padding-left: 1.5rem; border-left: 2px solid var(--accent);
       margin: 1.5rem 0 2rem;
     }
-    .career-text-col > p {
+    .career-head > p {
       color: var(--dim); font-size: 0.95rem; line-height: 1.85; margin-bottom: 1.25rem;
     }
     .career-list {
@@ -718,8 +730,14 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 960px) {
-      .career-grid-melan { grid-template-columns: 1fr; gap: 48px; }
-      .career-img-col { order: -1; }
+      .career-grid-melan {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "head"
+          "image"
+          "stack";
+        gap: 32px;
+      }
       .career-img-frame { aspect-ratio: 16/9; }
       .career-list { grid-template-columns: 1fr; }
       .career-tag-date { margin-left: 0; }
@@ -937,7 +955,8 @@
   <section id="career">
     <div class="career-inner">
       <div class="career-grid-melan">
-        <div class="career-text-col">
+        <!-- Head: heading, quote, and tabs — own row at the top of the left column -->
+        <div class="career-head">
           <h2 class="wow d1">Career</h2>
 
           <blockquote class="career-quote wow d2">
@@ -949,9 +968,11 @@
             <button class="career-tab active" data-tab="exp" role="tab" aria-selected="true">Experience</button>
             <button class="career-tab" data-tab="edu" role="tab" aria-selected="false">Education</button>
           </div>
+        </div>
 
-          <!-- Stack wrapper: both panels occupy the same grid cell so the image col never jumps -->
-          <div class="career-tab-stack wow d3">
+        <!-- Stack wrapper: shares a row with the image so the image top aligns
+             with the break below the Experience / Education toggle. -->
+        <div class="career-tab-stack wow d3">
 
             <!-- ─── Experience panel ─── -->
             <div class="career-tab-panel active" id="career-panel-exp" role="tabpanel">
@@ -1014,8 +1035,7 @@
               </ul>
             </div>
 
-          </div><!-- /career-tab-stack -->
-        </div>
+        </div><!-- /career-tab-stack -->
 
         <div class="career-img-col wow d2">
           <div class="career-img-frame">
