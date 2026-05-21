@@ -250,6 +250,21 @@
     @media (max-width: 900px) { .gallery { columns: 2; } }
     @media (max-width: 550px) { .gallery { columns: 1; } }
 
+    /* ── CLOSING VIDEO ── */
+    .closing-video {
+      margin-top: 1rem;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 16/9;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+    }
+    .closing-video video {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transform: translate3d(0,0,0);
+    }
+
     /* ── NAV SOCIALS ── */
     .nav-right { display: flex; align-items: center; gap: 0.9rem; }
     .nav-socials { display: flex; align-items: center; gap: 0.75rem; }
@@ -428,11 +443,10 @@
   </button>
 </nav>
 
-<!-- Full-width video hero header — auroras as moving background for the title -->
+<!-- Full-width video hero — Lystrup Strand -->
 <section class="nl-hero" aria-label="Northern lights">
-  <video autoplay muted loop playsinline preload="auto" poster="../../media/travel/thumbs/Reykjav%C3%ADk.jpg">
-    <source src="../../media/photography/northern-lights.mp4" type="video/mp4">
-    <source src="../../media/photography/northern-lights.mov" type="video/quicktime">
+  <video autoplay muted loop playsinline preload="auto">
+    <source src="../../media/photography/Lystrup Strand 2702.mov" type="video/quicktime">
   </video>
   <div class="nl-hero-inner">
     <h1>Northern Lights</h1>
@@ -446,28 +460,28 @@
       <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b7cd7e10-b873-485f-a4d5-996b9e870666/DSC_9801.JPG" alt="Northern lights" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/cae680b9-345e-4552-9a0b-4c3175a091c0/_CEV0398.JPG" alt="Northern lights" loading="lazy">
-    </div>
-    <div class="gallery-item">
       <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/1f8786a0-1de7-4d34-8f23-cb94fe638f6b/DSC_9729.JPG" alt="Northern lights" loading="lazy">
     </div>
     <div class="gallery-item">
       <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/71b12422-68b6-427b-b37c-40b2e3d5915d/DSC_9825.JPG" alt="Northern lights" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b0d3dc57-7cf1-4b81-8752-2639e32f9e7a/Thingvellir.jpg" alt="Þingvellir" loading="lazy">
+      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/cae680b9-345e-4552-9a0b-4c3175a091c0/_CEV0398.JPG" alt="Northern lights" loading="lazy">
     </div>
     <div class="gallery-item">
       <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/6600ca83-210d-4a90-b46e-87278925e4d3/_CEV0402.JPG" alt="Northern lights" loading="lazy">
     </div>
     <div class="gallery-item">
+      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/b0d3dc57-7cf1-4b81-8752-2639e32f9e7a/Thingvellir.jpg" alt="Þingvellir" loading="lazy">
+    </div>
+    <div class="gallery-item">
       <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/f94533a2-2ce6-4869-8f71-2add54c9470a/DSC_0622-4.jpg" alt="Northern lights" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/3f267e8a-4f80-4fb9-b810-5aaaa9694e08/DSC_7001.JPG" alt="Northern lights" loading="lazy">
+      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/81e61e4e-c9a8-4411-bd15-4d4df7adad82/_CEV0835-2.JPG" alt="Northern lights" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/81e61e4e-c9a8-4411-bd15-4d4df7adad82/_CEV0835-2.JPG" alt="Northern lights" loading="lazy">
+      <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/3f267e8a-4f80-4fb9-b810-5aaaa9694e08/DSC_7001.JPG" alt="Northern lights" loading="lazy">
     </div>
     <div class="gallery-item">
       <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/0d9d696e-a46e-475f-a0a8-5c8dddb17d70/_CEV0388.JPG" alt="Northern lights" loading="lazy">
@@ -475,6 +489,14 @@
     <div class="gallery-item">
       <img src="https://images.squarespace-cdn.com/content/v1/5ec321c2af33de48734cc929/ca914dc2-0179-4932-8225-63291f8238e4/20140228_Trade+151_0046+1.jpg" alt="Northern lights" loading="lazy">
     </div>
+  </div>
+
+  <!-- Closing video -->
+  <div class="closing-video">
+    <video autoplay muted loop playsinline preload="auto">
+      <source src="../../media/photography/northern-lights.mp4" type="video/mp4">
+      <source src="../../media/photography/northern-lights.mov" type="video/quicktime">
+    </video>
   </div>
 </div>
 
