@@ -567,140 +567,138 @@
     .hobbies-inner { max-width: 1140px; margin: 0 auto; padding: 0 30px; }
 
     /* ══════════════════════════════════════════════════════════════════
-       ══ HOBBY HONEYCOMB — Apple-Watch-style omnidirectional grid     ══
-       ══   Drag in any direction; icons closer to viewport centre     ══
-       ══   grow larger, those at the edges shrink and fade.           ══
+       ══ HOBBY REEL — vertical 3D picker cylinder                     ══
+       ══   Hobbies are cards arranged around the surface of an        ══
+       ══   invisible cylinder. Drag / scroll to rotate it; the card   ══
+       ══   facing front is "in focus" and gets the colour glow.       ══
+       ══   Inspired by Vegas slot reels, iOS pickers, vinyl B-sides.  ══
        ══════════════════════════════════════════════════════════════════ */
-    .honeycomb-stage {
-      position: relative;
-      height: 540px; margin-top: 2.5rem;
+    .reel-stage {
+      position: relative; height: 480px; margin-top: 2.5rem;
+      perspective: 1400px; perspective-origin: 50% 50%;
+      cursor: grab; user-select: none; touch-action: none;
+      -webkit-user-select: none;
       overflow: hidden;
-      cursor: grab; user-select: none;
-      touch-action: none; -webkit-user-select: none;
-      border-radius: 24px;
-      mask-image: radial-gradient(ellipse at center, #000 55%, rgba(0,0,0,0.65) 78%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse at center, #000 55%, rgba(0,0,0,0.65) 78%, transparent 100%);
     }
-    .honeycomb-stage:active { cursor: grabbing; }
+    .reel-stage:active { cursor: grabbing; }
 
-    /* Faint hex-pattern background under the orbs */
-    .honeycomb-stage::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        radial-gradient(ellipse at 50% 50%, rgba(106,141,181,0.06) 0%, transparent 55%),
-        radial-gradient(ellipse at 50% 50%, rgba(232,220,196,0.04) 0%, transparent 35%);
-      pointer-events: none;
+    /* Soft top/bottom vignette so cards rotating away fade out instead of clipping */
+    .reel-stage::before, .reel-stage::after {
+      content: ''; position: absolute; left: 0; right: 0; height: 32%;
+      pointer-events: none; z-index: 4;
     }
-
-    /* Centre pulse */
-    .honeycomb-stage::after {
-      content: '';
-      position: absolute; top: 50%; left: 50%; width: 6px; height: 6px;
-      border-radius: 50%; background: rgba(232,220,196,0.6);
-      transform: translate(-50%,-50%);
-      box-shadow:
-        0 0 0 14px rgba(232,220,196,0.04),
-        0 0 0 32px rgba(232,220,196,0.015),
-        0 0 24px rgba(232,220,196,0.5);
-      animation: pulseDot 3s ease-in-out infinite;
-      pointer-events: none; z-index: 1;
+    .reel-stage::before {
+      top: 0;
+      background: linear-gradient(to bottom, var(--bg) 0%, rgba(8,9,14,0.85) 30%, transparent 100%);
     }
-    @keyframes pulseDot {
-      0%,100% { box-shadow: 0 0 0 14px rgba(232,220,196,0.04), 0 0 0 32px rgba(232,220,196,0.015), 0 0 24px rgba(232,220,196,0.5); }
-      50%      { box-shadow: 0 0 0 18px rgba(232,220,196,0.03), 0 0 0 42px rgba(232,220,196,0.01),  0 0 36px rgba(232,220,196,0.62); }
+    .reel-stage::after {
+      bottom: 0;
+      background: linear-gradient(to top, var(--navy) 0%, rgba(5,6,15,0.85) 30%, transparent 100%);
     }
 
-    .honeycomb-grid {
+    /* The two horizontal rails that bracket the focused card */
+    .reel-rails {
       position: absolute; top: 50%; left: 50%;
-      width: 0; height: 0;
+      width: min(360px, 86%); height: 84px;
+      transform: translate(-50%, -50%);
+      border-top:    1px solid rgba(232,220,196,0.18);
+      border-bottom: 1px solid rgba(232,220,196,0.18);
+      pointer-events: none; z-index: 3;
+    }
+    .reel-rails::before, .reel-rails::after {
+      content: ''; position: absolute; width: 14px; height: 14px;
+      border: 1px solid var(--accent); border-radius: 50%;
+      background: rgba(232,220,196,0.1);
+      box-shadow: 0 0 14px rgba(232,220,196,0.3);
+    }
+    .reel-rails::before { left: -7px; top: 50%; transform: translateY(-50%); }
+    .reel-rails::after  { right: -7px; top: 50%; transform: translateY(-50%); }
+
+    .reel-scene {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      transform-style: preserve-3d;
+    }
+
+    .reel-cylinder {
+      position: relative;
+      width: min(340px, 80vw); height: 72px;
+      transform-style: preserve-3d;
+      transform: rotateX(0deg);
       will-change: transform;
     }
 
-    /* ── Hex orbs ── */
-    .hex-orb {
-      position: absolute; left: 0; top: 0;
-      width: 112px; height: 112px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem;
+    .reel-card {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.9rem; padding: 0 1.5rem;
+      border-radius: 16px;
       background:
-        radial-gradient(circle at 36% 30%, rgba(255,255,255,0.22) 0%,  rgba(255,255,255,0.06) 42%, transparent 62%),
-        radial-gradient(circle at 60% 78%, rgba(255,255,255,0.04) 0%,  transparent 55%),
-        radial-gradient(circle at 50% 50%, rgba(16,18,36,0.76) 0%,    rgba(5,6,18,0.92) 100%);
-      backdrop-filter: blur(14px) saturate(180%);
-      -webkit-backdrop-filter: blur(14px) saturate(180%);
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.09);
-      border-top: 1px solid rgba(255,255,255,0.28);
+        radial-gradient(ellipse at 36% 22%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 50%, transparent 70%),
+        linear-gradient(135deg, rgba(16,18,36,0.85), rgba(5,6,18,0.94));
+      backdrop-filter: blur(8px) saturate(160%);
+      -webkit-backdrop-filter: blur(8px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top: 1px solid rgba(255,255,255,0.18);
       box-shadow:
-        0 14px 48px rgba(0,0,0,0.55),
-        0 2px 0  rgba(255,255,255,0.07) inset,
-        0 -4px 8px rgba(0,0,0,0.45) inset;
-      will-change: transform, opacity;
-      transition: border-color 0.3s, box-shadow 0.3s;
-      cursor: pointer; outline: none;
-      padding: 0; font-family: inherit;
+        0 8px 24px rgba(0,0,0,0.5),
+        0 1px 0 rgba(255,255,255,0.06) inset;
+      backface-visibility: hidden;
+      transition: background 0.35s, border-color 0.35s;
+      cursor: pointer;
+      font-family: inherit;
     }
-    .hex-orb:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(232,220,196,0.4), 0 14px 48px rgba(0,0,0,0.55); }
-    .hex-orb .orb-icon {
-      font-size: 1.75rem;
-      filter: grayscale(0.25) drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+    .reel-card .card-icon {
+      font-size: 1.65rem;
+      filter: grayscale(0.3) drop-shadow(0 1px 2px rgba(0,0,0,0.6));
       transition: filter 0.3s, transform 0.3s;
     }
-    .hex-orb .orb-label {
-      font-size: 0.66rem; font-weight: 500; color: rgba(168,169,175,0.85);
-      letter-spacing: 0.03em; text-align: center; white-space: nowrap;
-      transition: color 0.3s, opacity 0.3s;
+    .reel-card .card-label {
+      font-size: 1.05rem; font-weight: 500; color: var(--dim);
+      letter-spacing: 0.01em; white-space: nowrap;
+      transition: color 0.3s, letter-spacing 0.3s;
     }
-    /* Focused (closest to viewport centre) orb */
-    .hex-orb.focused {
-      border-color: var(--orb-color, var(--accent));
-      border-top-color: rgba(255,255,255,0.38);
+
+    /* Focused card — the one currently sitting between the rails */
+    .reel-card.focused {
+      background:
+        radial-gradient(ellipse at 36% 22%, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 50%, transparent 70%),
+        linear-gradient(135deg, rgba(22,26,52,0.88), rgba(8,10,28,0.96));
+      border-color: var(--card-color, var(--accent));
+      border-top-color: rgba(255,255,255,0.28);
       box-shadow:
-        0 0 0 1.5px var(--orb-color, var(--accent)) inset,
-        0 28px 80px -12px var(--orb-glow, rgba(232,220,196,0.5)),
-        0 14px 48px rgba(0,0,0,0.55),
-        0 2px 0 rgba(255,255,255,0.10) inset,
-        0 -4px 8px rgba(0,0,0,0.35) inset;
+        0 0 0 1.5px var(--card-color, var(--accent)) inset,
+        0 18px 50px -10px var(--card-glow, rgba(232,220,196,0.5)),
+        0 8px 24px rgba(0,0,0,0.55),
+        0 1px 0 rgba(255,255,255,0.08) inset;
     }
-    .hex-orb.focused .orb-icon {
-      filter: grayscale(0) drop-shadow(0 0 8px var(--orb-color, var(--accent)));
+    .reel-card.focused .card-icon {
+      filter: grayscale(0) drop-shadow(0 0 8px var(--card-color, var(--accent)));
       transform: scale(1.12);
     }
-    .hex-orb.focused .orb-label { color: #fff; font-weight: 600; letter-spacing: 0.05em; }
-    /* Per-colour accent vars */
-    .hex-orb[data-color="travel"] { --orb-color: var(--c-travel); --orb-glow: rgba(106,141,181,0.5); }
-    .hex-orb[data-color="photo"]  { --orb-color: var(--c-photo);  --orb-glow: rgba(200,120,74,0.5);  }
-    .hex-orb[data-color="tech"]   { --orb-color: var(--c-tech);   --orb-glow: rgba(106,141,181,0.5); }
-    .hex-orb[data-color="accent"] { --orb-color: var(--accent);   --orb-glow: rgba(232,220,196,0.45); }
+    .reel-card.focused .card-label {
+      color: #fff; font-weight: 600; letter-spacing: 0.04em;
+    }
 
-    /* Pan hint */
-    .honeycomb-hint {
-      position: absolute; bottom: 0.75rem; left: 50%; transform: translateX(-50%);
+    .reel-card[data-color="travel"] { --card-color: var(--c-travel); --card-glow: rgba(106,141,181,0.55); }
+    .reel-card[data-color="photo"]  { --card-color: var(--c-photo);  --card-glow: rgba(200,120,74,0.55); }
+    .reel-card[data-color="tech"]   { --card-color: var(--c-tech);   --card-glow: rgba(106,141,181,0.55); }
+    .reel-card[data-color="accent"] { --card-color: var(--accent);   --card-glow: rgba(232,220,196,0.5); }
+
+    /* Drag hint */
+    .reel-hint {
+      position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%);
       color: var(--mute); font-size: 0.6rem; letter-spacing: 0.18em;
       font-family: 'JetBrains Mono', monospace; text-transform: uppercase;
       opacity: 0.55; pointer-events: none; z-index: 5;
       transition: opacity 0.4s;
     }
-    .honeycomb-hint::before {
+    .reel-hint::before {
       content: '◆'; margin-right: 0.45rem; color: var(--accent);
       animation: hintBlink 2s ease-in-out infinite;
     }
     @keyframes hintBlink { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
-    .honeycomb-stage.has-panned .honeycomb-hint { opacity: 0; }
-
-    /* "Now focused" pill — shows the centred hobby's name */
-    .honeycomb-now {
-      position: absolute; top: 1rem; left: 50%; transform: translateX(-50%);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--accent);
-      background: rgba(8,9,14,0.55); backdrop-filter: blur(10px);
-      border: 1px solid rgba(232,220,196,0.18);
-      padding: 0.45rem 1rem; border-radius: 999px;
-      pointer-events: none; z-index: 5;
-      transition: opacity 0.25s;
-    }
-    .honeycomb-now span { color: #fff; font-weight: 600; margin-left: 0.45rem; }
+    .reel-stage.has-spun .reel-hint { opacity: 0; }
 
     /* ── FOOTER — slim, copyright + socials only ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
@@ -743,7 +741,7 @@
       .career-tag-date { margin-left: 0; }
       .portfolio_row_top, .portfolio_row_bottom { grid-template-columns: 1fr; }
       .portfolio_row_top .portfolio_thumb { height: 240px; }
-      .honeycomb-stage { height: 460px; }
+      .reel-stage { height: 420px; }
     }
     @media (max-width: 768px) {
       /* ── Hero — stack the headshot ABOVE the text (not faded behind it). ── */
@@ -796,10 +794,12 @@
       .home-thumb h1 { font-size: 2.5rem; }
       .home-tagline { white-space: normal; font-size: 0.88rem; }
       .cta-wrap { flex-direction: column; }
-      .honeycomb-stage { height: 400px; }
-      .hex-orb { width: 90px; height: 90px; }
-      .hex-orb .orb-icon { font-size: 1.4rem; }
-      .hex-orb .orb-label { font-size: 0.62rem; }
+      .reel-stage { height: 380px; }
+      .reel-cylinder { height: 64px; }
+      .reel-rails { width: 88%; height: 76px; }
+      .reel-card { padding: 0 1rem; gap: 0.7rem; border-radius: 14px; }
+      .reel-card .card-icon { font-size: 1.4rem; }
+      .reel-card .card-label { font-size: 0.95rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -1051,15 +1051,23 @@
 </main>
 
 <!-- ══ PODCAST SECTION ══ -->
-<div class="testimonial_area">
-  <div class="testimonial_inner wow">
+<!-- Note: the iframe used to live inside a `.wow` container that starts at
+     opacity:0 and only fades in when scrolled into view. If the scroll-reveal
+     observer didn't fire (e.g. when navigating in via anchor, or on some
+     mobile browsers) the iframe stayed invisible — clicking the play button
+     hit nothing because the iframe wasn't actually displayed. Moved the
+     `.wow` to the *outer* wrapper so the iframe itself is always visible. -->
+<div class="testimonial_area wow">
+  <div class="testimonial_inner">
     <div class="podcast-embed">
       <iframe
-        src="https://open.spotify.com/embed/episode/32KfFpTYIb7LoLDQVJsyww?utm_source=generator"
+        style="border-radius:12px"
+        src="https://open.spotify.com/embed/episode/32KfFpTYIb7LoLDQVJsyww?utm_source=generator&theme=0"
         width="100%" height="152"
-        frameBorder="0" allowfullscreen=""
+        frameborder="0"
+        allowfullscreen=""
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; web-share"
-        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
         title="Spotify · Career Coffee · Grundfos">
       </iframe>
     </div>
@@ -1123,26 +1131,29 @@
   <div class="hobbies-inner">
     <h2 class="melan-h2 wow">Other stuff I love</h2>
 
-    <div class="honeycomb-stage wow d2" id="honeycombStage" style="margin-top:2rem;">
-      <div class="honeycomb-now" aria-live="polite">Now focusing<span id="honeycombNow">—</span></div>
-      <div class="honeycomb-grid" id="honeycombGrid">
-        <!-- Hobby tiles. data-q/data-r are axial-hex coordinates (pointy-top).
-             Add a new tile any time: pick a free (q,r) slot and the JS will lay it out. -->
-        <button class="hex-orb" data-q="0"  data-r="0"  data-color="accent" type="button"><span class="orb-icon">🌌</span><span class="orb-label">Space</span></button>
-        <button class="hex-orb" data-q="1"  data-r="0"  data-color="travel" type="button"><span class="orb-icon">✈</span><span class="orb-label">Aviation</span></button>
-        <button class="hex-orb" data-q="0"  data-r="1"  data-color="tech"   type="button"><span class="orb-icon">🤖</span><span class="orb-label">AI &amp; ML</span></button>
-        <button class="hex-orb" data-q="-1" data-r="1"  data-color="travel" type="button"><span class="orb-icon">🤿</span><span class="orb-label">Scuba Diving</span></button>
-        <button class="hex-orb" data-q="-1" data-r="0"  data-color="photo"  type="button"><span class="orb-icon">🏎</span><span class="orb-label">Formula 1</span></button>
-        <button class="hex-orb" data-q="0"  data-r="-1" data-color="tech"   type="button"><span class="orb-icon">🔭</span><span class="orb-label">Astronomy</span></button>
-        <button class="hex-orb" data-q="1"  data-r="-1" data-color="accent" type="button"><span class="orb-icon">📈</span><span class="orb-label">Investing</span></button>
-        <button class="hex-orb" data-q="2"  data-r="-1" data-color="photo"  type="button"><span class="orb-icon">🖨</span><span class="orb-label">3D Printing</span></button>
-        <button class="hex-orb" data-q="2"  data-r="0"  data-color="travel" type="button"><span class="orb-icon">🏃</span><span class="orb-label">Running</span></button>
-        <button class="hex-orb" data-q="1"  data-r="1"  data-color="accent" type="button"><span class="orb-icon">🚴</span><span class="orb-label">Cycling</span></button>
-        <button class="hex-orb" data-q="-2" data-r="1"  data-color="photo"  type="button"><span class="orb-icon">📚</span><span class="orb-label">Reading</span></button>
-        <button class="hex-orb" data-q="-1" data-r="-1" data-color="accent" type="button"><span class="orb-icon">☕</span><span class="orb-label">Coffee</span></button>
-        <button class="hex-orb" data-q="-2" data-r="0"  data-color="tech"   type="button"><span class="orb-icon">🌊</span><span class="orb-label">Open Water</span></button>
+    <!-- 3-D vertical scroll reel: hobbies are arranged around the surface of
+         an invisible cylinder. Drag or scroll vertically to rotate it; the
+         card sitting between the two horizontal rails is "in focus". -->
+    <div class="reel-stage wow d2" id="reelStage" style="margin-top:2rem;">
+      <div class="reel-rails" aria-hidden="true"></div>
+      <div class="reel-scene">
+        <div class="reel-cylinder" id="reelCylinder">
+          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">✈</span><span class="card-label">Aviation</span></button>
+          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">🏎</span><span class="card-label">Formula 1</span></button>
+          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🔭</span><span class="card-label">Astronomy</span></button>
+          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">🤿</span><span class="card-label">Scuba Diving</span></button>
+          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">📈</span><span class="card-label">Investing</span></button>
+          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">🖨</span><span class="card-label">3D Printing</span></button>
+          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🤖</span><span class="card-label">AI &amp; ML</span></button>
+          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">🌌</span><span class="card-label">Space</span></button>
+          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">🏃</span><span class="card-label">Running</span></button>
+          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">🚴</span><span class="card-label">Cycling</span></button>
+          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">📚</span><span class="card-label">Reading</span></button>
+          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">☕</span><span class="card-label">Coffee</span></button>
+          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🌊</span><span class="card-label">Open Water</span></button>
+        </div>
       </div>
-      <div class="honeycomb-hint">Drag in any direction</div>
+      <div class="reel-hint">Scroll or drag to spin</div>
     </div>
   </div>
 </section>
@@ -1233,146 +1244,113 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.wow').forEach(el => revealObserver.observe(el));
 
-  /* ── Hobby honeycomb (Apple-Watch-style omnidirectional grid) ── */
-  (function initHobbyHoneycomb() {
-    const stage = document.getElementById('honeycombStage');
-    const grid  = document.getElementById('honeycombGrid');
-    const nowEl = document.getElementById('honeycombNow');
-    if (!stage || !grid) return;
+  /* ── Hobby reel (3D vertical picker cylinder) ── */
+  (function initHobbyReel() {
+    const stage    = document.getElementById('reelStage');
+    const cylinder = document.getElementById('reelCylinder');
+    if (!stage || !cylinder) return;
 
-    const orbs = Array.from(grid.querySelectorAll('.hex-orb'));
-    const HEX_SIZE = 80;   // distance from hex centre to neighbour centre (px)
-    const SQRT3    = Math.sqrt(3);
-
-    // Pointy-top hex pixel position from axial (q, r) coordinates
-    function hexToPixel(q, r) {
-      return {
-        x: HEX_SIZE * (SQRT3 * q + SQRT3 / 2 * r),
-        y: HEX_SIZE * (3 / 2 * r)
-      };
+    const cards = Array.from(cylinder.querySelectorAll('.reel-card'));
+    const N = cards.length;
+    const STEP = 360 / N;                 // degrees between adjacent cards
+    // Radius so card faces sit "behind" the cylinder surface at the right
+    // depth. We use the *visible* cylinder height (CSS-controlled) as the
+    // chord length between adjacent cards; the radius then falls out of
+    // basic trig: chord = 2 R sin(STEP/2).
+    function getRadius() {
+      const h = cylinder.getBoundingClientRect().height;
+      return h / (2 * Math.sin((STEP * Math.PI / 180) / 2));
     }
 
-    // Pre-compute each orb's home pixel position
-    const cells = orbs.map(orb => {
-      const q = parseInt(orb.dataset.q, 10);
-      const r = parseInt(orb.dataset.r, 10);
-      const { x, y } = hexToPixel(q, r);
-      return { orb, q, r, x, y, label: orb.querySelector('.orb-label')?.textContent.trim() || '' };
-    });
+    // Place each card at its angular slot around the cylinder.
+    function placeCards() {
+      const R = getRadius();
+      cards.forEach((card, i) => {
+        const a = i * STEP;
+        card.style.transform =
+          `rotateX(${a}deg) translateZ(${R.toFixed(2)}px)`;
+      });
+    }
+    placeCards();
+    window.addEventListener('resize', placeCards);
 
-    // ── Pan state ──
-    let panX = 0, panY = 0;            // current viewport offset (px)
-    let velX = 0, velY = 0;            // pixels per second
-    let targetPanX = 0, targetPanY = 0; // smoothed target
-    let isDragging = false, didPan = false;
-    let lastX = 0, lastY = 0, lastT = 0;
-    let lastFrame = performance.now();
-    let inView = false;
+    // ── State ──
+    let rotation = 0;                     // degrees; positive = scrolling DOWN brings later cards forward
+    let velocity = 0;                     // degrees per second
+    let isDragging = false, didDrag = false;
+    let lastY = 0, lastT = 0, lastFrame = performance.now();
+    let idle = true, idleTO = null, inView = false;
 
-    const io = new IntersectionObserver(([e]) => { inView = e.isIntersecting; }, { threshold: 0.1 });
+    const io = new IntersectionObserver(([e]) => { inView = e.isIntersecting; }, { threshold: 0.05 });
     io.observe(stage);
 
-    // ── Render loop ──
-    function render() {
-      // Update grid transform — orbs are children, so this translates them all.
-      grid.style.transform = `translate(${panX.toFixed(2)}px, ${panY.toFixed(2)}px)`;
+    function applyRotation() {
+      cylinder.style.transform = `rotateX(${(-rotation).toFixed(3)}deg)`;
+      // Mark whichever card is closest to the front (rotation modulo STEP)
+      const norm = ((rotation % 360) + 360) % 360;
+      const focusedIdx = Math.round(norm / STEP) % N;
+      cards.forEach((c, i) => c.classList.toggle('focused', i === focusedIdx));
+    }
+    applyRotation();
 
-      // Per-orb scale & opacity, based on distance from the stage centre
-      // (in pixel space the viewport-centre maps to (−panX, −panY) in grid space).
-      const cx = -panX, cy = -panY;
-      const FOCAL = 220;   // distance at which scale falls below ~0.55
-      const MIN_S = 0.42;
-      let closestIdx = -1, closestD = Infinity;
-
-      for (let i = 0; i < cells.length; i++) {
-        const c = cells[i];
-        const dx = c.x - cx, dy = c.y - cy;
-        const d = Math.hypot(dx, dy);
-        if (d < closestD) { closestD = d; closestIdx = i; }
-        const t = Math.min(1, d / (FOCAL * 1.6));
-        const scale = MIN_S + (1 - MIN_S) * Math.pow(1 - t, 1.6);
-        const opacity = 0.32 + 0.68 * Math.pow(1 - t, 1.4);
-        c.orb.style.transform = `translate(calc(-50% + ${c.x}px), calc(-50% + ${c.y}px)) scale(${scale.toFixed(3)})`;
-        c.orb.style.opacity   = opacity.toFixed(3);
-        c.orb.style.zIndex    = Math.round((1 - t) * 100);
-      }
-
-      // Mark the closest orb as "focused" and update the now-focused pill
-      cells.forEach((c, i) => c.orb.classList.toggle('focused', i === closestIdx));
-      if (nowEl) nowEl.textContent = closestIdx >= 0 ? cells[closestIdx].label : '—';
+    function nearestSnap() {
+      return Math.round(rotation / STEP) * STEP;
     }
 
     function tick(now) {
       const dt = Math.min(0.05, (now - lastFrame) / 1000);
       lastFrame = now;
-
-      if (inView) {
-        if (!isDragging) {
-          // Inertia + magnetic snap toward the nearest hex centre when idle.
-          if (Math.hypot(velX, velY) > 8) {
-            panX += velX * dt;
-            panY += velY * dt;
-            // Exponential decay (5x per second → ~0.007^dt)
-            const decay = Math.pow(0.06, dt);
-            velX *= decay; velY *= decay;
-          } else {
-            // Snap-to-nearest: figure out which cell is closest to viewport
-            // centre and ease the pan toward putting it there.
-            const cx = -panX, cy = -panY;
-            let bestX = 0, bestY = 0, bestD = Infinity;
-            for (const c of cells) {
-              const d = Math.hypot(c.x - cx, c.y - cy);
-              if (d < bestD) { bestD = d; bestX = c.x; bestY = c.y; }
-            }
-            const easing = 1 - Math.pow(0.04, dt);   // smooth, framerate-independent
-            panX += (-bestX - panX) * easing;
-            panY += (-bestY - panY) * easing;
-            velX = velY = 0;
-          }
+      if (inView && !isDragging) {
+        if (Math.abs(velocity) > 8) {
+          rotation += velocity * dt;
+          velocity *= Math.pow(0.04, dt);          // exponential decay
+        } else if (idle) {
+          // Idle auto-rotate — gentle drift, one card every ~3s.
+          rotation += (STEP / 3) * dt;
+        } else {
+          // Magnetic snap to the nearest card slot.
+          const target = nearestSnap();
+          const ease = 1 - Math.pow(0.0008, dt);
+          rotation += (target - rotation) * ease;
+          if (Math.abs(target - rotation) < 0.05) rotation = target;
+          velocity = 0;
         }
-        render();
+        applyRotation();
       }
       requestAnimationFrame(tick);
     }
-    render();
     requestAnimationFrame(tick);
 
-    // ── Pointer / touch handling ──
-    function getXY(e) {
-      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      return { x: e.clientX, y: e.clientY };
+    // ── Pointer / touch ──
+    function getY(e) {
+      if (e.touches && e.touches[0]) return e.touches[0].clientY;
+      return e.clientY;
     }
-
     function onDown(e) {
-      isDragging = true; didPan = false;
-      stage.classList.add('grabbing');
-      const p = getXY(e);
-      lastX = p.x; lastY = p.y; lastT = performance.now();
-      velX = velY = 0;
+      isDragging = true; didDrag = false; idle = false;
+      lastY = getY(e); lastT = performance.now(); velocity = 0;
     }
     function onMove(e) {
       if (!isDragging) return;
-      const p = getXY(e);
-      const dx = p.x - lastX, dy = p.y - lastY;
+      const y = getY(e);
+      const dy = y - lastY;
       const now = performance.now();
       const dt = Math.max(1, now - lastT);
-      lastX = p.x; lastY = p.y; lastT = now;
-      panX += dx;
-      panY += dy;
-      // Track velocity for inertia after release
-      velX = (dx / (dt / 1000)) * 0.85;
-      velY = (dy / (dt / 1000)) * 0.85;
-      if (!didPan && Math.hypot(dx, dy) > 3) {
-        didPan = true;
-        stage.classList.add('has-panned');
+      lastY = y; lastT = now;
+      // 1 pixel of vertical movement → 0.6 deg of cylinder rotation
+      const dDeg = dy * 0.6;
+      rotation += dDeg;
+      velocity = (dDeg / (dt / 1000)) * 0.85;
+      if (!didDrag && Math.abs(dy) > 3) {
+        didDrag = true; stage.classList.add('has-spun');
       }
     }
     function onUp() {
       if (!isDragging) return;
       isDragging = false;
-      stage.classList.remove('grabbing');
+      clearTimeout(idleTO);
+      idleTO = setTimeout(() => { idle = true; }, 4000);
     }
-
     stage.addEventListener('mousedown', onDown);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
@@ -1381,33 +1359,42 @@
     window.addEventListener('touchend', onUp);
     window.addEventListener('touchcancel', onUp);
 
-    // Wheel: pan in both axes (shift converts vertical scroll to horizontal pan)
+    // Mouse wheel — direct rotation. Prevent the page from scrolling away
+    // when the pointer is over the reel; restore it once we reach a snap.
     stage.addEventListener('wheel', (e) => {
       e.preventDefault();
-      panX -= e.deltaX;
-      panY -= e.deltaY;
-      stage.classList.add('has-panned');
+      idle = false;
+      // Trackpad fast scroll can produce large deltas; clamp so one twitch
+      // doesn't spin half the cylinder.
+      const d = Math.max(-30, Math.min(30, e.deltaY)) * 0.35;
+      rotation += d;
+      velocity = d * 12;        // a little inertia per scroll tick
+      stage.classList.add('has-spun');
+      clearTimeout(idleTO);
+      idleTO = setTimeout(() => { idle = true; }, 4000);
     }, { passive: false });
 
-    // Click any visible orb to centre it (Apple-Watch-style "tap to focus")
-    cells.forEach(c => {
-      c.orb.addEventListener('click', () => {
-        if (didPan) { didPan = false; return; }   // don't re-trigger after a drag
-        velX = velY = 0;
-        // Smooth via the idle snap loop — set pan target indirectly by nudging
-        panX = -c.x + (panX - (-c.x)) * 0.0001;
-        panY = -c.y + (panY - (-c.y)) * 0.0001;
+    // Click a visible card → snap that card to the front
+    cards.forEach((card, i) => {
+      card.addEventListener('click', () => {
+        if (didDrag) { didDrag = false; return; }
+        idle = false; velocity = 0;
+        // Choose the closest *equivalent* angle so we don't spin the long way
+        const target = i * STEP;
+        const wrap = Math.round((rotation - target) / 360) * 360;
+        rotation = target + wrap;
+        // ease towards target — handled by the snap branch in tick()
+        clearTimeout(idleTO);
+        idleTO = setTimeout(() => { idle = true; }, 4000);
+        stage.classList.add('has-spun');
       });
     });
 
-    // Keyboard panning when stage is focused
+    // Keyboard
     stage.tabIndex = 0;
     stage.addEventListener('keydown', (e) => {
-      const STEP = 80;
-      if (e.key === 'ArrowLeft')  { panX += STEP; stage.classList.add('has-panned'); }
-      if (e.key === 'ArrowRight') { panX -= STEP; stage.classList.add('has-panned'); }
-      if (e.key === 'ArrowUp')    { panY += STEP; stage.classList.add('has-panned'); }
-      if (e.key === 'ArrowDown')  { panY -= STEP; stage.classList.add('has-panned'); }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { rotation += STEP; idle = false; stage.classList.add('has-spun'); }
+      if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  { rotation -= STEP; idle = false; stage.classList.add('has-spun'); }
     });
   })();
 

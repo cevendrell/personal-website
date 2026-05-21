@@ -3,122 +3,441 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A scuba diving log by Carlos Ebrahim Vendrell.">
+  <meta name="description" content="A descent through every scuba dive — colour-coded by depth, from tropical surface to deep blue.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cevendrell.github.io/personal-website/pages/travel/dive-log.html">
   <meta property="og:title" content="Dive Log — Carlos Ebrahim Vendrell">
-  <meta property="og:description" content="A scuba diving log by Carlos Ebrahim Vendrell.">
+  <meta property="og:description" content="A descent through every scuba dive — colour-coded by depth, from tropical surface to deep blue.">
   <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Dive Log — Carlos Ebrahim Vendrell">
-  <meta name="twitter:description" content="A scuba diving log by Carlos Ebrahim Vendrell.">
+  <meta name="twitter:description" content="A descent through every scuba dive — colour-coded by depth, from tropical surface to deep blue.">
   <title>Dive Log - Carlos Ebrahim Vendrell</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:         #08090e;
-      --bg-alt:     #0c1028;
-      --bg-elevated: #111630;
-      --surface:    rgba(255,255,255,0.03);
-      --surface-hi: rgba(255,255,255,0.05);
-      --navy:       #05060f;
-      --cream:      #f0e9db;
-      --cream-dark: #1e1408;
-      --cream-dim:  #6b5a40;
-      --text:       #ececea;
-      --dim:        #a8a9af;
-      --text-dim:   #a8a9af;
-      --mute:       #6b6d75;
-      --text-mute:  #6b6d75;
-      --accent:     #e8dcc4;
-      --c-photo:    #c8784a;
-      --c-travel:   #6a8db5;
-      --c-tech:     #6a8db5;
-      --line:       rgba(255,255,255,0.08);
-      --line-strong: rgba(255,255,255,0.14);
-      --radius:     16px;
-      --radius-lg:  24px;
+      --text:        #f4f9fc;
+      --text-dim:    rgba(244,249,252,0.78);
+      --text-mute:   rgba(244,249,252,0.5);
+      --line:        rgba(255,255,255,0.12);
+      --line-strong: rgba(255,255,255,0.22);
+      --accent:      #ffe8b8;     /* warm sand — contrast against blue */
+      --c-photo:     #ff9b5e;
+      --c-travel:    #6fc6e8;
+      --c-tech:      #6a8db5;
+      --bg:          #02141f;     /* abyss — fallback */
+      --navy:        #02141f;
+      --radius:      14px;
+      --radius-lg:   22px;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; background: var(--bg); }
-    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.75; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--text);
+      min-height: 100vh; overflow-x: hidden;
+      line-height: 1.7;
+      /* ── Descent gradient ──
+         Long vertical gradient spanning the entire document. The body element
+         grows to the height of its content, so this gradient stretches across
+         the full page — scrolling visually becomes descending through water. */
+      background:
+        linear-gradient(to bottom,
+          #6fdcec  0%,             /* tropical surface */
+          #4cc3df  6%,
+          #2ea7c8  14%,
+          #1a8aae  24%,
+          #136d92  36%,
+          #0c5377  48%,
+          #093f5e  60%,
+          #062f4a  72%,
+          #042036  84%,
+          #02141f 100%              /* abyss */
+        );
+      background-attachment: scroll;
+    }
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
 
-    /* ── NAV ── */
+    /* ══════════════════════════════════════════════════════════════════
+       ══ NAV (shared scaffolding — translucent over the water)        ══
+       ══════════════════════════════════════════════════════════════════ */
     nav#navbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
       padding: 1.25rem 2.5rem; display: flex; align-items: center;
-      justify-content: space-between; background: rgba(10, 11, 16, 0.6);
-      backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
+      justify-content: space-between;
+      background: rgba(2,20,31,0.35);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
       border-bottom: 1px solid transparent; transition: all 0.3s ease;
     }
-    nav#navbar.scrolled { padding: 0.85rem 2.5rem; background: rgba(10, 11, 16, 0.82); border-bottom-color: var(--line); }
-    .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text); display: flex; align-items: center; gap: 0.65rem; }
+    nav#navbar.scrolled { padding: 0.85rem 2.5rem; background: rgba(2,20,31,0.7); border-bottom-color: rgba(255,255,255,0.08); }
+    .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text); }
     .nav-links { display: flex; gap: 2.25rem; list-style: none; align-items: center; }
     .nav-item { position: relative; }
-    .nav-links > li > a { font-size: 0.85rem; font-weight: 500; color: var(--text-dim); position: relative; padding: 0.5rem 0; transition: color 0.2s; }
-    .nav-links > li > a:hover { color: var(--text); }
+    .nav-links > li > a { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.78); position: relative; padding: 0.5rem 0; transition: color 0.2s; }
+    .nav-links > li > a:hover { color: #fff; }
     .nav-links > li > a::after { content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: var(--accent); transition: width 0.25s ease; }
     .nav-links > li > a:hover::after { width: 100%; }
-    .dropdown { position: absolute; top: calc(100% + 0.5rem); left: -1rem; min-width: 200px; background: rgba(6,8,20,0.92); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.08); border-radius: 0; padding: 0.4rem 0; list-style: none; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0,0,0,0.6); }
+    .dropdown { position: absolute; top: calc(100% + 0.5rem); left: -1rem; min-width: 200px;
+      background: rgba(2,20,31,0.92); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.08); padding: 0.4rem 0; list-style: none;
+      opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.2s;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6); }
     .dropdown li { list-style: none; }
     .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
-    .dropdown a { display: block; padding: 0.65rem 1rem; border-radius: 0; font-size: 0.87rem; color: rgba(255,255,255,0.65); transition: background 0.15s, color 0.15s; }
+    .dropdown a { display: block; padding: 0.65rem 1rem; font-size: 0.87rem; color: rgba(255,255,255,0.65); transition: background 0.15s, color 0.15s; }
     .dropdown a:hover { background: rgba(255,255,255,0.06); color: #fff; }
-    .nav-cta { font-size: 0.8rem; font-weight: 600; padding: 0.65rem 1.2rem; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); transition: all 0.25s; }
-    .nav-cta:hover { background: var(--accent); color: #111; border-color: var(--accent); }
     .nav-right { display: flex; align-items: center; gap: 0.9rem; }
     .nav-socials { display: flex; align-items: center; gap: 1rem; }
-    .nav-social-link { color: var(--mute); display: flex; align-items: center; transition: color 0.2s; }
-    .nav-social-link:hover { color: var(--text); }
+    .nav-social-link { color: rgba(255,255,255,0.55); display: flex; align-items: center; transition: color 0.2s; }
+    .nav-social-link:hover { color: #fff; }
     .hamburger { display: none; flex-direction: column; gap: 5px; padding: 6px; background: none; border: none; cursor: pointer; }
     .hamburger span { width: 22px; height: 1.5px; background: var(--text); display: block; transition: all 0.3s; }
     @media (max-width: 768px) {
       nav#navbar { padding: 1rem 1.5rem; }
       nav#navbar.scrolled { padding: 0.75rem 1.5rem; }
       .nav-links { display: none; }
-      .nav-cta { display: none; }
       .nav-socials { display: none; }
       .hamburger { display: flex; }
     }
+    body.nav-open { overflow: hidden; }
+    body.nav-open .nav-links {
+      display: flex !important; flex-direction: column; position: fixed; inset: 0; z-index: 999;
+      background: #042036; padding: 5.5rem 2rem 2rem; gap: 0; overflow-y: auto; align-items: flex-start;
+    }
+    body.nav-open .nav-links > li > a { font-size: 1.5rem; font-weight: 600; color: var(--text); padding: 0.75rem 0; }
+    body.nav-open .dropdown { position: static; opacity: 1 !important; visibility: visible !important; transform: none !important;
+      background: transparent; border: none; box-shadow: none; padding: 0.25rem 0 0.75rem 1rem; min-width: auto; }
+    body.nav-open .dropdown a { font-size: 1rem; padding: 0.4rem 0.5rem; }
+    body.nav-open .hamburger span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
+    body.nav-open .hamburger span:nth-child(2) { opacity: 0; }
+    body.nav-open .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
 
-    /* ── LAYOUT ── */
-    .container { max-width: 960px; margin: 0 auto; padding: 8rem 2rem 5rem; }
-    .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; }
+    /* ── Scroll progress bar (kept) ── */
+    .progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--accent); z-index: 2000; transition: width 0.1s linear; }
 
-    /* ── PAGE HEADER ── */
-    .page-eyebrow { color: var(--c-photo); margin-bottom: 0.75rem; }
-    .page-header { margin-bottom: 3rem; }
-    .page-header h1 { font-size: clamp(2.4rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.75rem; }
-    .page-header p { font-size: 1rem; color: var(--text-dim); max-width: 600px; line-height: 1.8; }
+    /* ══════════════════════════════════════════════════════════════════
+       ══ ATMOSPHERE                                                   ══
+       ══   Three fixed layers that overlay the gradient:              ══
+       ══   1) caustics — wavy light pattern (strong at top, fades)    ══
+       ══   2) bubbles — rising air bubbles (constant)                 ══
+       ══   3) film grain — subtle texture                             ══
+       ══════════════════════════════════════════════════════════════════ */
+    .ocean-fx {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    /* Caustics: cross-hatched white lines simulating sun through water.
+       JS dims this layer as you descend. */
+    .caustics {
+      position: absolute; inset: 0;
+      opacity: 0.55;
+      background-image:
+        repeating-linear-gradient( 38deg, transparent 0 110px, rgba(255,255,255,0.06) 110px 132px, rgba(255,255,255,0.12) 132px 138px, rgba(255,255,255,0.06) 138px 160px, transparent 160px 260px),
+        repeating-linear-gradient(-44deg, transparent 0 130px, rgba(255,255,255,0.04) 130px 150px, rgba(255,255,255,0.10) 150px 156px, rgba(255,255,255,0.04) 156px 176px, transparent 176px 290px);
+      mix-blend-mode: overlay;
+      animation: causticsDrift 16s ease-in-out infinite alternate;
+      transition: opacity 0.4s linear;
+    }
+    @keyframes causticsDrift {
+      0%   { transform: translate(0, 0); }
+      50%  { transform: translate(28px, -16px) skewX(2deg); }
+      100% { transform: translate(-12px, 22px) skewX(-1deg); }
+    }
+    /* Bubbles container — JS spawns elements in here on init */
+    .bubbles { position: absolute; inset: 0; }
+    .bubble {
+      position: absolute; bottom: -40px;
+      width: var(--s, 8px); height: var(--s, 8px);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.05) 60%, transparent 80%);
+      box-shadow: 0 0 6px rgba(255,255,255,0.15);
+      opacity: 0;
+      animation: bubbleRise var(--d, 14s) linear var(--delay, 0s) infinite;
+      will-change: transform, opacity;
+    }
+    @keyframes bubbleRise {
+      0%   { transform: translateY(0)  translateX(0);   opacity: 0; }
+      8%   { opacity: 0.7; }
+      80%  { opacity: 0.55; }
+      100% { transform: translateY(calc(-100vh - 80px)) translateX(var(--drift, 30px)); opacity: 0; }
+    }
+    /* Subtle film grain on top, very faint */
+    .grain {
+      position: fixed; inset: -50%; width: 200%; height: 200%;
+      z-index: 1; pointer-events: none; opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grainMove 0.5s steps(1) infinite;
+    }
+    @keyframes grainMove {
+      0%,100% { transform: translate(0,0); }
+      25%  { transform: translate(-2%,-3%); }
+      50%  { transform: translate(2%,1%); }
+      75%  { transform: translate(-1%,2%); }
+    }
 
-    /* ── HERO IMAGE ── */
-    .page-hero-img {
-      width: 100%;
-      aspect-ratio: 16/5;
-      object-fit: cover;
+    /* ══════════════════════════════════════════════════════════════════
+       ══ DEPTH METER — sticky vertical scale on the right             ══
+       ══════════════════════════════════════════════════════════════════ */
+    .depth-meter {
+      position: fixed; top: 50%; right: 1.75rem; z-index: 50;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; align-items: flex-end; gap: 0;
+      pointer-events: none;
+    }
+    .dm-rail {
+      position: relative; width: 2px;
+      height: clamp(280px, 50vh, 460px);
+      background:
+        linear-gradient(to bottom,
+          rgba(255,255,255,0.5) 0%,
+          rgba(255,255,255,0.35) 40%,
+          rgba(255,255,255,0.2) 100%);
+    }
+    .dm-tick {
+      position: absolute; right: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.55);
+      transform: translateY(-50%);
+      white-space: nowrap;
+    }
+    .dm-tick::before {
+      content: ''; position: absolute; left: calc(100% + 6px); top: 50%;
+      width: 6px; height: 1px; background: rgba(255,255,255,0.4); transform: translateY(-50%);
+    }
+    .dm-needle {
+      position: absolute; right: -1px; top: 0;
+      width: 14px; height: 14px; transform: translate(50%, -50%);
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,232,184,0.18), 0 0 14px rgba(255,232,184,0.8);
+      transition: top 0.18s cubic-bezier(0.16,1,0.3,1);
+    }
+    .dm-readout {
+      margin-top: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent);
+      text-transform: uppercase;
+      background: rgba(2,20,31,0.55); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,232,184,0.3);
+      border-radius: 999px; padding: 0.35rem 0.7rem;
+    }
+    .dm-readout strong { color: #fff; font-weight: 700; margin-right: 0.15rem; }
+    @media (max-width: 900px) { .depth-meter { display: none; } }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ HERO                                                         ══
+       ══════════════════════════════════════════════════════════════════ */
+    .dive-hero {
+      position: relative; z-index: 2;
+      max-width: 920px; margin: 0 auto;
+      padding: 11rem 2rem 4rem;
+      text-align: center;
+    }
+    .dive-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.24em; text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 1.1rem;
+    }
+    .dive-eyebrow::before { content: '◆ '; color: var(--accent); margin-right: 0.4rem; }
+    .dive-hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 800; letter-spacing: -0.04em; line-height: 1.05;
+      color: #fff;
+      margin-bottom: 1.25rem;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.2);
+    }
+    .dive-hero h1 span {
+      background: linear-gradient(135deg, var(--accent), #ffd47a);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .dive-hero .lede {
+      font-size: 1.05rem; color: rgba(255,255,255,0.9);
+      line-height: 1.7; max-width: 580px; margin: 0 auto 2.5rem;
+    }
+    .surface-line {
+      display: inline-flex; align-items: center; gap: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.18em; color: rgba(255,255,255,0.65);
+      text-transform: uppercase;
+    }
+    .surface-line::before, .surface-line::after {
+      content: ''; height: 1px; width: 60px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent);
+    }
+    .scroll-cue {
+      display: block; margin: 4rem auto 0;
+      color: rgba(255,255,255,0.6); font-size: 1.4rem;
+      animation: bob 1.8s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%,100% { transform: translateY(0); opacity: 0.5; }
+      50%     { transform: translateY(8px); opacity: 1; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ DIVE STREAM — cards alternating left / right                 ══
+       ══════════════════════════════════════════════════════════════════ */
+    .dive-stream {
+      position: relative; z-index: 2;
+      max-width: 1100px; margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+    /* The thin guideline running down the centre */
+    .dive-stream::before {
+      content: '';
+      position: absolute; top: 0; bottom: 0; left: 50%;
+      width: 1px; transform: translateX(-50%);
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(255,255,255,0.18) 4%,
+        rgba(255,255,255,0.18) 96%,
+        transparent 100%);
+    }
+
+    .dive-card {
+      position: relative;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      margin-bottom: 8rem;
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    }
+    .dive-card.visible { opacity: 1; transform: translateY(0); }
+    .dive-card:last-child { margin-bottom: 4rem; }
+
+    /* Depth pip in the centre, on the guideline */
+    .dive-card::after {
+      content: '';
+      position: absolute; left: 50%; top: 40%;
+      width: 14px; height: 14px;
+      border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(2,20,31,0.6), 0 0 14px rgba(255,232,184,0.7);
+      transform: translateX(-50%);
+      z-index: 3;
+    }
+
+    /* Left layout: photo on left, info on right */
+    .dive-card[data-side="left"]  .dive-photo { order: 1; }
+    .dive-card[data-side="left"]  .dive-info  { order: 2; text-align: left; }
+    /* Right layout: photo on right, info on left */
+    .dive-card[data-side="right"] .dive-photo { order: 2; }
+    .dive-card[data-side="right"] .dive-info  { order: 1; text-align: right; }
+
+    /* Photo placeholder — gradient hue derived from --depth */
+    .dive-photo {
+      position: relative;
+      aspect-ratio: 4 / 3;
       border-radius: var(--radius-lg);
-      margin-bottom: 3rem;
-      background: var(--bg-elevated);
+      overflow: hidden;
+      box-shadow:
+        0 24px 50px rgba(0,0,0,0.45),
+        0 0 0 1px rgba(255,255,255,0.08) inset;
+      background: linear-gradient(135deg,
+        hsl(calc(188 + var(--depth) * 0.65), calc(72% - var(--depth) * 0.55%), calc(58% - var(--depth) * 1%)),
+        hsl(calc(196 + var(--depth) * 0.65), calc(64% - var(--depth) * 0.55%), calc(38% - var(--depth) * 0.9%)));
+      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+    .dive-card:hover .dive-photo { transform: translateY(-4px) scale(1.01); }
+
+    /* Subtle inner caustic shimmer */
+    .dive-photo::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(38deg,
+          transparent 0 60px,
+          rgba(255,255,255,0.06) 60px 70px,
+          transparent 70px 130px);
+      mix-blend-mode: overlay;
+      pointer-events: none;
+    }
+    /* Big emoji placeholder, low opacity */
+    .dive-photo .placeholder-icon {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,0.35));
+      opacity: 0.95;
+    }
+    .dive-photo .placeholder-hint {
+      position: absolute; bottom: 0.8rem; left: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.55rem; letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+    }
+    .dive-photo .depth-badge {
+      position: absolute; top: 0.9rem; right: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      color: #fff;
+      background: rgba(2,20,31,0.55); backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 0.35rem 0.65rem; border-radius: 999px;
     }
 
-    /* ── CALLOUT ── */
-    .callout {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 2rem 2.5rem;
-      margin-bottom: 2.5rem;
-      border-left: 3px solid var(--c-travel);
+    /* Info block */
+    .dive-info { padding: 0.5rem 0; min-width: 0; }
+    .dive-meta {
+      display: inline-flex; align-items: center; gap: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.85rem;
     }
-    .callout p { color: var(--text-dim); font-size: 1rem; line-height: 1.8; }
-    .callout strong { color: var(--text); font-weight: 600; }
+    .dive-meta .dot {
+      width: 4px; height: 4px; border-radius: 50%; background: var(--accent);
+    }
+    .dive-info h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+      color: #fff;
+      margin-bottom: 0.55rem;
+    }
+    .dive-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 1.1rem;
+    }
+    .dive-note {
+      font-size: 0.95rem; color: rgba(255,255,255,0.82);
+      line-height: 1.75; max-width: 38ch;
+    }
+    .dive-card[data-side="right"] .dive-note { margin-left: auto; }
 
-    /* ── FOOTER ── */
+    /* ══ End-of-log marker ══ */
+    .dive-bottom {
+      position: relative; z-index: 2;
+      text-align: center; padding: 4rem 2rem 6rem;
+      color: rgba(255,255,255,0.5);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+    }
+    .dive-bottom .marker {
+      display: inline-flex; align-items: center; gap: 0.9rem;
+    }
+    .dive-bottom .marker::before, .dive-bottom .marker::after {
+      content: ''; height: 1px; width: 60px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+    }
+    .dive-bottom a {
+      display: inline-block; margin-top: 1rem;
+      color: var(--accent); border-bottom: 1px solid rgba(255,232,184,0.3);
+      padding: 0.2rem 0;
+    }
+    .dive-bottom a:hover { color: #fff; border-bottom-color: #fff; }
+
+    /* ══ Footer ══ */
     footer { background: var(--navy); position: relative; z-index: 2; }
     .footer-slim {
       max-width: 1140px; margin: 0 auto; padding: 24px 30px;
@@ -132,108 +451,60 @@
       width: 36px; height: 36px;
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      color: var(--mute); transition: all 0.3s;
+      color: rgba(255,255,255,0.55); transition: all 0.3s;
     }
     .footer-socials li a:hover { background: var(--accent); color: #111; border-color: var(--accent); }
-    /* ── AMBIENT BACKGROUND ── */
-    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.055; animation: drift 20s ease-in-out infinite; }
-    .orb-1 { width: 600px; height: 600px; background: var(--c-travel); top: -20%; left: -10%; animation-duration: 23s; }
-    .orb-2 { width: 500px; height: 500px; background: var(--c-photo); bottom: 10%; right: -10%; animation-duration: 28s; animation-delay: -6s; }
-    .orb-3 { width: 400px; height: 400px; background: var(--c-tech); top: 40%; left: 40%; animation-duration: 31s; animation-delay: -12s; }
-    @keyframes drift {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33%  { transform: translate(40px, -30px) scale(1.05); }
-      66%  { transform: translate(-30px, 20px) scale(0.95); }
-    }
-    /* ── FILM GRAIN ── */
-    .grain {
-      position: fixed; inset: -50%; width: 200%; height: 200%;
-      z-index: 1; pointer-events: none; opacity: 0.022;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      animation: grainMove 0.5s steps(1) infinite;
-    }
-    @keyframes grainMove {
-      0%,100% { transform: translate(0,0); }
-      25%  { transform: translate(-2%,-3%); }
-      50%  { transform: translate(2%,1%); }
-      75%  { transform: translate(-1%,2%); }
-    }
-    /* ── PROGRESS BAR ── */
-    .progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--accent); z-index: 2000; transition: width 0.1s linear; }
 
-    /* ── MOBILE NAV OPEN ── */
-    body.nav-open { overflow: hidden; }
-    body.nav-open .nav-links {
-      display: flex !important;
-      flex-direction: column;
-      position: fixed;
-      inset: 0;
-      z-index: 999;
-      background: var(--bg);
-      padding: 5.5rem 2rem 2rem;
-      gap: 0;
-      overflow-y: auto;
-      align-items: flex-start;
-    }
-    body.nav-open .nav-links > li > a {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text);
-      padding: 0.75rem 0;
-    }
-    body.nav-open .dropdown {
-      position: static;
-      opacity: 1 !important;
-      visibility: visible !important;
-      transform: none !important;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      padding: 0.25rem 0 0.75rem 1rem;
-      min-width: auto;
-    }
-    body.nav-open .dropdown a { font-size: 1rem; padding: 0.4rem 0.5rem; }
-    body.nav-open .hamburger span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
-    body.nav-open .hamburger span:nth-child(2) { opacity: 0; }
-    body.nav-open .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
-      /* ── PRELOADER ── */
+    /* ══ Preloader ══ */
     .preloader {
-      position: fixed; inset: 0; z-index: 9999; background: var(--bg);
+      position: fixed; inset: 0; z-index: 9999;
+      background: #6fdcec;
       display: flex; align-items: center; justify-content: center;
       transition: opacity 0.6s ease, visibility 0.6s;
     }
     .preloader.done { opacity: 0; visibility: hidden; }
     .spinner {
       width: 60px; height: 60px; border-radius: 50%;
-      border: 2px solid rgba(232,220,196,0.15); border-top-color: var(--accent);
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
       animation: spin 0.9s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* ── Mobile sanity (consistent across pages) ── */
-    @media (max-width: 768px) {
-      .container { padding: 7rem 1.5rem 3rem; }
-      .page-header { margin-bottom: 2rem; }
-      .page-header p { font-size: 0.95rem; }
-      .footer-slim {
-        flex-direction: column; text-align: center; gap: 0.85rem;
+
+    /* ══ Mobile: stack cards vertically, photo above text ══ */
+    @media (max-width: 760px) {
+      .dive-hero { padding: 8rem 1.5rem 3rem; }
+      .dive-stream { padding: 2rem 1.5rem 4rem; }
+      .dive-stream::before { left: 24px; }
+      .dive-card {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        margin-bottom: 4.5rem;
+        padding-left: 36px;
       }
-    }
-    @media (max-width: 420px) {
-      .container { padding: 6.5rem 1rem 2.5rem; }
-      .page-header h1 { font-size: clamp(2rem, 8vw, 2.6rem); }
+      .dive-card::after { left: 24px; top: 16px; }
+      .dive-card[data-side="left"]  .dive-photo,
+      .dive-card[data-side="right"] .dive-photo { order: 1; }
+      .dive-card[data-side="left"]  .dive-info,
+      .dive-card[data-side="right"] .dive-info { order: 2; text-align: left; }
+      .dive-card[data-side="right"] .dive-note { margin-left: 0; }
+      .footer-slim { flex-direction: column; text-align: center; gap: 0.75rem; }
     }
 
+    /* Reduced motion — kill animations */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      .scroll-cue { animation: none; }
+    }
   </style>
 </head>
 <body>
 <!-- Preloader -->
 <div class="preloader" id="preloader"><div class="spinner"></div></div>
 
-<div class="ambient" aria-hidden="true">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
+<!-- Atmosphere layers (fixed) -->
+<div class="ocean-fx" aria-hidden="true">
+  <div class="caustics" id="causticsLayer"></div>
+  <div class="bubbles" id="bubblesLayer"></div>
 </div>
 <div class="grain" aria-hidden="true"></div>
 <div class="progress-bar" id="progress"></div>
@@ -245,8 +516,6 @@
       <a href="../../index.html">Home</a>
       <ul class="dropdown">
         <li><a href="../../index.html#career">About me</a></li>
-        
-        
         <li><a href="../about/contact.html">Contact</a></li>
       </ul>
     </li>
@@ -291,19 +560,151 @@
   </button>
 </nav>
 
-<div class="container">
-  <div class="page-eyebrow mono">Travel</div>
-  <div class="page-header">
-    <h1>Dive Log</h1>
-    <p>Scuba dives from around the world — depths, reefs, and encounters.</p>
+<!-- ══════════ DEPTH METER (sticky right side) ══════════ -->
+<aside class="depth-meter" aria-hidden="true">
+  <div class="dm-rail">
+    <span class="dm-tick" style="top: 0%">0 m</span>
+    <span class="dm-tick" style="top: 25%">10 m</span>
+    <span class="dm-tick" style="top: 50%">20 m</span>
+    <span class="dm-tick" style="top: 75%">30 m</span>
+    <span class="dm-tick" style="top: 100%">40 m</span>
+    <div class="dm-needle" id="dmNeedle" style="top: 0%"></div>
   </div>
+  <div class="dm-readout"><strong id="dmValue">0</strong>m · depth</div>
+</aside>
 
-  <img src="../../media/travel/dive-hero.jpg" alt="Underwater" class="page-hero-img" onerror="this.style.display='none'">
+<!-- ══════════ HERO ══════════ -->
+<header class="dive-hero">
+  <div class="dive-eyebrow">Travel · Underwater</div>
+  <h1>Dive <span>Log</span></h1>
+  <p class="lede">
+    A descent through every dive I've logged. The water gets darker as you scroll — so do the photos. Click any tile to read about the dive.
+  </p>
+  <div class="surface-line">0 m — surface</div>
+  <span class="scroll-cue" aria-hidden="true">↓</span>
+</header>
 
-  <div class="callout">
-    <p><strong>Coming soon</strong> — the full log is being built.</p>
-  </div>
-</div>
+<!-- ══════════ DIVE STREAM ══════════
+     Each card sets `--depth` (in metres) and `data-side` (left/right).
+     The `--depth` value drives the photo placeholder colour via CSS calc()
+     so the tile naturally tints darker the deeper you go. Replace the
+     placeholder `<div class="dive-photo">…</div>` block with an `<img>`
+     when you have a real photo. -->
+<main class="dive-stream" id="diveStream">
+
+  <!-- 6 m — INDONESIA, 2022 -->
+  <article class="dive-card" data-side="left" style="--depth: 6;">
+    <div class="dive-photo">
+      <span class="depth-badge">6 m</span>
+      <span class="placeholder-icon">🐠</span>
+      <span class="placeholder-hint">photo · indonesia</span>
+    </div>
+    <div class="dive-info">
+      <div class="dive-meta"><span>2022</span><span class="dot"></span><span>06 m</span></div>
+      <h2>Indonesia</h2>
+      <p class="dive-sub">Bali · Gili Islands · Komodo</p>
+      <p class="dive-note">Tropical reefs at near-zero depth — anthias swarms, butterflyfish, and the occasional reef tip drifting just at the edge of visibility.</p>
+    </div>
+  </article>
+
+  <!-- 12 m — THAILAND, 2022 -->
+  <article class="dive-card" data-side="right" style="--depth: 12;">
+    <div class="dive-photo">
+      <span class="depth-badge">12 m</span>
+      <span class="placeholder-icon">🪸</span>
+      <span class="placeholder-hint">photo · thailand</span>
+    </div>
+    <div class="dive-info">
+      <div class="dive-meta"><span>12 m</span><span class="dot"></span><span>2022</span></div>
+      <h2>Thailand</h2>
+      <p class="dive-sub">Phi Phi · Krabi · Andaman Sea</p>
+      <p class="dive-note">Limestone pinnacles dressed in soft corals, with leopard sharks resting on the sandy bottoms. Some of the clearest water of the trip.</p>
+    </div>
+  </article>
+
+  <!-- 18 m — ST LUCIA, 2024 -->
+  <article class="dive-card" data-side="left" style="--depth: 18;">
+    <div class="dive-photo">
+      <span class="depth-badge">18 m</span>
+      <span class="placeholder-icon">🐢</span>
+      <span class="placeholder-hint">photo · st lucia</span>
+    </div>
+    <div class="dive-info">
+      <div class="dive-meta"><span>2024</span><span class="dot"></span><span>18 m</span></div>
+      <h2>St Lucia</h2>
+      <p class="dive-sub">Caribbean Sea · Pinnacles</p>
+      <p class="dive-note">Volcanic pinnacles rising from the deep — eagle rays cruising along the walls and hawksbill turtles working the coral heads.</p>
+    </div>
+  </article>
+
+  <!-- 22 m — MALAYSIA, 2022 -->
+  <article class="dive-card" data-side="right" style="--depth: 22;">
+    <div class="dive-photo">
+      <span class="depth-badge">22 m</span>
+      <span class="placeholder-icon">🐡</span>
+      <span class="placeholder-hint">photo · malaysia</span>
+    </div>
+    <div class="dive-info">
+      <div class="dive-meta"><span>22 m</span><span class="dot"></span><span>2022</span></div>
+      <h2>Malaysia</h2>
+      <p class="dive-sub">Kuching · Borneo</p>
+      <p class="dive-note">Drift dives along the Borneo shelf — green turtles, schools of jacks, and the colour palette shifting visibly into deeper blue.</p>
+    </div>
+  </article>
+
+  <!-- 28 m — CYPRUS, 2023 -->
+  <article class="dive-card" data-side="left" style="--depth: 28;">
+    <div class="dive-photo">
+      <span class="depth-badge">28 m</span>
+      <span class="placeholder-icon">🦑</span>
+      <span class="placeholder-hint">photo · cyprus</span>
+    </div>
+    <div class="dive-info">
+      <div class="dive-meta"><span>2023</span><span class="dot"></span><span>28 m</span></div>
+      <h2>Cyprus</h2>
+      <p class="dive-sub">Larnaca · Mediterranean</p>
+      <p class="dive-note">Visibility-for-days dives along the Zenobia wreck — octopus tucked into the cargo holds and Mediterranean groupers patrolling the upper decks.</p>
+    </div>
+  </article>
+
+  <!-- 32 m — GRENADA, 2024 -->
+  <article class="dive-card" data-side="right" style="--depth: 32;">
+    <div class="dive-photo">
+      <span class="depth-badge">32 m</span>
+      <span class="placeholder-icon">🦈</span>
+      <span class="placeholder-hint">photo · grenada</span>
+    </div>
+    <div class="dive-info">
+      <div class="dive-meta"><span>32 m</span><span class="dot"></span><span>2024</span></div>
+      <h2>Grenada</h2>
+      <p class="dive-sub">Caribbean Sea · Bianca C wreck</p>
+      <p class="dive-note">"Titanic of the Caribbean" — 180 m of cruise liner overgrown with coral, patrolled by silvery barracuda and the occasional reef shark in the gloom.</p>
+    </div>
+  </article>
+
+  <!-- 40 m — TANZANIA, 2023 -->
+  <article class="dive-card" data-side="left" style="--depth: 40;">
+    <div class="dive-photo">
+      <span class="depth-badge">40 m</span>
+      <span class="placeholder-icon">🐋</span>
+      <span class="placeholder-hint">photo · tanzania</span>
+    </div>
+    <div class="dive-info">
+      <div class="dive-meta"><span>2023</span><span class="dot"></span><span>40 m</span></div>
+      <h2>Tanzania</h2>
+      <p class="dive-sub">Mnemba Atoll · Zanzibar</p>
+      <p class="dive-note">The deepest of the bunch — drop-offs into open blue, schooling spinner dolphins on the surface intervals and surge-driven drift back into shallower water.</p>
+    </div>
+  </article>
+
+</main>
+
+<!-- ══════════ BOTTOM MARKER ══════════ -->
+<section class="dive-bottom">
+  <div class="marker">End of log · 40 m</div>
+  <br>
+  <a href="#">Resurface ↑</a>
+</section>
 
 <footer>
   <div class="footer-slim">
@@ -320,13 +721,13 @@
 </footer>
 
 <script>
-
   /* ── Preloader ── */
   window.addEventListener('load', () => {
     const pl = document.getElementById('preloader');
     if (pl) pl.classList.add('done');
   });
 
+  /* ── Nav + hamburger ── */
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 40);
@@ -334,9 +735,7 @@
 
   const hamburger = document.querySelector('.hamburger');
   if (hamburger) {
-    hamburger.addEventListener('click', () => {
-      document.body.classList.toggle('nav-open');
-    });
+    hamburger.addEventListener('click', () => document.body.classList.toggle('nav-open'));
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', () => document.body.classList.remove('nav-open'));
     });
@@ -345,13 +744,76 @@
     });
   }
 
+  /* ── Scroll progress bar ── */
   const progress = document.getElementById('progress');
-  if (progress) {
-    window.addEventListener('scroll', () => {
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
-    }, { passive: true });
-  }
+  window.addEventListener('scroll', () => {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
+  }, { passive: true });
+
+  /* ── Spawn ambient bubbles ── */
+  (function spawnBubbles() {
+    const layer = document.getElementById('bubblesLayer');
+    if (!layer) return;
+    const N = 26;
+    for (let i = 0; i < N; i++) {
+      const b = document.createElement('span');
+      b.className = 'bubble';
+      const size = 4 + Math.random() * 18;          // 4–22 px
+      const duration = 9 + Math.random() * 14;      // 9–23 s rise
+      const delay = -Math.random() * duration;      // negative so they're mid-flight on load
+      const drift = (Math.random() - 0.5) * 90;     // horizontal drift in px
+      b.style.setProperty('--s', size + 'px');
+      b.style.setProperty('--d', duration + 's');
+      b.style.setProperty('--delay', delay + 's');
+      b.style.setProperty('--drift', drift + 'px');
+      b.style.left = (Math.random() * 100) + 'vw';
+      layer.appendChild(b);
+    }
+  })();
+
+  /* ── Card reveal on scroll ── */
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); cardObserver.unobserve(e.target); }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.dive-card').forEach(c => cardObserver.observe(c));
+
+  /* ── Depth meter + caustics fade ──
+     Maps scroll progress between the hero bottom and the dive-stream end
+     to a depth between 0 m and 40 m. Drives:
+       • the needle position on the right-side meter
+       • the readout value
+       • the caustics layer opacity (fades to 0 by ~20 m) */
+  (function depthTracker() {
+    const stream     = document.getElementById('diveStream');
+    const needle     = document.getElementById('dmNeedle');
+    const valueEl    = document.getElementById('dmValue');
+    const caustics   = document.getElementById('causticsLayer');
+    if (!stream || !needle || !valueEl) return;
+
+    const MAX_DEPTH = 40;
+    function update() {
+      const rect = stream.getBoundingClientRect();
+      const top  = rect.top + window.scrollY;
+      const span = rect.height;
+      const here = window.scrollY + window.innerHeight * 0.45;   // "eye level"
+      let t = (here - top) / span;
+      t = Math.max(0, Math.min(1, t));
+      const depth = Math.round(t * MAX_DEPTH);
+      needle.style.top = (t * 100) + '%';
+      valueEl.textContent = depth;
+      // Caustics dim as we go deeper — fully gone by 25 m
+      if (caustics) {
+        const causticsOpacity = Math.max(0, 0.55 * (1 - depth / 25));
+        caustics.style.opacity = causticsOpacity.toFixed(2);
+      }
+    }
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  })();
 </script>
 
 </body>

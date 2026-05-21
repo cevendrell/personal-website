@@ -126,23 +126,22 @@
       .contact-row .platform { grid-column: 1 / -1; margin-bottom: -0.4rem; }
     }
 
-    /* ── Location section: text + map side by side (compact) ── */
-    .location-section {
-      margin-top: 5rem;
+    /* ── Top-of-page header: intro left, Aarhus map top-right ── */
+    .contact-header {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-      gap: 2.5rem;
-      align-items: center;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+      gap: 3rem;
+      align-items: start;
+      margin-bottom: 3.5rem;
     }
-    .location-eyebrow { color: var(--c-travel); margin-bottom: 0.6rem; }
+    .contact-map {
+      margin-top: 0.6rem;   /* nudge map down so its top aligns near h1's eyebrow */
+    }
+    .location-eyebrow { color: var(--c-travel); margin-bottom: 0.5rem; }
     .location-title {
-      font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 700;
-      letter-spacing: -0.02em; line-height: 1.1; color: var(--text);
-      margin-bottom: 0.6rem;
-    }
-    .location-desc {
-      font-size: 0.92rem; color: var(--text-dim); line-height: 1.65;
-      max-width: 38ch;
+      font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 700;
+      letter-spacing: -0.01em; line-height: 1.1; color: var(--text);
+      margin-bottom: 0.8rem;
     }
     .map-frame {
       width: 100%; aspect-ratio: 4/3;
@@ -156,8 +155,9 @@
       /* Dark-mode the otherwise-light OSM tiles */
       filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.92) saturate(0.85);
     }
-    @media (max-width: 700px) {
-      .location-section { grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (max-width: 760px) {
+      .contact-header { grid-template-columns: 1fr; gap: 1.75rem; margin-bottom: 2.5rem; }
+      .contact-map { margin-top: 0; }
       .map-frame { aspect-ratio: 16/10; }
     }
 
@@ -295,12 +295,30 @@
 </nav>
 
 <div class="container">
-  <div class="page-eyebrow mono">Contact</div>
-  <h1>Let's <span class="accent">talk</span>.</h1>
-  <p class="intro">
-    Always happy to connect — whether it's about AI, travel, photography, or just to say hello.
-    The fastest ways to reach me are below.
-  </p>
+
+  <!-- Header: intro on the left, Aarhus map pinned to the top-right -->
+  <header class="contact-header">
+    <div class="contact-intro">
+      <div class="page-eyebrow mono">Contact</div>
+      <h1>Let's <span class="accent">talk</span>.</h1>
+      <p class="intro">
+        Based in <strong>Aarhus, Denmark</strong> — originally from Barcelona, I've called Aarhus home since 2018.
+        Always happy to connect, whether it's about AI, travel, photography, or just to grab a coffee if you're around.
+        The fastest ways to reach me are below.
+      </p>
+    </div>
+    <aside class="contact-map">
+      <div class="page-eyebrow mono location-eyebrow">Based in</div>
+      <div class="location-title">Aarhus, Denmark</div>
+      <div class="map-frame">
+        <iframe
+          src="https://www.openstreetmap.org/export/embed.html?bbox=10.0%2C56.10%2C10.4%2C56.22&amp;layer=mapnik"
+          loading="lazy"
+          title="Map of Aarhus, Denmark"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </aside>
+  </header>
 
   <div class="contact-links">
     <a class="contact-row" href="https://www.linkedin.com/in/carlosevendrell/" target="_blank" rel="noopener">
@@ -320,24 +338,6 @@
     </a>
   </div>
 
-  <!-- Location: text + Aarhus map side by side -->
-  <section class="location-section">
-    <div>
-      <div class="page-eyebrow mono location-eyebrow">Based in</div>
-      <h2 class="location-title">Aarhus, Denmark</h2>
-      <p class="location-desc">
-        Originally from Barcelona, I've called Aarhus home since 2018.
-        If you're around, let's grab a coffee.
-      </p>
-    </div>
-    <div class="map-frame">
-      <iframe
-        src="https://www.openstreetmap.org/export/embed.html?bbox=10.0%2C56.10%2C10.4%2C56.22&amp;layer=mapnik"
-        loading="lazy"
-        title="Map of Aarhus, Denmark"
-        referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
-  </section>
 </div>
 
 <footer>
