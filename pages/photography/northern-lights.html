@@ -243,10 +243,10 @@
     .gallery-item img {
       width: 100%; height: auto;
       display: block;
-      transition: transform 0.4s ease, opacity 0.3s ease;
-      opacity: 0;
+      transition: transform 0.4s ease;
+      /* Always visible — no fade-in dependency on JS load events,
+         which can silently fail for some lazy-loaded images. */
     }
-    .gallery-item img.loaded { opacity: 1; }
     .gallery-item:hover img { transform: scale(1.03); }
 
     /* Lightbox for HD viewing */
@@ -583,34 +583,55 @@
     }, { passive: true });
   }
 
-  /* ── Force-trigger autoplay for all videos ── */
+  /* ── Aggressive autoplay handler ──
+     Some browsers (esp. Safari on slow connections) refuse autoplay until enough
+     data is buffered or the user interacts. We retry on every relevant event. */
+  function kickPlay(v) {
+    try {
+      v.muted = true;
+      v.playsInline = true;
+      v.setAttribute('muted','');
+      v.setAttribute('playsinline','');
+      v.setAttribute('autoplay','');
+      const p = v.play();
+      if (p && typeof p.catch === 'function') p.catch(() => {});
+    } catch(e) {}
+  }
   document.querySelectorAll('video').forEach(v => {
-    v.muted = true;
-    v.playsInline = true;
-    v.setAttribute('muted','');
-    v.setAttribute('playsinline','');
-    const tryPlay = () => { v.play().catch(() => {}); };
-    tryPlay();
-    v.addEventListener('loadedmetadata', tryPlay, { once: true });
-    v.addEventListener('canplay', tryPlay, { once: true });
-    v.addEventListener('loadeddata', tryPlay, { once: true });
+    // First nudge — and again on each readiness event
+    kickPlay(v);
+    ['loadedmetadata','loadeddata','canplay','canplaythrough','suspend'].forEach(ev => {
+      v.addEventListener(ev, () => kickPlay(v));
+    });
+    // If the browser reports the video as paused later, try again
+    v.addEventListener('pause', () => {
+      // Only auto-resume if it wasn't the user's choice (no controls in this page)
+      if (v.paused && !v.ended) setTimeout(() => kickPlay(v), 100);
+    });
+    // Force a load() in case preload didn't kick in
+    if (v.readyState < 2) { try { v.load(); } catch(e) {} }
   });
 
+  // Pause off-screen, play on-screen
   const vidObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       const v = e.target;
-      if (e.isIntersecting) v.play().catch(()=>{});
-      else v.pause();
+      if (e.isIntersecting) kickPlay(v);
+      else { try { v.pause(); } catch(_) {} }
     });
-  }, { threshold: 0.1, rootMargin: '50px' });
+  }, { threshold: 0.05, rootMargin: '50px' });
   document.querySelectorAll('video').forEach(v => vidObs.observe(v));
 
   // Any user interaction unlocks blocked autoplay
-  const unlock = () => {
-    document.querySelectorAll('video').forEach(v => v.play().catch(()=>{}));
-  };
-  ['click','touchstart','scroll','keydown','mousemove'].forEach(ev => {
-    window.addEventListener(ev, unlock, { passive: true, once: false });
+  const unlock = () => document.querySelectorAll('video').forEach(kickPlay);
+  ['click','touchstart','scroll','keydown','mousemove','pointerdown'].forEach(ev => {
+    window.addEventListener(ev, unlock, { passive: true });
+  });
+
+  // One more attempt after the window fully loads
+  window.addEventListener('load', () => {
+    setTimeout(() => document.querySelectorAll('video').forEach(kickPlay), 300);
+    setTimeout(() => document.querySelectorAll('video').forEach(kickPlay), 1500);
   });
 
   /* ── Gallery: fade-in on load, hide broken, click → HD lightbox ── */
