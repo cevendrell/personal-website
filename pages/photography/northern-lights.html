@@ -236,14 +236,36 @@
       margin-bottom: 0.75rem;
       overflow: hidden;
       border-radius: 12px;
-      background: var(--bg-elevated);
+      background: #0a0a0e;       /* neutral dark — no orphan blue tiles */
+      cursor: zoom-in;
     }
+    .gallery-item.broken { display: none !important; }
     .gallery-item img {
       width: 100%; height: auto;
       display: block;
-      transition: transform 0.4s ease;
+      transition: transform 0.4s ease, opacity 0.3s ease;
+      opacity: 0;
     }
+    .gallery-item img.loaded { opacity: 1; }
     .gallery-item:hover img { transform: scale(1.03); }
+
+    /* Lightbox for HD viewing */
+    .nl-lightbox {
+      position: fixed; inset: 0; z-index: 9000;
+      background: rgba(0,4,10,0.93); backdrop-filter: blur(14px);
+      display: none; align-items: center; justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .nl-lightbox.open { display: flex; }
+    .nl-lightbox img { max-width: 94vw; max-height: 88vh; border-radius: 10px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+    .nl-lightbox .nl-close {
+      position: absolute; top: 1.25rem; right: 1.5rem;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+      color: #fff; font-size: 1.4rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nl-lightbox .nl-close:hover { background: rgba(255,255,255,0.18); }
     @media (max-width: 900px) { .gallery { columns: 2; } }
     @media (max-width: 550px) { .gallery { columns: 1; } }
 
@@ -452,47 +474,47 @@
   <div class="gallery">
     <!-- Denmark / Lystrup Strand, Feb 2023 -->
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/DSC_9675.jpg" alt="Aurora borealis, Denmark 2023" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/DSC_9675.jpg" data-full="../../media/Northern Lights/DSC_9675.jpg" alt="Aurora borealis, Denmark 2023" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/DSC_9764.jpg" alt="Aurora borealis, Denmark 2023" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/DSC_9764.jpg" data-full="../../media/Northern Lights/DSC_9764.jpg" alt="Aurora borealis, Denmark 2023" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/DSC_9804.jpg" alt="Aurora borealis, Denmark 2023" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/DSC_9804.jpg" data-full="../../media/Northern Lights/DSC_9804.jpg" alt="Aurora borealis, Denmark 2023" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/DSC_9860.jpg" alt="Aurora borealis, Denmark 2023" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/DSC_9860.jpg" data-full="../../media/Northern Lights/DSC_9860.jpg" alt="Aurora borealis, Denmark 2023" loading="lazy">
     </div>
     <!-- Tromsø, Norway / Dec 2023 -->
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/DSC_5026.jpg" alt="Aurora borealis, Norway 2023" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/DSC_5026.jpg" data-full="../../media/Northern Lights/DSC_5026.jpg" alt="Aurora borealis, Norway 2023" loading="lazy">
     </div>
     <!-- Tromsø, Norway / Aug 2018 -->
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/DSC_0622-4.jpg" alt="Aurora borealis, Norway 2018" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/DSC_0622-4.jpg" data-full="../../media/Northern Lights/DSC_0622-4.jpg" alt="Aurora borealis, Norway 2018" loading="lazy">
     </div>
     <!-- Tromsø, Oct 2024 -->
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/_CEV0371.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/_CEV0371.JPG" data-full="../../media/Northern Lights/_CEV0371.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/_CEV0388.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/_CEV0388.JPG" data-full="../../media/Northern Lights/_CEV0388.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/_CEV0398.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/_CEV0398.JPG" data-full="../../media/Northern Lights/_CEV0398.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/_CEV0399.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/_CEV0399.JPG" data-full="../../media/Northern Lights/_CEV0399.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/_CEV0405.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/_CEV0405.JPG" data-full="../../media/Northern Lights/_CEV0405.JPG" alt="Aurora borealis, Tromsø 2024" loading="lazy">
     </div>
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/_CEV0835-2.jpg" alt="Aurora borealis, Tromsø 2024" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/_CEV0835-2.jpg" data-full="../../media/Northern Lights/_CEV0835-2.jpg" alt="Aurora borealis, Tromsø 2024" loading="lazy">
     </div>
     <!-- Aug 2024 -->
     <div class="gallery-item">
-      <img src="../../media/Northern Lights/DSC_6966.jpg" alt="Aurora borealis 2024" loading="lazy">
+      <img src="../../media/Northern Lights/thumbs/DSC_6966.jpg" data-full="../../media/Northern Lights/DSC_6966.jpg" alt="Aurora borealis 2024" loading="lazy">
     </div>
   </div>
 </div>
@@ -561,37 +583,74 @@
     }, { passive: true });
   }
 
-  /* ── Force-trigger autoplay for all videos ──
-     Some browsers refuse autoplay until first interaction; explicitly call play()
-     and retry on visibility / first user gesture. */
+  /* ── Force-trigger autoplay for all videos ── */
   document.querySelectorAll('video').forEach(v => {
     v.muted = true;
     v.playsInline = true;
+    v.setAttribute('muted','');
+    v.setAttribute('playsinline','');
     const tryPlay = () => { v.play().catch(() => {}); };
     tryPlay();
+    v.addEventListener('loadedmetadata', tryPlay, { once: true });
     v.addEventListener('canplay', tryPlay, { once: true });
+    v.addEventListener('loadeddata', tryPlay, { once: true });
   });
 
-  // Pause off-screen videos, resume when scrolled back into view
   const vidObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       const v = e.target;
       if (e.isIntersecting) v.play().catch(()=>{});
       else v.pause();
     });
-  }, { threshold: 0.25 });
+  }, { threshold: 0.1, rootMargin: '50px' });
   document.querySelectorAll('video').forEach(v => vidObs.observe(v));
 
-  // First user gesture unlocks any blocked videos
+  // Any user interaction unlocks blocked autoplay
   const unlock = () => {
     document.querySelectorAll('video').forEach(v => v.play().catch(()=>{}));
-    window.removeEventListener('click', unlock);
-    window.removeEventListener('touchstart', unlock);
-    window.removeEventListener('scroll', unlock);
   };
-  window.addEventListener('click', unlock, { passive: true });
-  window.addEventListener('touchstart', unlock, { passive: true });
-  window.addEventListener('scroll', unlock, { passive: true });
+  ['click','touchstart','scroll','keydown','mousemove'].forEach(ev => {
+    window.addEventListener(ev, unlock, { passive: true, once: false });
+  });
+
+  /* ── Gallery: fade-in on load, hide broken, click → HD lightbox ── */
+  const galleryImgs = document.querySelectorAll('.gallery-item img');
+  galleryImgs.forEach(img => {
+    const item = img.closest('.gallery-item');
+    if (img.complete && img.naturalWidth) img.classList.add('loaded');
+    else if (img.complete && !img.naturalWidth) item.classList.add('broken');
+    else {
+      img.addEventListener('load',  () => img.classList.add('loaded'), { once: true });
+      img.addEventListener('error', () => item.classList.add('broken'), { once: true });
+    }
+  });
+
+  // Build lightbox dynamically
+  const nlLightbox = document.createElement('div');
+  nlLightbox.className = 'nl-lightbox';
+  nlLightbox.innerHTML = '<button class="nl-close" aria-label="Close">×</button><img alt="">';
+  document.body.appendChild(nlLightbox);
+  const nlLbImg = nlLightbox.querySelector('img');
+  const nlClose = nlLightbox.querySelector('.nl-close');
+  function openNlLightbox(src, alt) {
+    nlLbImg.src = src;
+    nlLbImg.alt = alt || '';
+    nlLightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNlLightbox() {
+    nlLightbox.classList.remove('open');
+    nlLbImg.src = '';
+    document.body.style.overflow = '';
+  }
+  nlClose.addEventListener('click', closeNlLightbox);
+  nlLightbox.addEventListener('click', e => { if (e.target === nlLightbox) closeNlLightbox(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNlLightbox(); });
+  galleryImgs.forEach(img => {
+    img.closest('.gallery-item').addEventListener('click', () => {
+      openNlLightbox(img.dataset.full || img.src, img.alt);
+    });
+  });
 </script>
 
 </body>

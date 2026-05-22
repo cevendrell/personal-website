@@ -633,23 +633,58 @@
     }
 
     /* ══════════════════════════════════════════════════════════════════
-       ══ DIVE COMPUTER — replaces simple depth meter                  ══
+       ══ DIVE HUD — sticky bottom bar, simple                         ══
        ══════════════════════════════════════════════════════════════════ */
-    .dive-computer {
-      position: fixed; top: 50%; right: 1.5rem; z-index: 60;
-      transform: translateY(-50%);
-      width: 178px;
-      background: linear-gradient(180deg, rgba(2,20,31,0.78), rgba(2,12,20,0.86));
-      backdrop-filter: blur(12px) saturate(140%);
-      -webkit-backdrop-filter: blur(12px) saturate(140%);
-      border: 1px solid rgba(232,220,196,0.18);
-      border-radius: 14px;
-      padding: 14px 14px 12px;
-      box-shadow: 0 18px 50px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+    .dive-hud {
+      position: fixed; left: 50%; bottom: 1.25rem;
+      transform: translateX(-50%);
+      z-index: 60; pointer-events: none;
+      display: flex; align-items: center; gap: 1.5rem;
+      padding: 0.7rem 1.25rem;
+      background: rgba(2,20,31,0.78);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border: 1px solid rgba(232,220,196,0.2);
+      border-radius: 999px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.55);
       font-family: 'JetBrains Mono', monospace;
       color: var(--text);
-      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
+    .dive-hud .hud-block {
+      display: flex; flex-direction: column; gap: 2px; align-items: center;
+      padding: 0 0.5rem;
+      border-right: 1px solid rgba(232,220,196,0.18);
+    }
+    .dive-hud .hud-block:last-child { border-right: none; }
+    .dive-hud .hud-label {
+      font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(232,220,196,0.7);
+    }
+    .dive-hud .hud-value {
+      font-size: 1.25rem; font-weight: 700; color: #fff;
+      letter-spacing: -0.02em; line-height: 1;
+      display: flex; align-items: baseline; gap: 3px;
+    }
+    .dive-hud .hud-value em {
+      font-style: normal; font-size: 0.62rem; letter-spacing: 0.18em;
+      color: var(--accent); text-transform: uppercase;
+    }
+    .dive-hud .hud-value-sm {
+      font-size: 0.95rem; font-weight: 600; color: #fff; line-height: 1;
+    }
+    .dive-hud .tank-svg {
+      width: 96px; height: 36px; margin-top: 2px;
+    }
+    @media (max-width: 540px) {
+      .dive-hud { gap: 1rem; padding: 0.55rem 0.9rem; bottom: 0.75rem; }
+      .dive-hud .hud-block { padding: 0 0.35rem; }
+      .dive-hud .tank-svg { width: 70px; height: 28px; }
+      .dive-hud .hud-value { font-size: 1.05rem; }
+    }
+
+    /* (legacy classes kept inert; not used by current markup) */
+    .dive-computer { display: none; }
     .dc-header {
       display: flex; align-items: center; justify-content: space-between;
       font-size: 0.56rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -924,6 +959,50 @@
       50%     { transform: translateX(-50%) scale(1.05); }
     }
 
+    /* ══════════════════════════════════════════════════════════════════
+       ══ LIGHTBOX — opens HD original on tap                          ══
+       ══════════════════════════════════════════════════════════════════ */
+    #diveLightbox {
+      position: fixed; inset: 0; z-index: 9000;
+      background: rgba(0,4,10,0.93); backdrop-filter: blur(14px);
+      display: none; align-items: center; justify-content: center;
+      padding: 4rem 2rem;
+    }
+    #diveLightbox.open { display: flex; flex-direction: column; }
+    #diveLightbox .dl-content { max-width: 92vw; max-height: 78vh; display: flex; align-items: center; justify-content: center; }
+    #diveLightbox img, #diveLightbox video {
+      max-width: 92vw; max-height: 78vh; width: auto; height: auto;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      border-radius: 10px;
+    }
+    #diveLightbox .dl-caption {
+      margin-top: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent);
+    }
+    #diveLightbox .dl-close {
+      position: absolute; top: 1.25rem; right: 1.5rem;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+      color: #fff; font-size: 1.4rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    #diveLightbox .dl-close:hover { background: rgba(255,255,255,0.18); }
+
+    .dive-photo { cursor: zoom-in; }
+    .media-type-badge {
+      position: absolute; top: 0.85rem; left: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: #fff;
+      background: rgba(2,20,31,0.7); backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 0.3rem 0.6rem; border-radius: 999px;
+      pointer-events: none;
+    }
+
     /* Reduced motion — kill animations */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -1007,44 +1086,37 @@
   </button>
 </nav>
 
-<!-- ══════════ DIVE COMPUTER (sticky right side) ══════════ -->
-<aside class="dive-computer" id="diveComputer" aria-hidden="true">
-  <div class="dc-header">
-    <span class="dc-status">Online</span>
-    <span>DC · 01</span>
+<!-- ══════════ DIVE HUD (sticky bottom — simple) ══════════ -->
+<aside class="dive-hud" id="diveHUD" aria-hidden="true">
+  <div class="hud-block">
+    <span class="hud-label">Depth</span>
+    <span class="hud-value"><span id="hudDepth">0</span><em>m</em></span>
   </div>
-  <div class="dc-primary">
-    <span class="dc-val" id="dcDepth">0</span>
-    <span class="dc-unit">m · depth</span>
+  <div class="hud-block hud-tank">
+    <span class="hud-label">Tank · <span id="hudTankBar">200</span> bar</span>
+    <svg class="tank-svg" viewBox="0 0 80 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Valve -->
+      <rect x="6" y="4" width="6" height="6" rx="1" fill="rgba(255,255,255,0.5)"/>
+      <rect x="3" y="9" width="12" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
+      <!-- Tank body outline -->
+      <rect x="14" y="6" width="62" height="24" rx="11" fill="none" stroke="rgba(232,220,196,0.55)" stroke-width="1.5"/>
+      <!-- Fill (clip-path animates width via JS) -->
+      <clipPath id="tankClip"><rect x="16" y="8" width="58" height="20" rx="9"/></clipPath>
+      <rect id="tankFill" x="16" y="8" width="58" height="20" rx="9"
+            clip-path="url(#tankClip)"
+            fill="url(#tankGrad)"/>
+      <defs>
+        <linearGradient id="tankGrad" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%"   stop-color="#5fd99a"/>
+          <stop offset="60%"  stop-color="#ffd47a"/>
+          <stop offset="100%" stop-color="#ff7a6a"/>
+        </linearGradient>
+      </defs>
+    </svg>
   </div>
-  <div class="dc-grid">
-    <div class="dc-stat">
-      <span class="dc-label">Bottom T</span>
-      <span class="dc-num" id="dcTime">00:00</span>
-    </div>
-    <div class="dc-stat">
-      <span class="dc-label">No-Deco</span>
-      <span class="dc-num" id="dcNDL">∞</span>
-    </div>
-    <div class="dc-stat">
-      <span class="dc-label">Temp</span>
-      <span class="dc-num" id="dcTemp">28°C</span>
-    </div>
-    <div class="dc-stat">
-      <span class="dc-label">Pressure</span>
-      <span class="dc-num" id="dcPressure">1.0 ata</span>
-    </div>
-  </div>
-  <div class="dc-stat" style="margin-bottom: 8px;">
-    <span class="dc-label">Tank · <span id="dcTankPsi">200</span> bar</span>
-    <div class="dc-bar" id="dcTankBar"><span style="width: 100%"></span></div>
-  </div>
-  <div class="dc-rail-mini">
-    <span class="dc-tick-mini" style="top: 0%">0</span>
-    <span class="dc-tick-mini" style="top: 33%">7</span>
-    <span class="dc-tick-mini" style="top: 66%">14</span>
-    <span class="dc-tick-mini" style="top: 100%">20</span>
-    <span class="dc-needle-mini" id="dcNeedle" style="top: 0%"></span>
+  <div class="hud-block">
+    <span class="hud-label">Bottom T</span>
+    <span class="hud-value-sm" id="hudTime">00:00</span>
   </div>
 </aside>
 
@@ -1070,14 +1142,6 @@
 </main>
 
 <!-- gallery removed — media now populates the main dive stream -->
-
-<!-- ══════════ SAFETY STOP ══════════ -->
-<section class="safety-stop" aria-label="Safety stop">
-  <div class="ss-head">◆ Safety Stop · 5 m</div>
-  <div class="ss-ring" aria-hidden="true"></div>
-  <div class="ss-timer" id="ssTimer">3:00</div>
-  <p class="ss-note">Three minutes hanging in the blue while the nitrogen unwinds.<br>Breathe. Look up. The light is good here.</p>
-</section>
 
 <!-- ══════════ SURFACE LOG — debrief ══════════ -->
 <section class="surface-log" aria-label="Surface log">
@@ -1209,33 +1273,18 @@
   }, { threshold: 0.18 });
   document.querySelectorAll('.dive-card').forEach(c => cardObserver.observe(c));
 
-  /* ── Dive computer + descent driver ──
-     Drives the full HUD as you scroll through the dive stream:
-       • depth (m) from 0 → 20
-       • bottom time (mm:ss) — accumulates while submerged
-       • tank pressure depletes from 200 bar → ~70 bar
-       • temperature drops with depth (28°C surface → 18°C deep)
-       • ambient pressure increases (1 ata + 0.1 per m)
-       • no-deco-limit shrinks
-       • caustics fade out
-       • vignette closes in
-     */
+  /* ── Descent driver — drives the simplified bottom HUD ── */
   let __currentDepth = 0;
-  let __maxDepth = 0;
   (function depthTracker() {
-    const stream     = document.getElementById('diveStream');
-    const caustics   = document.getElementById('causticsLayer');
-    const vignette   = document.getElementById('depthVignette');
-    const dcDepth    = document.getElementById('dcDepth');
-    const dcNeedle   = document.getElementById('dcNeedle');
-    const dcTime     = document.getElementById('dcTime');
-    const dcNDL      = document.getElementById('dcNDL');
-    const dcTemp     = document.getElementById('dcTemp');
-    const dcPressure = document.getElementById('dcPressure');
-    const dcTankPsi  = document.getElementById('dcTankPsi');
-    const dcTankBar  = document.getElementById('dcTankBar');
-    const eqPrompt   = document.getElementById('equalizePrompt');
-    if (!stream || !dcDepth) return;
+    const stream    = document.getElementById('diveStream');
+    const caustics  = document.getElementById('causticsLayer');
+    const vignette  = document.getElementById('depthVignette');
+    const hudDepth  = document.getElementById('hudDepth');
+    const hudTank   = document.getElementById('hudTankBar');
+    const hudTime   = document.getElementById('hudTime');
+    const tankFill  = document.getElementById('tankFill');
+    const eqPrompt  = document.getElementById('equalizePrompt');
+    if (!stream || !hudDepth) return;
 
     const MAX_DEPTH = 20;
     let diveStartTs = null;
@@ -1255,75 +1304,45 @@
       t = Math.max(0, Math.min(1, t));
       const depth = Math.round(t * MAX_DEPTH);
       __currentDepth = depth;
-      __maxDepth = Math.max(__maxDepth, depth);
 
-      // Trigger dive timer once we start descending
-      if (depth > 0 && diveStartTs === null) {
-        diveStartTs = Date.now();
-      }
+      if (depth > 0 && diveStartTs === null) diveStartTs = Date.now();
 
-      // Equalize prompt — flash briefly between 1m and 3m
       if (!eqShown && depth >= 1 && depth <= 3 && eqPrompt) {
         eqShown = true;
         eqPrompt.classList.add('show');
         setTimeout(() => eqPrompt.classList.remove('show'), 3500);
       }
 
-      // Primary depth readout
-      dcDepth.textContent = depth;
-      if (dcNeedle) dcNeedle.style.top = (t * 100) + '%';
+      hudDepth.textContent = depth;
 
-      // Temperature — surface 28°C → deep 18°C
-      const temp = Math.round(28 - (depth / MAX_DEPTH) * 10);
-      if (dcTemp) dcTemp.textContent = temp + '°C';
-
-      // Ambient pressure (1 ata + 0.1 per metre)
-      const ata = (1 + depth * 0.1).toFixed(1);
-      if (dcPressure) dcPressure.textContent = ata + ' ata';
-
-      // Tank — starts 200 bar, drops ~ proportional to depth + time
-      const baseBar = 200 - depth * 5;   // depth alone takes off 100 bar at 20m
-      const timeBar = diveStartTs ? Math.min(30, (Date.now() - diveStartTs) / 1000 * 0.4) : 0;
+      // Tank — starts 200 bar, depletes with depth + time
+      const baseBar = 200 - depth * 5;
+      const timeBar = diveStartTs ? Math.min(30, (Date.now() - diveStartTs) / 1000 * 0.35) : 0;
       const tankBar = Math.max(50, Math.round(baseBar - timeBar));
-      if (dcTankPsi) dcTankPsi.textContent = tankBar;
-      if (dcTankBar) {
-        const pct = (tankBar / 200) * 100;
-        dcTankBar.firstElementChild.style.width = pct + '%';
-        dcTankBar.classList.toggle('danger', tankBar < 80);
+      if (hudTank)  hudTank.textContent = tankBar;
+      if (tankFill) {
+        // Shrink the fill rectangle's width from full (58) down based on remaining %
+        const pct = tankBar / 200;
+        tankFill.setAttribute('width', (58 * pct).toFixed(1));
       }
 
-      // No-deco limit — simple curve
-      if (dcNDL) {
-        let ndl;
-        if (depth < 10)      ndl = '∞';
-        else if (depth < 12) ndl = '147';
-        else if (depth < 15) ndl = '78';
-        else if (depth < 18) ndl = '56';
-        else                 ndl = '37';
-        dcNDL.textContent = ndl;
-        dcNDL.classList.toggle('warn', depth >= 15);
-      }
-
-      // Caustics
+      // Caustics fade with depth
       if (caustics) {
-        const causticsOpacity = Math.max(0, 0.6 * (1 - depth / 12));
-        caustics.style.opacity = causticsOpacity.toFixed(2);
+        caustics.style.opacity = Math.max(0, 0.6 * (1 - depth / 12)).toFixed(2);
       }
-
-      // Vignette closes in as we go deeper
+      // Vignette closes in
       if (vignette) {
         const vig = Math.min(0.75, (depth / MAX_DEPTH) * 0.85);
         vignette.style.setProperty('--vig', vig.toFixed(2));
       }
     }
 
-    // Tick the bottom time every second
     setInterval(() => {
-      if (diveStartTs && dcTime) {
+      if (diveStartTs && hudTime) {
         const elapsed = (Date.now() - diveStartTs) / 1000;
-        dcTime.textContent = fmtTime(elapsed);
+        hudTime.textContent = fmtTime(elapsed);
       }
-      update(); // re-run so tank pressure ticks down
+      update();
     }, 1000);
 
     update();
@@ -1354,24 +1373,91 @@
     }
   })();
 
-  /* ── Marine life — occasional fish silhouettes swimming across ── */
+  /* ── Marine life — distinct silhouettes, drift upward as you scroll down ── */
   (function spawnMarineLife() {
     const layer = document.getElementById('marineLife');
     if (!layer) return;
 
-    // Silhouette SVGs (simple, friendly forms)
-    const fishSVG = `<svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg"><path d="M5 20 Q15 5 45 8 Q75 8 85 20 Q75 32 45 32 Q15 35 5 20 Z M85 20 L98 8 L95 20 L98 32 Z" fill="currentColor"/><circle cx="68" cy="17" r="1.6" fill="rgba(255,255,255,0.7)"/></svg>`;
-    const turtleSVG = `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="55" cy="32" rx="28" ry="18" fill="currentColor"/><circle cx="22" cy="28" r="6" fill="currentColor"/><path d="M82 22 L96 14 M82 42 L96 50 M30 50 L26 58 M70 50 L74 58" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="26" r="1.4" fill="rgba(255,255,255,0.7)"/></svg>`;
-    const mantaSVG = `<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg"><path d="M10 30 Q40 4 60 18 Q80 4 110 30 Q80 38 60 32 Q40 38 10 30 Z M55 18 L52 10 M65 18 L68 10" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
-    const sharkSVG = `<svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg"><path d="M5 22 Q20 8 55 10 Q90 10 100 22 L115 12 L110 22 L115 32 L100 22 Q90 30 55 30 Q20 32 5 22 Z M55 10 L52 0 L60 8" fill="currentColor"/><circle cx="80" cy="19" r="1.6" fill="rgba(255,255,255,0.7)"/></svg>`;
+    // ── Distinct creature silhouettes (all heads point LEFT in default orientation) ──
+    // Small reef fish — short tail, rounded body
+    const fishSVG = `<svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 20 Q15 5 45 8 Q75 8 85 20 Q75 32 45 32 Q15 35 5 20 Z M85 20 L98 8 L95 20 L98 32 Z" fill="currentColor"/>
+      <circle cx="22" cy="17" r="1.8" fill="rgba(255,255,255,0.8)"/>
+    </svg>`;
+
+    // Shark — long sleek body, prominent dorsal fin, pointed tail
+    const sharkSVG = `<svg viewBox="0 0 160 50" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 26 Q10 16 35 18 Q70 16 120 22 Q140 22 152 26
+               L158 16 L155 26 L158 36 L152 26
+               Q140 30 120 30 Q70 34 35 32 Q10 34 2 26 Z
+               M68 18 L72 4 L82 16 Z
+               M28 30 L22 38 L32 30 Z" fill="currentColor"/>
+      <circle cx="22" cy="24" r="1.6" fill="rgba(255,255,255,0.7)"/>
+      <line x1="14" y1="28" x2="18" y2="28" stroke="rgba(0,0,0,0.4)" stroke-width="1"/>
+      <line x1="14" y1="30" x2="18" y2="30" stroke="rgba(0,0,0,0.4)" stroke-width="1"/>
+    </svg>`;
+
+    // Manta ray — wide diamond wings, long thin tail
+    const mantaSVG = `<svg viewBox="0 0 180 70" xmlns="http://www.w3.org/2000/svg">
+      <path d="M90 22 Q40 6 8 32 Q40 40 90 36 Q140 40 172 32 Q140 6 90 22 Z
+               M82 20 L78 8 M98 20 L102 8
+               M88 36 Q90 50 92 60 L94 64" fill="currentColor" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+
+    // Sea turtle — oval shell, distinct head left, four flippers
+    const turtleSVG = `<svg viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="62" cy="38" rx="32" ry="22" fill="currentColor"/>
+      <ellipse cx="62" cy="38" rx="28" ry="18" fill="rgba(0,0,0,0.15)"/>
+      <circle cx="22" cy="34" r="8" fill="currentColor"/>
+      <path d="M92 22 L112 14 M92 54 L112 62 M34 58 L30 68 M82 58 L86 68"
+            stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="18" cy="32" r="1.4" fill="rgba(255,255,255,0.85)"/>
+    </svg>`;
+
+    // Whale shark — huge spotted body
+    const whaleSharkSVG = `<svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 30 Q15 15 50 18 Q120 16 175 24 Q190 26 196 30
+               L200 18 L196 30 L200 42 L196 30
+               Q190 34 175 36 Q120 44 50 42 Q15 45 5 30 Z" fill="currentColor"/>
+      <circle cx="38" cy="20" r="1.8" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="60" cy="36" r="1.8" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="82" cy="22" r="1.6" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="105" cy="40" r="1.7" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="128" cy="24" r="1.6" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="150" cy="36" r="1.4" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="20" cy="28" r="1.6" fill="rgba(255,255,255,0.85)"/>
+    </svg>`;
+
+    // Tiny schooling fish (a cluster of dots)
+    const schoolSVG = `<svg viewBox="0 0 80 30" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="10" cy="15" rx="5" ry="2.5" fill="currentColor"/>
+      <ellipse cx="22" cy="10" rx="5" ry="2.5" fill="currentColor"/>
+      <ellipse cx="22" cy="20" rx="5" ry="2.5" fill="currentColor"/>
+      <ellipse cx="35" cy="6" rx="5" ry="2.5" fill="currentColor"/>
+      <ellipse cx="35" cy="15" rx="5" ry="2.5" fill="currentColor"/>
+      <ellipse cx="35" cy="24" rx="5" ry="2.5" fill="currentColor"/>
+      <ellipse cx="48" cy="10" rx="5" ry="2.5" fill="currentColor"/>
+      <ellipse cx="48" cy="20" rx="5" ry="2.5" fill="currentColor"/>
+      <ellipse cx="60" cy="15" rx="5" ry="2.5" fill="currentColor"/>
+    </svg>`;
+
+    // Jellyfish — drifts down (no horizontal animation needed), but we keep it simple
+    const jellySVG = `<svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 30 Q8 6 30 6 Q52 6 52 30 L48 32 L44 30 L40 32 L36 30 L32 32 L28 30 L24 32 L20 30 L16 32 L12 30 Z" fill="currentColor" opacity="0.7"/>
+      <path d="M16 32 Q18 50 14 70 M24 32 Q26 55 22 78 M30 32 Q32 50 30 78 M36 32 Q34 55 38 78 M44 32 Q42 50 46 70"
+            stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.55"/>
+    </svg>`;
 
     const creatures = [
-      { svg: fishSVG,   w: 38, weight: 5 },
-      { svg: fishSVG,   w: 26, weight: 5 },
-      { svg: fishSVG,   w: 46, weight: 3 },
-      { svg: turtleSVG, w: 70, weight: 1 },
-      { svg: mantaSVG,  w: 110, weight: 1 },
-      { svg: sharkSVG,  w: 90, weight: 1 },
+      { svg: fishSVG,       w: 30, weight: 6 },
+      { svg: fishSVG,       w: 44, weight: 4 },
+      { svg: schoolSVG,     w: 80, weight: 3 },
+      { svg: sharkSVG,      w: 110, weight: 2 },
+      { svg: mantaSVG,      w: 130, weight: 2 },
+      { svg: turtleSVG,     w: 80, weight: 2 },
+      { svg: whaleSharkSVG, w: 180, weight: 1 },
+      { svg: jellySVG,      w: 35, weight: 2 },
     ];
     const pool = [];
     creatures.forEach(c => { for (let i = 0; i < c.weight; i++) pool.push(c); });
@@ -1381,110 +1467,108 @@
       const el = document.createElement('div');
       el.className = 'swimmer' + (Math.random() < 0.5 ? ' flip' : '');
       el.style.setProperty('--w', c.w + 'px');
-      const duration = 28 + Math.random() * 35;       // 28–63s — slow glide
+      const duration = 32 + Math.random() * 40;       // 32–72s — slower glide
       el.style.setProperty('--d', duration + 's');
       el.style.setProperty('--delay', '0s');
-      el.style.top = (10 + Math.random() * 70) + 'vh';
+      const startTop = 15 + Math.random() * 70;       // 15–85vh
+      el.style.top = startTop + 'vh';
+      el.dataset.startTop = startTop;
       // Darker silhouette as we descend
       const tintAlpha = 0.45 + Math.min(0.45, __currentDepth / 20 * 0.45);
       el.style.color = `rgba(2,12,20,${tintAlpha.toFixed(2)})`;
       el.innerHTML = c.svg;
       layer.appendChild(el);
-      setTimeout(() => el.remove(), duration * 1000 + 200);
+      setTimeout(() => el.remove(), duration * 1000 + 500);
     }
 
     // Initial trickle + recurring spawn
-    setTimeout(spawnOne, 2500);
+    setTimeout(spawnOne, 1500);
+    setTimeout(spawnOne, 4000);
     setInterval(() => {
-      // Spawn rate scales gently with depth (more life in the reef)
-      if (Math.random() < 0.7) spawnOne();
-    }, 6500);
-  })();
+      if (Math.random() < 0.85) spawnOne();
+    }, 5500);
 
-  /* ── Safety stop countdown — starts when scrolled into view ── */
-  (function safetyStop() {
-    const el = document.getElementById('ssTimer');
-    if (!el) return;
-    const section = el.closest('.safety-stop');
-    let started = false, remaining = 180;
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(en => {
-        if (en.isIntersecting && !started) {
-          started = true;
-          const id = setInterval(() => {
-            remaining--;
-            const m = Math.floor(remaining / 60);
-            const s = remaining % 60;
-            el.textContent = m + ':' + String(s).padStart(2,'0');
-            if (remaining <= 0) { clearInterval(id); el.textContent = '0:00 ✓'; }
-          }, 1000);
-        }
+    // ── Drift swimmers upward relative to scroll ──
+    // The deeper we go, the more they appear to move up (illusion of descent).
+    let lastScroll = window.scrollY;
+    function onScroll() {
+      const delta = window.scrollY - lastScroll;
+      lastScroll = window.scrollY;
+      // Move each visible swimmer slightly up
+      const swimmers = layer.querySelectorAll('.swimmer');
+      swimmers.forEach(s => {
+        const cur = parseFloat(s.style.top) || 50;
+        // Move 0.02vh upward per pixel scrolled down
+        const newTop = cur - (delta * 0.012);
+        s.style.top = newTop + 'vh';
       });
-    }, { threshold: 0.5 });
-    obs.observe(section);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
   })();
 
-  /* ── Build dive stream — sorted bright→dark (surface→deep) by measured avg colour ── */
+  /* ── Build dive stream — sorted bright→dark (surface→deep) by measured avg colour.
+        Files are prefixed 01_…47_ for stable ordering. Cards use small thumbnails;
+        the HD original loads only when the user opens the lightbox. ── */
   (function buildDiveStream() {
     const stream = document.getElementById('diveStream');
     if (!stream) return;
-    const MEDIA_DIR = '../../media/Dive/';
+    const MEDIA_DIR  = '../../media/Dive/';
+    const THUMB_DIR  = '../../media/Dive/thumbs/';
 
-    // Ordered by composite brightness+blueness DESC (clearest blue = surface, darkest = deep).
-    // Videos are inserted near their location group.
+    // Ordered surface → deep. Videos interleaved with their location group.
     const files = [
-      "Thailand_2022-07-13_02.JPG",
-      "Cyprus_2023-05-08_04.JPG",
-      "Indonesia_2022-06-03_01.JPG",
-      "Cyprus_2023-05-08_03.JPG",
-      "Grenada_2024-06-26_02.JPG",
-      "Cyprus_2023-05-08_01.JPG",
-      "Thailand_2022-07-13_01.JPG",
-      "Indonesia_2022-06-02_01.JPG",
-      "Thailand_2022-07-13_06.JPG",
-      "Indonesia_2022-06-11_01.JPG",
-      "St_Vincent_2024-06-28_03.JPG",
-      "Tanzania_2023-07-24_02.JPG",
-      "St_Vincent_2024-06-28_01.JPG",
-      "Grenada_2024-06-26_01.JPG",
-      "Cyprus_2023-05-08_02.JPG",
-      "Indonesia_2022-06-02_02.JPG",
-      "St_Lucia_2024-06-20_01.JPG",
-      "St_Lucia_2024-06-20_01.mov",
-      "St_Lucia_2024-06-20_02.mov",
-      "Thailand_2022-07-10_01.JPG",
-      "Tanzania_2023-07-26_01.JPG",
-      "St_Vincent_2024-06-28_02.JPG",
-      "Tanzania_2023-07-25_01.mov",
-      "Tanzania_2023-07-25_02.mov",
-      "Tanzania_2023-07-26_05.JPG",
-      "Tanzania_2023-07-24_01.JPG",
-      "Indonesia_2022-06-03_02.JPG",
-      "Tanzania_2023-07-26_03.JPG",
-      "Thailand_2022-07-13_04.JPG",
-      "Borneo_2022-07-20_01.JPG",
-      "Seychelles_2025_01.JPG",
-      "Seychelles_2025-07-21_01.mov",
-      "Tanzania_2023-07-24_03.JPG",
-      "Tanzania_2023-07-26_04.JPG",
-      "St_Vincent_2024-06-29_01.JPG",
-      "St_Vincent_2024-06-28_01.mov",
-      "Tanzania_2023-07-26_02.JPG",
-      "Grenada_2024-06-24_03.JPG",
-      "Grenada_2024-06-24_01.JPG",
-      "Grenada_2024-06-24_01.mp4",
-      "Thailand_2022-07-13_03.JPG",
-      "Grenada_2024-06-24_02.JPG",
-      "Malaysia_2022-08-22_01.mp4",
-      "Borneo_2022-07-20_02.JPG",
-      "Borneo_2022-07-20_01.mov",
-      "Thailand_2022-07-13_05.JPG",
-      "Borneo_2022-07-20_03.JPG",
+      "01_Thailand_2022-07-13_02.JPG",
+      "02_Cyprus_2023-05-08_04.JPG",
+      "03_Indonesia_2022-06-03_01.JPG",
+      "04_Cyprus_2023-05-08_03.JPG",
+      "05_Grenada_2024-06-26_02.JPG",
+      "06_Cyprus_2023-05-08_01.JPG",
+      "07_Thailand_2022-07-13_01.JPG",
+      "08_Indonesia_2022-06-02_01.JPG",
+      "09_Thailand_2022-07-13_06.JPG",
+      "10_Indonesia_2022-06-11_01.JPG",
+      "11_St_Vincent_2024-06-28_03.JPG",
+      "12_Tanzania_2023-07-24_02.JPG",
+      "13_St_Vincent_2024-06-28_01.JPG",
+      "14_Grenada_2024-06-26_01.JPG",
+      "15_Cyprus_2023-05-08_02.JPG",
+      "16_Indonesia_2022-06-02_02.JPG",
+      "17_St_Lucia_2024-06-20_01.JPG",
+      "18_St_Lucia_2024-06-20_01.mp4",
+      "19_St_Lucia_2024-06-20_02.mp4",
+      "20_Thailand_2022-07-10_01.JPG",
+      "21_Tanzania_2023-07-26_01.JPG",
+      "22_St_Vincent_2024-06-28_02.JPG",
+      "23_Tanzania_2023-07-25_01.mp4",
+      "24_Tanzania_2023-07-25_02.mp4",
+      "25_Tanzania_2023-07-26_05.JPG",
+      "26_Tanzania_2023-07-24_01.JPG",
+      "27_Indonesia_2022-06-03_02.JPG",
+      "28_Tanzania_2023-07-26_03.JPG",
+      "29_Thailand_2022-07-13_04.JPG",
+      "30_Borneo_2022-07-20_01.JPG",
+      "31_Seychelles_2025_01.JPG",
+      "32_Seychelles_2025-07-21_01.mp4",
+      "33_Tanzania_2023-07-24_03.JPG",
+      "34_Tanzania_2023-07-26_04.JPG",
+      "35_St_Vincent_2024-06-29_01.JPG",
+      "36_St_Vincent_2024-06-28_01.mp4",
+      "37_Tanzania_2023-07-26_02.JPG",
+      "38_Grenada_2024-06-24_03.JPG",
+      "39_Grenada_2024-06-24_01.JPG",
+      "40_Grenada_2024-06-24_01.mp4",
+      "41_Thailand_2022-07-13_03.JPG",
+      "42_Grenada_2024-06-24_02.JPG",
+      "43_Malaysia_2022-08-22_01.mp4",
+      "44_Borneo_2022-07-20_02.JPG",
+      "45_Borneo_2022-07-20_01.mp4",
+      "46_Thailand_2022-07-13_05.JPG",
+      "47_Borneo_2022-07-20_03.JPG",
     ];
 
-    // Parse filename → { location, year }
+    // Parse filename → { location, year } (strips leading NN_ prefix)
     function parseFilename(fn) {
-      const base = fn.replace(/\.[^.]+$/, '');
+      const base = fn.replace(/\.[^.]+$/, '').replace(/^\d+_/, '');
       const parts = base.split('_');
       let yearIdx = -1;
       for (let i = 0; i < parts.length; i++) {
@@ -1497,39 +1581,98 @@
       };
     }
 
-    // IntersectionObserver to autoplay/pause videos when visible
+    const isVid = fn => ['mp4','mov','m4v','webm'].includes(fn.split('.').pop().toLowerCase());
+
+    // ── Lazy video loader: only sets src + preloads when card enters viewport ──
     const vidObserver = new IntersectionObserver((entries) => {
       entries.forEach(en => {
         const v = en.target.querySelector('video');
         if (!v) return;
-        if (en.isIntersecting) { v.play().catch(()=>{}); } else { v.pause(); }
+        if (en.isIntersecting) {
+          if (!v.src && v.dataset.src) {
+            v.src = v.dataset.src;
+            v.preload = 'auto';
+          }
+          v.play().catch(()=>{});
+        } else {
+          v.pause();
+        }
       });
-    }, { threshold: 0.5 });
+    }, { rootMargin: '200px', threshold: 0.1 });
 
+    // ── Lightbox for HD viewing ──
+    const lightbox = document.createElement('div');
+    lightbox.id = 'diveLightbox';
+    lightbox.innerHTML = `
+      <button class="dl-close" aria-label="Close">×</button>
+      <div class="dl-content">
+        <img alt="" />
+        <video controls muted playsinline></video>
+      </div>
+      <div class="dl-caption"></div>
+    `;
+    document.body.appendChild(lightbox);
+    const dlImg  = lightbox.querySelector('img');
+    const dlVid  = lightbox.querySelector('video');
+    const dlCap  = lightbox.querySelector('.dl-caption');
+    const dlClose = lightbox.querySelector('.dl-close');
+
+    function openLightbox(fn) {
+      const src = MEDIA_DIR + fn;
+      const meta = parseFilename(fn);
+      dlCap.textContent = `${meta.location} · ${meta.year}`;
+      if (isVid(fn)) {
+        dlImg.style.display = 'none';
+        dlVid.style.display = 'block';
+        dlVid.src = src;
+        dlVid.play().catch(()=>{});
+      } else {
+        dlVid.pause(); dlVid.src = '';
+        dlVid.style.display = 'none';
+        dlImg.style.display = 'block';
+        dlImg.src = src;
+      }
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      dlVid.pause(); dlVid.src = '';
+      dlImg.src = '';
+      document.body.style.overflow = '';
+    }
+    dlClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    // ── Build cards (DOM is light; thumbs are tiny; HD only on click) ──
     files.forEach((fn, idx) => {
-      const ext = fn.split('.').pop().toLowerCase();
       const side  = (idx % 2 === 0) ? 'left' : 'right';
       const { location, year } = parseFilename(fn);
-      const isVideo = ['mp4','mov','m4v','webm'].includes(ext);
-
       const article = document.createElement('article');
       article.className = 'dive-card';
       article.setAttribute('data-side', side);
-      // Approximate depth driven by position — used only by CSS for image tint, not displayed.
       const depth = Math.round((idx / Math.max(1, files.length - 1)) * 20);
       article.style.setProperty('--depth', depth + '');
 
       // ── Photo / video panel ──
       const photo = document.createElement('div'); photo.className = 'dive-photo';
-      const src = MEDIA_DIR + encodeURIComponent(fn).replace(/%2F/g,'/');
-      if (isVideo) {
+      photo.addEventListener('click', () => openLightbox(fn));
+
+      if (isVid(fn)) {
         const v = document.createElement('video');
-        v.src = src; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata';
+        v.dataset.src = MEDIA_DIR + fn;     // hold off loading until visible
+        v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'none';
         v.setAttribute('playsinline',''); v.setAttribute('muted','');
         photo.appendChild(v);
+        const badge = document.createElement('span'); badge.className = 'media-type-badge';
+        badge.textContent = '▶ Video'; photo.appendChild(badge);
       } else {
         const img = document.createElement('img');
-        img.src = src; img.loading = idx < 4 ? 'eager' : 'lazy'; img.alt = location;
+        img.src = THUMB_DIR + fn;            // small thumbnail by default
+        img.loading = idx < 3 ? 'eager' : 'lazy';
+        img.decoding = 'async';
+        img.alt = location;
         photo.appendChild(img);
       }
 
@@ -1550,7 +1693,7 @@
 
     // Populate surface-log dive count (images only)
     const slDives = document.getElementById('slDives');
-    if (slDives) slDives.textContent = files.filter(f => !['mp4','mov','m4v','webm'].includes(f.split('.').pop().toLowerCase())).length;
+    if (slDives) slDives.textContent = files.filter(f => !isVid(f)).length;
   })();
 </script>
 
