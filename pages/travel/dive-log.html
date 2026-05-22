@@ -23,7 +23,8 @@
       --text-mute:   rgba(244,249,252,0.5);
       --line:        rgba(255,255,255,0.12);
       --line-strong: rgba(255,255,255,0.22);
-      --accent:      #ffe8b8;     /* warm sand — contrast against blue */
+      --accent:      #e8dcc4;     /* warm sand — same as homepage */
+      --accent-hot:  #ffd47a;     /* used sparingly for HUD highlights */
       --c-photo:     #ff9b5e;
       --c-travel:    #6fc6e8;
       --c-tech:      #6a8db5;
@@ -567,6 +568,360 @@
       .footer-slim { flex-direction: column; text-align: center; gap: 0.75rem; }
     }
 
+    /* ══════════════════════════════════════════════════════════════════
+       ══ MARINE SNOW + PARTICULATES                                   ══
+       ══   Tiny specks drifting downward — counterpoint to bubbles.   ══
+       ══════════════════════════════════════════════════════════════════ */
+    .marine-snow { position: absolute; inset: 0; pointer-events: none; }
+    .speck {
+      position: absolute; top: -20px;
+      width: var(--s, 2px); height: var(--s, 2px);
+      background: rgba(255,255,255,0.55);
+      border-radius: 50%;
+      opacity: 0;
+      filter: blur(0.4px);
+      animation: snowFall var(--d, 22s) linear var(--delay, 0s) infinite;
+    }
+    @keyframes snowFall {
+      0%   { transform: translateY(0) translateX(0); opacity: 0; }
+      10%  { opacity: var(--o, 0.55); }
+      90%  { opacity: var(--o, 0.55); }
+      100% { transform: translateY(calc(100vh + 40px)) translateX(var(--drift, 20px)); opacity: 0; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ FISH / MARINE LIFE SILHOUETTES                               ══
+       ══   SVG fish that occasionally glide across the screen.        ══
+       ══════════════════════════════════════════════════════════════════ */
+    .marine-life { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+    .swimmer {
+      position: absolute;
+      opacity: 0;
+      color: rgba(2,20,31,0.55);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+      animation: swimAcross var(--d, 38s) linear var(--delay, 0s) infinite;
+      will-change: transform, opacity;
+    }
+    .swimmer.flip { transform: scaleX(-1); }
+    .swimmer svg { display: block; width: var(--w, 60px); height: auto; }
+    @keyframes swimAcross {
+      0%   { transform: translateX(-15vw); opacity: 0; }
+      10%  { opacity: 0.7; }
+      85%  { opacity: 0.7; }
+      100% { transform: translateX(115vw); opacity: 0; }
+    }
+    @keyframes swimAcrossFlip {
+      0%   { transform: translateX(115vw) scaleX(-1); opacity: 0; }
+      10%  { opacity: 0.7; }
+      85%  { opacity: 0.7; }
+      100% { transform: translateX(-15vw) scaleX(-1); opacity: 0; }
+    }
+    .swimmer.flip { animation-name: swimAcrossFlip; }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ DEPTH VIGNETTE — closes in as you descend                    ══
+       ══════════════════════════════════════════════════════════════════ */
+    .depth-vignette {
+      position: fixed; inset: 0; pointer-events: none; z-index: 2;
+      background: radial-gradient(ellipse 110% 80% at center,
+        transparent 30%,
+        rgba(0,0,0,0.0) 50%,
+        rgba(0,0,0,var(--vig, 0)) 100%);
+      transition: background 0.4s linear;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ DIVE COMPUTER — replaces simple depth meter                  ══
+       ══════════════════════════════════════════════════════════════════ */
+    .dive-computer {
+      position: fixed; top: 50%; right: 1.5rem; z-index: 60;
+      transform: translateY(-50%);
+      width: 178px;
+      background: linear-gradient(180deg, rgba(2,20,31,0.78), rgba(2,12,20,0.86));
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      border: 1px solid rgba(232,220,196,0.18);
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+      pointer-events: none;
+    }
+    .dc-header {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.56rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(232,220,196,0.7);
+      padding-bottom: 8px; margin-bottom: 10px;
+      border-bottom: 1px dashed rgba(232,220,196,0.18);
+    }
+    .dc-header .dc-status::before {
+      content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: #5fd99a; margin-right: 6px; box-shadow: 0 0 6px #5fd99a;
+      animation: dcPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes dcPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .dc-primary {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 6px;
+      margin-bottom: 8px;
+    }
+    .dc-primary .dc-val {
+      font-size: 2rem; font-weight: 700; color: #fff;
+      line-height: 1; letter-spacing: -0.02em;
+      text-shadow: 0 0 14px rgba(232,220,196,0.25);
+    }
+    .dc-primary .dc-unit {
+      font-size: 0.62rem; letter-spacing: 0.16em; color: rgba(232,220,196,0.6);
+      text-transform: uppercase;
+    }
+    .dc-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px;
+      margin-bottom: 10px;
+    }
+    .dc-stat { display: flex; flex-direction: column; gap: 2px; }
+    .dc-stat .dc-label { font-size: 0.5rem; letter-spacing: 0.16em; color: rgba(232,220,196,0.55); text-transform: uppercase; }
+    .dc-stat .dc-num   { font-size: 0.95rem; color: #fff; font-weight: 600; letter-spacing: -0.01em; }
+    .dc-stat .dc-num.warn { color: var(--accent-hot); }
+    .dc-bar {
+      position: relative; height: 4px; border-radius: 999px;
+      background: rgba(255,255,255,0.08); overflow: hidden;
+    }
+    .dc-bar > span {
+      position: absolute; top: 0; left: 0; bottom: 0;
+      background: linear-gradient(to right, #5fd99a, var(--accent-hot));
+      transition: width 0.3s ease;
+    }
+    .dc-bar.danger > span { background: linear-gradient(to right, var(--accent-hot), #ff7a6a); }
+    .dc-rail-mini {
+      position: relative; margin-top: 8px;
+      height: 90px; border-left: 1px solid rgba(232,220,196,0.25);
+      padding-left: 8px;
+    }
+    .dc-rail-mini .dc-needle-mini {
+      position: absolute; left: -4px; top: 0; width: 7px; height: 7px;
+      border-radius: 50%; background: var(--accent-hot);
+      box-shadow: 0 0 8px var(--accent-hot);
+      transform: translateY(-50%);
+      transition: top 0.18s cubic-bezier(0.16,1,0.3,1);
+    }
+    .dc-rail-mini .dc-tick-mini {
+      position: absolute; left: 6px; font-size: 0.5rem;
+      letter-spacing: 0.12em; color: rgba(232,220,196,0.5); transform: translateY(-50%);
+    }
+    @media (max-width: 900px) { .dive-computer { display: none; } }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ PRE-DIVE BRIEFING                                            ══
+       ══════════════════════════════════════════════════════════════════ */
+    .briefing {
+      max-width: 720px; margin: 2.5rem auto 0;
+      background: linear-gradient(180deg, rgba(2,20,31,0.55), rgba(2,20,31,0.35));
+      border: 1px solid rgba(232,220,196,0.18);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      backdrop-filter: blur(10px);
+      text-align: left;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.35);
+    }
+    .briefing-head {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+    }
+    .briefing-head .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent-hot);
+      box-shadow: 0 0 0 0 rgba(255,212,122,0.6);
+      animation: brfPulse 2.2s ease-out infinite;
+    }
+    @keyframes brfPulse {
+      0%   { box-shadow: 0 0 0 0   rgba(255,212,122,0.55); }
+      70%  { box-shadow: 0 0 0 12px rgba(255,212,122,0);   }
+      100% { box-shadow: 0 0 0 0   rgba(255,212,122,0);    }
+    }
+    .briefing-grid {
+      display: grid; gap: 0.85rem 1.5rem;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .brf-cell {
+      display: flex; flex-direction: column; gap: 4px;
+      padding-left: 0.9rem;
+      border-left: 1px solid rgba(232,220,196,0.22);
+    }
+    .brf-cell .lbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(232,220,196,0.65);
+    }
+    .brf-cell .val { font-size: 0.95rem; color: #fff; font-weight: 600; }
+    @media (max-width: 640px) {
+      .briefing-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ DEPTH-ZONE MARKERS — inserted between dive cards             ══
+       ══════════════════════════════════════════════════════════════════ */
+    .zone-marker {
+      position: relative; z-index: 2;
+      margin: 1rem auto 5rem;
+      max-width: 720px; padding: 0 2rem;
+      text-align: center;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .zone-marker.visible { opacity: 1; transform: translateY(0); }
+    .zone-marker .zone-depth {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--accent);
+      display: inline-flex; align-items: center; gap: 0.9rem;
+    }
+    .zone-marker .zone-depth::before,
+    .zone-marker .zone-depth::after {
+      content: ''; height: 1px; width: 70px;
+      background: linear-gradient(to right, transparent, rgba(232,220,196,0.55), transparent);
+    }
+    .zone-marker .zone-name {
+      display: block; margin-top: 0.55rem;
+      font-size: clamp(1.3rem, 2.6vw, 1.85rem);
+      font-weight: 700; letter-spacing: -0.02em; color: #fff;
+    }
+    .zone-marker .zone-note {
+      display: block; margin-top: 0.4rem;
+      font-size: 0.82rem; color: rgba(255,255,255,0.65);
+      max-width: 44ch; margin-left: auto; margin-right: auto; line-height: 1.6;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ SAFETY STOP                                                  ══
+       ══════════════════════════════════════════════════════════════════ */
+    .safety-stop {
+      position: relative; z-index: 2;
+      max-width: 640px; margin: 4rem auto 2rem;
+      padding: 1.75rem 2rem;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(2,20,31,0.6), rgba(2,20,31,0.4));
+      border: 1px dashed rgba(232,220,196,0.35);
+      border-radius: 18px;
+      backdrop-filter: blur(8px);
+    }
+    .safety-stop .ss-head {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--accent-hot); margin-bottom: 0.75rem;
+    }
+    .safety-stop .ss-timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.6rem; font-weight: 700; color: #fff;
+      letter-spacing: -0.02em; line-height: 1;
+      text-shadow: 0 0 20px rgba(255,212,122,0.25);
+    }
+    .safety-stop .ss-ring {
+      width: 90px; height: 90px; margin: 0.75rem auto 1rem;
+      border-radius: 50%;
+      border: 2px solid rgba(232,220,196,0.2);
+      border-top-color: var(--accent-hot);
+      animation: ssSpin 3s linear infinite;
+    }
+    @keyframes ssSpin { to { transform: rotate(360deg); } }
+    .safety-stop .ss-note {
+      font-size: 0.85rem; color: rgba(255,255,255,0.72);
+      max-width: 38ch; margin: 0.6rem auto 0; line-height: 1.6;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ SURFACE LOG — debrief stats                                  ══
+       ══════════════════════════════════════════════════════════════════ */
+    .surface-log {
+      position: relative; z-index: 2;
+      max-width: 1140px; margin: 0 auto;
+      padding: 5rem 2rem 4rem;
+      background: linear-gradient(180deg, rgba(184,242,247,0.05), rgba(184,242,247,0.18));
+      border-top: 1px solid rgba(184,242,247,0.25);
+    }
+    .surface-log .sl-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--accent); position: relative; display: inline-block; padding-top: 60px;
+      margin-bottom: 14px;
+    }
+    .surface-log .sl-label::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 2px; height: 50px; background: var(--accent);
+    }
+    .surface-log .sl-wrap { text-align: center; margin-bottom: 3rem; }
+    .surface-log h2 {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.04em;
+      color: #fff; margin-bottom: 0.6rem;
+    }
+    .surface-log .sl-sub {
+      color: rgba(255,255,255,0.75); max-width: 560px; margin: 0 auto;
+      font-size: 0.98rem; line-height: 1.7;
+    }
+    .sl-stats {
+      display: grid; gap: 1.25rem;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 880px; margin: 0 auto 2.5rem;
+    }
+    .sl-stat {
+      background: rgba(2,20,31,0.45);
+      border: 1px solid rgba(232,220,196,0.16);
+      border-radius: 14px;
+      padding: 1.35rem 1.25rem;
+      text-align: left;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .sl-stat:hover { transform: translateY(-3px); border-color: rgba(232,220,196,0.35); }
+    .sl-stat .sl-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.85rem; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -0.02em;
+    }
+    .sl-stat .sl-unit {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.18em; color: var(--accent); text-transform: uppercase;
+      margin-top: 8px;
+    }
+    .sl-stat .sl-name {
+      font-size: 0.75rem; color: rgba(255,255,255,0.65); margin-top: 6px;
+    }
+    @media (max-width: 760px) {
+      .sl-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    .sl-tags {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;
+      max-width: 720px; margin: 0 auto;
+    }
+    .sl-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.78);
+      padding: 0.4rem 0.85rem;
+      border: 1px solid rgba(232,220,196,0.25);
+      border-radius: 999px;
+      background: rgba(2,20,31,0.35);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ══ EQUALIZE PROMPT (flash hint at descent start)                ══
+       ══════════════════════════════════════════════════════════════════ */
+    .equalize-prompt {
+      position: fixed; left: 50%; top: 25%; transform: translateX(-50%);
+      z-index: 80; pointer-events: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--accent-hot);
+      background: rgba(2,20,31,0.75); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,212,122,0.4);
+      border-radius: 999px; padding: 0.6rem 1.1rem;
+      opacity: 0; transition: opacity 0.5s ease;
+    }
+    .equalize-prompt.show { opacity: 1; animation: eqPulse 1.6s ease-in-out 2; }
+    @keyframes eqPulse {
+      0%,100% { transform: translateX(-50%) scale(1); }
+      50%     { transform: translateX(-50%) scale(1.05); }
+    }
+
     /* Reduced motion — kill animations */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -587,10 +942,17 @@
 <!-- Atmosphere layers (fixed) -->
 <div class="ocean-fx" aria-hidden="true">
   <div class="caustics" id="causticsLayer"></div>
+  <div class="marine-snow" id="snowLayer"></div>
   <div class="bubbles" id="bubblesLayer"></div>
 </div>
+<!-- Marine life — swimming silhouettes -->
+<div class="marine-life" id="marineLife" aria-hidden="true"></div>
+<!-- Depth vignette — closes in as we go deeper -->
+<div class="depth-vignette" id="depthVignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 <div class="progress-bar" id="progress"></div>
+<!-- Equalize prompt (flashes briefly when you start descending) -->
+<div class="equalize-prompt" id="equalizePrompt" aria-hidden="true">◆ Equalize ◆</div>
 
 <nav id="navbar">
   <a href="../../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
@@ -643,17 +1005,45 @@
   </button>
 </nav>
 
-<!-- ══════════ DEPTH METER (sticky right side) ══════════ -->
-<aside class="depth-meter" aria-hidden="true">
-  <div class="dm-rail">
-    <span class="dm-tick" style="top: 0%">0 m</span>
-    <span class="dm-tick" style="top: 25%">5 m</span>
-    <span class="dm-tick" style="top: 50%">10 m</span>
-    <span class="dm-tick" style="top: 75%">15 m</span>
-    <span class="dm-tick" style="top: 100%">20 m</span>
-    <div class="dm-needle" id="dmNeedle" style="top: 0%"></div>
+<!-- ══════════ DIVE COMPUTER (sticky right side) ══════════ -->
+<aside class="dive-computer" id="diveComputer" aria-hidden="true">
+  <div class="dc-header">
+    <span class="dc-status">Online</span>
+    <span>DC · 01</span>
   </div>
-  <div class="dm-readout"><strong id="dmValue">0</strong>m · depth</div>
+  <div class="dc-primary">
+    <span class="dc-val" id="dcDepth">0</span>
+    <span class="dc-unit">m · depth</span>
+  </div>
+  <div class="dc-grid">
+    <div class="dc-stat">
+      <span class="dc-label">Bottom T</span>
+      <span class="dc-num" id="dcTime">00:00</span>
+    </div>
+    <div class="dc-stat">
+      <span class="dc-label">No-Deco</span>
+      <span class="dc-num" id="dcNDL">∞</span>
+    </div>
+    <div class="dc-stat">
+      <span class="dc-label">Temp</span>
+      <span class="dc-num" id="dcTemp">28°C</span>
+    </div>
+    <div class="dc-stat">
+      <span class="dc-label">Pressure</span>
+      <span class="dc-num" id="dcPressure">1.0 ata</span>
+    </div>
+  </div>
+  <div class="dc-stat" style="margin-bottom: 8px;">
+    <span class="dc-label">Tank · <span id="dcTankPsi">200</span> bar</span>
+    <div class="dc-bar" id="dcTankBar"><span style="width: 100%"></span></div>
+  </div>
+  <div class="dc-rail-mini">
+    <span class="dc-tick-mini" style="top: 0%">0</span>
+    <span class="dc-tick-mini" style="top: 33%">7</span>
+    <span class="dc-tick-mini" style="top: 66%">14</span>
+    <span class="dc-tick-mini" style="top: 100%">20</span>
+    <span class="dc-needle-mini" id="dcNeedle" style="top: 0%"></span>
+  </div>
 </aside>
 
 <!-- ══════════ HERO ══════════ -->
@@ -664,6 +1054,49 @@
     A descent through every dive I've logged. The water gets darker as you scroll — so do the photos. Click any tile to read about the dive.
   </p>
   <div class="surface-line">0 m — surface</div>
+
+  <!-- Pre-dive briefing — homepage-style mono labels with stats -->
+  <section class="briefing" aria-label="Pre-dive briefing">
+    <div class="briefing-head">
+      <span class="pulse"></span>
+      <span>Pre-Dive Briefing</span>
+    </div>
+    <div class="briefing-grid">
+      <div class="brf-cell">
+        <span class="lbl">Plan</span>
+        <span class="val">Multi-site</span>
+      </div>
+      <div class="brf-cell">
+        <span class="lbl">Max Depth</span>
+        <span class="val">20 m</span>
+      </div>
+      <div class="brf-cell">
+        <span class="lbl">Gas Mix</span>
+        <span class="val">Air · 21%</span>
+      </div>
+      <div class="brf-cell">
+        <span class="lbl">Buddy</span>
+        <span class="val">You</span>
+      </div>
+      <div class="brf-cell">
+        <span class="lbl">Entry</span>
+        <span class="val">Giant stride</span>
+      </div>
+      <div class="brf-cell">
+        <span class="lbl">Visibility</span>
+        <span class="val">20 m+</span>
+      </div>
+      <div class="brf-cell">
+        <span class="lbl">Current</span>
+        <span class="val">Mild</span>
+      </div>
+      <div class="brf-cell">
+        <span class="lbl">Signal</span>
+        <span class="val">Scroll ↓</span>
+      </div>
+    </div>
+  </section>
+
   <span class="scroll-cue" aria-hidden="true">↓</span>
 </header>
 
@@ -679,11 +1112,64 @@
 
 <!-- gallery removed — media now populates the main dive stream -->
 
+<!-- ══════════ SAFETY STOP ══════════ -->
+<section class="safety-stop" aria-label="Safety stop">
+  <div class="ss-head">◆ Safety Stop · 5 m</div>
+  <div class="ss-ring" aria-hidden="true"></div>
+  <div class="ss-timer" id="ssTimer">3:00</div>
+  <p class="ss-note">Three minutes hanging in the blue while the nitrogen unwinds.<br>Breathe. Look up. The light is good here.</p>
+</section>
+
+<!-- ══════════ SURFACE LOG — debrief ══════════ -->
+<section class="surface-log" aria-label="Surface log">
+  <div class="sl-wrap">
+    <span class="sl-label">Back on the boat</span>
+    <h2>Surface Log</h2>
+    <p class="sl-sub">A debrief of everything below — counted up, tagged, and dripping onto the deck.</p>
+  </div>
+
+  <div class="sl-stats">
+    <div class="sl-stat">
+      <div class="sl-num" id="slDives">—</div>
+      <div class="sl-unit">Logged</div>
+      <div class="sl-name">Dives in this log</div>
+    </div>
+    <div class="sl-stat">
+      <div class="sl-num">20<span style="font-size:1rem;color:var(--accent);"> m</span></div>
+      <div class="sl-unit">Max Depth</div>
+      <div class="sl-name">Deepest of the set</div>
+    </div>
+    <div class="sl-stat">
+      <div class="sl-num">15<span style="font-size:1rem;color:var(--accent);">+</span></div>
+      <div class="sl-unit">Sites</div>
+      <div class="sl-name">Reefs · walls · wrecks</div>
+    </div>
+    <div class="sl-stat">
+      <div class="sl-num">7<span style="font-size:1rem;color:var(--accent);"> seas</span></div>
+      <div class="sl-unit">Waters</div>
+      <div class="sl-name">From Andaman to Caribbean</div>
+    </div>
+  </div>
+
+  <div class="sl-tags" aria-label="Marine life spotted">
+    <span class="sl-tag">🐢 Sea turtle</span>
+    <span class="sl-tag">🦈 Reef shark</span>
+    <span class="sl-tag">🐠 Clownfish</span>
+    <span class="sl-tag">🐙 Octopus</span>
+    <span class="sl-tag">🦑 Cuttlefish</span>
+    <span class="sl-tag">🐡 Pufferfish</span>
+    <span class="sl-tag">🪸 Coral wall</span>
+    <span class="sl-tag">⚓ Wreck</span>
+    <span class="sl-tag">🌊 Drift dive</span>
+    <span class="sl-tag">🔦 Night dive</span>
+  </div>
+</section>
+
 <!-- ══════════ BOTTOM MARKER ══════════ -->
 <section class="dive-bottom">
-  <div class="marker">End of log · 20 m</div>
+  <div class="marker">End of log · 0 m · back at surface</div>
   <br>
-  <a href="#">Resurface ↑</a>
+  <a href="#top">Resurface ↑</a>
 </section>
 
 <footer>
@@ -764,39 +1250,219 @@
   }, { threshold: 0.18 });
   document.querySelectorAll('.dive-card').forEach(c => cardObserver.observe(c));
 
-  /* ── Depth meter + caustics fade ──
-     Maps scroll progress between the hero bottom and the dive-stream end
-     to a depth between 0 m and 40 m. Drives:
-       • the needle position on the right-side meter
-       • the readout value
-       • the caustics layer opacity (fades to 0 by ~20 m) */
+  /* ── Dive computer + descent driver ──
+     Drives the full HUD as you scroll through the dive stream:
+       • depth (m) from 0 → 20
+       • bottom time (mm:ss) — accumulates while submerged
+       • tank pressure depletes from 200 bar → ~70 bar
+       • temperature drops with depth (28°C surface → 18°C deep)
+       • ambient pressure increases (1 ata + 0.1 per m)
+       • no-deco-limit shrinks
+       • caustics fade out
+       • vignette closes in
+     */
+  let __currentDepth = 0;
+  let __maxDepth = 0;
   (function depthTracker() {
     const stream     = document.getElementById('diveStream');
-    const needle     = document.getElementById('dmNeedle');
-    const valueEl    = document.getElementById('dmValue');
     const caustics   = document.getElementById('causticsLayer');
-    if (!stream || !needle || !valueEl) return;
+    const vignette   = document.getElementById('depthVignette');
+    const dcDepth    = document.getElementById('dcDepth');
+    const dcNeedle   = document.getElementById('dcNeedle');
+    const dcTime     = document.getElementById('dcTime');
+    const dcNDL      = document.getElementById('dcNDL');
+    const dcTemp     = document.getElementById('dcTemp');
+    const dcPressure = document.getElementById('dcPressure');
+    const dcTankPsi  = document.getElementById('dcTankPsi');
+    const dcTankBar  = document.getElementById('dcTankBar');
+    const eqPrompt   = document.getElementById('equalizePrompt');
+    if (!stream || !dcDepth) return;
 
     const MAX_DEPTH = 20;
+    let diveStartTs = null;
+    let eqShown = false;
+
+    function fmtTime(secs) {
+      const m = Math.floor(secs / 60), s = Math.floor(secs % 60);
+      return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    }
+
     function update() {
       const rect = stream.getBoundingClientRect();
       const top  = rect.top + window.scrollY;
       const span = rect.height;
-      const here = window.scrollY + window.innerHeight * 0.45;   // "eye level"
+      const here = window.scrollY + window.innerHeight * 0.45;
       let t = (here - top) / span;
       t = Math.max(0, Math.min(1, t));
       const depth = Math.round(t * MAX_DEPTH);
-      needle.style.top = (t * 100) + '%';
-      valueEl.textContent = depth;
-      // Caustics dim as we go deeper — fully gone by ~12 m for stronger effect
+      __currentDepth = depth;
+      __maxDepth = Math.max(__maxDepth, depth);
+
+      // Trigger dive timer once we start descending
+      if (depth > 0 && diveStartTs === null) {
+        diveStartTs = Date.now();
+      }
+
+      // Equalize prompt — flash briefly between 1m and 3m
+      if (!eqShown && depth >= 1 && depth <= 3 && eqPrompt) {
+        eqShown = true;
+        eqPrompt.classList.add('show');
+        setTimeout(() => eqPrompt.classList.remove('show'), 3500);
+      }
+
+      // Primary depth readout
+      dcDepth.textContent = depth;
+      if (dcNeedle) dcNeedle.style.top = (t * 100) + '%';
+
+      // Temperature — surface 28°C → deep 18°C
+      const temp = Math.round(28 - (depth / MAX_DEPTH) * 10);
+      if (dcTemp) dcTemp.textContent = temp + '°C';
+
+      // Ambient pressure (1 ata + 0.1 per metre)
+      const ata = (1 + depth * 0.1).toFixed(1);
+      if (dcPressure) dcPressure.textContent = ata + ' ata';
+
+      // Tank — starts 200 bar, drops ~ proportional to depth + time
+      const baseBar = 200 - depth * 5;   // depth alone takes off 100 bar at 20m
+      const timeBar = diveStartTs ? Math.min(30, (Date.now() - diveStartTs) / 1000 * 0.4) : 0;
+      const tankBar = Math.max(50, Math.round(baseBar - timeBar));
+      if (dcTankPsi) dcTankPsi.textContent = tankBar;
+      if (dcTankBar) {
+        const pct = (tankBar / 200) * 100;
+        dcTankBar.firstElementChild.style.width = pct + '%';
+        dcTankBar.classList.toggle('danger', tankBar < 80);
+      }
+
+      // No-deco limit — simple curve
+      if (dcNDL) {
+        let ndl;
+        if (depth < 10)      ndl = '∞';
+        else if (depth < 12) ndl = '147';
+        else if (depth < 15) ndl = '78';
+        else if (depth < 18) ndl = '56';
+        else                 ndl = '37';
+        dcNDL.textContent = ndl;
+        dcNDL.classList.toggle('warn', depth >= 15);
+      }
+
+      // Caustics
       if (caustics) {
         const causticsOpacity = Math.max(0, 0.6 * (1 - depth / 12));
         caustics.style.opacity = causticsOpacity.toFixed(2);
       }
+
+      // Vignette closes in as we go deeper
+      if (vignette) {
+        const vig = Math.min(0.75, (depth / MAX_DEPTH) * 0.85);
+        vignette.style.setProperty('--vig', vig.toFixed(2));
+      }
     }
+
+    // Tick the bottom time every second
+    setInterval(() => {
+      if (diveStartTs && dcTime) {
+        const elapsed = (Date.now() - diveStartTs) / 1000;
+        dcTime.textContent = fmtTime(elapsed);
+      }
+      update(); // re-run so tank pressure ticks down
+    }, 1000);
+
     update();
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
+  })();
+
+  /* ── Marine snow — slow drift downward ── */
+  (function spawnMarineSnow() {
+    const layer = document.getElementById('snowLayer');
+    if (!layer) return;
+    const N = 60;
+    for (let i = 0; i < N; i++) {
+      const s = document.createElement('span');
+      s.className = 'speck';
+      const size = 1 + Math.random() * 2.2;
+      const duration = 18 + Math.random() * 18;
+      const delay = -Math.random() * duration;
+      const drift = (Math.random() - 0.5) * 50;
+      const opacity = 0.25 + Math.random() * 0.4;
+      s.style.setProperty('--s', size + 'px');
+      s.style.setProperty('--d', duration + 's');
+      s.style.setProperty('--delay', delay + 's');
+      s.style.setProperty('--drift', drift + 'px');
+      s.style.setProperty('--o', opacity);
+      s.style.left = (Math.random() * 100) + 'vw';
+      layer.appendChild(s);
+    }
+  })();
+
+  /* ── Marine life — occasional fish silhouettes swimming across ── */
+  (function spawnMarineLife() {
+    const layer = document.getElementById('marineLife');
+    if (!layer) return;
+
+    // Silhouette SVGs (simple, friendly forms)
+    const fishSVG = `<svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg"><path d="M5 20 Q15 5 45 8 Q75 8 85 20 Q75 32 45 32 Q15 35 5 20 Z M85 20 L98 8 L95 20 L98 32 Z" fill="currentColor"/><circle cx="68" cy="17" r="1.6" fill="rgba(255,255,255,0.7)"/></svg>`;
+    const turtleSVG = `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="55" cy="32" rx="28" ry="18" fill="currentColor"/><circle cx="22" cy="28" r="6" fill="currentColor"/><path d="M82 22 L96 14 M82 42 L96 50 M30 50 L26 58 M70 50 L74 58" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="26" r="1.4" fill="rgba(255,255,255,0.7)"/></svg>`;
+    const mantaSVG = `<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg"><path d="M10 30 Q40 4 60 18 Q80 4 110 30 Q80 38 60 32 Q40 38 10 30 Z M55 18 L52 10 M65 18 L68 10" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+    const sharkSVG = `<svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg"><path d="M5 22 Q20 8 55 10 Q90 10 100 22 L115 12 L110 22 L115 32 L100 22 Q90 30 55 30 Q20 32 5 22 Z M55 10 L52 0 L60 8" fill="currentColor"/><circle cx="80" cy="19" r="1.6" fill="rgba(255,255,255,0.7)"/></svg>`;
+
+    const creatures = [
+      { svg: fishSVG,   w: 38, weight: 5 },
+      { svg: fishSVG,   w: 26, weight: 5 },
+      { svg: fishSVG,   w: 46, weight: 3 },
+      { svg: turtleSVG, w: 70, weight: 1 },
+      { svg: mantaSVG,  w: 110, weight: 1 },
+      { svg: sharkSVG,  w: 90, weight: 1 },
+    ];
+    const pool = [];
+    creatures.forEach(c => { for (let i = 0; i < c.weight; i++) pool.push(c); });
+
+    function spawnOne() {
+      const c = pool[Math.floor(Math.random() * pool.length)];
+      const el = document.createElement('div');
+      el.className = 'swimmer' + (Math.random() < 0.5 ? ' flip' : '');
+      el.style.setProperty('--w', c.w + 'px');
+      const duration = 28 + Math.random() * 35;       // 28–63s — slow glide
+      el.style.setProperty('--d', duration + 's');
+      el.style.setProperty('--delay', '0s');
+      el.style.top = (10 + Math.random() * 70) + 'vh';
+      // Darker silhouette as we descend
+      const tintAlpha = 0.45 + Math.min(0.45, __currentDepth / 20 * 0.45);
+      el.style.color = `rgba(2,12,20,${tintAlpha.toFixed(2)})`;
+      el.innerHTML = c.svg;
+      layer.appendChild(el);
+      setTimeout(() => el.remove(), duration * 1000 + 200);
+    }
+
+    // Initial trickle + recurring spawn
+    setTimeout(spawnOne, 2500);
+    setInterval(() => {
+      // Spawn rate scales gently with depth (more life in the reef)
+      if (Math.random() < 0.7) spawnOne();
+    }, 6500);
+  })();
+
+  /* ── Safety stop countdown — starts when scrolled into view ── */
+  (function safetyStop() {
+    const el = document.getElementById('ssTimer');
+    if (!el) return;
+    const section = el.closest('.safety-stop');
+    let started = false, remaining = 180;
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting && !started) {
+          started = true;
+          const id = setInterval(() => {
+            remaining--;
+            const m = Math.floor(remaining / 60);
+            const s = remaining % 60;
+            el.textContent = m + ':' + String(s).padStart(2,'0');
+            if (remaining <= 0) { clearInterval(id); el.textContent = '0:00 ✓'; }
+          }, 1000);
+        }
+      });
+    }, { threshold: 0.5 });
+    obs.observe(section);
   })();
 
   /* ── Build media-driven dive stream from media/Dive/ — limit to 50 items ── */
@@ -877,10 +1543,41 @@
       });
     }, { threshold: 0.5 });
 
+    // Depth zones — injected between groups of cards as we descend.
+    // The narrative arc: surface → reef top → reef wall → twilight → deep blue.
+    const ZONES = [
+      { atDepth: 0,  name: 'Surface',         note: 'Mask on. One last regulator check. The water is warm and looks bottomless.' },
+      { atDepth: 4,  name: 'Reef Top · 5 m',  note: 'Sunlight still bright. Anemones, parrotfish, the slow patrol of butterflyfish.' },
+      { atDepth: 9,  name: 'Reef Wall · 10 m', note: 'The colour starts to drift. Red fades first. Everything turns into blues and greens.' },
+      { atDepth: 14, name: 'Twilight · 15 m', note: 'Cooler now. Larger silhouettes pass at the edge of visibility. Slow your breathing.' },
+      { atDepth: 18, name: 'Deep Blue · 18 m', note: 'Quiet. Just the rhythm of bubbles and the soft press of pressure on the mask.' },
+    ];
+    let zonePtr = 0;
+
+    function injectZoneIfDue(depth) {
+      if (zonePtr >= ZONES.length) return;
+      const z = ZONES[zonePtr];
+      if (depth >= z.atDepth) {
+        const m = document.createElement('div');
+        m.className = 'zone-marker';
+        m.innerHTML = `
+          <div class="zone-depth">◆ ${z.atDepth === 0 ? '0 m' : z.atDepth + ' m'} ◆</div>
+          <span class="zone-name">${z.name}</span>
+          <span class="zone-note">${z.note}</span>
+        `;
+        stream.appendChild(m);
+        try { cardObserver.observe(m); } catch(e) {}
+        zonePtr++;
+      }
+    }
+
     chosen.forEach((fn, idx) => {
       const ext = fn.split('.').pop().toLowerCase();
       const depth = Math.round((idx / Math.max(1, chosen.length - 1)) * MAX_DEPTH_STREAM);
       const side = (idx % 2 === 0) ? 'left' : 'right';
+
+      // Inject zone marker BEFORE this card if we've crossed a threshold
+      injectZoneIfDue(depth);
 
       const article = document.createElement('article');
       article.className = 'dive-card';
@@ -925,6 +1622,10 @@
       try { cardObserver.observe(article); } catch(e) {}
       vidObserver.observe(article);
     });
+
+    // Populate surface-log dive count
+    const slDives = document.getElementById('slDives');
+    if (slDives) slDives.textContent = chosen.length;
   })();
 </script>
 
