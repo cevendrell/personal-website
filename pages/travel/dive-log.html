@@ -996,16 +996,22 @@
       .dive-hero-stats { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* ── Intro picture (00) — sits between hero and the timeline ── */
+    /* ── Intro picture (00) — wide cinematic banner before the timeline ── */
     .dive-intro {
-      max-width: 900px; margin: 3.5rem auto 0;
-      position: relative;
+      max-width: 1140px; margin: 3.5rem auto 0;
+      padding: 0 2rem; position: relative;
     }
-    .dive-intro img {
-      width: 100%; height: auto; display: block;
+    .dive-intro .intro-frame {
+      position: relative; width: 100%;
+      aspect-ratio: 16 / 7;
+      overflow: hidden;
       border-radius: 14px;
       box-shadow: 0 30px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
       cursor: zoom-in;
+    }
+    .dive-intro img {
+      width: 100%; height: 100%; display: block;
+      object-fit: cover; object-position: center;
     }
     .dive-intro figcaption {
       margin-top: 1.1rem; text-align: center;
@@ -1013,42 +1019,9 @@
       font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase;
       color: var(--accent);
     }
-
-    /* ══════════════════════════════════════════════════════════════════
-       ══ PLAIN PHOTO STREAM — no cards, no subtitles                  ══
-       ══════════════════════════════════════════════════════════════════ */
-    .dive-stream {
-      max-width: 900px; margin: 4rem auto 6rem;
-      padding: 0 1.5rem;
-      display: flex; flex-direction: column;
-      gap: 1.5rem;
-      position: relative; z-index: 2;
-    }
-    /* override the old centre-line guide */
-    .dive-stream::before { display: none !important; }
-
-    .dive-item {
-      width: 100%; position: relative;
-      opacity: 0; transform: translateY(20px);
-      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
-      cursor: zoom-in;
-      border-radius: 12px; overflow: hidden;
-      box-shadow: 0 18px 45px rgba(0,0,0,0.4);
-      background: #0a0a0e;
-    }
-    .dive-item.visible { opacity: 1; transform: translateY(0); }
-    .dive-item img, .dive-item video {
-      width: 100%; height: auto; display: block;
-    }
-    .dive-item .vid-marker {
-      position: absolute; top: 0.7rem; left: 0.7rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: #fff;
-      background: rgba(2,20,31,0.7); backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.18);
-      padding: 0.28rem 0.55rem; border-radius: 999px;
-      pointer-events: none;
+    @media (max-width: 600px) {
+      .dive-intro { padding: 0 1rem; }
+      .dive-intro .intro-frame { aspect-ratio: 4 / 3; }
     }
 
     /* ══════════════════════════════════════════════════════════════════
@@ -1241,13 +1214,15 @@
     </div>
   </div>
 
-  <!-- 00 intro picture — special, sits below the figures, before the timeline -->
+  <!-- 00 intro picture — wide cinematic banner, sits below the figures, before the timeline -->
   <figure class="dive-intro" id="diveIntro">
-    <img src="../../media/Dive/thumbs/00_Cyprus_2023-05-08_03.JPG"
-         data-full="../../media/Dive/00_Cyprus_2023-05-08_03.JPG"
-         alt="Surface — the dive begins"
-         loading="eager"
-         decoding="async">
+    <div class="intro-frame">
+      <img src="../../media/Dive/00_Cyprus_2023-05-08_03.JPG"
+           data-full="../../media/Dive/00_Cyprus_2023-05-08_03.JPG"
+           alt="Surface — the dive begins"
+           loading="eager"
+           decoding="async">
+    </div>
     <figcaption>The descent begins ↓</figcaption>
   </figure>
 </header>
@@ -1692,43 +1667,81 @@
       });
     }, { threshold: 0.1, rootMargin: '100px' });
 
-    // ── Build the plain stream ──
+    // Parse filename → { location, year } (strips leading NN_ prefix; tolerates messy names)
+    function parseFilename(fn) {
+      const base = fn.replace(/\.[^.]+$/, '').replace(/^\d+_?/, '');
+      const parts = base.split('_').filter(Boolean);
+      // Find first part that looks like a year (4 digits, optionally -MM-DD)
+      let yearIdx = -1;
+      for (let i = 0; i < parts.length; i++) {
+        if (/^\d{4}(-\d{2}-\d{2})?$/.test(parts[i])) { yearIdx = i; break; }
+      }
+      const titleCase = s => s.replace(/\b\w/g, c => c.toUpperCase());
+      // Strip out pure-numeric segments (e.g. trailing "_02" sequence numbers)
+      const cleanLoc = (arr) => arr.filter(p => !/^\d+$/.test(p)).join(' ');
+      if (yearIdx < 0) {
+        const loc = cleanLoc(parts);
+        return { location: loc ? titleCase(loc) : 'Dive', year: '' };
+      }
+      const loc = cleanLoc(parts.slice(0, yearIdx));
+      return { location: loc ? titleCase(loc) : 'Dive', year: parts[yearIdx].slice(0, 4) };
+    }
+
+    // ── Build dive cards (alternating left/right with location + year) ──
     files.forEach((fn, idx) => {
-      const item = document.createElement('div');
-      item.className = 'dive-item';
-      item.addEventListener('click', () => openLightbox(fn));
+      const side = (idx % 2 === 0) ? 'left' : 'right';
+      const { location, year } = parseFilename(fn);
+
+      const article = document.createElement('article');
+      article.className = 'dive-card';
+      article.setAttribute('data-side', side);
+      const depth = Math.round((idx / Math.max(1, files.length - 1)) * 20);
+      article.style.setProperty('--depth', depth + '');
+
+      // Photo / video panel
+      const photo = document.createElement('div');
+      photo.className = 'dive-photo';
+      photo.addEventListener('click', () => openLightbox(fn));
 
       if (isVid(fn)) {
         const v = document.createElement('video');
-        v.src = MEDIA_DIR + fn;        // load directly — no data-src indirection
+        v.src = MEDIA_DIR + fn;
         v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata';
         v.setAttribute('playsinline',''); v.setAttribute('muted','');
-        item.appendChild(v);
-        const tag = document.createElement('span');
-        tag.className = 'vid-marker'; tag.textContent = '▶ Video';
-        item.appendChild(tag);
+        photo.appendChild(v);
+        const badge = document.createElement('span');
+        badge.className = 'media-type-badge';
+        badge.textContent = '▶ Video';
+        photo.appendChild(badge);
       } else {
         const img = document.createElement('img');
         img.src = THUMB_DIR + fn;
         img.loading = idx < 2 ? 'eager' : 'lazy';
         img.decoding = 'async';
-        img.alt = '';
-        item.appendChild(img);
+        img.alt = location;
+        photo.appendChild(img);
       }
-      stream.appendChild(item);
-      try { cardObserver.observe(item); } catch(e) {}
-      vidObs.observe(item);
+
+      // Info panel — just location + year
+      const info = document.createElement('div');
+      info.className = 'dive-info';
+      const h2 = document.createElement('h2');
+      h2.textContent = location;
+      const sub = document.createElement('p');
+      sub.className = 'dive-sub';
+      sub.textContent = year;
+      info.append(h2, sub);
+
+      article.append(photo, info);
+      stream.appendChild(article);
+      try { cardObserver.observe(article); } catch(e) {}
+      vidObs.observe(article);
     });
 
-    // Populate hero "Logged" stat (images only)
+    // Populate hero "Logged" stat (images only, +1 for 00 intro)
     const hsDives = document.getElementById('hsDives');
-    if (hsDives) hsDives.textContent = files.filter(f => !isVid(f)).length + 1; // +1 for the 00 intro
+    if (hsDives) hsDives.textContent = files.filter(f => !isVid(f)).length + 1;
   })();
-
-  // Map the .dive-item reveal-on-scroll to the .visible class (same observer used for .dive-card).
-  document.querySelectorAll('.dive-item').forEach(el => {
-    // Initial reveal observer already wired up via cardObserver.observe in the builder
-  });
 </script>
 
 </body>
