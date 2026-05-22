@@ -437,9 +437,9 @@
 
 <!-- Full-width video hero — Lystrup Strand, Denmark 2023 -->
 <section class="nl-hero" aria-label="Northern lights">
-  <video autoplay muted loop playsinline preload="auto">
+  <video autoplay muted loop playsinline preload="auto" disableRemotePlayback>
+    <source src="../../media/Northern Lights/Lystrup Strand 2702.mp4" type="video/mp4">
     <source src="../../media/Northern Lights/Lystrup Strand 2702.mov" type="video/quicktime">
-    <source src="../../media/Northern Lights/northern-lights.mp4" type="video/mp4">
   </video>
   <div class="nl-hero-inner">
     <h1>Northern Lights</h1>
@@ -497,16 +497,17 @@
   </div>
 </div>
 
-<!-- New video — Tromsø Oct 2024 -->
+<!-- New video — Tromsø, Norway · Oct 2024 -->
 <div class="closing-video">
-  <video autoplay muted loop playsinline preload="metadata">
+  <video autoplay muted loop playsinline preload="auto" disableRemotePlayback>
+    <source src="../../media/Northern Lights/AUnorthernLights.mp4" type="video/mp4">
     <source src="../../media/Northern Lights/AUnorthernLights.MOV" type="video/quicktime">
   </video>
 </div>
 
 <!-- Closing timelapse video -->
 <div class="closing-video">
-  <video autoplay muted loop playsinline preload="metadata">
+  <video autoplay muted loop playsinline preload="auto" disableRemotePlayback>
     <source src="../../media/Northern Lights/northern-lights.mp4" type="video/mp4">
     <source src="../../media/Northern Lights/northern-lights.mov" type="video/quicktime">
   </video>
@@ -559,6 +560,38 @@
       if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
     }, { passive: true });
   }
+
+  /* ── Force-trigger autoplay for all videos ──
+     Some browsers refuse autoplay until first interaction; explicitly call play()
+     and retry on visibility / first user gesture. */
+  document.querySelectorAll('video').forEach(v => {
+    v.muted = true;
+    v.playsInline = true;
+    const tryPlay = () => { v.play().catch(() => {}); };
+    tryPlay();
+    v.addEventListener('canplay', tryPlay, { once: true });
+  });
+
+  // Pause off-screen videos, resume when scrolled back into view
+  const vidObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting) v.play().catch(()=>{});
+      else v.pause();
+    });
+  }, { threshold: 0.25 });
+  document.querySelectorAll('video').forEach(v => vidObs.observe(v));
+
+  // First user gesture unlocks any blocked videos
+  const unlock = () => {
+    document.querySelectorAll('video').forEach(v => v.play().catch(()=>{}));
+    window.removeEventListener('click', unlock);
+    window.removeEventListener('touchstart', unlock);
+    window.removeEventListener('scroll', unlock);
+  };
+  window.addEventListener('click', unlock, { passive: true });
+  window.addEventListener('touchstart', unlock, { passive: true });
+  window.addEventListener('scroll', unlock, { passive: true });
 </script>
 
 </body>

@@ -604,17 +604,19 @@
     }
     .swimmer.flip { transform: scaleX(-1); }
     .swimmer svg { display: block; width: var(--w, 60px); height: auto; }
+    /* Default SVG heads point LEFT, so default motion is RIGHT → LEFT (head-first). */
     @keyframes swimAcross {
-      0%   { transform: translateX(-15vw); opacity: 0; }
+      0%   { transform: translateX(115vw); opacity: 0; }
       10%  { opacity: 0.7; }
       85%  { opacity: 0.7; }
-      100% { transform: translateX(115vw); opacity: 0; }
+      100% { transform: translateX(-15vw); opacity: 0; }
     }
+    /* Flipped (scaleX(-1)) makes head point RIGHT, so motion is LEFT → RIGHT (head-first). */
     @keyframes swimAcrossFlip {
-      0%   { transform: translateX(115vw) scaleX(-1); opacity: 0; }
+      0%   { transform: translateX(-15vw) scaleX(-1); opacity: 0; }
       10%  { opacity: 0.7; }
       85%  { opacity: 0.7; }
-      100% { transform: translateX(-15vw) scaleX(-1); opacity: 0; }
+      100% { transform: translateX(115vw) scaleX(-1); opacity: 0; }
     }
     .swimmer.flip { animation-name: swimAcrossFlip; }
 
@@ -1054,49 +1056,6 @@
     A descent through every dive I've logged. The water gets darker as you scroll — so do the photos. Click any tile to read about the dive.
   </p>
   <div class="surface-line">0 m — surface</div>
-
-  <!-- Pre-dive briefing — homepage-style mono labels with stats -->
-  <section class="briefing" aria-label="Pre-dive briefing">
-    <div class="briefing-head">
-      <span class="pulse"></span>
-      <span>Pre-Dive Briefing</span>
-    </div>
-    <div class="briefing-grid">
-      <div class="brf-cell">
-        <span class="lbl">Plan</span>
-        <span class="val">Multi-site</span>
-      </div>
-      <div class="brf-cell">
-        <span class="lbl">Max Depth</span>
-        <span class="val">20 m</span>
-      </div>
-      <div class="brf-cell">
-        <span class="lbl">Gas Mix</span>
-        <span class="val">Air · 21%</span>
-      </div>
-      <div class="brf-cell">
-        <span class="lbl">Buddy</span>
-        <span class="val">You</span>
-      </div>
-      <div class="brf-cell">
-        <span class="lbl">Entry</span>
-        <span class="val">Giant stride</span>
-      </div>
-      <div class="brf-cell">
-        <span class="lbl">Visibility</span>
-        <span class="val">20 m+</span>
-      </div>
-      <div class="brf-cell">
-        <span class="lbl">Current</span>
-        <span class="val">Mild</span>
-      </div>
-      <div class="brf-cell">
-        <span class="lbl">Signal</span>
-        <span class="val">Scroll ↓</span>
-      </div>
-    </div>
-  </section>
-
   <span class="scroll-cue" aria-hidden="true">↓</span>
 </header>
 
@@ -1471,62 +1430,59 @@
     if (!stream) return;
     const MEDIA_DIR = '../../media/Dive/';
 
-    // Ordered by average pixel brightness DESC (lightest = surface, darkest = deep).
-    // Files renamed to Location_YYYY-MM-DD_seq.ext based on EXIF metadata.
+    // Ordered by composite brightness+blueness DESC (clearest blue = surface, darkest = deep).
+    // Videos are inserted near their location group.
     const files = [
-      "Cyprus_2023-05-08_04.JPG",        // 136.7 — brightest, surface
-      "St_Lucia_2024-06-26_02.JPG",      // 128.6
-      "Cyprus_2023-05-08_01.JPG",        // 124.0
-      "Indonesia_2022-06-02_01.JPG",     // 121.7
-      "Indonesia_2022-07-13_02.JPG",     // 121.1
-      "St_Lucia_2024-06-28_03.JPG",      // 119.1
-      "Cyprus_2023-05-08_03.JPG",        // 118.7
-      "St_Lucia_2024-06-28_01.JPG",      // 116.5
-      "Indonesia_2022-06-11_01.JPG",     // 114.5
-      "St_Lucia_2024-06-26_01.JPG",      // 114.3
-      "Thailand_2022-07-10_01.JPG",      // 112.0
-      "Indonesia_2022-07-13_01.JPG",     // 109.3
-      "Indonesia_2022-06-03_01.JPG",     // 108.0
-      "Indonesia_2022-07-13_06.JPG",     // 106.0
-      "Tanzania_2023-07-24_02.JPG",      // 100.9
-      "Cyprus_2023-05-08_02.JPG",        // 98.5
-      "St_Lucia_2024-06-20_01.mov",      // St Lucia video
+      "Thailand_2022-07-13_02.JPG",
+      "Cyprus_2023-05-08_04.JPG",
+      "Indonesia_2022-06-03_01.JPG",
+      "Cyprus_2023-05-08_03.JPG",
+      "Grenada_2024-06-26_02.JPG",
+      "Cyprus_2023-05-08_01.JPG",
+      "Thailand_2022-07-13_01.JPG",
+      "Indonesia_2022-06-02_01.JPG",
+      "Thailand_2022-07-13_06.JPG",
+      "Indonesia_2022-06-11_01.JPG",
+      "St_Vincent_2024-06-28_03.JPG",
+      "Tanzania_2023-07-24_02.JPG",
+      "St_Vincent_2024-06-28_01.JPG",
+      "Grenada_2024-06-26_01.JPG",
+      "Cyprus_2023-05-08_02.JPG",
+      "Indonesia_2022-06-02_02.JPG",
+      "St_Lucia_2024-06-20_01.JPG",
+      "St_Lucia_2024-06-20_01.mov",
       "St_Lucia_2024-06-20_02.mov",
-      "St_Lucia_2024-06-20_01.JPG",      // 97.4
-      "Malaysia_2022-07-20_01.JPG",      // 96.6
-      "Tanzania_2023-07-26_01.JPG",      // 96.2
-      "Indonesia_2022-06-03_02.JPG",     // 95.4
-      "Tanzania_2023-07-25_01.mov",      // Tanzania video
+      "Thailand_2022-07-10_01.JPG",
+      "Tanzania_2023-07-26_01.JPG",
+      "St_Vincent_2024-06-28_02.JPG",
+      "Tanzania_2023-07-25_01.mov",
       "Tanzania_2023-07-25_02.mov",
-      "Tanzania_2023-07-24_01.JPG",      // 92.1
-      "Tanzania_2023-07-26_05.JPG",      // 92.9
-      "St_Lucia_2024-06-29_01.JPG",      // 92.6
-      "Tanzania_2023-07-26_03.JPG",      // 90.1
-      "St_Lucia_2024-06-28_02.JPG",      // 89.3
-      "St_Lucia_2024-06-28_01.mov",      // St Lucia video
-      "Seychelles_2025_01.JPG",          // 88.7
-      "Seychelles_2025-07-21_01.mov",    // Seychelles video
-      "Tanzania_2023-07-26_04.JPG",      // 83.3
-      "Indonesia_2022-07-13_04.JPG",     // 82.5
-      "Indonesia_2022-08-22_01.mp4",     // Indonesia video
-      "St_Lucia_2024-06-24_01.JPG",      // 71.0
-      "Tanzania_2023-07-26_02.JPG",      // 72.5
-      "Indonesia_2022-06-02_02.JPG",     // 73.6
-      "Tanzania_2023-07-24_03.JPG",      // 75.0
-      "St_Lucia_2024-06-24_01.mp4",      // St Lucia video
-      "St_Lucia_2024-06-24_02.JPG",      // 67.3
-      "St_Lucia_2024-06-24_03.JPG",      // 68.0
-      "Indonesia_2022-07-13_03.JPG",     // 68.5
-      "Malaysia_2022-07-20_02.JPG",      // 60.2
-      "Malaysia_2022-07-20_01.mov",      // Malaysia video
-      "Indonesia_2022-07-13_05.JPG",     // 42.9
-      "Malaysia_2022-07-20_03.JPG",      // 41.2 — darkest, deepest
+      "Tanzania_2023-07-26_05.JPG",
+      "Tanzania_2023-07-24_01.JPG",
+      "Indonesia_2022-06-03_02.JPG",
+      "Tanzania_2023-07-26_03.JPG",
+      "Thailand_2022-07-13_04.JPG",
+      "Borneo_2022-07-20_01.JPG",
+      "Seychelles_2025_01.JPG",
+      "Seychelles_2025-07-21_01.mov",
+      "Tanzania_2023-07-24_03.JPG",
+      "Tanzania_2023-07-26_04.JPG",
+      "St_Vincent_2024-06-29_01.JPG",
+      "St_Vincent_2024-06-28_01.mov",
+      "Tanzania_2023-07-26_02.JPG",
+      "Grenada_2024-06-24_03.JPG",
+      "Grenada_2024-06-24_01.JPG",
+      "Grenada_2024-06-24_01.mp4",
+      "Thailand_2022-07-13_03.JPG",
+      "Grenada_2024-06-24_02.JPG",
+      "Malaysia_2022-08-22_01.mp4",
+      "Borneo_2022-07-20_02.JPG",
+      "Borneo_2022-07-20_01.mov",
+      "Thailand_2022-07-13_05.JPG",
+      "Borneo_2022-07-20_03.JPG",
     ];
 
-    const MAX_DEPTH_STREAM = 20;
-
-    // Parse filename → { location, date, year }
-    // Format: Location_YYYY[-MM-DD]_seq.ext  (underscores within location name, e.g. St_Lucia)
+    // Parse filename → { location, year }
     function parseFilename(fn) {
       const base = fn.replace(/\.[^.]+$/, '');
       const parts = base.split('_');
@@ -1534,25 +1490,12 @@
       for (let i = 0; i < parts.length; i++) {
         if (/^\d{4}(-\d{2}-\d{2})?$/.test(parts[i])) { yearIdx = i; break; }
       }
-      if (yearIdx < 0) return { location: base, date: '', year: '' };
+      if (yearIdx < 0) return { location: base, year: '' };
       return {
         location: parts.slice(0, yearIdx).join(' '),
-        date: parts[yearIdx],
         year: parts[yearIdx].slice(0, 4),
       };
     }
-
-    // Dive notes keyed by location
-    const NOTES = {
-      'Cyprus':     'Mediterranean clarity — visibility stretching 25 metres. Posidonia meadows, nudibranchs, and the occasional octopus wedged into the rocks.',
-      'Indonesia':  'Lombok, Komodo, and the Gili Islands. Manta rays at cleaning stations, hawksbill turtles, reef sharks resting on the sand.',
-      'Thailand':   'Andaman Sea. Leopard sharks sleeping on the bottom, schools of barracuda circling overhead, whale shark luck on the horizon.',
-      'Tanzania':   'Zanzibar and Pemba. Hawksbill turtles gliding over hard coral, giant moray eels, and the quietest drift dives imaginable.',
-      'St Lucia':   'Caribbean warmth. Nurse sharks under ledges, glassy sweepers, every colour of parrotfish on the volcanic reef walls.',
-      'Grenada':    'Gravel-bottom bays and wreck dives. The Bianca C — the "Titanic of the Caribbean" — sits at 50 m; we circled its bow at 28.',
-      'Malaysia':   'Sipadan. One of the world's top ten — barracuda tornado, sea turtle highway, white-tip sharks on the seabed at noon.',
-      'Seychelles': 'Granite boulders dropped into warm Indian Ocean. Nurse sharks, eagle rays, and a visibility that makes everything feel like a diorama.',
-    };
 
     // IntersectionObserver to autoplay/pause videos when visible
     const vidObserver = new IntersectionObserver((entries) => {
@@ -1563,48 +1506,21 @@
       });
     }, { threshold: 0.5 });
 
-    // Depth zone markers injected as we pass thresholds
-    const ZONES = [
-      { atDepth: 0,  name: 'Surface · 0 m',    note: 'Mask on. Regulator check. The water is warm and clear and looks bottomless.' },
-      { atDepth: 4,  name: 'Reef Top · 5 m',   note: 'Sunlight still bright. Parrotfish, anemones, the slow patrol of butterflyfish.' },
-      { atDepth: 9,  name: 'Reef Wall · 10 m', note: 'Red fades first. Everything turns blues and greens. Bigger shapes pass at the edge of visibility.' },
-      { atDepth: 14, name: 'Twilight · 15 m',  note: 'Cooler now. Slow your breathing. The reef falls away into the blue below.' },
-      { atDepth: 18, name: 'Deep Blue · 18 m', note: 'Quiet. Just the rhythm of your bubbles and the soft press of depth on the mask.' },
-    ];
-    let zonePtr = 0;
-
-    function injectZoneIfDue(depth) {
-      while (zonePtr < ZONES.length && depth >= ZONES[zonePtr].atDepth) {
-        const z = ZONES[zonePtr];
-        const m = document.createElement('div');
-        m.className = 'zone-marker';
-        m.innerHTML = `<div class="zone-depth">◆ ${z.name} ◆</div><span class="zone-note">${z.note}</span>`;
-        stream.appendChild(m);
-        try { cardObserver.observe(m); } catch(e) {}
-        zonePtr++;
-      }
-    }
-
     files.forEach((fn, idx) => {
       const ext = fn.split('.').pop().toLowerCase();
-      const depth = Math.round((idx / Math.max(1, files.length - 1)) * MAX_DEPTH_STREAM);
       const side  = (idx % 2 === 0) ? 'left' : 'right';
-      const { location, date, year } = parseFilename(fn);
+      const { location, year } = parseFilename(fn);
       const isVideo = ['mp4','mov','m4v','webm'].includes(ext);
-
-      injectZoneIfDue(depth);
 
       const article = document.createElement('article');
       article.className = 'dive-card';
       article.setAttribute('data-side', side);
+      // Approximate depth driven by position — used only by CSS for image tint, not displayed.
+      const depth = Math.round((idx / Math.max(1, files.length - 1)) * 20);
       article.style.setProperty('--depth', depth + '');
 
       // ── Photo / video panel ──
       const photo = document.createElement('div'); photo.className = 'dive-photo';
-      const badge = document.createElement('span'); badge.className = 'depth-badge';
-      badge.textContent = depth + ' m';
-      photo.appendChild(badge);
-
       const src = MEDIA_DIR + encodeURIComponent(fn).replace(/%2F/g,'/');
       if (isVideo) {
         const v = document.createElement('video');
@@ -1613,30 +1529,18 @@
         photo.appendChild(v);
       } else {
         const img = document.createElement('img');
-        img.src = src; img.loading = idx < 4 ? 'eager' : 'lazy'; img.alt = location + ' dive';
+        img.src = src; img.loading = idx < 4 ? 'eager' : 'lazy'; img.alt = location;
         photo.appendChild(img);
       }
 
-      const hint = document.createElement('span'); hint.className = 'placeholder-hint';
-      hint.textContent = location || '—';
-      photo.appendChild(hint);
-
-      // ── Info panel ──
+      // ── Info panel — just title + year ──
       const info = document.createElement('div'); info.className = 'dive-info';
-
-      const meta = document.createElement('div'); meta.className = 'dive-meta';
-      meta.innerHTML = `<span>${depth} m</span><span class="dot"></span><span>${date || year}</span>`;
-
       const h2 = document.createElement('h2');
       h2.textContent = location || 'Dive';
-
       const sub = document.createElement('p'); sub.className = 'dive-sub';
-      sub.textContent = isVideo ? `${year} · Video` : `${year} · Photo`;
+      sub.textContent = year;
+      info.append(h2, sub);
 
-      const note = document.createElement('p'); note.className = 'dive-note';
-      note.textContent = NOTES[location] || 'The ocean has its own light down here.';
-
-      info.append(meta, h2, sub, note);
       article.append(photo, info);
       stream.appendChild(article);
 

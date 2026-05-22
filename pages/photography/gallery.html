@@ -152,12 +152,14 @@
       margin-bottom: 14px;
       overflow: hidden;
       border-radius: 6px;
-      background: var(--bg-elevated);
+      background: #0a0a0e;   /* neutral dark — only shows briefly during load */
       cursor: zoom-in;
       position: relative;
       opacity: 1;
       transition: opacity 0.3s ease, transform 0.3s ease;
     }
+    /* Hide the item entirely if its image fails to load — no orphan blue tiles. */
+    .gallery-item.broken { display: none !important; }
     .gallery-item.hidden { display: none; }
     .gallery-item img {
       width: 100%; height: auto; display: block;
@@ -700,12 +702,18 @@
     });
   });
 
-  /* Image fade-in once loaded (already-cached images get the class immediately). */
+  /* Image fade-in once loaded; mark item as broken on error so the blue tile vanishes. */
   galleryItems.forEach(item => {
     const img = item.querySelector('img');
     if (!img) return;
-    if (img.complete && img.naturalWidth) img.classList.add('loaded');
-    else img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+    if (img.complete && img.naturalWidth) {
+      img.classList.add('loaded');
+    } else if (img.complete && !img.naturalWidth) {
+      item.classList.add('broken');
+    } else {
+      img.addEventListener('load',  () => img.classList.add('loaded'), { once: true });
+      img.addEventListener('error', () => item.classList.add('broken'), { once: true });
+    }
   });
 
   /* ── Lightbox — navigates only through currently-visible items ── */
