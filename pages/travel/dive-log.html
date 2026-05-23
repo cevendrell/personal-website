@@ -291,13 +291,53 @@
     @media (max-width: 900px) { .depth-meter { display: none; } }
 
     /* ══════════════════════════════════════════════════════════════════
-       ══ HERO — left-aligned title, full-bleed banner below           ══
+       ══ HERO — full-viewport, 00 picture as background, title left   ══
        ══════════════════════════════════════════════════════════════════ */
     .dive-hero {
       position: relative; z-index: 2;
-      max-width: 1240px; margin: 0 auto;
-      padding: 9rem 3rem 2.5rem;
+      min-height: 100vh; padding: 0;
+      display: flex; align-items: center;
+      overflow: hidden;
       text-align: left;
+    }
+    /* Background picture — like the home profile image */
+    .dive-hero .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      overflow: hidden;
+    }
+    .dive-hero .hero-bg img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center 35%;
+    }
+    /* Dark gradient overlay: opaque left → transparent right (like the home page) */
+    .dive-hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(
+        to right,
+        rgba(2,20,31,0.95) 0%,
+        rgba(2,20,31,0.85) 38%,
+        rgba(2,20,31,0.55) 60%,
+        rgba(2,20,31,0.15) 82%,
+        rgba(2,20,31,0)    100%
+      );
+    }
+    .dive-hero .hero-content {
+      position: relative; z-index: 2;
+      max-width: 1240px; width: 100%;
+      margin: 0 auto;
+      padding: 9rem 3rem 5rem;
+    }
+    @media (max-width: 768px) {
+      .dive-hero::before {
+        background: linear-gradient(
+          to bottom,
+          rgba(2,20,31,0.45) 0%,
+          rgba(2,20,31,0.7) 55%,
+          rgba(2,20,31,0.92) 100%
+        );
+      }
+      .dive-hero .hero-content { padding: 7rem 1.5rem 3rem; }
     }
     .dive-eyebrow {
       font-family: 'JetBrains Mono', monospace;
@@ -488,9 +528,15 @@
     .dive-tile .play-icon svg { width: 20px; height: 20px; fill: #fff; }
     .dive-sub {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
       color: rgba(255,255,255,0.7);
       margin-bottom: 1.1rem;
+    }
+    .dive-sub-sep {
+      display: inline-block;
+      margin: 0 0.7em;
+      color: rgba(232,220,196,0.5);
+      font-weight: 300;
     }
     .dive-note {
       font-size: 0.95rem; color: rgba(255,255,255,0.82);
@@ -1162,15 +1208,11 @@
   </div>
   <div class="hud-block hud-tank">
     <span class="hud-label">Tank · <span id="hudTankBar">200</span> bar</span>
-    <svg class="tank-svg" viewBox="0 0 80 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- Valve -->
-      <rect x="6" y="4" width="6" height="6" rx="1" fill="rgba(255,255,255,0.5)"/>
-      <rect x="3" y="9" width="12" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
-      <!-- Tank body outline -->
-      <rect x="14" y="6" width="62" height="24" rx="11" fill="none" stroke="rgba(232,220,196,0.55)" stroke-width="1.5"/>
-      <!-- Fill — width set by JS, never increases -->
-      <clipPath id="tankClip"><rect x="16" y="8" width="58" height="20" rx="9"/></clipPath>
-      <rect id="tankFill" x="16" y="8" width="58" height="20" rx="9"
+    <svg class="tank-svg" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Tank body only — no valve shapes -->
+      <rect x="3" y="3" width="64" height="24" rx="11" fill="none" stroke="rgba(232,220,196,0.55)" stroke-width="1.5"/>
+      <clipPath id="tankClip"><rect x="5" y="5" width="60" height="20" rx="9"/></clipPath>
+      <rect id="tankFill" x="5" y="5" width="60" height="20" rx="9"
             clip-path="url(#tankClip)"
             fill="url(#tankGrad)"/>
       <defs>
@@ -1182,44 +1224,46 @@
       </defs>
     </svg>
   </div>
+  <div class="hud-block">
+    <span class="hud-label">Duration</span>
+    <span class="hud-value-sm" id="hudTime">00:00</span>
+  </div>
 </aside>
 
 <!-- ══════════ HERO ══════════ -->
 <header class="dive-hero" id="top">
-  <div class="dive-eyebrow">Travel · Underwater</div>
-  <h1>Dive <span>Log</span></h1>
-
-  <!-- 4 hero figures — flight-log style, no chrome -->
-  <div class="dive-hero-stats">
-    <div class="hs-cell">
-      <div class="hs-num" id="hsDives">—</div>
-      <div class="hs-unit">Logged</div>
-    </div>
-    <div class="hs-cell">
-      <div class="hs-num">20<em>m</em></div>
-      <div class="hs-unit">Max Depth</div>
-    </div>
-    <div class="hs-cell">
-      <div class="hs-num">9</div>
-      <div class="hs-unit">Countries</div>
-    </div>
-    <div class="hs-cell">
-      <div class="hs-num">7<em>seas</em></div>
-      <div class="hs-unit">Waters</div>
-    </div>
+  <!-- Background photo (the 00 picture) -->
+  <div class="hero-bg" aria-hidden="true">
+    <img src="../../media/Dive/00_Cyprus_2023-05-08_03.JPG"
+         alt=""
+         loading="eager"
+         decoding="async">
   </div>
 
-  <!-- 00 intro picture — wide cinematic banner, sits below the figures, before the timeline -->
-  <figure class="dive-intro" id="diveIntro">
-    <div class="intro-frame">
-      <img src="../../media/Dive/00_Cyprus_2023-05-08_03.JPG"
-           data-full="../../media/Dive/00_Cyprus_2023-05-08_03.JPG"
-           alt="Surface — the dive begins"
-           loading="eager"
-           decoding="async">
+  <div class="hero-content">
+    <div class="dive-eyebrow">Travel · Underwater</div>
+    <h1>Dive <span>Log</span></h1>
+
+    <!-- 4 hero figures — flight-log style, no chrome -->
+    <div class="dive-hero-stats">
+      <div class="hs-cell">
+        <div class="hs-num" id="hsDives">—</div>
+        <div class="hs-unit">Logged</div>
+      </div>
+      <div class="hs-cell">
+        <div class="hs-num">20<em>m</em></div>
+        <div class="hs-unit">Max Depth</div>
+      </div>
+      <div class="hs-cell">
+        <div class="hs-num">9</div>
+        <div class="hs-unit">Countries</div>
+      </div>
+      <div class="hs-cell">
+        <div class="hs-num">7<em>seas</em></div>
+        <div class="hs-unit">Waters</div>
+      </div>
     </div>
-    <figcaption>The descent begins ↓</figcaption>
-  </figure>
+  </div>
 </header>
 
 <!-- ══════════ DIVE STREAM — plain photo list, no cards, no subtitles ══════════ -->
@@ -1353,7 +1397,7 @@
       if (hudTank)  hudTank.textContent = Math.round(tankBar);
       if (tankFill) {
         const pct = tankBar / 200;
-        tankFill.setAttribute('width', (58 * pct).toFixed(1));
+        tankFill.setAttribute('width', (60 * pct).toFixed(1));
       }
 
       // Caustics fade with depth
@@ -1662,61 +1706,66 @@
       });
     }, { threshold: 0.1, rootMargin: '100px' });
 
-    // ── Year inferred from trip when not in filename ──
-    // (each named trip happened in a single year, so location → year works for fallback)
-    const YEAR_BY_LOCATION = {
-      'Indonesia':  '2022',
-      'Thailand':   '2022',
-      'Malaysia':   '2022',
-      'Borneo':     '2022',
-      'Cyprus':     '2023',
-      'Tanzania':   '2023',
-      'St Lucia':   '2024',
-      'Grenada':    '2024',
-      'St Vincent': '2024',
-      'Seychelles': '2025',
+    // ── Place + country, keyed by raw "country" parsed from filename ──
+    // The dive site (place) becomes the card title; country + year becomes the subtitle.
+    const PLACE_INFO = {
+      'Indonesia':  { place: 'Gili Islands', country: 'Indonesia',                       year: '2022' },
+      'Thailand':   { place: 'Koh Phi Phi',  country: 'Thailand',                        year: '2022' },
+      'Malaysia':   { place: 'Borneo',       country: 'Malaysia',                        year: '2022' },
+      'Borneo':     { place: 'Borneo',       country: 'Malaysia',                        year: '2022' },
+      'Cyprus':     { place: 'Ayia Napa',    country: 'Cyprus',                          year: '2023' },
+      'Tanzania':   { place: 'Zanzibar',     country: 'Tanzania',                        year: '2023' },
+      'St Lucia':   { place: 'St Lucia',     country: 'St Lucia',                        year: '2024' },
+      'Grenada':    { place: 'Grenada',      country: 'Grenada',                         year: '2024' },
+      'St Vincent': { place: 'Bequia',       country: 'St Vincent and the Grenadines',   year: '2024' },
+      'Seychelles': { place: 'Praslin',      country: 'Seychelles',                      year: '2025' },
     };
 
-    // ── Per-file overrides for messy filenames (typos, missing locations) ──
+    // ── Per-file overrides — direct mappings for messy filenames ──
     const FILE_OVERRIDES = {
-      '01_Indonesia.JPG':  { location: 'Indonesia', year: '2022' },
-      '02_Cypurs.JPG':     { location: 'Cyprus',    year: '2023' }, // typo
-      '03_indonesia.JPG':  { location: 'Indonesia', year: '2022' },
-      '05.JPG':            { location: 'Indonesia', year: '2022' },
+      '01_Indonesia.JPG':  'Indonesia',
+      '02_Cypurs.JPG':     'Cyprus',  // typo → Cyprus
+      '03_indonesia.JPG':  'Indonesia',
+      '05.JPG':            'Indonesia',
     };
 
-    // Parse filename → { location, year } (strips leading NN_ prefix; tolerates messy names)
+    // Parse filename → { place, country, year }
     function parseFilename(fn) {
-      if (FILE_OVERRIDES[fn]) return FILE_OVERRIDES[fn];
+      // 1) override map (returns the country key)
+      let rawCountry = FILE_OVERRIDES[fn];
+      let yearFromFile = '';
 
-      const base = fn.replace(/\.[^.]+$/, '').replace(/^\d+_?/, '');
-      const parts = base.split('_').filter(Boolean);
-      // Find first part that looks like a year (4 digits, optionally -MM-DD)
-      let yearIdx = -1;
-      for (let i = 0; i < parts.length; i++) {
-        if (/^\d{4}(-\d{2}-\d{2})?$/.test(parts[i])) { yearIdx = i; break; }
+      if (!rawCountry) {
+        const base = fn.replace(/\.[^.]+$/, '').replace(/^\d+_?/, '');
+        const parts = base.split('_').filter(Boolean);
+        let yearIdx = -1;
+        for (let i = 0; i < parts.length; i++) {
+          if (/^\d{4}(-\d{2}-\d{2})?$/.test(parts[i])) { yearIdx = i; break; }
+        }
+        const cleanLoc = (arr) => arr.filter(p => !/^\d+$/.test(p)).join(' ');
+        const titleCase = s => s.replace(/\b\w/g, c => c.toUpperCase());
+        const slice = yearIdx < 0 ? parts : parts.slice(0, yearIdx);
+        rawCountry = cleanLoc(slice);
+        rawCountry = rawCountry ? titleCase(rawCountry) : '';
+        if (yearIdx >= 0) yearFromFile = parts[yearIdx].slice(0, 4);
       }
-      const titleCase = s => s.replace(/\b\w/g, c => c.toUpperCase());
-      const cleanLoc = (arr) => arr.filter(p => !/^\d+$/.test(p)).join(' ');
 
-      let location, year;
-      if (yearIdx < 0) {
-        location = cleanLoc(parts);
-        year = '';
-      } else {
-        location = cleanLoc(parts.slice(0, yearIdx));
-        year = parts[yearIdx].slice(0, 4);
+      const info = PLACE_INFO[rawCountry];
+      if (info) {
+        return { place: info.place, country: info.country, year: yearFromFile || info.year };
       }
-      location = location ? titleCase(location) : 'Dive';
-      // Fallback: if no year in filename, look up by location
-      if (!year && YEAR_BY_LOCATION[location]) year = YEAR_BY_LOCATION[location];
-      return { location, year };
+      // Unknown — fall back to whatever was parsed
+      return {
+        place:   rawCountry || 'Dive',
+        country: rawCountry || '',
+        year:    yearFromFile,
+      };
     }
 
-    // ── Build dive cards (alternating left/right with location + year) ──
+    // ── Build dive cards (alternating left/right with place + country | year) ──
     files.forEach((fn, idx) => {
       const side = (idx % 2 === 0) ? 'left' : 'right';
-      const { location, year } = parseFilename(fn);
+      const { place, country, year } = parseFilename(fn);
 
       const article = document.createElement('article');
       article.className = 'dive-card';
@@ -1744,18 +1793,22 @@
         img.src = THUMB_DIR + fn;
         img.loading = idx < 2 ? 'eager' : 'lazy';
         img.decoding = 'async';
-        img.alt = location;
+        img.alt = place;
         photo.appendChild(img);
       }
 
-      // Info panel — just location + year
+      // Info panel — place as title, "Country  |  Year" as subtitle.
       const info = document.createElement('div');
       info.className = 'dive-info';
       const h2 = document.createElement('h2');
-      h2.textContent = location;
+      h2.textContent = place;
       const sub = document.createElement('p');
       sub.className = 'dive-sub';
-      sub.textContent = year;
+      if (country && year) {
+        sub.innerHTML = `${country}<span class="dive-sub-sep">|</span>${year}`;
+      } else {
+        sub.textContent = year || country || '';
+      }
       info.append(h2, sub);
 
       article.append(photo, info);
