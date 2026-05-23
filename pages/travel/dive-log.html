@@ -291,13 +291,13 @@
     @media (max-width: 900px) { .depth-meter { display: none; } }
 
     /* ══════════════════════════════════════════════════════════════════
-       ══ HERO                                                         ══
+       ══ HERO — left-aligned title, full-bleed banner below           ══
        ══════════════════════════════════════════════════════════════════ */
     .dive-hero {
       position: relative; z-index: 2;
-      max-width: 920px; margin: 0 auto;
-      padding: 11rem 2rem 4rem;
-      text-align: center;
+      max-width: 1240px; margin: 0 auto;
+      padding: 9rem 3rem 2.5rem;
+      text-align: left;
     }
     .dive-eyebrow {
       font-family: 'JetBrains Mono', monospace;
@@ -320,7 +320,7 @@
     }
     .dive-hero .lede {
       font-size: 1.05rem; color: rgba(255,255,255,0.9);
-      line-height: 1.7; max-width: 580px; margin: 0 auto 2.5rem;
+      line-height: 1.7; max-width: 580px; margin: 0 0 2.5rem;
     }
     .surface-line {
       display: inline-flex; align-items: center; gap: 0.9rem;
@@ -347,7 +347,7 @@
        ══════════════════════════════════════════════════════════════════ */
     .dive-stream {
       position: relative; z-index: 2;
-      max-width: 1100px; margin: 0 auto;
+      max-width: 880px; margin: 0 auto;
       padding: 3rem 2rem 6rem;
     }
     /* The thin guideline running down the centre */
@@ -366,13 +366,13 @@
       position: relative;
       display: grid; grid-template-columns: 1fr 1fr;
       align-items: center;
-      gap: 4rem;
-      margin-bottom: 8rem;
+      gap: 2.5rem;
+      margin-bottom: 5rem;
       opacity: 0; transform: translateY(40px);
       transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
     }
     .dive-card.visible { opacity: 1; transform: translateY(0); }
-    .dive-card:last-child { margin-bottom: 4rem; }
+    .dive-card:last-child { margin-bottom: 3rem; }
 
     /* Depth pip in the centre, on the guideline */
     .dive-card::after {
@@ -450,10 +450,10 @@
       width: 4px; height: 4px; border-radius: 50%; background: var(--accent);
     }
     .dive-info h2 {
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+      font-size: clamp(1.4rem, 2.6vw, 2rem);
+      font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;
       color: #fff;
-      margin-bottom: 0.55rem;
+      margin-bottom: 0.4rem;
     }
     /* ── Media gallery (square tiles) ── */
     .dive-media {
@@ -969,10 +969,10 @@
        ══════════════════════════════════════════════════════════════════ */
     .dive-hero-stats {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem 2rem;
-      max-width: 720px; margin: 2rem auto 0;
-      text-align: center;
+      grid-template-columns: repeat(4, max-content);
+      gap: 1.5rem 3rem;
+      margin: 1.5rem 0 0;
+      text-align: left;
     }
     .dive-hero-stats .hs-cell { padding: 0; }
     .dive-hero-stats .hs-num {
@@ -981,7 +981,6 @@
       color: #fff;
       text-shadow: 0 2px 16px rgba(255,255,255,0.08);
       display: inline-flex; align-items: baseline; gap: 4px;
-      justify-content: center;
     }
     .dive-hero-stats .hs-num em {
       font-style: normal; font-size: 0.55em; color: var(--accent);
@@ -996,18 +995,19 @@
       .dive-hero-stats { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* ── Intro picture (00) — wide cinematic banner before the timeline ── */
+    /* ── Intro picture (00) — full viewport-width cinematic banner ── */
     .dive-intro {
-      max-width: 1140px; margin: 3.5rem auto 0;
-      padding: 0 2rem; position: relative;
+      width: 100vw; margin: 2.5rem 0 0;
+      padding: 0; position: relative;
+      /* If anything nudges body alignment, force re-centre on the viewport */
+      margin-left: calc(50% - 50vw);
     }
     .dive-intro .intro-frame {
       position: relative; width: 100%;
       aspect-ratio: 16 / 7;
       overflow: hidden;
-      border-radius: 14px;
-      box-shadow: 0 30px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
       cursor: zoom-in;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.55);
     }
     .dive-intro img {
       width: 100%; height: 100%; display: block;
@@ -1020,7 +1020,6 @@
       color: var(--accent);
     }
     @media (max-width: 600px) {
-      .dive-intro { padding: 0 1rem; }
       .dive-intro .intro-frame { aspect-ratio: 4 / 3; }
     }
 
@@ -1182,10 +1181,6 @@
         </linearGradient>
       </defs>
     </svg>
-  </div>
-  <div class="hud-block">
-    <span class="hud-label">Bottom T</span>
-    <span class="hud-value-sm" id="hudTime">00:00</span>
   </div>
 </aside>
 
@@ -1667,8 +1662,33 @@
       });
     }, { threshold: 0.1, rootMargin: '100px' });
 
+    // ── Year inferred from trip when not in filename ──
+    // (each named trip happened in a single year, so location → year works for fallback)
+    const YEAR_BY_LOCATION = {
+      'Indonesia':  '2022',
+      'Thailand':   '2022',
+      'Malaysia':   '2022',
+      'Borneo':     '2022',
+      'Cyprus':     '2023',
+      'Tanzania':   '2023',
+      'St Lucia':   '2024',
+      'Grenada':    '2024',
+      'St Vincent': '2024',
+      'Seychelles': '2025',
+    };
+
+    // ── Per-file overrides for messy filenames (typos, missing locations) ──
+    const FILE_OVERRIDES = {
+      '01_Indonesia.JPG':  { location: 'Indonesia', year: '2022' },
+      '02_Cypurs.JPG':     { location: 'Cyprus',    year: '2023' }, // typo
+      '03_indonesia.JPG':  { location: 'Indonesia', year: '2022' },
+      '05.JPG':            { location: 'Indonesia', year: '2022' },
+    };
+
     // Parse filename → { location, year } (strips leading NN_ prefix; tolerates messy names)
     function parseFilename(fn) {
+      if (FILE_OVERRIDES[fn]) return FILE_OVERRIDES[fn];
+
       const base = fn.replace(/\.[^.]+$/, '').replace(/^\d+_?/, '');
       const parts = base.split('_').filter(Boolean);
       // Find first part that looks like a year (4 digits, optionally -MM-DD)
@@ -1677,14 +1697,20 @@
         if (/^\d{4}(-\d{2}-\d{2})?$/.test(parts[i])) { yearIdx = i; break; }
       }
       const titleCase = s => s.replace(/\b\w/g, c => c.toUpperCase());
-      // Strip out pure-numeric segments (e.g. trailing "_02" sequence numbers)
       const cleanLoc = (arr) => arr.filter(p => !/^\d+$/.test(p)).join(' ');
+
+      let location, year;
       if (yearIdx < 0) {
-        const loc = cleanLoc(parts);
-        return { location: loc ? titleCase(loc) : 'Dive', year: '' };
+        location = cleanLoc(parts);
+        year = '';
+      } else {
+        location = cleanLoc(parts.slice(0, yearIdx));
+        year = parts[yearIdx].slice(0, 4);
       }
-      const loc = cleanLoc(parts.slice(0, yearIdx));
-      return { location: loc ? titleCase(loc) : 'Dive', year: parts[yearIdx].slice(0, 4) };
+      location = location ? titleCase(location) : 'Dive';
+      // Fallback: if no year in filename, look up by location
+      if (!year && YEAR_BY_LOCATION[location]) year = YEAR_BY_LOCATION[location];
+      return { location, year };
     }
 
     // ── Build dive cards (alternating left/right with location + year) ──
