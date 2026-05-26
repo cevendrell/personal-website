@@ -248,8 +248,15 @@
     }
     .footer-socials li a:hover { background: var(--page-accent); color: #fff; border-color: var(--page-accent); }
 
+    @media (max-width: 768px) {
+      .hero-inner { padding: 7rem 1.5rem 2.5rem; }
+      .container { padding: 1.5rem 1.5rem 3rem; }
+      .gpt-card { padding: 1.25rem; gap: 1rem; }
+      .gpt-icon { width: 44px; height: 44px; font-size: 1.25rem; }
+    }
     @media (max-width: 480px) {
       .container, .hero-inner { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .gpt-card { flex-direction: column; gap: 0.75rem; padding: 1.1rem; }
       .footer-slim { flex-direction: column; text-align: center; gap: 0.85rem; }
     }
   </style>
