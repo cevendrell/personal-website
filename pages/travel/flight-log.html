@@ -94,7 +94,11 @@
     /* ── PAGE HEADER ── */
     .page-eyebrow { color: var(--c-travel); margin-bottom: 1.25rem; }
     .page-header { margin-bottom: 3rem; max-width: 760px; }
-    .page-header h1 { font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 0.75rem; }
+    .page-header h1 { font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 0.75rem; color: var(--text); }
+    .page-header h1 span {
+      background: linear-gradient(135deg, var(--accent), var(--c-travel));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
     .page-header p { font-size: 1rem; color: var(--text-dim); line-height: 1.8; }
 
     /* ── HERO STATS — bare numbers, single column ── */
@@ -131,11 +135,11 @@
     }
     .section-eyebrow {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--c-photo); margin-bottom: 0.6rem;
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--c-travel); margin-bottom: 0.7rem;
     }
     .section h2 {
-      font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 700; letter-spacing: -0.02em;
+      font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 700; letter-spacing: -0.02em;
       color: var(--text); margin-bottom: 1.75rem;
     }
 
@@ -862,7 +866,7 @@
 <div class="container">
   <div class="page-eyebrow mono">Travel</div>
   <div class="page-header">
-    <h1>Flight Log</h1>
+    <h1>Flight <span>Log</span></h1>
     <p>176 flights logged since 2000 — every boarding pass, every aircraft type, every airport. Tracked on FlightRadar24 and mirrored here. Below: live ADS-B feed from my receiver in Aarhus, plus the full lifetime ledger.</p>
   </div>
 

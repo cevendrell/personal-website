@@ -218,6 +218,10 @@
       margin-bottom: 0.75rem;
       text-shadow: 0 4px 24px rgba(0,0,0,0.6);
     }
+    .nl-hero h1 span {
+      background: linear-gradient(135deg, var(--accent), var(--c-photo));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
     .nl-hero p {
       font-size: clamp(1.05rem, 1.6vw, 1.35rem);
       font-style: italic; color: rgba(255,255,255,0.88);
@@ -472,7 +476,7 @@
   </video>
   <div class="nl-hero-inner">
     <div class="nl-eyebrow">Photography</div>
-    <h1>Northern Lights</h1>
+    <h1>Northern <span>Lights</span></h1>
     <p>Sometimes, less is more.</p>
   </div>
 </section>
