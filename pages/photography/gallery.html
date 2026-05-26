@@ -128,13 +128,10 @@
       width: 6px; height: 6px; border-radius: 50%;
       background: var(--c-photo); transform: translateX(-50%);
     }
-    /* All tag sizes unified */
-    .filter-chip.s-1,
-    .filter-chip.s-2,
-    .filter-chip.s-3,
-    .filter-chip.s-4,
-    .filter-chip.s-5 { font-size: 0.95rem; }
-    .filter-chip.s-all { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+    /* All tag sizes are intentionally identical */
+    .filter-chip { font-size: 0.95rem; font-weight: 500; }
+    .filter-chip.active { font-weight: 700; }
+    .filter-chip[data-filter="all"] { letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 
     .filter-count {
       margin-left: auto;
@@ -300,7 +297,10 @@
 
     /* ── MOBILE NAV OPEN ── */
     body.nav-open { overflow: hidden; }
-    body.nav-open nav#navbar { background: #08090e; border-bottom-color: var(--line); }
+    body.nav-open nav#navbar {
+      background: #08090e; border-bottom-color: var(--line);
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
     body.nav-open .hamburger { position: relative; z-index: 1001; }
     body.nav-open .nav-links > li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.06); }
     body.nav-open .nav-links > li:last-child { border-bottom: none; }
