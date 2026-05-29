@@ -90,7 +90,7 @@
       color: var(--text);
     }
     h1 .accent { color: var(--c-photo); }
-    .intro { font-size: 1.15rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 3.5rem; max-width: 56ch; }
+    .intro { font-size: 1.05rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 2.5rem; max-width: 56ch; }
 
     /* ── Inline social links (no cards) ── */
     .contact-links {
@@ -352,7 +352,7 @@
 
 <footer>
   <div class="footer-inner">
-    <span class="footer-copy">© 2026 Carlos Ebrahim Vendrell</span>
+    <span class="footer-copy">© <span class="js-year">2026</span> Carlos Ebrahim Vendrell</span>
     <div class="footer-links">
       <a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener">Instagram</a>
       <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener">LinkedIn</a>
@@ -387,5 +387,6 @@
   }
 </script>
 
+<script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body>
 </html>

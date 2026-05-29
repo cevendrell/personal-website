@@ -1,1 +1,9 @@
 .claude/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor / OS junk
+Thumbs.db
+*.swp

@@ -1091,38 +1091,28 @@
     <div class="stuff-wrap wow d2">
       <div class="stuff-marquee">
         <div class="stuff-track">
-          <span class="stuff-chip" data-color="travel"><span class="chip-icon">✈</span> Aviation</span>
-          <span class="stuff-chip" data-color="photo"><span class="chip-icon">🏎</span> Formula 1</span>
+          <span class="stuff-chip" data-color="travel"><span class="chip-icon">✈</span> Commercial Aviation</span>
+          <span class="stuff-chip" data-color="photo"><span class="chip-icon">🏎</span> F1</span>
           <span class="stuff-chip" data-color="tech"><span class="chip-icon">🔭</span> Astronomy</span>
-          <span class="stuff-chip" data-color="travel"><span class="chip-icon">🤿</span> Scuba Diving</span>
-          <span class="stuff-chip" data-color="tech"><span class="chip-icon">🤖</span> AI &amp; ML</span>
-          <span class="stuff-chip" data-color="accent"><span class="chip-icon">🌌</span> Space</span>
-          <span class="stuff-chip" data-color="travel"><span class="chip-icon">🚴</span> Cycling</span>
+          <span class="stuff-chip" data-color="accent"><span class="chip-icon">💰</span> Personal Finance</span>
           <!-- duplicate -->
-          <span class="stuff-chip" data-color="travel" aria-hidden="true"><span class="chip-icon">✈</span> Aviation</span>
-          <span class="stuff-chip" data-color="photo" aria-hidden="true"><span class="chip-icon">🏎</span> Formula 1</span>
+          <span class="stuff-chip" data-color="travel" aria-hidden="true"><span class="chip-icon">✈</span> Commercial Aviation</span>
+          <span class="stuff-chip" data-color="photo" aria-hidden="true"><span class="chip-icon">🏎</span> F1</span>
           <span class="stuff-chip" data-color="tech" aria-hidden="true"><span class="chip-icon">🔭</span> Astronomy</span>
-          <span class="stuff-chip" data-color="travel" aria-hidden="true"><span class="chip-icon">🤿</span> Scuba Diving</span>
-          <span class="stuff-chip" data-color="tech" aria-hidden="true"><span class="chip-icon">🤖</span> AI &amp; ML</span>
-          <span class="stuff-chip" data-color="accent" aria-hidden="true"><span class="chip-icon">🌌</span> Space</span>
-          <span class="stuff-chip" data-color="travel" aria-hidden="true"><span class="chip-icon">🚴</span> Cycling</span>
+          <span class="stuff-chip" data-color="accent" aria-hidden="true"><span class="chip-icon">💰</span> Personal Finance</span>
         </div>
       </div>
       <div class="stuff-marquee">
         <div class="stuff-track stuff-track--reverse">
           <span class="stuff-chip" data-color="accent"><span class="chip-icon">📈</span> Investing</span>
-          <span class="stuff-chip" data-color="photo"><span class="chip-icon">🖨</span> 3D Printing</span>
           <span class="stuff-chip" data-color="travel"><span class="chip-icon">🏃</span> Running</span>
-          <span class="stuff-chip" data-color="photo"><span class="chip-icon">📚</span> Reading</span>
-          <span class="stuff-chip" data-color="accent"><span class="chip-icon">☕</span> Coffee</span>
-          <span class="stuff-chip" data-color="tech"><span class="chip-icon">🌊</span> Open Water</span>
+          <span class="stuff-chip" data-color="travel"><span class="chip-icon">🚴</span> Cycling</span>
+          <span class="stuff-chip" data-color="travel"><span class="chip-icon">🤿</span> Diving</span>
           <!-- duplicate -->
           <span class="stuff-chip" data-color="accent" aria-hidden="true"><span class="chip-icon">📈</span> Investing</span>
-          <span class="stuff-chip" data-color="photo" aria-hidden="true"><span class="chip-icon">🖨</span> 3D Printing</span>
           <span class="stuff-chip" data-color="travel" aria-hidden="true"><span class="chip-icon">🏃</span> Running</span>
-          <span class="stuff-chip" data-color="photo" aria-hidden="true"><span class="chip-icon">📚</span> Reading</span>
-          <span class="stuff-chip" data-color="accent" aria-hidden="true"><span class="chip-icon">☕</span> Coffee</span>
-          <span class="stuff-chip" data-color="tech" aria-hidden="true"><span class="chip-icon">🌊</span> Open Water</span>
+          <span class="stuff-chip" data-color="travel" aria-hidden="true"><span class="chip-icon">🚴</span> Cycling</span>
+          <span class="stuff-chip" data-color="travel" aria-hidden="true"><span class="chip-icon">🤿</span> Diving</span>
         </div>
       </div>
     </div>
@@ -1132,7 +1122,7 @@
 <!-- ── FOOTER (Melan dark navy, no nav links) ── -->
 <footer>
   <div class="footer-slim">
-    <span class="footer-copy">© 2026 Carlos Ebrahim Vendrell. All rights reserved.</span>
+    <span class="footer-copy">© <span class="js-year">2026</span> Carlos Ebrahim Vendrell. All rights reserved.</span>
     <ul class="footer-socials">
       <li>
         <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener" aria-label="LinkedIn">
@@ -1233,5 +1223,6 @@
     });
   })();
 </script>
+<script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body>
 </html>
