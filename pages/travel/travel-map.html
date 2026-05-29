@@ -2466,10 +2466,10 @@ function runGlobeInit() {
   const lbClose  = document.getElementById('imapLbClose');
   const lbPrev   = document.getElementById('imapLbPrev');
   const lbNext   = document.getElementById('imapLbNext');
-  let lbPhotos = []; let lbIndex = 0; let lbLabel = '';
+  let lbPhotos = []; let lbIndex = 0; let lbLabel = ''; let lbLabels = null;
 
-  function openLightbox(photos, startIdx, label) {
-    lbPhotos = photos; lbIndex = startIdx; lbLabel = label || '';
+  function openLightbox(photos, startIdx, label, labels) {
+    lbPhotos = photos; lbIndex = startIdx; lbLabel = label || ''; lbLabels = labels || null;
     showLightboxPhoto();
     lb.classList.add('open');
     lb.setAttribute('aria-hidden', 'false');
@@ -2490,8 +2490,9 @@ function runGlobeInit() {
     if (!lbPhotos.length) return;
     lbIndex = (lbIndex + lbPhotos.length) % lbPhotos.length;
     lbImg.src = PHOTO_PATH + encodeURI(lbPhotos[lbIndex]);
-    lbImg.alt = lbLabel;
-    lbCap.textContent = lbLabel + (lbPhotos.length > 1 ? '  ·  ' + (lbIndex+1) + ' / ' + lbPhotos.length : '');
+    const cap = (lbLabels && lbLabels[lbIndex]) || lbLabel;
+    lbImg.alt = cap;
+    lbCap.textContent = cap + (lbPhotos.length > 1 ? '  ·  ' + (lbIndex+1) + ' / ' + lbPhotos.length : '');
   }
   lbClose.addEventListener('click', closeLightbox);
   lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
@@ -2956,25 +2957,25 @@ function runGlobeInit() {
     else img.addEventListener('load', () => img.classList.remove('loading'), { once: true });
   });
 
-  function open(tile) {
-    const name     = tile.dataset.name    || '';
-    const country  = tile.dataset.country || '';
-    const label    = country ? `${name}, ${country}` : name;
-    // data-photo carries the FULL-RES filename. The grid <img> uses the thumbnail
-    // (../../media/travel/thumbs/) — lightbox uses the original from
-    // ../../media/travel/photos/.
-    const filename = tile.dataset.photo || '';
-    if (!filename) return;
+  // Build the full ordered list of grid photos + matching labels once, so the
+  // lightbox can page through every photo (arrows / keyboard / swipe).
+  // data-photo carries the FULL-RES filename; the grid <img> uses the thumbnail.
+  const photoTiles = Array.from(tiles).filter(t => t.dataset.photo);
+  const allPhotos  = photoTiles.map(t => t.dataset.photo);
+  const allLabels  = photoTiles.map(t => {
+    const nm = t.dataset.name || '', ct = t.dataset.country || '';
+    return ct ? `${nm}, ${ct}` : nm;
+  });
 
+  function open(tile) {
+    if (!tile.dataset.photo) return;
+    const start = photoTiles.indexOf(tile);
+    const launch = () => window.__travelLightbox(allPhotos, start < 0 ? 0 : start, null, allLabels);
     if (typeof window.__travelLightbox === 'function') {
-      window.__travelLightbox([filename], 0, label);
+      launch();
     } else {
       // Fallback: lightbox not ready yet — retry once after a tick
-      setTimeout(() => {
-        if (typeof window.__travelLightbox === 'function') {
-          window.__travelLightbox([filename], 0, label);
-        }
-      }, 200);
+      setTimeout(() => { if (typeof window.__travelLightbox === 'function') launch(); }, 200);
     }
   }
 

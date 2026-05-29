@@ -175,7 +175,18 @@
 
     /* ── CONTENT ── */
     .container { max-width: 1200px; margin: 0 auto; padding: 5rem 2rem 5rem; position: relative; z-index: 2; }
-    main { background: var(--bg-alt); }
+    /* Light content section — dark hero → white body */
+    main {
+      position: relative; z-index: 2;
+      background: #ffffff;
+      --text: #16161a;
+      --dim: #4f5158;
+      --mute: #8a8b91;
+      --surface: #f5f5f2;
+      --line: rgba(0,0,0,0.12);
+      --bg: #ffffff;
+      --bg-elevated: #ececea;
+    }
 
     /* ── VIDEO TIMELINE ── */
     .timeline {

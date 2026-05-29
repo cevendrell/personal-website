@@ -348,7 +348,7 @@
       display: grid;
       grid-template-columns: 1.1fr 1fr;
       grid-template-areas:
-        "head    image"
+        "head    ."
         "stack   image";
       gap: 0 80px;
       align-items: start;
@@ -473,9 +473,9 @@
     .career-img-header {
       display: flex; align-items: center; justify-content: space-between;
       gap: 1rem; flex-wrap: wrap;
-      margin-bottom: 1.25rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--line);
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
     }
     .career-company-logo {
       height: 56px; width: auto; max-width: 220px;
@@ -987,15 +987,15 @@
         </div><!-- /career-tab-stack -->
 
         <div class="career-img-col wow d2">
-          <!-- Company logo + tenure sit on top of the photo, framing it as
+          <div class="career-img-frame">
+            <img src="media/home/career.jpg" alt="Career at GRUNDFOS"
+                 onerror="this.style.display='none'">
+          </div>
+          <!-- Company logo + tenure sit under the photo, captioning it as
                "this is where I've been since 2019". -->
           <div class="career-img-header">
             <img src="media/shared/grundfos-logo.png" alt="GRUNDFOS" class="career-company-logo">
             <span class="career-company-date">2019 – Present</span>
-          </div>
-          <div class="career-img-frame">
-            <img src="media/home/career.jpg" alt="Career at GRUNDFOS"
-                 onerror="this.style.display='none'">
           </div>
           <div class="career-dots" aria-hidden="true"></div>
         </div>
