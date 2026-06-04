@@ -347,6 +347,81 @@
       .tetris-side { flex-direction: row; flex-wrap: wrap; min-width: 0; }
       .tetris-panel { flex: 1 1 30%; }
     }
+
+    /* ══ NEUROEVOLUTION — self-driving F1 ══ */
+    .evo-block { margin-top: 4.5rem; }
+    .evo-title {
+      font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 700;
+      letter-spacing: -0.02em; color: var(--text); margin: 0.2rem 0 0.6rem;
+    }
+    .evo-intro { color: var(--dim); font-size: 0.95rem; line-height: 1.7; max-width: 62ch; margin-bottom: 1.75rem; }
+    .evo-intro strong { color: var(--text); font-weight: 600; }
+    .evo-wrap { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+    .evo-stage {
+      position: relative; flex: 1 1 540px; min-width: 0;
+      border-radius: 14px; overflow: hidden;
+      background: #0b0f14; border: 1px solid rgba(0,0,0,0.15);
+      box-shadow: 0 18px 50px -22px rgba(0,0,0,0.5);
+    }
+    #evoCanvas { display: block; width: 100%; height: auto; }
+    .evo-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(8,12,18,0.84); backdrop-filter: blur(3px);
+      text-align: center; transition: opacity 0.35s;
+    }
+    .evo-overlay.hidden { opacity: 0; pointer-events: none; }
+    .evo-overlay-inner { max-width: 360px; padding: 1.5rem; }
+    .eo-title { font-size: 1.4rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+    .eo-sub { font-size: 0.85rem; color: rgba(255,255,255,0.72); margin: 0.5rem 0 1.25rem; line-height: 1.6; }
+    .evo-btn {
+      font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+      padding: 0.7rem 1.5rem; border-radius: 999px;
+      background: var(--page-accent); color: #fff; border: none;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .evo-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -10px var(--page-glow); background: var(--page-accent2); }
+    .evo-btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+    .evo-btn.ghost:hover { background: var(--surface); box-shadow: none; transform: none; border-color: var(--page-accent); }
+    .evo-side { display: flex; flex-direction: column; gap: 0.7rem; flex: 0 0 200px; }
+    .evo-stat {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 12px; padding: 0.7rem 0.9rem;
+      display: flex; flex-direction: column; gap: 0.1rem;
+    }
+    .evo-stat-lbl {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.56rem;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--mute);
+    }
+    .evo-stat-val { font-size: 1.45rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1; }
+    .evo-stat-val small { font-size: 0.7rem; font-weight: 600; color: var(--dim); }
+    .evo-leader {
+      display: flex; align-items: center; gap: 0.55rem;
+      font-size: 0.82rem; color: var(--text); font-weight: 600;
+    }
+    .evo-leader .swatch { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.2); }
+    .evo-speed { display: flex; gap: 0.3rem; }
+    .evo-speed button {
+      flex: 1; padding: 0.45rem 0; border-radius: 8px; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600;
+      background: var(--surface); border: 1px solid var(--line); color: var(--dim);
+      transition: all 0.15s;
+    }
+    .evo-speed button.active { background: var(--page-accent); color: #fff; border-color: var(--page-accent); }
+    .evo-controls { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.15rem; }
+    .evo-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.78rem; color: var(--dim); cursor: pointer; user-select: none;
+      padding: 0.2rem 0;
+    }
+    .evo-toggle input { accent-color: var(--page-accent); width: 16px; height: 16px; cursor: pointer; }
+    @media (max-width: 760px) {
+      .evo-side { flex: 1 1 100%; flex-direction: row; flex-wrap: wrap; }
+      .evo-stat { flex: 1 1 30%; }
+      .evo-controls { flex: 1 1 100%; }
+      .evo-speed { flex: 1 1 100%; }
+    }
   </style>
 </head>
 <body>
@@ -485,6 +560,45 @@
         <button data-act="right" aria-label="Move right">→</button>
         <button data-act="down" aria-label="Soft drop">↓</button>
         <button data-act="drop" aria-label="Hard drop">⤓</button>
+      </div>
+    </section>
+
+    <!-- ══ NEUROEVOLUTION — F1 cars that teach themselves to drive ══ -->
+    <section class="evo-block wow" aria-label="Neural network learning to drive">
+      <span class="section-eyebrow">Watch AI learn</span>
+      <h2 class="evo-title">A grid that teaches itself to race</h2>
+      <p class="evo-intro">No pre-trained model — just a fleet of F1 cars, each steered by a tiny neural network that starts as <strong>random numbers</strong>. They crash instantly at first. Every generation, the survivors that got furthest are bred together with a dash of mutation, and the field slowly learns the circuit. Livery a different era of F1 each. <strong>Watch them get faster, generation by generation.</strong></p>
+      <div class="evo-wrap">
+        <div class="evo-stage">
+          <canvas id="evoCanvas" width="820" height="480"></canvas>
+          <div class="evo-overlay" id="evoOverlay">
+            <div class="evo-overlay-inner">
+              <p class="eo-title">Neuroevolution</p>
+              <p class="eo-sub">26 neural nets, zero training data. Hit play and watch them learn to drive the circuit from scratch.</p>
+              <button class="evo-btn" id="evoStart">Start evolution</button>
+            </div>
+          </div>
+        </div>
+        <div class="evo-side">
+          <div class="evo-stat"><span class="evo-stat-lbl">Generation</span><span class="evo-stat-val" id="evoGen">0</span></div>
+          <div class="evo-stat"><span class="evo-stat-lbl">Cars alive</span><span class="evo-stat-val" id="evoAlive">0 <small>/ 26</small></span></div>
+          <div class="evo-stat"><span class="evo-stat-lbl">Best this gen</span><span class="evo-stat-val" id="evoBest">0<small> %</small></span></div>
+          <div class="evo-stat"><span class="evo-stat-lbl">Champion laps</span><span class="evo-stat-val" id="evoChamp">0</span></div>
+          <div class="evo-stat">
+            <span class="evo-stat-lbl">Leader</span>
+            <span class="evo-leader"><span class="swatch" id="evoLeaderSwatch"></span><span id="evoLeaderName">—</span></span>
+          </div>
+          <div class="evo-speed" role="group" aria-label="Simulation speed">
+            <button data-spd="1" class="active">1×</button>
+            <button data-spd="4">4×</button>
+            <button data-spd="12">12×</button>
+          </div>
+          <div class="evo-controls">
+            <label class="evo-toggle"><span>Show sensors</span><input type="checkbox" id="evoSensors" checked></label>
+            <label class="evo-toggle"><span>Show racing lines</span><input type="checkbox" id="evoTrails" checked></label>
+            <button class="evo-btn ghost" id="evoReset">Reset evolution</button>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -713,6 +827,330 @@
   });
 
   board = emptyBoard(); draw();   // idle paint behind the overlay
+})();
+</script>
+<!-- ══ Neuroevolution F1 — vanilla JS, no dependencies, no pre-trained model ══ -->
+<script>
+(function initEvolution(){
+  const canvas = document.getElementById('evoCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // ── Config ──
+  const POP = 26, ELITE = 4;
+  const IN = 6, HID = 8, OUT = 2;
+  const GENES = IN*HID + HID + HID*OUT + OUT;       // 74
+  const HW = 30;                                     // half track width
+  const SENSOR_ANGLES = [-75,-40,0,40,75].map(d=>d*Math.PI/180);
+  const RANGE = 170;                                 // sensor reach
+  const MAXSPEED = 3.5, TURN = 0.062;
+  const STUCK_TICKS = 150, MAX_GEN_TICKS = 2600;
+  const MUT_RATE = 0.12;
+
+  // ── Liveries — a different era of F1 on every car ──
+  const LIVERIES = [
+    {name:'Black & Gold',         body:'#0a0a0a', trim:'#d4af37', accent:'#d4af37', pat:'stripe'},
+    {name:'Red & Gold',           body:'#d8281f', trim:'#f3d23c', accent:'#ffffff', pat:'flash'},
+    {name:'Navy & Gold',          body:'#0a2a6b', trim:'#ffffff', accent:'#e8b53a', pat:'edge'},
+    {name:'Red & White',          body:'#e0122b', trim:'#ffffff', accent:'#ffffff', pat:'split'},
+    {name:'Papaya Orange',        body:'#ff7a00', trim:'#15182c', accent:'#0098d4', pat:'flash'},
+    {name:'Scuderia Red',         body:'#d10000', trim:'#1a1a1a', accent:'#ffffff', pat:'solid'},
+    {name:'Silver Arrow',         body:'#c6cacd', trim:'#1a1a1a', accent:'#d10000', pat:'stripe'},
+    {name:'Teal & Black',         body:'#111418', trim:'#00d2be', accent:'#00d2be', pat:'edge'},
+    {name:'Navy & Flame',         body:'#0a1c48', trim:'#e0122b', accent:'#f3d23c', pat:'flash'},
+    {name:'United Colours',       body:'#00a99d', trim:'#1a4fa0', accent:'#e3e31a', pat:'split'},
+    {name:'Cobalt Blue',          body:'#0a3a8c', trim:'#ffffff', accent:'#ffffff', pat:'solid'},
+    {name:'Hornet Yellow',        body:'#f3d21a', trim:'#1a1a1a', accent:'#1a1a1a', pat:'edge'},
+    {name:'White & Lime',         body:'#f2f2f2', trim:'#cfe000', accent:'#1a1a1a', pat:'flash'},
+    {name:'White & Blue',         body:'#f2f2f2', trim:'#0a2a6b', accent:'#e0122b', pat:'stripe'},
+    {name:'French Blue',          body:'#3a7fd0', trim:'#ffffff', accent:'#15182c', pat:'flash'},
+    {name:'Sunflower',            body:'#f3d21a', trim:'#1a1a1a', accent:'#0a2a6b', pat:'split'},
+    {name:'Flame Orange',         body:'#ff5a1a', trim:'#1a1a1a', accent:'#ffffff', pat:'edge'},
+    {name:'Ice & Red',            body:'#eef0f2', trim:'#0a4f9e', accent:'#e0122b', pat:'split'},
+    {name:'White & Navy',         body:'#eef0f2', trim:'#0a3a8c', accent:'#e0122b', pat:'stripe'},
+    {name:'Aqua',                 body:'#3fc6c6', trim:'#ffffff', accent:'#1a3a8c', pat:'solid'},
+    {name:'Black & Yellow',       body:'#16181c', trim:'#f3d21a', accent:'#e0122b', pat:'edge'},
+    {name:'Green & Gold',         body:'#0a5a3c', trim:'#d4af37', accent:'#ffffff', pat:'stripe'},
+    {name:'British Racing Green', body:'#0a4226', trim:'#f3d23c', accent:'#f3d23c', pat:'flash'},
+    {name:'Blue & Red',           body:'#1a3a8c', trim:'#e0122b', accent:'#ffffff', pat:'split'},
+    {name:'Yellow & Green',       body:'#f3d21a', trim:'#00a050', accent:'#1a1a1a', pat:'stripe'},
+    {name:'Pearl & Red',          body:'#f4f4f4', trim:'#e0122b', accent:'#0a2a6b', pat:'flash'}
+  ];
+
+  // ── Build the circuit (closed Catmull-Rom through control points) ──
+  const CTRL = [
+    [150,120],[320,95],[490,125],[600,95],[720,140],[745,260],[675,345],
+    [720,415],[540,425],[400,368],[255,420],[110,365],[95,235]
+  ];
+  const STEPS = 8;
+  const center = [];
+  (function buildCenter(){
+    const n = CTRL.length;
+    for (let i=0;i<n;i++){
+      const p0=CTRL[(i-1+n)%n], p1=CTRL[i], p2=CTRL[(i+1)%n], p3=CTRL[(i+2)%n];
+      for (let s=0;s<STEPS;s++){
+        const t=s/STEPS, t2=t*t, t3=t2*t;
+        const x=0.5*((2*p1[0])+(-p0[0]+p2[0])*t+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3);
+        const y=0.5*((2*p1[1])+(-p0[1]+p2[1])*t+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3);
+        center.push({x,y});
+      }
+    }
+  })();
+  const N = center.length;
+  // Offset walls + ray segments
+  const innerW=[], outerW=[];
+  for (let i=0;i<N;i++){
+    const a=center[(i-1+N)%N], b=center[(i+1)%N];
+    let tx=b.x-a.x, ty=b.y-a.y; const len=Math.hypot(tx,ty)||1; tx/=len; ty/=len;
+    const nx=-ty, ny=tx;
+    innerW.push({x:center[i].x+nx*HW, y:center[i].y+ny*HW});
+    outerW.push({x:center[i].x-nx*HW, y:center[i].y-ny*HW});
+  }
+  const WALL_SEGS=[];
+  function addWall(arr){ for(let i=0;i<arr.length;i++){ const a=arr[i],b=arr[(i+1)%arr.length]; WALL_SEGS.push({ax:a.x,ay:a.y,bx:b.x,by:b.y,mx:(a.x+b.x)/2,my:(a.y+b.y)/2}); } }
+  addWall(innerW); addWall(outerW);
+  // Road path for rendering
+  const roadPath = new Path2D();
+  roadPath.moveTo(center[0].x, center[0].y);
+  for (let i=1;i<N;i++) roadPath.lineTo(center[i].x, center[i].y);
+  roadPath.closePath();
+  // Start orientation
+  const startA = Math.atan2(center[1].y-center[0].y, center[1].x-center[0].x);
+
+  // ── Neural net ──
+  function gaussian(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  function randomGenome(){ const g=new Float32Array(GENES); for(let i=0;i<GENES;i++) g[i]=gaussian()*0.8; return g; }
+  function forward(g, inp){
+    const hid=new Float32Array(HID);
+    for(let j=0;j<HID;j++){ let s=g[IN*HID+j]; for(let i=0;i<IN;i++) s+=inp[i]*g[j*IN+i]; hid[j]=Math.tanh(s); }
+    const o2=IN*HID+HID, ob=o2+HID*OUT, out=[0,0];
+    for(let k=0;k<OUT;k++){ let s=g[ob+k]; for(let j=0;j<HID;j++) s+=hid[j]*g[o2+k*HID+j]; out[k]=Math.tanh(s); }
+    return out;
+  }
+
+  // ── Geometry helpers ──
+  function raycast(ox,oy,ang){
+    const dx=Math.cos(ang), dy=Math.sin(ang); let best=RANGE; const lim=(RANGE+50)*(RANGE+50);
+    for(let i=0;i<WALL_SEGS.length;i++){
+      const s=WALL_SEGS[i]; const ddx=s.mx-ox, ddy=s.my-oy; if(ddx*ddx+ddy*ddy>lim) continue;
+      const ex=s.bx-s.ax, ey=s.by-s.ay; const den=dx*ey-dy*ex; if(Math.abs(den)<1e-6) continue;
+      const t=((s.ax-ox)*ey-(s.ay-oy)*ex)/den;
+      const u=((s.ax-ox)*dy-(s.ay-oy)*dx)/den;
+      if(t>0 && t<best && u>=0 && u<=1) best=t;
+    }
+    return best;
+  }
+  function nearestIdx(x,y){
+    let bi=0, bd=Infinity;
+    for(let i=0;i<N;i++){ const dx=center[i].x-x, dy=center[i].y-y, d=dx*dx+dy*dy; if(d<bd){bd=d;bi=i;} }
+    return {idx:bi, dist:Math.sqrt(bd)};
+  }
+
+  // ── Cars ──
+  function makeCar(slot){ return { liv:LIVERIES[slot%LIVERIES.length], genome:null, trail:[] }; }
+  const cars = []; for(let i=0;i<POP;i++) cars.push(makeCar(i));
+
+  function resetCar(c){
+    c.x=center[0].x; c.y=center[0].y; c.angle=startA; c.speed=0.6;
+    c.alive=true; c.idx=0; c.prevIdx=0; c.lap=0; c.station=0; c.best=0;
+    c.lastImprove=0; c.fitness=0; c.trail.length=0; c.sensors=[1,1,1,1,1];
+  }
+
+  let generation=0, genTick=0, running=false, inView=false, started=false;
+  let speed=1, showSensors=true, showTrails=true;
+  let champGenome=null, champStation=0;
+
+  function newPopulation(){
+    for(let i=0;i<POP;i++){ cars[i].genome=randomGenome(); resetCar(cars[i]); }
+    generation=1; genTick=0;
+  }
+
+  function tournament(sorted){
+    let best=sorted[(Math.random()*sorted.length)|0];
+    for(let k=0;k<2;k++){ const c=sorted[(Math.random()*Math.min(sorted.length,POP/2|0))|0]; if(c.fitness>best.fitness) best=c; }
+    return best.genome;
+  }
+  function breed(a,b){
+    const g=new Float32Array(GENES);
+    for(let i=0;i<GENES;i++){
+      g[i]= Math.random()<0.5 ? a[i] : b[i];
+      if(Math.random()<MUT_RATE) g[i]+=gaussian()*0.5;
+      if(Math.random()<0.02) g[i]=gaussian();
+    }
+    return g;
+  }
+  function evolve(){
+    const sorted=[...cars].sort((p,q)=>q.fitness-p.fitness);
+    if(sorted[0].best>champStation){ champStation=sorted[0].best; champGenome=sorted[0].genome.slice(); }
+    const elite=sorted.slice(0,ELITE).map(c=>c.genome.slice());
+    const next=[];
+    for(let i=0;i<POP;i++){
+      if(i<ELITE) next.push(elite[i]);
+      else next.push(breed(tournament(sorted), tournament(sorted)));
+    }
+    for(let i=0;i<POP;i++){ cars[i].genome=next[i]; resetCar(cars[i]); }
+    generation++; genTick=0;
+  }
+
+  function update(){
+    let aliveCount=0;
+    for(let c=0;c<POP;c++){
+      const car=cars[c]; if(!car.alive) continue; aliveCount++;
+      // sensors
+      const inp=[0,0,0,0,0,0];
+      for(let s=0;s<5;s++){ const d=raycast(car.x,car.y,car.angle+SENSOR_ANGLES[s]); car.sensors[s]=d/RANGE; inp[s]=car.sensors[s]; }
+      inp[5]=car.speed/MAXSPEED;
+      // brain → controls
+      const out=forward(car.genome,inp);
+      car.angle += out[0]*TURN;
+      const target=(out[1]*0.5+0.5)*MAXSPEED;
+      car.speed += (target-car.speed)*0.08;
+      car.x += Math.cos(car.angle)*car.speed;
+      car.y += Math.sin(car.angle)*car.speed;
+      // progress + collision
+      const near=nearestIdx(car.x,car.y);
+      let delta=near.idx-car.prevIdx;
+      if(delta<-N/2) car.lap++; else if(delta>N/2) car.lap--;
+      car.prevIdx=near.idx; car.station=car.lap*N+near.idx;
+      if(car.station>car.best){ car.best=car.station; car.lastImprove=genTick; }
+      car.fitness=car.best;
+      if(showTrails){ car.trail.push(car.x,car.y); if(car.trail.length>32) car.trail.splice(0,2); }
+      if(near.dist>HW-3 || genTick-car.lastImprove>STUCK_TICKS) car.alive=false;
+    }
+    genTick++;
+    if(aliveCount===0 || genTick>MAX_GEN_TICKS) evolve();
+  }
+
+  // ── Rendering ──
+  function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  function drawTrack(){
+    ctx.fillStyle='#0b0f14'; ctx.fillRect(0,0,W,H);
+    // road
+    ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.strokeStyle='#3b4048'; ctx.lineWidth=HW*2+8; ctx.stroke(roadPath);
+    ctx.strokeStyle='#23272e'; ctx.lineWidth=HW*2;   ctx.stroke(roadPath);
+    // dashed racing centreline
+    ctx.strokeStyle='rgba(232,220,196,0.18)'; ctx.lineWidth=2; ctx.setLineDash([10,14]); ctx.stroke(roadPath); ctx.setLineDash([]);
+    // start/finish — checkered band
+    const a=center[0], b=center[1]; let tx=b.x-a.x, ty=b.y-a.y; const l=Math.hypot(tx,ty)||1; tx/=l; ty/=l;
+    const nx=-ty, ny=tx;
+    for(let r=0;r<2;r++) for(let s=-HW;s<HW;s+=10){
+      ctx.fillStyle=((s/10+r)&1)?'#e8e8e8':'#15181d';
+      const px=a.x+nx*s - tx*(r*8), py=a.y+ny*s - ty*(r*8);
+      ctx.save(); ctx.translate(px,py); ctx.rotate(Math.atan2(ty,tx)); ctx.fillRect(0,0,10,8); ctx.restore();
+    }
+  }
+
+  function drawCar(car, isLeader){
+    const L=car.liv;
+    // trail
+    if(showTrails && car.alive && car.trail.length>=4){
+      ctx.strokeStyle=L.body; ctx.globalAlpha=0.13; ctx.lineWidth=2.5; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(car.trail[0],car.trail[1]);
+      for(let i=2;i<car.trail.length;i+=2) ctx.lineTo(car.trail[i],car.trail[i+1]);
+      ctx.stroke(); ctx.globalAlpha=1;
+    }
+    ctx.save();
+    ctx.translate(car.x,car.y); ctx.rotate(car.angle);
+    if(!car.alive){ ctx.globalAlpha=0.16; }
+    if(isLeader && car.alive){
+      const g=ctx.createRadialGradient(0,0,2,0,0,30);
+      g.addColorStop(0,'rgba(16,163,127,0.5)'); g.addColorStop(1,'rgba(16,163,127,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,30,0,7); ctx.fill();
+    }
+    // sensors (leader only)
+    if(showSensors && isLeader && car.alive){
+      ctx.strokeStyle='rgba(16,163,127,0.35)'; ctx.lineWidth=1;
+      for(let s=0;s<5;s++){ const d=car.sensors[s]*RANGE, ang=SENSOR_ANGLES[s];
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ang)*d,Math.sin(ang)*d); ctx.stroke();
+        ctx.fillStyle='rgba(16,163,127,0.6)'; ctx.beginPath(); ctx.arc(Math.cos(ang)*d,Math.sin(ang)*d,1.8,0,7); ctx.fill();
+      }
+    }
+    // ── F1 car (forward = +x) ──
+    const TYRE='#16181d';
+    // rear wing
+    ctx.fillStyle=L.accent; roundRect(-15,-9.5,4,19,1.5); ctx.fill();
+    // tyres
+    ctx.fillStyle=TYRE;
+    roundRect(-12,-9.5,8,4,1.5); ctx.fill(); roundRect(-12,5.5,8,4,1.5); ctx.fill();
+    roundRect(3,-9,7,4,1.5); ctx.fill();  roundRect(3,5,7,4,1.5); ctx.fill();
+    // nose + front wing
+    ctx.fillStyle=L.accent; roundRect(18,-10.5,3.5,21,1.5); ctx.fill();
+    ctx.fillStyle=L.body; ctx.beginPath(); ctx.moveTo(12,-2.4); ctx.lineTo(19,-1.4); ctx.lineTo(19,1.4); ctx.lineTo(12,2.4); ctx.closePath(); ctx.fill();
+    // body
+    ctx.fillStyle=L.body;
+    ctx.beginPath();
+    ctx.moveTo(-12,-5); ctx.lineTo(-12,5); ctx.lineTo(2,6.8); ctx.lineTo(8,4.4);
+    ctx.lineTo(13,2.2); ctx.lineTo(13,-2.2); ctx.lineTo(8,-4.4); ctx.lineTo(2,-6.8); ctx.closePath(); ctx.fill();
+    // livery pattern
+    if(L.pat==='stripe'){ ctx.fillStyle=L.trim; ctx.fillRect(-12,-1.8,25,3.6); }
+    else if(L.pat==='flash'){ ctx.fillStyle=L.trim; ctx.beginPath(); ctx.moveTo(4,-5.6); ctx.lineTo(13,-2.2); ctx.lineTo(13,2.2); ctx.lineTo(4,5.6); ctx.closePath(); ctx.fill(); }
+    else if(L.pat==='split'){ ctx.fillStyle=L.trim; ctx.beginPath(); ctx.moveTo(-12,-5); ctx.lineTo(-2,-6); ctx.lineTo(-2,6); ctx.lineTo(-12,5); ctx.closePath(); ctx.fill(); }
+    else if(L.pat==='edge'){ ctx.fillStyle=L.trim; ctx.fillRect(-12,-5.4,24,1.4); ctx.fillRect(-12,4,24,1.4); }
+    // cockpit + halo + helmet
+    ctx.fillStyle='#0c0e12'; roundRect(-4,-3,9,6,2.5); ctx.fill();
+    ctx.fillStyle=L.accent; ctx.beginPath(); ctx.arc(0.5,0,2,0,7); ctx.fill();
+    ctx.restore();
+    // leader tag
+    if(isLeader && car.alive){
+      ctx.fillStyle='#10a37f'; ctx.font='700 10px JetBrains Mono, monospace'; ctx.textAlign='center';
+      ctx.fillText('P1', car.x, car.y-24);
+    }
+  }
+
+  // HUD elements
+  const el={ gen:document.getElementById('evoGen'), alive:document.getElementById('evoAlive'),
+    best:document.getElementById('evoBest'), champ:document.getElementById('evoChamp'),
+    lname:document.getElementById('evoLeaderName'), lsw:document.getElementById('evoLeaderSwatch') };
+
+  function render(){
+    drawTrack();
+    // leader = alive car with highest station
+    let leader=null, alive=0;
+    for(let i=0;i<POP;i++){ const c=cars[i]; if(c.alive){alive++; if(!leader||c.station>leader.station) leader=c;} }
+    // draw dead first, then alive, leader last
+    for(let i=0;i<POP;i++) if(!cars[i].alive) drawCar(cars[i],false);
+    for(let i=0;i<POP;i++) if(cars[i].alive && cars[i]!==leader) drawCar(cars[i],false);
+    if(leader) drawCar(leader,true);
+    // HUD
+    el.gen.textContent=generation;
+    el.alive.innerHTML=alive+' <small>/ '+POP+'</small>';
+    let bestPct=0; for(let i=0;i<POP;i++) bestPct=Math.max(bestPct,cars[i].best);
+    el.best.innerHTML=Math.max(0,Math.round(bestPct/N*100))+'<small> %</small>';
+    el.champ.textContent=Math.max(0,Math.floor(champStation/N));
+    if(leader){ el.lname.textContent=leader.liv.name; el.lsw.style.background=leader.liv.body; }
+  }
+
+  function frame(){
+    if(running && inView && started){ for(let s=0;s<speed;s++) update(); render(); }
+    requestAnimationFrame(frame);
+  }
+
+  // ── Controls ──
+  const overlay=document.getElementById('evoOverlay');
+  document.getElementById('evoStart').addEventListener('click',()=>{
+    if(!started){ newPopulation(); started=true; }
+    running=true; overlay.classList.add('hidden');
+  });
+  document.getElementById('evoReset').addEventListener('click',()=>{
+    champGenome=null; champStation=0; newPopulation(); started=true; running=true; overlay.classList.add('hidden'); render();
+  });
+  document.querySelectorAll('.evo-speed button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.evo-speed button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); speed=+b.dataset.spd;
+  }));
+  document.getElementById('evoSensors').addEventListener('change',e=>showSensors=e.target.checked);
+  document.getElementById('evoTrails').addEventListener('change',e=>showTrails=e.target.checked);
+
+  // Pause when scrolled out of view (saves CPU)
+  new IntersectionObserver(([e])=>{ inView=e.isIntersecting; },{threshold:0.05}).observe(canvas);
+
+  // Idle paint behind the overlay
+  for(let i=0;i<POP;i++){ cars[i].genome=randomGenome(); resetCar(cars[i]); }
+  render();
+  requestAnimationFrame(frame);
 })();
 </script>
 <script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
