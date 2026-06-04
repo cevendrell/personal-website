@@ -2667,8 +2667,9 @@ function runGlobeInit() {
       attributionControl: false,
       zoomControl: true,
     });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd', maxZoom: 19
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 12,
+      attribution: 'Tiles &copy; Esri &mdash; National Geographic'
     }).addTo(map);
     map.on('click', onMapClick);
     setTimeout(() => map.invalidateSize(), 100);
