@@ -214,8 +214,15 @@
       border-left: 3px solid var(--page-accent);
       border-radius: var(--radius); overflow: hidden;
       transition: background 0.25s, border-color 0.25s, box-shadow 0.3s, transform 0.3s;
-      position: relative;
+      position: relative; text-decoration: none; color: inherit; display: flex;
     }
+    a.gpt-card { cursor: pointer; }
+    .gpt-arrow {
+      margin-left: auto; padding-left: 0.75rem; flex-shrink: 0; align-self: center;
+      font-size: 1.1rem; color: var(--page-accent); opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+    }
+    .gpt-card:hover .gpt-arrow { opacity: 1; transform: translateX(3px); }
     .gpt-card:hover {
       background: rgba(16,163,127,0.05);
       border-color: rgba(16,163,127,0.35);
@@ -501,32 +508,35 @@
 
     <div class="gpt-grid">
 
-      <div class="gpt-card wow d1">
+      <a class="gpt-card wow d1" href="https://chat.openai.com/g/g-nLELAekQe-mini-world-of-me" target="_blank" rel="noopener">
         <div class="gpt-icon">🌍</div>
         <div class="gpt-body">
           <h3>Mini World of Me</h3>
-          <p>A personalised GPT trained on my background, interests, and experiences. Ask it anything about my career, travels, or projects — it knows me surprisingly well.</p>
+          <p>How do you introduce yourself without a boring list of bullet points? This GPT generates a personalised 3D mini-world based on your geography and interests — turn it into a slide, open with it, and let it do the talking. Built around my own background as a starting point.</p>
         </div>
         <span class="gpt-badge">Personal</span>
-      </div>
+        <span class="gpt-arrow">→</span>
+      </a>
 
-      <div class="gpt-card wow d2">
+      <a class="gpt-card wow d2" href="https://chat.openai.com/g/g-eBzwsaNY0-virtual-background-artist" target="_blank" rel="noopener">
         <div class="gpt-icon">🎨</div>
         <div class="gpt-body">
           <h3>Virtual Background Artist</h3>
-          <p>Generates polished virtual backgrounds for video calls — from minimalist office setups to creative environments. Designed for professionals who want to look good on camera.</p>
+          <p>Effortlessly generate a background image for your Teams or Zoom calls. Ask for something professional, something playful, or something seasonally appropriate — and swap it in before your next meeting. No design skills required.</p>
         </div>
         <span class="gpt-badge">Creative</span>
-      </div>
+        <span class="gpt-arrow">→</span>
+      </a>
 
-      <div class="gpt-card wow d3">
+      <a class="gpt-card wow d3" href="https://chat.openai.com/g/g-LoEocHAHX-photography-review" target="_blank" rel="noopener">
         <div class="gpt-icon">📷</div>
         <div class="gpt-body">
           <h3>Photography Review</h3>
-          <p>Upload a photo and get detailed, constructive feedback on composition, lighting, exposure, and storytelling — like having a photography mentor on demand.</p>
+          <p>Upload a photo and get a thorough critique across both technical and artistic dimensions — exposure, contrast, colour temperature, sharpness, composition, rule of thirds, mood. Structured feedback, like having a photography mentor review your work on demand.</p>
         </div>
         <span class="gpt-badge">Visual</span>
-      </div>
+        <span class="gpt-arrow">→</span>
+      </a>
 
     </div>
 
