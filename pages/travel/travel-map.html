@@ -2667,9 +2667,9 @@ function runGlobeInit() {
       attributionControl: false,
       zoomControl: true,
     });
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 12,
-      attribution: 'Tiles &copy; Esri &mdash; National Geographic'
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 8,
+      attribution: 'Tiles &copy; Esri &mdash; US National Park Service'
     }).addTo(map);
     map.on('click', onMapClick);
     setTimeout(() => map.invalidateSize(), 100);
