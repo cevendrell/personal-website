@@ -309,27 +309,28 @@
       display: flex; align-items: center;
       overflow: hidden;
       text-align: left;
+      background: #02141f;   /* flat panel behind the left side */
     }
-    /* Background picture — like the home profile image */
+    /* Background picture — anchored to the RIGHT so the diver clears the title */
     .dive-hero .hero-bg {
-      position: absolute; inset: 0; z-index: 0;
+      position: absolute; top: 0; bottom: 0; right: 0; left: 26%; z-index: 0;
       overflow: hidden;
     }
     .dive-hero .hero-bg img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      object-fit: cover; object-position: 72% 35%;
+      object-fit: cover; object-position: 50% 45%;
     }
-    /* Dark gradient overlay: opaque left → transparent right (like the home page) */
+    /* Flat colour on the left, fading into the photo on the right */
     .dive-hero::before {
       content: ''; position: absolute; inset: 0; z-index: 1;
       background: linear-gradient(
         to right,
-        rgba(2,20,31,0.95) 0%,
-        rgba(2,20,31,0.85) 38%,
-        rgba(2,20,31,0.55) 60%,
-        rgba(2,20,31,0.15) 82%,
-        rgba(2,20,31,0)    100%
+        #02141f          0%,
+        #02141f          40%,
+        rgba(2,20,31,0.82) 53%,
+        rgba(2,20,31,0.40) 68%,
+        rgba(2,20,31,0)    84%
       );
     }
     .dive-hero .hero-content {
@@ -339,6 +340,8 @@
       padding: 9rem 3rem 5rem;
     }
     @media (max-width: 768px) {
+      .dive-hero .hero-bg { left: 0; }   /* full-width photo on phones */
+      .dive-hero .hero-bg img { object-position: 60% 40%; }
       .dive-hero::before {
         background: linear-gradient(
           to bottom,
@@ -655,31 +658,74 @@
        ══   SVG fish that occasionally glide across the screen.        ══
        ══════════════════════════════════════════════════════════════════ */
     .marine-life { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+    /* ── Outer: horizontal traverse across the screen (heads point LEFT → R-to-L) ── */
     .swimmer {
       position: absolute;
       opacity: 0;
       color: rgba(2,20,31,0.55);
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
-      animation: swimAcross var(--d, 38s) linear var(--delay, 0s) infinite;
+      filter: drop-shadow(0 6px 11px rgba(0,0,0,0.22));
+      animation: swimAcross var(--d, 44s) linear var(--delay, 0s) infinite;
       will-change: transform, opacity;
     }
-    .swimmer.flip { transform: scaleX(-1); }
-    .swimmer svg { display: block; width: var(--w, 60px); height: auto; }
-    /* Default SVG heads point LEFT, so default motion is RIGHT → LEFT (head-first). */
-    @keyframes swimAcross {
-      0%   { transform: translateX(115vw); opacity: 0; }
-      10%  { opacity: 0.7; }
-      85%  { opacity: 0.7; }
-      100% { transform: translateX(-15vw); opacity: 0; }
-    }
-    /* Flipped (scaleX(-1)) makes head point RIGHT, so motion is LEFT → RIGHT (head-first). */
-    @keyframes swimAcrossFlip {
-      0%   { transform: translateX(-15vw) scaleX(-1); opacity: 0; }
-      10%  { opacity: 0.7; }
-      85%  { opacity: 0.7; }
-      100% { transform: translateX(115vw) scaleX(-1); opacity: 0; }
-    }
     .swimmer.flip { animation-name: swimAcrossFlip; }
+    /* Distant creatures: hazy + faint, for a sense of water depth between layers */
+    .swimmer.far { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18)) blur(1.7px); }
+    .swimmer svg { display: block; width: var(--w, 60px); height: auto; overflow: visible; }
+    /* ── Inner: gentle vertical bob so paths undulate instead of running ruler-straight ── */
+    .swimmer .bob { animation: bob var(--bobd, 5s) ease-in-out infinite alternate; }
+    @keyframes bob {
+      0%   { transform: translateY(calc(var(--boba, 7px) * -1)) rotate(calc(var(--tilt, 1deg) * -1)); }
+      100% { transform: translateY(var(--boba, 7px)) rotate(var(--tilt, 1deg)); }
+    }
+    @keyframes swimAcross {
+      0%   { transform: translateX(116vw); opacity: 0; }
+      8%   { opacity: var(--vis, 0.7); }
+      88%  { opacity: var(--vis, 0.7); }
+      100% { transform: translateX(-18vw); opacity: 0; }
+    }
+    /* Flipped (scaleX(-1)) makes the head point RIGHT → motion is L-to-R (still head-first). */
+    @keyframes swimAcrossFlip {
+      0%   { transform: translateX(-18vw) scaleX(-1); opacity: 0; }
+      8%   { opacity: var(--vis, 0.7); }
+      88%  { opacity: var(--vis, 0.7); }
+      100% { transform: translateX(116vw) scaleX(-1); opacity: 0; }
+    }
+
+    /* ── Jellyfish: slow vertical drift + lateral sway, no head-first traverse ── */
+    .swimmer.jelly { animation: jellyDrift var(--d, 64s) linear var(--delay, 0s) infinite; }
+    @keyframes jellyDrift {
+      0%   { transform: translateY(120vh) translateX(0); opacity: 0; }
+      12%  { opacity: var(--vis, 0.55); }
+      88%  { opacity: var(--vis, 0.55); }
+      100% { transform: translateY(-28vh) translateX(var(--sway, 26px)); opacity: 0; }
+    }
+    .swimmer.jelly .bob { animation: jellySway var(--bobd, 6s) ease-in-out infinite alternate; }
+    @keyframes jellySway {
+      0%   { transform: translateX(-9px) rotate(-3deg); }
+      100% { transform: translateX(9px)  rotate(3deg);  }
+    }
+
+    /* ── SVG sub-part motion — gives each species its real swimming action ── */
+    .svg-tail   { transform-box: fill-box; transform-origin: left center; animation: tailWag    var(--wag, 1.1s) ease-in-out infinite alternate; }
+    .svg-pec    { transform-box: fill-box; transform-origin: top center;  animation: pecFlap    var(--wag, 1.6s) ease-in-out infinite alternate; }
+    .svg-wing   { transform-box: fill-box; transform-origin: center;      animation: wingFlap   var(--wag, 3.4s) ease-in-out infinite alternate; }
+    .svg-flip-t { transform-box: fill-box; transform-origin: 28% 60%;     animation: flipperFlap var(--wag, 2.4s) ease-in-out infinite alternate; }
+    .svg-flip-b { transform-box: fill-box; transform-origin: 28% 40%;     animation: flipperFlap var(--wag, 2.4s) ease-in-out infinite alternate reverse; }
+    .svg-bell   { transform-box: fill-box; transform-origin: center top;  animation: bellPulse  var(--wag, 2.8s) ease-in-out infinite; }
+    .svg-tent   { transform-box: fill-box; transform-origin: center top;  animation: tentSway   var(--wag, 2.8s) ease-in-out infinite; }
+    @keyframes tailWag     { 0% { transform: rotate(-10deg); } 100% { transform: rotate(10deg); } }
+    @keyframes pecFlap     { 0% { transform: rotate(-8deg);  } 100% { transform: rotate(8deg);  } }
+    @keyframes wingFlap    { 0% { transform: scaleY(0.80);   } 100% { transform: scaleY(1.14);  } }
+    @keyframes flipperFlap { 0% { transform: rotate(-15deg); } 100% { transform: rotate(15deg); } }
+    @keyframes bellPulse   { 0%,100% { transform: scaleX(1) scaleY(1); } 50% { transform: scaleX(1.13) scaleY(0.8); } }
+    @keyframes tentSway    { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.2); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .swimmer, .swimmer .bob,
+      .svg-tail, .svg-pec, .svg-wing, .svg-flip-t, .svg-flip-b, .svg-bell, .svg-tent {
+        animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+      }
+    }
 
     /* ══════════════════════════════════════════════════════════════════
        ══ DEPTH VIGNETTE — closes in as you descend                    ══
@@ -1469,112 +1515,140 @@
     const layer = document.getElementById('marineLife');
     if (!layer) return;
 
-    // ── Distinct creature silhouettes (all heads point LEFT in default orientation) ──
-    // Small reef fish — short tail, rounded body
-    const fishSVG = `<svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
-      <path d="M5 20 Q15 5 45 8 Q75 8 85 20 Q75 32 45 32 Q15 35 5 20 Z M85 20 L98 8 L95 20 L98 32 Z" fill="currentColor"/>
-      <circle cx="22" cy="17" r="1.8" fill="rgba(255,255,255,0.8)"/>
+    // ── Creature silhouettes (heads point LEFT in default orientation). ──
+    // Sub-parts carry classes (.svg-tail, .svg-pec, .svg-wing, .svg-flip-*, .svg-bell,
+    // .svg-tent) that CSS animates so each species swims with its own real action.
+
+    // Reef fish — teardrop body, forked tail that wags, fluttering pectoral fin
+    const fishSVG = `<svg viewBox="0 0 112 52" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 26 Q26 9 58 11 Q86 13 92 26 Q86 39 58 41 Q26 43 10 26 Z" fill="currentColor"/>
+      <path d="M44 12 Q54 2 66 11 L58 15 Z" fill="currentColor"/>
+      <path class="svg-pec" d="M46 30 Q52 44 64 38 L54 30 Z" fill="currentColor"/>
+      <path class="svg-tail" d="M90 26 L110 12 Q102 26 110 40 Z" fill="currentColor"/>
+      <circle cx="24" cy="22" r="2.2" fill="rgba(255,255,255,0.85)"/>
     </svg>`;
 
-    // Shark — long sleek body, prominent dorsal fin, pointed tail
-    const sharkSVG = `<svg viewBox="0 0 160 50" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 26 Q10 16 35 18 Q70 16 120 22 Q140 22 152 26
-               L158 16 L155 26 L158 36 L152 26
-               Q140 30 120 30 Q70 34 35 32 Q10 34 2 26 Z
-               M68 18 L72 4 L82 16 Z
-               M28 30 L22 38 L32 30 Z" fill="currentColor"/>
-      <circle cx="22" cy="24" r="1.6" fill="rgba(255,255,255,0.7)"/>
-      <line x1="14" y1="28" x2="18" y2="28" stroke="rgba(0,0,0,0.4)" stroke-width="1"/>
-      <line x1="14" y1="30" x2="18" y2="30" stroke="rgba(0,0,0,0.4)" stroke-width="1"/>
+    // Shark — sleek body, dorsal + pectoral fins, crescent tail that beats
+    const sharkSVG = `<svg viewBox="0 0 184 68" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 36 Q42 23 92 26 Q132 28 150 33 Q140 36 130 37 Q92 41 42 39 Q20 39 8 36 Z" fill="currentColor"/>
+      <path d="M72 26 L90 5 L102 25 Z" fill="currentColor"/>
+      <path class="svg-pec" d="M58 38 L66 56 L84 41 Z" fill="currentColor"/>
+      <path class="svg-tail" d="M148 34 L182 16 Q172 34 184 52 L150 38 Z" fill="currentColor"/>
+      <circle cx="22" cy="33" r="1.8" fill="rgba(255,255,255,0.6)"/>
+      <path d="M14 33 l4 1 M16 37 l4 1" stroke="rgba(255,255,255,0.25)" stroke-width="1" fill="none"/>
     </svg>`;
 
-    // Manta ray — wide diamond wings, long thin tail
-    const mantaSVG = `<svg viewBox="0 0 180 70" xmlns="http://www.w3.org/2000/svg">
-      <path d="M90 22 Q40 6 8 32 Q40 40 90 36 Q140 40 172 32 Q140 6 90 22 Z
-               M82 20 L78 8 M98 20 L102 8
-               M88 36 Q90 50 92 60 L94 64" fill="currentColor" stroke="currentColor"
-               stroke-width="2" stroke-linecap="round"/>
+    // Manta ray — diamond wings that flap, cephalic horns, trailing tail
+    const mantaSVG = `<svg viewBox="0 0 210 102" xmlns="http://www.w3.org/2000/svg">
+      <path d="M104 50 Q106 76 108 100" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M96 34 Q90 18 86 11 M112 34 Q118 18 122 11" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <g class="svg-wing">
+        <path d="M104 34 Q58 9 16 45 Q50 55 104 50 Q158 55 194 45 Q150 9 104 34 Z" fill="currentColor"/>
+      </g>
     </svg>`;
 
-    // Sea turtle — oval shell, distinct head left, four flippers
-    const turtleSVG = `<svg viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="62" cy="38" rx="32" ry="22" fill="currentColor"/>
-      <ellipse cx="62" cy="38" rx="28" ry="18" fill="rgba(0,0,0,0.15)"/>
-      <circle cx="22" cy="34" r="8" fill="currentColor"/>
-      <path d="M92 22 L112 14 M92 54 L112 62 M34 58 L30 68 M82 58 L86 68"
-            stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
-      <circle cx="18" cy="32" r="1.4" fill="rgba(255,255,255,0.85)"/>
+    // Sea turtle — domed shell, head left, four flippers (front pair paddles)
+    const turtleSVG = `<svg viewBox="0 0 144 94" xmlns="http://www.w3.org/2000/svg">
+      <path class="svg-flip-t" d="M54 28 Q34 9 16 12 Q30 26 50 40 Z" fill="currentColor"/>
+      <path class="svg-flip-b" d="M54 66 Q34 85 16 82 Q30 68 50 54 Z" fill="currentColor"/>
+      <path d="M110 30 Q130 22 136 33 L112 43 Z" fill="currentColor"/>
+      <path d="M110 64 Q130 72 136 61 L112 51 Z" fill="currentColor"/>
+      <ellipse cx="78" cy="47" rx="39" ry="28" fill="currentColor"/>
+      <circle cx="26" cy="41" r="11" fill="currentColor"/>
+      <ellipse cx="78" cy="47" rx="31" ry="21" fill="rgba(255,255,255,0.10)"/>
+      <circle cx="20" cy="38" r="1.7" fill="rgba(255,255,255,0.85)"/>
     </svg>`;
 
-    // Whale shark — huge spotted body
-    const whaleSharkSVG = `<svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-      <path d="M5 30 Q15 15 50 18 Q120 16 175 24 Q190 26 196 30
-               L200 18 L196 30 L200 42 L196 30
-               Q190 34 175 36 Q120 44 50 42 Q15 45 5 30 Z" fill="currentColor"/>
-      <circle cx="38" cy="20" r="1.8" fill="rgba(255,255,255,0.45)"/>
-      <circle cx="60" cy="36" r="1.8" fill="rgba(255,255,255,0.45)"/>
-      <circle cx="82" cy="22" r="1.6" fill="rgba(255,255,255,0.45)"/>
-      <circle cx="105" cy="40" r="1.7" fill="rgba(255,255,255,0.45)"/>
-      <circle cx="128" cy="24" r="1.6" fill="rgba(255,255,255,0.45)"/>
-      <circle cx="150" cy="36" r="1.4" fill="rgba(255,255,255,0.45)"/>
-      <circle cx="20" cy="28" r="1.6" fill="rgba(255,255,255,0.85)"/>
+    // Whale shark — broad spotted body, wide tail beat
+    const whaleSVG = `<svg viewBox="0 0 226 78" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 41 Q22 20 64 22 Q140 20 188 31 Q200 33 206 39 Q200 45 188 47 Q140 57 64 55 Q22 57 8 41 Z" fill="currentColor"/>
+      <path d="M96 23 L108 6 L120 23 Z" fill="currentColor"/>
+      <path class="svg-pec" d="M70 51 L80 72 L100 55 Z" fill="currentColor"/>
+      <path class="svg-tail" d="M200 39 L224 18 Q214 39 226 62 L202 45 Z" fill="currentColor"/>
+      <circle cx="26" cy="35" r="2" fill="rgba(255,255,255,0.5)"/>
+      <g fill="rgba(255,255,255,0.28)">
+        <circle cx="60" cy="31" r="2"/><circle cx="86" cy="45" r="2"/><circle cx="106" cy="30" r="2"/>
+        <circle cx="130" cy="45" r="1.9"/><circle cx="152" cy="31" r="1.8"/><circle cx="174" cy="43" r="1.6"/>
+        <circle cx="74" cy="41" r="1.6"/><circle cx="118" cy="40" r="1.6"/><circle cx="142" cy="33" r="1.5"/>
+      </g>
     </svg>`;
 
-    // Tiny schooling fish (a cluster of dots)
-    const schoolSVG = `<svg viewBox="0 0 80 30" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="10" cy="15" rx="5" ry="2.5" fill="currentColor"/>
-      <ellipse cx="22" cy="10" rx="5" ry="2.5" fill="currentColor"/>
-      <ellipse cx="22" cy="20" rx="5" ry="2.5" fill="currentColor"/>
-      <ellipse cx="35" cy="6" rx="5" ry="2.5" fill="currentColor"/>
-      <ellipse cx="35" cy="15" rx="5" ry="2.5" fill="currentColor"/>
-      <ellipse cx="35" cy="24" rx="5" ry="2.5" fill="currentColor"/>
-      <ellipse cx="48" cy="10" rx="5" ry="2.5" fill="currentColor"/>
-      <ellipse cx="48" cy="20" rx="5" ry="2.5" fill="currentColor"/>
-      <ellipse cx="60" cy="15" rx="5" ry="2.5" fill="currentColor"/>
+    // Small school — a loose shoal of tiny fish (drifts as one cluster)
+    const schoolSVG = `<svg viewBox="0 0 116 50" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor">
+      ${[[6,16],[20,9],[22,25],[38,5],[40,20],[42,35],[58,12],[60,28],[78,8],[80,22],[98,16]]
+        .map(([x,y]) => `<g transform="translate(${x},${y})"><ellipse cx="5" cy="0" rx="5" ry="2.4"/><path d="M10 0 L16 -3 L16 3 Z"/></g>`).join('')}
+    </g></svg>`;
+
+    // Jellyfish — pulsing bell + trailing tentacles, drifts vertically
+    const jellySVG = `<svg viewBox="0 0 84 116" xmlns="http://www.w3.org/2000/svg">
+      <g class="svg-tent" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.55">
+        <path d="M24 46 Q26 76 19 110"/><path d="M34 47 Q36 80 31 112"/><path d="M42 47 Q42 78 42 113"/>
+        <path d="M50 47 Q48 80 53 112"/><path d="M60 46 Q58 76 65 110"/>
+      </g>
+      <g class="svg-bell">
+        <path d="M10 44 Q10 8 42 8 Q74 8 74 44 Q64 53 56 44 Q49 54 42 44 Q35 54 28 44 Q20 53 10 44 Z" fill="currentColor" opacity="0.78"/>
+      </g>
     </svg>`;
 
-    // Jellyfish — drifts down (no horizontal animation needed), but we keep it simple
-    const jellySVG = `<svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 30 Q8 6 30 6 Q52 6 52 30 L48 32 L44 30 L40 32 L36 30 L32 32 L28 30 L24 32 L20 30 L16 32 L12 30 Z" fill="currentColor" opacity="0.7"/>
-      <path d="M16 32 Q18 50 14 70 M24 32 Q26 55 22 78 M30 32 Q32 50 30 78 M36 32 Q34 55 38 78 M44 32 Q42 50 46 70"
-            stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.55"/>
-    </svg>`;
-
+    // type: 'swim' traverses head-first; 'jelly' drifts vertically.
+    // bob/bobd = vertical undulation amplitude(px)/period(s); wag = sub-part period(s);
+    // dur = traverse time range(s); vis = base opacity.
     const creatures = [
-      { svg: fishSVG,       w: 30, weight: 6 },
-      { svg: fishSVG,       w: 44, weight: 4 },
-      { svg: schoolSVG,     w: 80, weight: 3 },
-      { svg: sharkSVG,      w: 110, weight: 2 },
-      { svg: mantaSVG,      w: 130, weight: 2 },
-      { svg: turtleSVG,     w: 80, weight: 2 },
-      { svg: whaleSharkSVG, w: 180, weight: 1 },
-      { svg: jellySVG,      w: 35, weight: 2 },
+      { svg: fishSVG,   w: 34,  weight: 6, type:'swim',  bob:[6,9],   bobd:[2.6,3.6], wag:[0.7,1.0], dur:[26,40], vis:0.62 },
+      { svg: fishSVG,   w: 50,  weight: 4, type:'swim',  bob:[6,9],   bobd:[3.0,4.2], wag:[0.8,1.1], dur:[28,42], vis:0.60 },
+      { svg: schoolSVG, w: 110, weight: 3, type:'swim',  bob:[5,8],   bobd:[3.4,4.8], wag:[1,1],     dur:[30,46], vis:0.50 },
+      { svg: turtleSVG, w: 96,  weight: 3, type:'swim',  bob:[7,11],  bobd:[4.0,5.5], wag:[2.0,2.8], dur:[40,58], vis:0.62 },
+      { svg: sharkSVG,  w: 142, weight: 2, type:'swim',  bob:[8,12],  bobd:[5.0,7.0], wag:[2.0,2.8], dur:[42,62], vis:0.60 },
+      { svg: mantaSVG,  w: 152, weight: 2, type:'swim',  bob:[7,11],  bobd:[5.0,7.0], wag:[3.0,4.2], dur:[48,68], vis:0.55 },
+      { svg: whaleSVG,  w: 196, weight: 1, type:'swim',  bob:[9,13],  bobd:[6.0,8.0], wag:[2.6,3.4], dur:[58,82], vis:0.50 },
+      { svg: jellySVG,  w: 46,  weight: 4, type:'jelly', bob:[0,0],   bobd:[5.0,7.0], wag:[2.4,3.4], dur:[55,85], vis:0.50 },
     ];
     const pool = [];
     creatures.forEach(c => { for (let i = 0; i < c.weight; i++) pool.push(c); });
+    const rand = (a, b) => a + Math.random() * (b - a);
 
     function spawnOne() {
       const c = pool[Math.floor(Math.random() * pool.length)];
       const el = document.createElement('div');
-      el.className = 'swimmer' + (Math.random() < 0.5 ? ' flip' : '');
-      el.style.setProperty('--w', c.w + 'px');
-      const duration = 32 + Math.random() * 40;       // 32–72s — slower glide
-      el.style.setProperty('--d', duration + 's');
+      const far = Math.random() < 0.34;                          // depth layering
+      let cls = 'swimmer';
+      if (c.type === 'jelly') cls += ' jelly';
+      else if (Math.random() < 0.5) cls += ' flip';
+      if (far) cls += ' far';
+      el.className = cls;
+
+      const scale = far ? 0.68 : 1;
+      el.style.setProperty('--w', Math.round(c.w * scale) + 'px');
+      const duration = rand(c.dur[0], c.dur[1]) * (far ? 1.3 : 1);
+      el.style.setProperty('--d', duration.toFixed(1) + 's');
       el.style.setProperty('--delay', '0s');
-      const startTop = 15 + Math.random() * 70;       // 15–85vh
-      el.style.top = startTop + 'vh';
-      el.dataset.startTop = startTop;
-      // Darker silhouette as we descend
-      const tintAlpha = 0.45 + Math.min(0.45, __currentDepth / 20 * 0.45);
+      el.style.setProperty('--vis', (c.vis * (far ? 0.5 : 1)).toFixed(2));
+      el.style.setProperty('--wag', rand(c.wag[0], c.wag[1]).toFixed(2) + 's');
+
+      // Silhouette darkens as we descend
+      const tintAlpha = 0.42 + Math.min(0.40, __currentDepth / 20 * 0.40);
       el.style.color = `rgba(2,12,20,${tintAlpha.toFixed(2)})`;
-      el.innerHTML = c.svg;
+
+      if (c.type === 'jelly') {
+        el.style.left = rand(5, 90).toFixed(1) + 'vw';
+        el.style.setProperty('--sway', (rand(-1, 1) * 34).toFixed(0) + 'px');
+      } else {
+        const startTop = rand(12, 84);
+        el.style.top = startTop + 'vh';
+        el.dataset.startTop = startTop;
+      }
+
+      const boba = rand(c.bob[0], c.bob[1]);
+      const bobd = rand(c.bobd[0], c.bobd[1]);
+      const tilt = c.type === 'jelly' ? 0 : rand(0.8, 2.6);
+      el.innerHTML = `<div class="bob" style="--boba:${boba.toFixed(1)}px;--bobd:${bobd.toFixed(1)}s;--tilt:${tilt.toFixed(1)}deg">${c.svg}</div>`;
       layer.appendChild(el);
-      setTimeout(() => el.remove(), duration * 1000 + 500);
+      setTimeout(() => el.remove(), duration * 1000 + 900);
     }
 
-    // Initial trickle + recurring spawn
-    setTimeout(spawnOne, 1500);
-    setTimeout(spawnOne, 4000);
+    // Initial trickle + recurring spawn (kept gentle to avoid clutter)
+    setTimeout(spawnOne, 1200);
+    setTimeout(spawnOne, 3800);
     setInterval(() => {
       if (Math.random() < 0.85) spawnOne();
     }, 5500);
@@ -1586,7 +1660,7 @@
       const delta = window.scrollY - lastScroll;
       lastScroll = window.scrollY;
       // Move each visible swimmer slightly up
-      const swimmers = layer.querySelectorAll('.swimmer');
+      const swimmers = layer.querySelectorAll('.swimmer:not(.jelly)');
       swimmers.forEach(s => {
         const cur = parseFloat(s.style.top) || 50;
         // Move 0.02vh upward per pixel scrolled down
