@@ -212,30 +212,7 @@
       50%  { transform: translate(28px, -16px) skewX(2deg); }
       100% { transform: translate(-12px, 22px) skewX(-1deg); }
     }
-    /* Bubbles container — JS spawns elements in here on init */
-    .bubbles { position: absolute; inset: 0; }
-    .bubble {
-      position: absolute; bottom: -20px;
-      width: var(--s, 4px); height: var(--s, 4px);
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.18) 35%, rgba(255,255,255,0.03) 65%, transparent 85%);
-      box-shadow: 0 0 3px rgba(255,255,255,0.1);
-      opacity: 0;
-      animation: bubbleRise var(--d, 14s) linear var(--delay, 0s) infinite;
-      will-change: transform, opacity;
-    }
-    @keyframes bubbleRise {
-      /* Pure vertical motion. A tiny jiggle around 0 keeps it lively without drifting. */
-      0%   { transform: translate(0,   0);                    opacity: 0; }
-      6%   { transform: translate(2px, -6vh);                 opacity: 0.7; }
-      18%  { transform: translate(-2px, -18vh);               opacity: 0.65; }
-      32%  { transform: translate(2px, -32vh);                opacity: 0.6; }
-      50%  { transform: translate(-2px, -50vh);               opacity: 0.55; }
-      70%  { transform: translate(2px, -70vh);                opacity: 0.5; }
-      90%  { transform: translate(-1px, -90vh);               opacity: 0.4; }
-      100% { transform: translate(0, calc(-100vh - 80px));    opacity: 0; }
-    }
+    /* (bubbles now drawn by the procedural ocean canvas) */
     /* Subtle film grain on top, very faint */
     .grain {
       position: fixed; inset: -50%; width: 200%; height: 200%;
@@ -632,100 +609,18 @@
       .footer-slim { flex-direction: column; text-align: center; gap: 0.75rem; }
     }
 
-    /* ══════════════════════════════════════════════════════════════════
-       ══ MARINE SNOW + PARTICULATES                                   ══
-       ══   Tiny specks drifting downward — counterpoint to bubbles.   ══
-       ══════════════════════════════════════════════════════════════════ */
-    .marine-snow { position: absolute; inset: 0; pointer-events: none; }
-    .speck {
-      position: absolute; top: -20px;
-      width: var(--s, 2px); height: var(--s, 2px);
-      background: rgba(255,255,255,0.55);
-      border-radius: 50%;
-      opacity: 0;
-      filter: blur(0.4px);
-      animation: snowFall var(--d, 22s) linear var(--delay, 0s) infinite;
+    /* ==================================================================
+       == PROCEDURAL OCEAN - one canvas, simulated in real time        ==
+       ==   Spine-based fish, boids schools, pulse-jet jellyfish, a   ==
+       ==   paddling turtle, a breathing ray, marine snow, bubbles    ==
+       ==   and depth-reactive bioluminescence. See script below.     ==
+       ================================================================== */
+    #oceanCanvas {
+      position: fixed; inset: 0; z-index: 1;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
     }
-    @keyframes snowFall {
-      0%   { transform: translateY(0) translateX(0); opacity: 0; }
-      10%  { opacity: var(--o, 0.55); }
-      90%  { opacity: var(--o, 0.55); }
-      100% { transform: translateY(calc(100vh + 40px)) translateX(var(--drift, 20px)); opacity: 0; }
-    }
-
-    /* ══════════════════════════════════════════════════════════════════
-       ══ FISH / MARINE LIFE SILHOUETTES                               ══
-       ══   SVG fish that occasionally glide across the screen.        ══
-       ══════════════════════════════════════════════════════════════════ */
-    .marine-life { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
-    /* ── Outer: horizontal traverse across the screen (heads point LEFT → R-to-L) ── */
-    .swimmer {
-      position: absolute;
-      opacity: 0;
-      color: rgba(2,20,31,0.55);
-      filter: drop-shadow(0 6px 11px rgba(0,0,0,0.22));
-      animation: swimAcross var(--d, 44s) linear var(--delay, 0s) infinite;
-      will-change: transform, opacity;
-    }
-    .swimmer.flip { animation-name: swimAcrossFlip; }
-    /* Distant creatures: hazy + faint, for a sense of water depth between layers */
-    .swimmer.far { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18)) blur(1.7px); }
-    .swimmer svg { display: block; width: var(--w, 60px); height: auto; overflow: visible; }
-    /* ── Inner: gentle vertical bob so paths undulate instead of running ruler-straight ── */
-    .swimmer .bob { animation: bob var(--bobd, 5s) ease-in-out infinite alternate; }
-    @keyframes bob {
-      0%   { transform: translateY(calc(var(--boba, 7px) * -1)) rotate(calc(var(--tilt, 1deg) * -1)); }
-      100% { transform: translateY(var(--boba, 7px)) rotate(var(--tilt, 1deg)); }
-    }
-    @keyframes swimAcross {
-      0%   { transform: translateX(116vw); opacity: 0; }
-      8%   { opacity: var(--vis, 0.7); }
-      88%  { opacity: var(--vis, 0.7); }
-      100% { transform: translateX(-18vw); opacity: 0; }
-    }
-    /* Flipped (scaleX(-1)) makes the head point RIGHT → motion is L-to-R (still head-first). */
-    @keyframes swimAcrossFlip {
-      0%   { transform: translateX(-18vw) scaleX(-1); opacity: 0; }
-      8%   { opacity: var(--vis, 0.7); }
-      88%  { opacity: var(--vis, 0.7); }
-      100% { transform: translateX(116vw) scaleX(-1); opacity: 0; }
-    }
-
-    /* ── Jellyfish: slow vertical drift + lateral sway, no head-first traverse ── */
-    .swimmer.jelly { animation: jellyDrift var(--d, 64s) linear var(--delay, 0s) infinite; }
-    @keyframes jellyDrift {
-      0%   { transform: translateY(120vh) translateX(0); opacity: 0; }
-      12%  { opacity: var(--vis, 0.55); }
-      88%  { opacity: var(--vis, 0.55); }
-      100% { transform: translateY(-28vh) translateX(var(--sway, 26px)); opacity: 0; }
-    }
-    .swimmer.jelly .bob { animation: jellySway var(--bobd, 6s) ease-in-out infinite alternate; }
-    @keyframes jellySway {
-      0%   { transform: translateX(-9px) rotate(-3deg); }
-      100% { transform: translateX(9px)  rotate(3deg);  }
-    }
-
-    /* ── SVG sub-part motion — gives each species its real swimming action ── */
-    .svg-tail   { transform-box: fill-box; transform-origin: left center; animation: tailWag    var(--wag, 1.1s) ease-in-out infinite alternate; }
-    .svg-pec    { transform-box: fill-box; transform-origin: top center;  animation: pecFlap    var(--wag, 1.6s) ease-in-out infinite alternate; }
-    .svg-wing   { transform-box: fill-box; transform-origin: center;      animation: wingFlap   var(--wag, 3.4s) ease-in-out infinite alternate; }
-    .svg-flip-t { transform-box: fill-box; transform-origin: 28% 60%;     animation: flipperFlap var(--wag, 2.4s) ease-in-out infinite alternate; }
-    .svg-flip-b { transform-box: fill-box; transform-origin: 28% 40%;     animation: flipperFlap var(--wag, 2.4s) ease-in-out infinite alternate reverse; }
-    .svg-bell   { transform-box: fill-box; transform-origin: center top;  animation: bellPulse  var(--wag, 2.8s) ease-in-out infinite; }
-    .svg-tent   { transform-box: fill-box; transform-origin: center top;  animation: tentSway   var(--wag, 2.8s) ease-in-out infinite; }
-    @keyframes tailWag     { 0% { transform: rotate(-10deg); } 100% { transform: rotate(10deg); } }
-    @keyframes pecFlap     { 0% { transform: rotate(-8deg);  } 100% { transform: rotate(8deg);  } }
-    @keyframes wingFlap    { 0% { transform: scaleY(0.80);   } 100% { transform: scaleY(1.14);  } }
-    @keyframes flipperFlap { 0% { transform: rotate(-15deg); } 100% { transform: rotate(15deg); } }
-    @keyframes bellPulse   { 0%,100% { transform: scaleX(1) scaleY(1); } 50% { transform: scaleX(1.13) scaleY(0.8); } }
-    @keyframes tentSway    { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.2); } }
-
-    @media (prefers-reduced-motion: reduce) {
-      .swimmer, .swimmer .bob,
-      .svg-tail, .svg-pec, .svg-wing, .svg-flip-t, .svg-flip-b, .svg-bell, .svg-tent {
-        animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
-      }
-    }
+    @media (prefers-reduced-motion: reduce) { #oceanCanvas { display: none; } }
 
     /* ══════════════════════════════════════════════════════════════════
        ══ DEPTH VIGNETTE — closes in as you descend                    ══
@@ -1189,11 +1084,9 @@
 <!-- Atmosphere layers (fixed) -->
 <div class="ocean-fx" aria-hidden="true">
   <div class="caustics" id="causticsLayer"></div>
-  <div class="marine-snow" id="snowLayer"></div>
-  <div class="bubbles" id="bubblesLayer"></div>
 </div>
-<!-- Marine life — swimming silhouettes -->
-<div class="marine-life" id="marineLife" aria-hidden="true"></div>
+<!-- Procedural ocean: every creature below is simulated and drawn in real time -->
+<canvas id="oceanCanvas" aria-hidden="true"></canvas>
 <!-- Depth vignette — closes in as we go deeper -->
 <div class="depth-vignette" id="depthVignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
@@ -1371,28 +1264,6 @@
     if (total > 0) progress.style.width = (window.scrollY / total * 100) + '%';
   }, { passive: true });
 
-  /* ── Spawn ambient bubbles — strictly vertical (with a tiny jiggle in CSS) ── */
-  (function spawnBubbles() {
-    const layer = document.getElementById('bubblesLayer');
-    if (!layer) return;
-    const N = 55;
-    for (let i = 0; i < N; i++) {
-      const b = document.createElement('span');
-      b.className = 'bubble';
-      const r = Math.random();
-      const size = r < 0.85 ? (1 + Math.random() * 3) : (3 + Math.random() * 5);
-      const duration = 10 + Math.random() * 18;
-      const delay = -Math.random() * duration;
-      const opacity = 0.25 + Math.random() * 0.4;
-      b.style.setProperty('--s', size + 'px');
-      b.style.setProperty('--d', duration + 's');
-      b.style.setProperty('--delay', delay + 's');
-      b.style.opacity = opacity.toFixed(2);
-      b.style.left = (Math.random() * 100) + 'vw';
-      layer.appendChild(b);
-    }
-  })();
-
   /* ── Card reveal on scroll ── */
   const cardObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
@@ -1487,188 +1358,727 @@
     window.addEventListener('resize', updateDisplay);
   })();
 
-  /* ── Marine snow — slow drift downward ── */
-  (function spawnMarineSnow() {
-    const layer = document.getElementById('snowLayer');
-    if (!layer) return;
-    const N = 60;
-    for (let i = 0; i < N; i++) {
-      const s = document.createElement('span');
-      s.className = 'speck';
-      const size = 1 + Math.random() * 2.2;
-      const duration = 18 + Math.random() * 18;
-      const delay = -Math.random() * duration;
-      const drift = (Math.random() - 0.5) * 50;
-      const opacity = 0.25 + Math.random() * 0.4;
-      s.style.setProperty('--s', size + 'px');
-      s.style.setProperty('--d', duration + 's');
-      s.style.setProperty('--delay', delay + 's');
-      s.style.setProperty('--drift', drift + 'px');
-      s.style.setProperty('--o', opacity);
-      s.style.left = (Math.random() * 100) + 'vw';
-      layer.appendChild(s);
+  /* ==================================================================
+     == PROCEDURAL OCEAN ENGINE                                      ==
+     ==   One canvas, everything simulated in real time: spine-based ==
+     ==   fish kinematics, boids schooling, jellyfish pulse-jet      ==
+     ==   physics, a paddling sea turtle, an undulating ray, marine  ==
+     ==   snow, wobbling bubbles and depth-reactive bioluminescence. ==
+     ==   No libraries, no sprites. Move the cursor: fish flee it.   ==
+     ================================================================== */
+  (function oceanEngine() {
+    var canvas = document.getElementById('oceanCanvas');
+    if (!canvas || !canvas.getContext) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      canvas.style.display = 'none'; return;
     }
-  })();
+    var ctx = canvas.getContext('2d');
+    var TAU = Math.PI * 2;
+    var W = 0, H = 0;
 
-  /* ── Marine life — distinct silhouettes, drift upward as you scroll down ── */
-  (function spawnMarineLife() {
-    const layer = document.getElementById('marineLife');
-    if (!layer) return;
+    function resize() {
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
 
-    // ── Creature silhouettes (heads point LEFT in default orientation). ──
-    // Sub-parts carry classes (.svg-tail, .svg-pec, .svg-wing, .svg-flip-*, .svg-bell,
-    // .svg-tent) that CSS animates so each species swims with its own real action.
+    var MOBILE = window.innerWidth < 700;
+    var Q = MOBILE ? 0.55 : 1;
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 
-    // Reef fish — teardrop body, forked tail that wags, fluttering pectoral fin
-    const fishSVG = `<svg viewBox="0 0 112 52" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 26 Q26 9 58 11 Q86 13 92 26 Q86 39 58 41 Q26 43 10 26 Z" fill="currentColor"/>
-      <path d="M44 12 Q54 2 66 11 L58 15 Z" fill="currentColor"/>
-      <path class="svg-pec" d="M46 30 Q52 44 64 38 L54 30 Z" fill="currentColor"/>
-      <path class="svg-tail" d="M90 26 L110 12 Q102 26 110 40 Z" fill="currentColor"/>
-      <circle cx="24" cy="22" r="2.2" fill="rgba(255,255,255,0.85)"/>
-    </svg>`;
+    /* depth + light: reads the page's scroll-driven depth tracker */
+    function depthM() { return (typeof __currentDepth !== 'undefined') ? __currentDepth : 0; }
+    function lightF() { return clamp(1 - depthM() / 24, 0.14, 1); }
+    function bioF()   { return clamp((depthM() - 11) / 8, 0, 1); }
 
-    // Shark — sleek body, dorsal + pectoral fins, crescent tail that beats
-    const sharkSVG = `<svg viewBox="0 0 184 68" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 36 Q42 23 92 26 Q132 28 150 33 Q140 36 130 37 Q92 41 42 39 Q20 39 8 36 Z" fill="currentColor"/>
-      <path d="M72 26 L90 5 L102 25 Z" fill="currentColor"/>
-      <path class="svg-pec" d="M58 38 L66 56 L84 41 Z" fill="currentColor"/>
-      <path class="svg-tail" d="M148 34 L182 16 Q172 34 184 52 L150 38 Z" fill="currentColor"/>
-      <circle cx="22" cy="33" r="1.8" fill="rgba(255,255,255,0.6)"/>
-      <path d="M14 33 l4 1 M16 37 l4 1" stroke="rgba(255,255,255,0.25)" stroke-width="1" fill="none"/>
-    </svg>`;
+    /* pointer: creatures react to it */
+    var ptr = { x: -9999, y: -9999 };
+    window.addEventListener('pointermove', function (e) { ptr.x = e.clientX; ptr.y = e.clientY; }, { passive: true });
+    window.addEventListener('pointerdown', function (e) { burst(e.clientX, e.clientY); }, { passive: true });
 
-    // Manta ray — diamond wings that flap, cephalic horns, trailing tail
-    const mantaSVG = `<svg viewBox="0 0 210 102" xmlns="http://www.w3.org/2000/svg">
-      <path d="M104 50 Q106 76 108 100" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M96 34 Q90 18 86 11 M112 34 Q118 18 122 11" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <g class="svg-wing">
-        <path d="M104 34 Q58 9 16 45 Q50 55 104 50 Q158 55 194 45 Q150 9 104 34 Z" fill="currentColor"/>
-      </g>
-    </svg>`;
-
-    // Sea turtle — domed shell, head left, four flippers (front pair paddles)
-    const turtleSVG = `<svg viewBox="0 0 144 94" xmlns="http://www.w3.org/2000/svg">
-      <path class="svg-flip-t" d="M54 28 Q34 9 16 12 Q30 26 50 40 Z" fill="currentColor"/>
-      <path class="svg-flip-b" d="M54 66 Q34 85 16 82 Q30 68 50 54 Z" fill="currentColor"/>
-      <path d="M110 30 Q130 22 136 33 L112 43 Z" fill="currentColor"/>
-      <path d="M110 64 Q130 72 136 61 L112 51 Z" fill="currentColor"/>
-      <ellipse cx="78" cy="47" rx="39" ry="28" fill="currentColor"/>
-      <circle cx="26" cy="41" r="11" fill="currentColor"/>
-      <ellipse cx="78" cy="47" rx="31" ry="21" fill="rgba(255,255,255,0.10)"/>
-      <circle cx="20" cy="38" r="1.7" fill="rgba(255,255,255,0.85)"/>
-    </svg>`;
-
-    // Whale shark — broad spotted body, wide tail beat
-    const whaleSVG = `<svg viewBox="0 0 226 78" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 41 Q22 20 64 22 Q140 20 188 31 Q200 33 206 39 Q200 45 188 47 Q140 57 64 55 Q22 57 8 41 Z" fill="currentColor"/>
-      <path d="M96 23 L108 6 L120 23 Z" fill="currentColor"/>
-      <path class="svg-pec" d="M70 51 L80 72 L100 55 Z" fill="currentColor"/>
-      <path class="svg-tail" d="M200 39 L224 18 Q214 39 226 62 L202 45 Z" fill="currentColor"/>
-      <circle cx="26" cy="35" r="2" fill="rgba(255,255,255,0.5)"/>
-      <g fill="rgba(255,255,255,0.28)">
-        <circle cx="60" cy="31" r="2"/><circle cx="86" cy="45" r="2"/><circle cx="106" cy="30" r="2"/>
-        <circle cx="130" cy="45" r="1.9"/><circle cx="152" cy="31" r="1.8"/><circle cx="174" cy="43" r="1.6"/>
-        <circle cx="74" cy="41" r="1.6"/><circle cx="118" cy="40" r="1.6"/><circle cx="142" cy="33" r="1.5"/>
-      </g>
-    </svg>`;
-
-    // Small school — a loose shoal of tiny fish (drifts as one cluster)
-    const schoolSVG = `<svg viewBox="0 0 116 50" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor">
-      ${[[6,16],[20,9],[22,25],[38,5],[40,20],[42,35],[58,12],[60,28],[78,8],[80,22],[98,16]]
-        .map(([x,y]) => `<g transform="translate(${x},${y})"><ellipse cx="5" cy="0" rx="5" ry="2.4"/><path d="M10 0 L16 -3 L16 3 Z"/></g>`).join('')}
-    </g></svg>`;
-
-    // Jellyfish — pulsing bell + trailing tentacles, drifts vertically
-    const jellySVG = `<svg viewBox="0 0 84 116" xmlns="http://www.w3.org/2000/svg">
-      <g class="svg-tent" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.55">
-        <path d="M24 46 Q26 76 19 110"/><path d="M34 47 Q36 80 31 112"/><path d="M42 47 Q42 78 42 113"/>
-        <path d="M50 47 Q48 80 53 112"/><path d="M60 46 Q58 76 65 110"/>
-      </g>
-      <g class="svg-bell">
-        <path d="M10 44 Q10 8 42 8 Q74 8 74 44 Q64 53 56 44 Q49 54 42 44 Q35 54 28 44 Q20 53 10 44 Z" fill="currentColor" opacity="0.78"/>
-      </g>
-    </svg>`;
-
-    // type: 'swim' traverses head-first; 'jelly' drifts vertically.
-    // bob/bobd = vertical undulation amplitude(px)/period(s); wag = sub-part period(s);
-    // dur = traverse time range(s); vis = base opacity.
-    const creatures = [
-      { svg: fishSVG,   w: 34,  weight: 6, type:'swim',  bob:[6,9],   bobd:[2.6,3.6], wag:[0.7,1.0], dur:[26,40], vis:0.62 },
-      { svg: fishSVG,   w: 50,  weight: 4, type:'swim',  bob:[6,9],   bobd:[3.0,4.2], wag:[0.8,1.1], dur:[28,42], vis:0.60 },
-      { svg: schoolSVG, w: 110, weight: 3, type:'swim',  bob:[5,8],   bobd:[3.4,4.8], wag:[1,1],     dur:[30,46], vis:0.50 },
-      { svg: turtleSVG, w: 96,  weight: 3, type:'swim',  bob:[7,11],  bobd:[4.0,5.5], wag:[2.0,2.8], dur:[40,58], vis:0.62 },
-      { svg: sharkSVG,  w: 142, weight: 2, type:'swim',  bob:[8,12],  bobd:[5.0,7.0], wag:[2.0,2.8], dur:[42,62], vis:0.60 },
-      { svg: mantaSVG,  w: 152, weight: 2, type:'swim',  bob:[7,11],  bobd:[5.0,7.0], wag:[3.0,4.2], dur:[48,68], vis:0.55 },
-      { svg: whaleSVG,  w: 196, weight: 1, type:'swim',  bob:[9,13],  bobd:[6.0,8.0], wag:[2.6,3.4], dur:[58,82], vis:0.50 },
-      { svg: jellySVG,  w: 46,  weight: 4, type:'jelly', bob:[0,0],   bobd:[5.0,7.0], wag:[2.4,3.4], dur:[55,85], vis:0.50 },
-    ];
-    const pool = [];
-    creatures.forEach(c => { for (let i = 0; i < c.weight; i++) pool.push(c); });
-    const rand = (a, b) => a + Math.random() * (b - a);
-
-    function spawnOne() {
-      const c = pool[Math.floor(Math.random() * pool.length)];
-      const el = document.createElement('div');
-      const far = Math.random() < 0.34;                          // depth layering
-      let cls = 'swimmer';
-      if (c.type === 'jelly') cls += ' jelly';
-      else if (Math.random() < 0.5) cls += ' flip';
-      if (far) cls += ' far';
-      el.className = cls;
-
-      const scale = far ? 0.68 : 1;
-      el.style.setProperty('--w', Math.round(c.w * scale) + 'px');
-      const duration = rand(c.dur[0], c.dur[1]) * (far ? 1.3 : 1);
-      el.style.setProperty('--d', duration.toFixed(1) + 's');
-      el.style.setProperty('--delay', '0s');
-      el.style.setProperty('--vis', (c.vis * (far ? 0.5 : 1)).toFixed(2));
-      el.style.setProperty('--wag', rand(c.wag[0], c.wag[1]).toFixed(2) + 's');
-
-      // Silhouette darkens as we descend
-      const tintAlpha = 0.42 + Math.min(0.40, __currentDepth / 20 * 0.40);
-      el.style.color = `rgba(2,12,20,${tintAlpha.toFixed(2)})`;
-
-      if (c.type === 'jelly') {
-        el.style.left = rand(5, 90).toFixed(1) + 'vw';
-        el.style.setProperty('--sway', (rand(-1, 1) * 34).toFixed(0) + 'px');
-      } else {
-        const startTop = rand(12, 84);
-        el.style.top = startTop + 'vh';
-        el.dataset.startTop = startTop;
+    /* small draw helpers */
+    function smooth(pts) {
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (var i = 1; i < pts.length - 1; i++) {
+        ctx.quadraticCurveTo(pts[i].x, pts[i].y, (pts[i].x + pts[i + 1].x) / 2, (pts[i].y + pts[i + 1].y) / 2);
       }
-
-      const boba = rand(c.bob[0], c.bob[1]);
-      const bobd = rand(c.bobd[0], c.bobd[1]);
-      const tilt = c.type === 'jelly' ? 0 : rand(0.8, 2.6);
-      el.innerHTML = `<div class="bob" style="--boba:${boba.toFixed(1)}px;--bobd:${bobd.toFixed(1)}s;--tilt:${tilt.toFixed(1)}deg">${c.svg}</div>`;
-      layer.appendChild(el);
-      setTimeout(() => el.remove(), duration * 1000 + 900);
+      ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+    }
+    function glow(x, y, r, rgb, a) {
+      ctx.fillStyle = 'rgba(' + rgb + ',' + (a * 0.22).toFixed(3) + ')';
+      ctx.beginPath(); ctx.arc(x, y, r * 3.2, 0, TAU); ctx.fill();
+      ctx.fillStyle = 'rgba(' + rgb + ',' + Math.min(1, a).toFixed(3) + ')';
+      ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
     }
 
-    // Initial trickle + recurring spawn (kept gentle to avoid clutter)
-    setTimeout(spawnOne, 1200);
-    setTimeout(spawnOne, 3800);
-    setInterval(() => {
-      if (Math.random() < 0.85) spawnOne();
-    }, 5500);
-
-    // ── Drift swimmers upward relative to scroll ──
-    // The deeper we go, the more they appear to move up (illusion of descent).
-    let lastScroll = window.scrollY;
-    function onScroll() {
-      const delta = window.scrollY - lastScroll;
-      lastScroll = window.scrollY;
-      // Move each visible swimmer slightly up
-      const swimmers = layer.querySelectorAll('.swimmer:not(.jelly)');
-      swimmers.forEach(s => {
-        const cur = parseFloat(s.style.top) || 50;
-        // Move 0.02vh upward per pixel scrolled down
-        const newTop = cur - (delta * 0.012);
-        s.style.top = newTop + 'vh';
-      });
+    /* ------------ FISH: spine chain with a traveling swim wave ------------ */
+    function Fish(o) {
+      o = o || {};
+      this.size = o.size || rand(26, 46);
+      this.far = !!o.far;
+      if (this.far) this.size *= 0.6;
+      this.n = 8;
+      this.seg = this.size / this.n;
+      this.profile = o.profile || [0.30, 0.46, 0.50, 0.44, 0.34, 0.23, 0.13, 0.06, 0.03];
+      this.x = rand(0, W); this.y = rand(H * 0.10, H * 0.85);
+      this.bandY = this.y;
+      this.a = Math.random() < 0.5 ? 0 : Math.PI;
+      this.spine = [];
+      for (var i = 0; i < this.n; i++) this.spine.push(this.a);
+      this.base = (o.speed || rand(20, 34)) * (this.size / 36) * (this.far ? 0.7 : 1);
+      this.speed = this.base;
+      this.ph = rand(0, TAU);
+      this.seed = rand(0, 100);
+      this.alpha = (o.alpha || 0.62) * (this.far ? 0.45 : 1);
+      this.deep = !!o.deep;
+      this.angler = !!o.angler;
+      this.flee = 0;
+      this.fleeR = (o.fleeR !== undefined) ? o.fleeR : 120;
     }
-    window.addEventListener('scroll', onScroll, { passive: true });
+    Fish.prototype.update = function (dt, t) {
+      this.ph += dt * (4 + this.speed * 0.09);
+      var dir = Math.cos(this.a) >= 0 ? 1 : -1;
+      var wander = Math.sin(t * 0.21 + this.seed) * 0.30 + Math.sin(t * 0.43 + this.seed * 2.1) * 0.12;
+      var pull = clamp((this.bandY - this.y) / (H * 0.30), -0.5, 0.5);
+      var desired = Math.atan2(clamp(wander + pull, -0.6, 0.6), dir);
+      if (this.fleeR > 0) {
+        var dx = this.x - ptr.x, dy = this.y - ptr.y;
+        if (dx * dx + dy * dy < this.fleeR * this.fleeR) { desired = Math.atan2(dy, dx); this.flee = 1; }
+      }
+      if (this.flee > 0) this.flee = Math.max(0, this.flee - dt * 0.8);
+      var da = desired - this.a;
+      while (da > Math.PI) da -= TAU;
+      while (da < -Math.PI) da += TAU;
+      this.a += da * Math.min(1, (2.4 + this.flee * 7) * dt);
+      var want = this.base * (1 + this.flee * 2.6);
+      this.speed += (want - this.speed) * Math.min(1, 2.2 * dt);
+      this.x += Math.cos(this.a) * this.speed * dt;
+      this.y += Math.sin(this.a) * this.speed * dt;
+      var m = this.size * 3;
+      if (this.x < -m) { this.x = W + m; this.bandY = rand(H * 0.10, H * 0.85); }
+      else if (this.x > W + m) { this.x = -m; this.bandY = rand(H * 0.10, H * 0.85); }
+      this.bandY = clamp(this.bandY, H * 0.06, H * 0.92);
+      this.y = clamp(this.y, -m, H + m);
+      this.spine[0] = this.a;
+      var k = Math.min(1, 9 * dt);
+      for (var i = 1; i < this.n; i++) {
+        var dd = this.spine[i - 1] - this.spine[i];
+        while (dd > Math.PI) dd -= TAU;
+        while (dd < -Math.PI) dd += TAU;
+        this.spine[i] += dd * k;
+      }
+    };
+    Fish.prototype.draw = function (t) {
+      var aMul = 1;
+      if (this.angler) { aMul = bioF(); if (aMul < 0.04) return; }
+      var L = lightF();
+      var amp = 0.15 + this.flee * 0.10;
+      var pts = [], px = this.x, py = this.y, i, ang = this.a;
+      for (i = 0; i < this.n; i++) {
+        ang = this.spine[i] + Math.sin(this.ph - i * 1.05) * amp * (0.25 + i / this.n);
+        pts.push({ x: px, y: py, a: ang });
+        px -= Math.cos(ang) * this.seg;
+        py -= Math.sin(ang) * this.seg;
+      }
+      pts.push({ x: px, y: py, a: ang });
+      var top = [], bot = [];
+      for (i = 0; i <= this.n; i++) {
+        var p = pts[i];
+        var w = (this.profile[i] !== undefined ? this.profile[i] : 0.03) * this.size * 0.46;
+        var nx = -Math.sin(p.a) * w, ny = Math.cos(p.a) * w;
+        top.push({ x: p.x + nx, y: p.y + ny });
+        bot.push({ x: p.x - nx, y: p.y - ny });
+      }
+      var nose = { x: this.x + Math.cos(this.a) * this.seg * 0.9, y: this.y + Math.sin(this.a) * this.seg * 0.9 };
+      var outline = [nose].concat(top);
+      var tb = pts[this.n];
+      outline.push({ x: tb.x, y: tb.y });
+      for (i = this.n; i >= 0; i--) outline.push(bot[i]);
+      outline.push(nose);
+      ctx.save();
+      ctx.globalAlpha = this.alpha * aMul;
+      ctx.fillStyle = 'rgba(4,15,24,0.92)';
+      ctx.beginPath(); smooth(outline); ctx.closePath(); ctx.fill();
+      /* tail fin */
+      var ta = tb.a + Math.sin(this.ph - this.n * 1.05) * 0.5;
+      var fl = this.size * 0.30;
+      ctx.beginPath();
+      ctx.moveTo(tb.x, tb.y);
+      ctx.lineTo(tb.x - Math.cos(ta - 0.42) * fl, tb.y - Math.sin(ta - 0.42) * fl);
+      ctx.quadraticCurveTo(tb.x - Math.cos(ta) * fl * 0.5, tb.y - Math.sin(ta) * fl * 0.5,
+        tb.x - Math.cos(ta + 0.42) * fl, tb.y - Math.sin(ta + 0.42) * fl);
+      ctx.closePath(); ctx.fill();
+      /* dorsal fin on larger fish */
+      if (this.size > 34) {
+        var d1 = pts[2], ww = this.size * 0.30;
+        ctx.beginPath();
+        ctx.moveTo(top[1].x, top[1].y);
+        ctx.lineTo(d1.x - Math.sin(d1.a) * ww, d1.y + Math.cos(d1.a) * ww);
+        ctx.lineTo(top[3].x, top[3].y);
+        ctx.closePath(); ctx.fill();
+      }
+      /* rim light along the back */
+      ctx.strokeStyle = 'rgba(150,215,240,' + (0.18 * L).toFixed(3) + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); smooth(top); ctx.stroke();
+      /* eye */
+      ctx.fillStyle = 'rgba(215,240,250,' + (0.35 + 0.45 * L).toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.arc(this.x - Math.sin(this.a) * this.size * 0.05,
+              this.y + Math.cos(this.a) * this.size * 0.05,
+              Math.max(0.8, this.size * 0.028), 0, TAU);
+      ctx.fill();
+      /* deep-sea photophores */
+      var bf = bioF();
+      if (this.deep && bf > 0.05) {
+        for (i = 1; i <= 4; i++) {
+          glow(bot[i].x, bot[i].y, 0.9, '110,240,225',
+               0.55 * bf * (0.6 + 0.4 * Math.sin(t * 3 + i + this.seed)));
+        }
+      }
+      /* anglerfish lure */
+      if (this.angler) {
+        var hx = nose.x, hy = nose.y;
+        var fwd = this.a;
+        var lx = hx + Math.cos(fwd) * this.size * 0.34;
+        var ly = hy + Math.sin(fwd) * this.size * 0.34 - this.size * 0.34;
+        ctx.strokeStyle = 'rgba(140,200,210,' + (0.5 * aMul).toFixed(2) + ')';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(hx, hy - this.size * 0.06);
+        ctx.quadraticCurveTo(hx + Math.cos(fwd) * this.size * 0.2, hy - this.size * 0.45, lx, ly);
+        ctx.stroke();
+        glow(lx, ly, 2.2, '150,250,235', aMul * (0.65 + 0.35 * Math.sin(t * 5.5 + this.seed)));
+      }
+      ctx.restore();
+    };
+
+    /* ------------ SCHOOL: boids around a wandering anchor ------------ */
+    function School() {
+      this.dir = Math.random() < 0.5 ? 1 : -1;
+      this.ax = rand(0, W); this.ay = rand(H * 0.15, H * 0.70);
+      this.seed = rand(0, 100);
+      this.fs = [];
+      var n = Math.round(rand(11, 16) * (MOBILE ? 0.7 : 1));
+      for (var i = 0; i < n; i++) {
+        this.fs.push({
+          x: this.ax + rand(-70, 70), y: this.ay + rand(-45, 45),
+          vx: this.dir * rand(18, 30), vy: rand(-8, 8),
+          ph: rand(0, TAU), s: rand(6.5, 10.5)
+        });
+      }
+    }
+    School.prototype.update = function (dt, t) {
+      this.ax += this.dir * 27 * dt;
+      this.ay += Math.sin(t * 0.33 + this.seed) * 14 * dt;
+      this.ay = clamp(this.ay, H * 0.10, H * 0.82);
+      var m = 160;
+      if (this.dir > 0 && this.ax > W + m) { this.ax = -m; this.ay = rand(H * 0.15, H * 0.7); }
+      if (this.dir < 0 && this.ax < -m)    { this.ax = W + m; this.ay = rand(H * 0.15, H * 0.7); }
+      var i, j, b, o;
+      for (i = 0; i < this.fs.length; i++) {
+        b = this.fs[i];
+        var axc = (this.ax - b.x) * 0.9, ayc = (this.ay - b.y) * 1.4;
+        for (j = 0; j < this.fs.length; j++) {
+          if (j === i) continue;
+          o = this.fs[j];
+          var sx = b.x - o.x, sy = b.y - o.y, sd = sx * sx + sy * sy;
+          if (sd < 340 && sd > 0.01) { var inv = 60 / sd; axc += sx * inv * 9; ayc += sy * inv * 9; }
+        }
+        var fx = b.x - ptr.x, fy = b.y - ptr.y, fd = fx * fx + fy * fy;
+        var fleeing = fd < 22500;
+        if (fleeing) { var fi = 1 / Math.sqrt(fd + 1); axc += fx * fi * 2600; ayc += fy * fi * 2600; }
+        b.vx += axc * dt; b.vy += ayc * dt;
+        var sp = Math.sqrt(b.vx * b.vx + b.vy * b.vy) || 1;
+        var maxS = fleeing ? 210 : 55, minS = 16;
+        if (sp > maxS) { b.vx *= maxS / sp; b.vy *= maxS / sp; }
+        if (sp < minS) { b.vx *= minS / sp; b.vy *= minS / sp; }
+        b.x += b.vx * dt; b.y += b.vy * dt;
+        b.ph += dt * (6 + sp * 0.05);
+      }
+    };
+    School.prototype.draw = function () {
+      ctx.save();
+      ctx.fillStyle = 'rgba(6,20,30,0.66)';
+      for (var i = 0; i < this.fs.length; i++) {
+        var b = this.fs[i];
+        var ang = Math.atan2(b.vy, b.vx);
+        ctx.save();
+        ctx.translate(b.x, b.y); ctx.rotate(ang);
+        var tw = Math.sin(b.ph) * b.s * 0.34;
+        ctx.beginPath();
+        ctx.moveTo(b.s * 0.6, 0);
+        ctx.quadraticCurveTo(0, -b.s * 0.30, -b.s * 0.55, tw * 0.4);
+        ctx.lineTo(-b.s * 0.95, tw);
+        ctx.lineTo(-b.s * 0.55, tw * 0.4);
+        ctx.quadraticCurveTo(0, b.s * 0.30, b.s * 0.6, 0);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+      ctx.restore();
+    };
+
+    /* ------------ JELLYFISH: pulse-jet propulsion ------------ */
+    function Jelly() {
+      this.r = rand(15, 30);
+      this.x = rand(0, W); this.y = rand(0, H);
+      this.vx = 0; this.vy = 0;
+      this.T = rand(2.6, 3.8);
+      this.ph = rand(0, this.T);
+      this.seed = rand(0, 100);
+      this.alpha = rand(0.40, 0.58);
+      this.c = 0; this.tilt = 0;
+      this.tents = [];
+      var k = 4 + Math.round(this.r / 8);
+      for (var i = 0; i < k; i++) {
+        var nodes = [];
+        for (var j = 0; j < 7; j++) nodes.push({ x: this.x, y: this.y + j * this.r * 0.42 });
+        this.tents.push({ off: (k === 1 ? 0 : i / (k - 1) - 0.5) * 1.6, nodes: nodes, seed: rand(0, 10) });
+      }
+    }
+    function resetTents(j) {
+      for (var i = 0; i < j.tents.length; i++) {
+        var ns = j.tents[i].nodes;
+        for (var k = 0; k < ns.length; k++) { ns[k].x = j.x; ns[k].y = j.y + k * j.r * 0.42; }
+      }
+    }
+    Jelly.prototype.update = function (dt, t) {
+      this.ph += dt;
+      var p = (this.ph % this.T) / this.T;
+      var thrust = p < 0.24 ? Math.sin(p / 0.24 * Math.PI) : 0;
+      this.c = thrust;
+      this.vy += (-52 * thrust + 11) * dt;
+      this.vy = clamp(this.vy, -42, 16);
+      this.vx += (Math.sin(t * 0.24 + this.seed) * 6 - this.vx * 0.5) * dt;
+      this.x += this.vx * dt; this.y += this.vy * dt;
+      this.tilt = clamp(this.vx * 0.02, -0.3, 0.3);
+      if (this.y < -90)      { this.y = H + 80; this.x = rand(0, W); resetTents(this); }
+      if (this.y > H + 130)  { this.y = -60;    this.x = rand(0, W); resetTents(this); }
+      if (this.x < -60) this.x = W + 50;
+      else if (this.x > W + 60) this.x = -50;
+      var bw = this.r * (1 - 0.24 * this.c);
+      for (var i = 0; i < this.tents.length; i++) {
+        var tn = this.tents[i], ns = tn.nodes;
+        ns[0].x = this.x + tn.off * bw * 0.8;
+        ns[0].y = this.y + this.r * 0.12;
+        for (var j = 1; j < ns.length; j++) {
+          var ease = Math.min(1, Math.max(1.5, 7.5 - j * 0.7) * dt);
+          var txp = ns[j - 1].x + Math.sin(t * 1.1 + tn.seed + j * 0.9) * 1.4;
+          var typ = ns[j - 1].y + this.r * 0.40;
+          ns[j].x += (txp - ns[j].x) * ease;
+          ns[j].y += (typ - ns[j].y) * ease;
+        }
+      }
+    };
+    Jelly.prototype.draw = function (t) {
+      var bf = bioF();
+      var rgbA = bf > 0.4 ? '120,235,220' : '150,205,230';
+      var bw = this.r * (1 - 0.24 * this.c);
+      var bh = this.r * (0.95 + 0.30 * this.c);
+      var i;
+      ctx.save();
+      ctx.globalAlpha = this.alpha * 0.55;
+      ctx.strokeStyle = 'rgba(' + rgbA + ',0.42)';
+      ctx.lineWidth = 1.1;
+      for (i = 0; i < this.tents.length; i++) {
+        ctx.beginPath(); smooth(this.tents[i].nodes); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.tilt);
+      ctx.globalAlpha = this.alpha;
+      var g = ctx.createLinearGradient(0, -bh, 0, this.r * 0.3);
+      g.addColorStop(0, 'rgba(' + rgbA + ',0.34)');
+      g.addColorStop(1, 'rgba(' + rgbA + ',0.05)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(-bw, 0);
+      ctx.bezierCurveTo(-bw, -bh * 1.25, bw, -bh * 1.25, bw, 0);
+      var sc = 4, step = (2 * bw) / sc;
+      for (i = 1; i <= sc; i++) {
+        ctx.quadraticCurveTo(bw - step * (i - 0.5), this.r * 0.18, bw - step * i, 0);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(' + rgbA + ',' + (0.30 + 0.25 * bf).toFixed(2) + ')';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.globalAlpha = this.alpha * (0.5 + 0.5 * bf);
+      var cg = ctx.createRadialGradient(0, -bh * 0.45, 0, 0, -bh * 0.45, Math.max(2, bw * 0.6));
+      cg.addColorStop(0, 'rgba(' + rgbA + ',0.40)');
+      cg.addColorStop(1, 'rgba(' + rgbA + ',0)');
+      ctx.fillStyle = cg;
+      ctx.beginPath(); ctx.arc(0, -bh * 0.45, Math.max(2, bw * 0.6), 0, TAU); ctx.fill();
+      ctx.restore();
+    };
+
+    /* ------------ TURTLE: flipper power-stroke and glide ------------ */
+    function Turtle() {
+      this.size = rand(62, 80);
+      this.reset(Math.random() < 0.5 ? 1 : -1, true);
+    }
+    Turtle.prototype.reset = function (dir, initial) {
+      this.dir = dir;
+      this.x = initial ? rand(0, W) : (dir > 0 ? -this.size * 2 : W + this.size * 2);
+      this.y = rand(H * 0.18, H * 0.66);
+      this.ph = rand(0, 10);
+      this.seed = rand(0, 100);
+      this.speed = 16;
+      this.pitch = 0; this.flap = 0;
+    };
+    Turtle.prototype.update = function (dt, t) {
+      this.ph += dt;
+      var T = 3.1;
+      var c = (this.ph % T) / T;
+      var stroke = c < 0.32 ? Math.sin(c / 0.32 * Math.PI) : 0;
+      var phase = c < 0.32 ? (c / 0.32) : 1 - (c - 0.32) / 0.68;
+      this.flap = phase * 0.95 - 0.45;
+      var want = 13 + stroke * 30;
+      this.speed += (want - this.speed) * Math.min(1, 2.5 * dt);
+      this.pitch = Math.sin(t * 0.35 + this.seed) * 0.10;
+      this.x += this.dir * this.speed * dt * Math.cos(this.pitch);
+      this.y += this.speed * dt * Math.sin(this.pitch) * 1.4 + Math.sin(t * 0.5 + this.seed) * 3 * dt;
+      this.y = clamp(this.y, H * 0.08, H * 0.85);
+      var m = this.size * 2.2;
+      if (this.dir > 0 && this.x > W + m) this.reset(Math.random() < 0.5 ? 1 : -1, false);
+      if (this.dir < 0 && this.x < -m)    this.reset(Math.random() < 0.5 ? 1 : -1, false);
+    };
+    Turtle.prototype.draw = function (t) {
+      var L = lightF(), s = this.size;
+      function flipper(fx, fy, rot, len) {
+        ctx.save(); ctx.translate(fx, fy); ctx.rotate(rot);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(len * 0.55, -len * 0.16, len, -len * 0.05);
+        ctx.quadraticCurveTo(len * 0.55, len * 0.22, 0, len * 0.10);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.scale(this.dir, 1);
+      ctx.rotate(this.pitch * this.dir);
+      ctx.globalAlpha = 0.66;
+      ctx.fillStyle = 'rgba(4,16,25,0.92)';
+      flipper(s * 0.16, -s * 0.16, -0.9 + this.flap, s * 0.40);
+      flipper(s * 0.16,  s * 0.16,  0.9 - this.flap * 0.85, s * 0.40);
+      flipper(-s * 0.30, -s * 0.13, -2.4 - this.flap * 0.3, s * 0.20);
+      flipper(-s * 0.30,  s * 0.13,  2.4 + this.flap * 0.3, s * 0.20);
+      ctx.beginPath(); ctx.ellipse(s * 0.43, 0, s * 0.115, s * 0.085, 0, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0, 0, s * 0.34, s * 0.235, 0, 0, TAU); ctx.fill();
+      ctx.strokeStyle = 'rgba(160,215,235,' + (0.16 * L).toFixed(3) + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.ellipse(0, 0, s * 0.34, s * 0.235, 0, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, 0, s * 0.22, s * 0.15, 0, 0, TAU); ctx.stroke();
+      ctx.fillStyle = 'rgba(215,240,250,0.75)';
+      ctx.beginPath(); ctx.arc(s * 0.47, -s * 0.02, Math.max(0.9, s * 0.02), 0, TAU); ctx.fill();
+      ctx.restore();
+    };
+
+    /* ------------ RAY: breathing wings, slow glide ------------ */
+    function Ray() { this.init(true); }
+    Ray.prototype.init = function (initial) {
+      this.span = rand(105, 140) * (MOBILE ? 0.8 : 1);
+      this.dir = Math.random() < 0.5 ? 1 : -1;
+      this.x = initial ? rand(0, W) : (this.dir > 0 ? -this.span : W + this.span);
+      this.y = rand(H * 0.25, H * 0.72);
+      this.speed = rand(13, 19);
+      this.seed = rand(0, 100);
+      this.alpha = 0.5;
+    };
+    Ray.prototype.update = function (dt, t) {
+      this.x += this.dir * this.speed * dt;
+      this.y += Math.sin(t * 0.28 + this.seed) * 7 * dt;
+      var m = this.span * 1.4;
+      if ((this.dir > 0 && this.x > W + m) || (this.dir < 0 && this.x < -m)) this.init(false);
+    };
+    Ray.prototype.draw = function (t) {
+      var L = lightF(), sp = this.span;
+      var f = Math.sin(t * 1.9 + this.seed);
+      var f2 = Math.sin(t * 1.9 + this.seed - 1.3);
+      var tipY = sp * (0.40 + 0.085 * f);
+      var len = sp * 0.46;
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.scale(this.dir, 1);
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = 'rgba(4,15,24,0.9)';
+      ctx.beginPath();
+      ctx.moveTo(len, 0);
+      ctx.quadraticCurveTo(len * 0.30, -tipY * (0.5 + 0.1 * f2), -len * 0.1, -tipY);
+      ctx.quadraticCurveTo(-len * 0.55, -tipY * 0.30, -len, 0);
+      ctx.quadraticCurveTo(-len * 0.55, tipY * 0.30, -len * 0.1, tipY);
+      ctx.quadraticCurveTo(len * 0.30, tipY * (0.5 + 0.1 * f2), len, 0);
+      ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(len, -sp * 0.03); ctx.lineTo(len + sp * 0.09, -sp * 0.055); ctx.lineTo(len * 0.92, -sp * 0.012);
+      ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(len, sp * 0.03); ctx.lineTo(len + sp * 0.09, sp * 0.055); ctx.lineTo(len * 0.92, sp * 0.012);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(4,15,24,0.85)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(-len, 0);
+      ctx.quadraticCurveTo(-len * 1.45, Math.sin(t * 2.3 + this.seed) * 6, -len * 1.95, Math.sin(t * 1.6 + this.seed) * 9);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(150,215,240,' + (0.15 * L).toFixed(3) + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(len, 0);
+      ctx.quadraticCurveTo(len * 0.30, -tipY * (0.5 + 0.1 * f2), -len * 0.1, -tipY);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    /* ------------ WHALE: rare, ghostly, deep background ------------ */
+    var whale = null, nextWhaleAt = 70;
+    function Whale() {
+      this.size = Math.min(540, W * 0.55);
+      this.n = 11;
+      this.seg = this.size / this.n;
+      this.dir = Math.random() < 0.5 ? 1 : -1;
+      this.a = this.dir > 0 ? 0 : Math.PI;
+      this.x = this.dir > 0 ? -this.size * 1.2 : W + this.size * 1.2;
+      this.y = H * rand(0.45, 0.62);
+      this.spine = [];
+      for (var i = 0; i < this.n; i++) this.spine.push(this.a);
+      this.ph = 0;
+      this.speed = 26;
+      this.profile = [0.20, 0.30, 0.345, 0.355, 0.345, 0.32, 0.275, 0.22, 0.16, 0.10, 0.05, 0.02];
+      this.done = false;
+    }
+    Whale.prototype.update = function (dt, t) {
+      this.ph += dt * 1.1;
+      this.a = (this.dir > 0 ? 0 : Math.PI) + Math.sin(t * 0.18) * 0.05;
+      this.x += Math.cos(this.a) * this.speed * dt;
+      this.y += Math.sin(this.a) * this.speed * dt * 0.5;
+      this.spine[0] = this.a;
+      var k = Math.min(1, 5 * dt);
+      for (var i = 1; i < this.n; i++) {
+        var dd = this.spine[i - 1] - this.spine[i];
+        while (dd > Math.PI) dd -= TAU;
+        while (dd < -Math.PI) dd += TAU;
+        this.spine[i] += dd * k;
+      }
+      if ((this.dir > 0 && this.x > W + this.size * 1.4) || (this.dir < 0 && this.x < -this.size * 1.4)) this.done = true;
+    };
+    Whale.prototype.draw = function (t) {
+      var pts = [], px = this.x, py = this.y, i, ang = this.a;
+      for (i = 0; i < this.n; i++) {
+        ang = this.spine[i] + Math.sin(this.ph - i * 0.55) * 0.045 * (0.2 + i / this.n);
+        pts.push({ x: px, y: py, a: ang });
+        px -= Math.cos(ang) * this.seg;
+        py -= Math.sin(ang) * this.seg;
+      }
+      pts.push({ x: px, y: py, a: ang });
+      var top = [], bot = [];
+      for (i = 0; i <= this.n; i++) {
+        var p = pts[i];
+        var w = (this.profile[i] !== undefined ? this.profile[i] : 0.02) * this.size * 0.5;
+        var nx = -Math.sin(p.a) * w, ny = Math.cos(p.a) * w;
+        top.push({ x: p.x + nx, y: p.y + ny });
+        bot.push({ x: p.x - nx, y: p.y - ny });
+      }
+      ctx.save();
+      ctx.globalAlpha = 0.13;
+      ctx.fillStyle = 'rgba(6,18,28,1)';
+      var nose = { x: this.x + Math.cos(this.a) * this.seg, y: this.y + Math.sin(this.a) * this.seg };
+      var outline = [nose].concat(top, [pts[this.n]]);
+      for (i = this.n; i >= 0; i--) outline.push(bot[i]);
+      ctx.beginPath(); smooth(outline); ctx.closePath(); ctx.fill();
+      var tb = pts[this.n];
+      var fw = this.size * 0.14;
+      var beat = Math.sin(this.ph - this.n * 0.55) * 0.35;
+      ctx.beginPath();
+      ctx.ellipse(tb.x, tb.y, fw, fw * (0.34 + 0.10 * beat), tb.a + beat * 0.4, 0, TAU);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(pts[3].x, pts[3].y + this.size * 0.06, this.size * 0.10, this.size * 0.028, 0.5, 0, TAU);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    /* ------------ PARTICLES: bubbles, marine snow, deep plankton ------------ */
+    var bubbles = [], snow = [], plankton = [];
+    function newBubble(anywhere) {
+      return {
+        x: rand(0, W), y: anywhere ? rand(0, H) : H + rand(10, 60),
+        r: Math.random() < 0.85 ? rand(0.8, 2.4) : rand(2.4, 4.6),
+        v: 0, seed: rand(0, 100), a: rand(0.16, 0.4), burst: false
+      };
+    }
+    function burst(x, y) {
+      var n = 8 + Math.round(Math.random() * 7);
+      for (var i = 0; i < n; i++) {
+        bubbles.push({
+          x: x + rand(-7, 7), y: y + rand(-6, 6),
+          r: rand(0.7, 3.2), v: rand(26, 64), seed: rand(0, 100),
+          a: rand(0.25, 0.5), burst: true
+        });
+      }
+      if (bubbles.length > 130) bubbles.splice(0, bubbles.length - 130);
+    }
+    var NB = Math.round(24 * Q), NS = Math.round(64 * Q), NP = Math.round(44 * Q);
+    for (var bi = 0; bi < NB; bi++) bubbles.push(newBubble(true));
+    for (var si = 0; si < NS; si++) snow.push({
+      x: rand(0, W), y: rand(0, H), r: rand(0.7, 2.1),
+      v: rand(5, 13), seed: rand(0, 100), a: rand(0.10, 0.34), layer: rand(0.4, 1)
+    });
+    for (var pi = 0; pi < NP; pi++) plankton.push({
+      x: rand(0, W), y: rand(0, H), r: rand(0.7, 1.6), seed: rand(0, 100),
+      vx: rand(-3, 3), vy: rand(-2, 2), a: rand(0.3, 0.8), stir: 0
+    });
+
+    function stepParticles(dt, t) {
+      var i, b;
+      for (i = 0; i < bubbles.length; i++) {
+        b = bubbles[i];
+        var rise = (14 + b.r * 9) + (b.burst ? b.v : 0);
+        if (b.burst) b.v *= (1 - 1.1 * dt);
+        b.y -= rise * dt;
+        b.x += Math.sin(t * 2.1 + b.seed) * (4 + b.r) * dt * 2.2;
+        b.r += dt * 0.25;
+        if (b.y < -16) {
+          if (b.burst) { bubbles.splice(i, 1); i--; continue; }
+          bubbles[i] = newBubble(false);
+        }
+      }
+      for (i = 0; i < snow.length; i++) {
+        b = snow[i];
+        b.y += b.v * b.layer * dt;
+        b.x += Math.sin(t * 0.5 + b.seed) * 2.4 * dt;
+        if (b.y > H + 14) { b.y = -10; b.x = rand(0, W); }
+        if (b.y < -30)    { b.y = H + 10; b.x = rand(0, W); }
+      }
+      if (bioF() > 0.02) {
+        for (i = 0; i < plankton.length; i++) {
+          b = plankton[i];
+          b.x += b.vx * dt + Math.sin(t * 0.7 + b.seed) * 1.6 * dt;
+          b.y += b.vy * dt + Math.cos(t * 0.6 + b.seed) * 1.6 * dt;
+          var dx = b.x - ptr.x, dy = b.y - ptr.y, d2 = dx * dx + dy * dy;
+          if (d2 < 8100 && d2 > 1) {
+            var inv = 1 / Math.sqrt(d2);
+            b.x += dx * inv * 26 * dt;
+            b.y += dy * inv * 26 * dt;
+            b.stir = 1;
+          }
+          if (b.stir > 0) b.stir = Math.max(0, b.stir - dt * 0.5);
+          if (b.x < -10) b.x = W + 8; else if (b.x > W + 10) b.x = -8;
+          if (b.y < -10) b.y = H + 8; else if (b.y > H + 10) b.y = -8;
+        }
+      }
+    }
+    function drawParticles(t) {
+      var i, b;
+      ctx.save();
+      ctx.fillStyle = 'rgba(225,240,248,1)';
+      for (i = 0; i < snow.length; i++) {
+        b = snow[i];
+        ctx.globalAlpha = b.a;
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r * b.layer, 0, TAU); ctx.fill();
+      }
+      ctx.restore();
+      ctx.save();
+      for (i = 0; i < bubbles.length; i++) {
+        b = bubbles[i];
+        ctx.globalAlpha = b.a;
+        ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+        ctx.lineWidth = 0.9;
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, TAU); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.10)';
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, TAU); ctx.fill();
+        if (b.r > 1.6) {
+          ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+          ctx.beginPath(); ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.32, -2.4, -1.1); ctx.stroke();
+        }
+      }
+      ctx.restore();
+      var bf = bioF();
+      if (bf > 0.02) {
+        ctx.save();
+        for (i = 0; i < plankton.length; i++) {
+          b = plankton[i];
+          var tw = 0.45 + 0.55 * Math.pow(Math.sin(t * 1.6 + b.seed * 3), 2);
+          var a = b.a * tw * bf * (1 + b.stir * 1.8);
+          if (a < 0.02) continue;
+          glow(b.x, b.y, b.r, '110,240,225', Math.min(0.85, a));
+        }
+        ctx.restore();
+      }
+    }
+
+    /* ------------ POPULATION ------------ */
+    var fishes = [], schools = [], jellies = [];
+    var NF = Math.round(6 * Q);
+    for (var fi = 0; fi < NF; fi++) fishes.push(new Fish({ far: fi % 3 === 0, deep: fi % 2 === 0 }));
+    fishes.push(new Fish({
+      angler: true, size: 30, speed: 9, alpha: 0.8, fleeR: 0,
+      profile: [0.36, 0.54, 0.56, 0.47, 0.34, 0.20, 0.10, 0.05, 0.02]
+    }));
+    schools.push(new School());
+    if (!MOBILE) schools.push(new School());
+    var NJ = Math.max(2, Math.round(3 * Q));
+    for (var ji = 0; ji < NJ; ji++) jellies.push(new Jelly());
+    var turtle = new Turtle();
+    var ray = new Ray();
+
+    /* descent illusion: scrolling pushes the whole world gently upward */
+    var lastSc = window.scrollY;
+    window.addEventListener('scroll', function () {
+      var d = window.scrollY - lastSc; lastSc = window.scrollY;
+      var sh = d * 0.10, i, a2, b2;
+      for (i = 0; i < fishes.length; i++) { fishes[i].y -= sh * 0.6; fishes[i].bandY -= sh * 0.6; }
+      for (i = 0; i < jellies.length; i++) {
+        jellies[i].y -= sh * 0.5;
+        var tn = jellies[i].tents;
+        for (a2 = 0; a2 < tn.length; a2++) {
+          for (b2 = 0; b2 < tn[a2].nodes.length; b2++) tn[a2].nodes[b2].y -= sh * 0.5;
+        }
+      }
+      turtle.y -= sh * 0.55;
+      ray.y -= sh * 0.5;
+      for (i = 0; i < schools.length; i++) {
+        schools[i].ay -= sh * 0.6;
+        for (a2 = 0; a2 < schools[i].fs.length; a2++) schools[i].fs[a2].y -= sh * 0.6;
+      }
+      for (i = 0; i < snow.length; i++) snow[i].y -= sh * snow[i].layer * 0.8;
+    }, { passive: true });
+
+    /* ------------ MAIN LOOP ------------ */
+    var last = performance.now();
+    function frame(now) {
+      var dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      var t = now / 1000;
+      ctx.clearRect(0, 0, W, H);
+      if (!whale && t > nextWhaleAt) whale = new Whale();
+      if (whale) {
+        whale.update(dt, t); whale.draw(t);
+        if (whale.done) { whale = null; nextWhaleAt = t + rand(180, 300); }
+      }
+      var i;
+      ray.update(dt, t);    ray.draw(t);
+      turtle.update(dt, t); turtle.draw(t);
+      for (i = 0; i < schools.length; i++) { schools[i].update(dt, t); schools[i].draw(); }
+      for (i = 0; i < jellies.length; i++) { jellies[i].update(dt, t); jellies[i].draw(t); }
+      for (i = 0; i < fishes.length; i++)  { fishes[i].update(dt, t);  fishes[i].draw(t); }
+      stepParticles(dt, t);
+      drawParticles(t);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    /* a small hello for anyone who opens the console */
+    try {
+      console.log('%c~ whale song ~  This ocean is procedural: spine-driven fish, boids schooling, pulse-jet jellies, depth-gated bioluminescence. No libraries, no sprites. Crafted with Claude.', 'color:#5fc9c0;font-size:12px');
+    } catch (e) {}
   })();
 
   /* ── Build dive stream — plain photo list, no cards, sorted by NN_ prefix.
