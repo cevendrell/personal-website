@@ -7,3 +7,6 @@
 # Editor / OS junk
 Thumbs.db
 *.swp
+
+# Private strategy notes — never publish
+VENTURES.md
