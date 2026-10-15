@@ -6,13 +6,13 @@
   <meta name="description" content="Custom GPTs and AI experiments built by Carlos Ebrahim Vendrell to solve real-world problems.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cevendrell.com/pages/tech/ai-projects.html">
-  <meta property="og:title" content="AI Sandbox | Carlos Ebrahim Vendrell">
+  <meta property="og:title" content="AI Playground | Carlos Ebrahim Vendrell">
   <meta property="og:description" content="Custom GPTs and AI experiments built by Carlos Ebrahim Vendrell to solve real-world problems.">
   <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="AI Sandbox | Carlos Ebrahim Vendrell">
+  <meta name="twitter:title" content="AI Playground | Carlos Ebrahim Vendrell">
   <meta name="twitter:description" content="Custom GPTs and AI experiments built by Carlos Ebrahim Vendrell to solve real-world problems.">
-  <title>AI Sandbox - Carlos Ebrahim Vendrell</title>
+  <title>AI Playground - Carlos Ebrahim Vendrell</title>
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,10 +31,10 @@
       --line:        rgba(255,255,255,0.08);
       --line-strong: rgba(255,255,255,0.14);
       --radius:      16px;
-      /* Page accent — ChatGPT green */
-      --page-accent:  #10a37f;
-      --page-accent2: #19c37d;
-      --page-glow:    rgba(16,163,127,0.4);
+      /* Page accent — dusty blue (matches Ceven Labs) */
+      --page-accent:  #6a8db5;
+      --page-accent2: #8aa8c9;
+      --page-glow:    rgba(106,141,181,0.4);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -73,7 +73,7 @@
 
     .preloader { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s; }
     .preloader.done { opacity: 0; visibility: hidden; }
-    .spinner { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(16,163,127,0.15); border-top-color: var(--page-accent); animation: spin 0.9s linear infinite; }
+    .spinner { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(106,141,181,0.15); border-top-color: var(--page-accent); animation: spin 0.9s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── NAV ── */
@@ -135,7 +135,7 @@
     }
     #hero::before {
       content: ''; position: absolute; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(16,163,127,0.1) 0%, transparent 65%);
+      background: radial-gradient(ellipse at 70% 50%, rgba(106,141,181,0.1) 0%, transparent 65%);
     }
     .hero-inner {
       position: relative; z-index: 2;
@@ -177,7 +177,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; letter-spacing: 0.1em; color: var(--mute);
       padding: 0.65rem 1rem; border-radius: 999px;
-      background: rgba(16,163,127,0.08); border: 1px solid rgba(16,163,127,0.2);
+      background: rgba(106,141,181,0.08); border: 1px solid rgba(106,141,181,0.2);
       display: inline-block;
       opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
     }
@@ -224,7 +224,7 @@
     @media (max-width: 760px) { .product-grid { grid-template-columns: 1fr; } }
     .product-card {
       --card-accent: var(--page-accent);
-      --card-accent-soft: rgba(16,163,127,0.10);
+      --card-accent-soft: rgba(106,141,181,0.10);
       --card-glow: var(--page-glow);
       position: relative; display: flex; flex-direction: column; gap: 0.9rem;
       padding: 1.75rem; min-height: 240px;
@@ -263,7 +263,7 @@
       border: 1px solid rgba(255,255,255,0.12); color: var(--dim);
     }
     .status-pill.live {
-      background: rgba(16,163,127,0.12); border-color: rgba(16,163,127,0.4); color: var(--page-accent2);
+      background: rgba(106,141,181,0.12); border-color: rgba(106,141,181,0.4); color: var(--page-accent2);
     }
     .status-pill.beta {
       background: rgba(200,134,42,0.14); border-color: rgba(200,134,42,0.42); color: #e4b35a;
@@ -308,14 +308,14 @@
       transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.3s;
     }
     .toy-card:hover {
-      background: rgba(16,163,127,0.05); transform: translateY(-2px);
-      border-color: rgba(16,163,127,0.4);
+      background: rgba(106,141,181,0.05); transform: translateY(-2px);
+      border-color: rgba(106,141,181,0.4);
       box-shadow: 0 16px 48px -20px var(--page-glow);
     }
     .toy-visual {
       flex-shrink: 0; width: 72px; height: 72px; border-radius: 14px;
-      background: linear-gradient(135deg, rgba(16,163,127,0.18), rgba(25,195,125,0.06));
-      border: 1px solid rgba(16,163,127,0.28);
+      background: linear-gradient(135deg, rgba(106,141,181,0.18), rgba(138,168,201,0.06));
+      border: 1px solid rgba(106,141,181,0.28);
       display: flex; align-items: center; justify-content: center;
       font-size: 2rem; color: var(--page-accent2);
     }
@@ -335,6 +335,85 @@
     @media (max-width: 600px) {
       .toy-card { flex-direction: column; align-items: flex-start; text-align: left; gap: 1rem; padding: 1.25rem; }
       .toy-arrow { align-self: flex-end; }
+    }
+
+    /* ── Bike Fit — featured studio block ── */
+    .bikefit-block {
+      display: grid; grid-template-columns: 1.2fr 1fr; gap: 0;
+      margin-top: 3rem; margin-bottom: 2.5rem;
+      background: linear-gradient(140deg, #080f1e 0%, #0a1120 55%, #0d1626 100%);
+      border: 1px solid rgba(106,141,181,0.18); border-radius: 20px;
+      overflow: hidden; text-decoration: none; color: inherit;
+      transition: border-color 0.3s, box-shadow 0.35s, transform 0.3s;
+    }
+    .bikefit-block:hover {
+      border-color: rgba(106,141,181,0.45); transform: translateY(-3px);
+      box-shadow: 0 28px 70px -24px rgba(106,141,181,0.35);
+    }
+    .bikefit-visual {
+      position: relative; min-height: 320px; overflow: hidden;
+      background:
+        radial-gradient(ellipse at 70% 30%, rgba(106,141,181,0.14) 0%, transparent 60%),
+        linear-gradient(135deg, #04070e 0%, #080d1a 100%);
+    }
+    .bikefit-grid {
+      position: absolute; inset: 0; opacity: 0.5; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(170,195,230,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(170,195,230,0.07) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .bikefit-hero, .bikefit-fallback {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      display: block;
+    }
+    .bikefit-visual::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(90deg, transparent 72%, rgba(10,17,32,0.85) 100%);
+    }
+    .bikefit-copy {
+      padding: 2.25rem 2.25rem 2rem;
+      display: flex; flex-direction: column; justify-content: center; gap: 0.85rem;
+      position: relative;
+    }
+    .bikefit-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--page-accent2);
+    }
+    .bikefit-title {
+      font-size: clamp(1.5rem, 2.4vw, 1.9rem); font-weight: 800;
+      letter-spacing: -0.025em; color: var(--text); line-height: 1.15;
+    }
+    .bikefit-lede { font-size: 0.95rem; color: var(--dim); line-height: 1.65; }
+    .bikefit-features { list-style: none; padding: 0; margin: 0.35rem 0 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .bikefit-features li {
+      display: flex; align-items: baseline; gap: 0.7rem;
+      font-size: 0.85rem; color: var(--dim);
+    }
+    .bf-dot {
+      flex-shrink: 0; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--page-accent); transform: translateY(-2px);
+      box-shadow: 0 0 0 3px rgba(106,141,181,0.14);
+    }
+    .bikefit-cta {
+      align-self: flex-start; margin-top: 0.6rem;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.75rem 1.3rem; border-radius: 999px;
+      background: var(--page-accent); color: #fff;
+      font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em;
+      transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .bikefit-block:hover .bikefit-cta {
+      background: var(--page-accent2); transform: translateX(2px);
+      box-shadow: 0 12px 28px -10px rgba(106,141,181,0.5);
+    }
+    @media (max-width: 820px) {
+      .bikefit-block { grid-template-columns: 1fr; }
+      .bikefit-visual { min-height: 220px; }
+      .bikefit-visual::after { background: linear-gradient(180deg, transparent 72%, rgba(10,17,32,0.9) 100%); }
+      .bikefit-copy { padding: 1.75rem; }
     }
 
     /* ── Legacy GPTs: small intro pill before the three cards ── */
@@ -364,15 +443,15 @@
     }
     .gpt-card:hover .gpt-arrow { opacity: 1; transform: translateX(3px); }
     .gpt-card:hover {
-      background: rgba(16,163,127,0.05);
-      border-color: rgba(16,163,127,0.35);
+      background: rgba(106,141,181,0.05);
+      border-color: rgba(106,141,181,0.35);
       box-shadow: 0 16px 48px -16px var(--page-glow);
       transform: translateY(-2px);
     }
     .gpt-icon {
       width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
-      background: linear-gradient(135deg, rgba(16,163,127,0.18), rgba(25,195,125,0.08));
-      border: 1px solid rgba(16,163,127,0.25);
+      background: linear-gradient(135deg, rgba(106,141,181,0.18), rgba(138,168,201,0.08));
+      border: 1px solid rgba(106,141,181,0.25);
       display: flex; align-items: center; justify-content: center;
       font-size: 1.5rem;
     }
@@ -386,8 +465,8 @@
       position: absolute; top: 1rem; right: 1rem;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--page-accent2); background: rgba(25,195,125,0.08);
-      border: 1px solid rgba(25,195,125,0.22); border-radius: 999px;
+      color: var(--page-accent2); background: rgba(138,168,201,0.08);
+      border: 1px solid rgba(138,168,201,0.22); border-radius: 999px;
       padding: 0.25rem 0.55rem;
     }
 
@@ -613,7 +692,7 @@
       <ul class="dropdown">
         <li><a href="xr-videos.html">XR Videos</a></li>
         <li><a href="reality-capture.html">Reality Capture</a></li>
-        <li><a href="ai-projects.html">AI Sandbox</a></li>
+        <li><a href="ai-projects.html">AI Playground</a></li>
         <li><a href="3d-printing.html">3D Printing</a></li>
         <li><a href="food-for-thought.html">Food for Thought</a></li>
       </ul>
@@ -635,7 +714,7 @@
 <section id="hero">
   <div class="hero-inner">
     <p class="hero-eyebrow">Tech</p>
-    <h1>AI <span>Sandbox</span></h1>
+    <h1>AI <span>Playground</span></h1>
     <p class="hero-lead">The place where my ideas get hands-on. A couple of shipped products under Ceven Labs, a few interactive toys built from scratch in the browser, and some older experiments kept around for the record.</p>
   </div>
 </section>
@@ -649,7 +728,7 @@
     <section class="section-block wow" aria-label="Shipped products">
       <span class="section-eyebrow">Shipped</span>
       <h2 class="section-title">Products that actually left the garage</h2>
-      <p class="section-lede">Two real products I build and ship under <a href="https://cevenlabs.com" target="_blank" rel="noopener" style="color:var(--page-accent2);text-decoration:none;border-bottom:1px solid rgba(25,195,125,0.3);">Ceven Labs</a>, my Danish sole proprietorship. One for people who fly, one for people the flights fly over.</p>
+      <p class="section-lede">Two real solutions I've built and shipped under <a href="https://cevenlabs.com" target="_blank" rel="noopener" style="color:var(--page-accent2);text-decoration:none;border-bottom:1px solid rgba(138,168,201,0.4);">Ceven Labs</a>. One for people who fly, one for people the flights fly over.</p>
 
       <div class="product-grid">
 
@@ -681,7 +760,7 @@
          ══════════════════════════════════════════════════════════════════ -->
     <section class="section-block wow" aria-label="Interactive sandbox">
       <span class="section-eyebrow">Built in the browser</span>
-      <h2 class="section-title">The sandbox</h2>
+      <h2 class="section-title">The playground</h2>
       <p class="section-lede">Interactive things I built from scratch in vanilla JavaScript, mostly to understand an idea by making it move. Everything below runs locally in your browser, no servers, no accounts, no tracking.</p>
 
       <!-- ── Grid Race (featured) — F1 cars that teach themselves to drive ── -->
@@ -723,21 +802,62 @@
         </div>
       </section>
 
-      <!-- ── Bike Fit — browser-only biomechanics tool, lives on cevenlabs.com ── -->
-      <a class="toy-card wow" href="https://cevenlabs.com/pages/solutions/bike-fit/" target="_blank" rel="noopener" style="margin-top:3rem;">
-        <div class="toy-visual" aria-hidden="true">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/>
-            <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-            <path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+      <!-- ── Bike Fit — featured studio block, blueprint-style hero visual ── -->
+      <a class="bikefit-block wow" href="/ai-projects/bike-fit.html">
+        <div class="bikefit-visual" aria-hidden="true">
+          <div class="bikefit-grid"></div>
+          <img class="bikefit-hero" src="../../media/bike-fit/hero.png" alt=""
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <svg class="bikefit-fallback" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg" style="display:none">
+            <!-- blueprint fallback cyclist, rendered procedurally -->
+            <defs><filter id="bfg"><feGaussianBlur stdDeviation="0.6"/></filter></defs>
+            <g stroke="rgba(170,195,230,0.25)" stroke-width="0.6" fill="none">
+              <path d="M0 80 H460 M0 160 H460 M0 240 H460 M80 0 V320 M200 0 V320 M320 0 V320 M400 0 V320"/>
+            </g>
+            <circle cx="130" cy="230" r="55" fill="none" stroke="#0d1626" stroke-width="7"/>
+            <circle cx="130" cy="230" r="54" fill="none" stroke="#1a3450" stroke-width="1"/>
+            <circle cx="340" cy="230" r="55" fill="none" stroke="#0d1626" stroke-width="7"/>
+            <circle cx="340" cy="230" r="54" fill="none" stroke="#1a3450" stroke-width="1"/>
+            <g stroke="#2d6cd4" stroke-width="6" stroke-linecap="round" fill="none">
+              <path d="M130 230 L220 160 L260 160 L340 230"/>
+              <path d="M260 160 L240 230 M240 230 L130 230"/>
+              <path d="M260 160 L270 110"/>
+            </g>
+            <g stroke="#d8964c" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.95">
+              <path d="M240 230 L205 185 L235 150"/>
+              <path d="M235 150 L250 95"/>
+              <path d="M250 95 L320 110 L340 155"/>
+            </g>
+            <circle cx="250" cy="95" r="4" fill="#d8964c"/>
+            <circle cx="235" cy="150" r="4" fill="#d8964c"/>
+            <circle cx="205" cy="185" r="4" fill="#d8964c"/>
+            <circle cx="340" cy="155" r="5" fill="#d8964c"/>
+            <circle cx="250" cy="60" r="18" fill="none" stroke="#d8964c" stroke-width="2.5"/>
+            <ellipse cx="240" cy="230" rx="28" ry="4" fill="none" stroke="#e8e8ea" stroke-width="1.5"/>
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#aac3e6" letter-spacing="0.1em">
+              <text x="150" y="195" transform="rotate(-62 150 195)">SADDLE 742</text>
+              <text x="350" y="170" transform="rotate(-90 350 170)">STACK 560</text>
+              <text x="212" y="256">REACH 391</text>
+              <text x="400" y="155" transform="rotate(-90 400 155)">DROP 152</text>
+              <text x="252" y="138" fill="#d8964c">135°</text>
+              <text x="214" y="178" fill="#d8964c">33°</text>
+            </g>
+            <g stroke="#aac3e6" stroke-width="0.8" stroke-dasharray="3 3" fill="none" opacity="0.6">
+              <path d="M240 230 L240 170 M212 256 L340 256 M400 155 L400 230 M380 155 L420 155"/>
+            </g>
           </svg>
         </div>
-        <div class="toy-body">
-          <p class="toy-eyebrow">Biomechanics · browser tool</p>
-          <p class="toy-title">Bike Fit</p>
-          <p class="toy-desc">Enter your height, inseam and flexibility, pick a real frame from ~70 models across every major brand, and watch an animated rider pedal on that geometry with knee, hip and torso angles measured live. Runs entirely in your browser.</p>
+        <div class="bikefit-copy">
+          <span class="bikefit-eyebrow">Featured · Studio</span>
+          <h3 class="bikefit-title">Bike Fit Studio</h3>
+          <p class="bikefit-lede">Enter your height, inseam and flexibility, pick a real frame from ~70 models across every major brand, and watch an animated rider pedal on that geometry with knee, hip and torso angles measured live.</p>
+          <ul class="bikefit-features">
+            <li><span class="bf-dot"></span>Live kinematics: knee, hip &amp; torso angles</li>
+            <li><span class="bf-dot"></span>Real frame geometries from Specialized, Trek, Cervélo, Canyon &amp; more</li>
+            <li><span class="bf-dot"></span>Zero account, nothing leaves your browser</li>
+          </ul>
+          <span class="bikefit-cta">Open the studio <span aria-hidden="true">→</span></span>
         </div>
-        <span class="toy-arrow" aria-hidden="true">→</span>
       </a>
 
       <!-- ── Tetris (compact / lower-key) ── -->
@@ -1275,15 +1395,15 @@
     if(!car.alive){ ctx.globalAlpha=0.16; }
     if(isLeader && car.alive){
       const g=ctx.createRadialGradient(0,0,2,0,0,30);
-      g.addColorStop(0,'rgba(16,163,127,0.5)'); g.addColorStop(1,'rgba(16,163,127,0)');
+      g.addColorStop(0,'rgba(106,141,181,0.5)'); g.addColorStop(1,'rgba(106,141,181,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,30,0,7); ctx.fill();
     }
     // sensors (leader only)
     if(showSensors && isLeader && car.alive){
-      ctx.strokeStyle='rgba(16,163,127,0.35)'; ctx.lineWidth=1;
+      ctx.strokeStyle='rgba(106,141,181,0.35)'; ctx.lineWidth=1;
       for(let s=0;s<5;s++){ const d=car.sensors[s]*RANGE, ang=SENSOR_ANGLES[s];
         ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ang)*d,Math.sin(ang)*d); ctx.stroke();
-        ctx.fillStyle='rgba(16,163,127,0.6)'; ctx.beginPath(); ctx.arc(Math.cos(ang)*d,Math.sin(ang)*d,1.8,0,7); ctx.fill();
+        ctx.fillStyle='rgba(106,141,181,0.6)'; ctx.beginPath(); ctx.arc(Math.cos(ang)*d,Math.sin(ang)*d,1.8,0,7); ctx.fill();
       }
     }
     // ── F1 car (forward = +x) ──
@@ -1313,7 +1433,7 @@
     ctx.restore();
     // leader tag
     if(isLeader && car.alive){
-      ctx.fillStyle='#10a37f'; ctx.font='700 10px JetBrains Mono, monospace'; ctx.textAlign='center';
+      ctx.fillStyle='#6a8db5'; ctx.font='700 10px JetBrains Mono, monospace'; ctx.textAlign='center';
       ctx.fillText('P1', car.x, car.y-24);
     }
   }
