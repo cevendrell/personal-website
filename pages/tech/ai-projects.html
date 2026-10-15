@@ -204,8 +204,148 @@
     .section-eyebrow {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--page-accent); margin-bottom: 1.5rem; display: block;
+      color: var(--page-accent); margin-bottom: 0.75rem; display: block;
     }
+    .section-title {
+      font-size: clamp(1.6rem, 2.8vw, 2.1rem); font-weight: 700;
+      letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.75rem;
+    }
+    .section-lede {
+      font-size: 1rem; color: var(--dim); line-height: 1.7;
+      max-width: 60ch; margin-bottom: 2.25rem;
+    }
+    .section-block { margin-bottom: 5.5rem; }
+    .section-block:last-child { margin-bottom: 0; }
+
+    /* ── Live products (LayOvr, OvrHead) ── */
+    .product-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+    }
+    @media (max-width: 760px) { .product-grid { grid-template-columns: 1fr; } }
+    .product-card {
+      --card-accent: var(--page-accent);
+      --card-accent-soft: rgba(16,163,127,0.10);
+      --card-glow: var(--page-glow);
+      position: relative; display: flex; flex-direction: column; gap: 0.9rem;
+      padding: 1.75rem; min-height: 240px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.012));
+      border: 1px solid var(--line); border-radius: var(--radius);
+      overflow: hidden; text-decoration: none; color: inherit;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .product-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 85% 0%, var(--card-accent-soft) 0%, transparent 55%);
+      opacity: 0.9; pointer-events: none;
+    }
+    .product-card:hover {
+      border-color: var(--card-accent); transform: translateY(-3px);
+      box-shadow: 0 20px 60px -20px var(--card-glow);
+    }
+    .product-head {
+      position: relative; display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem; margin-bottom: 0.25rem;
+    }
+    .product-logo {
+      font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; color: #fff;
+      display: inline-flex; align-items: center; gap: 0.55rem;
+    }
+    .product-logo .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--card-accent);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.04), 0 0 12px var(--card-accent);
+    }
+    .status-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.56rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; padding: 0.35rem 0.65rem;
+      border-radius: 999px; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12); color: var(--dim);
+    }
+    .status-pill.live {
+      background: rgba(16,163,127,0.12); border-color: rgba(16,163,127,0.4); color: var(--page-accent2);
+    }
+    .status-pill.beta {
+      background: rgba(200,134,42,0.14); border-color: rgba(200,134,42,0.42); color: #e4b35a;
+    }
+    .product-tagline {
+      position: relative; font-size: 0.72rem; font-weight: 600;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--card-accent);
+    }
+    .product-desc {
+      position: relative; font-size: 0.95rem; color: var(--dim);
+      line-height: 1.7; flex-grow: 1;
+    }
+    .product-link {
+      position: relative; display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 0.4rem; font-size: 0.8rem; font-weight: 600;
+      color: var(--text); transition: gap 0.25s, color 0.25s;
+    }
+    .product-link::after {
+      content: '→'; font-size: 1rem; transition: transform 0.25s;
+    }
+    .product-card:hover .product-link { color: var(--card-accent); }
+    .product-card:hover .product-link::after { transform: translateX(4px); }
+    .product-card--layovr {
+      --card-accent: #e4b35a;
+      --card-accent-soft: rgba(228,179,90,0.12);
+      --card-glow: rgba(228,179,90,0.3);
+    }
+    .product-card--ovrhead {
+      --card-accent: #6a8db5;
+      --card-accent-soft: rgba(106,141,181,0.14);
+      --card-glow: rgba(106,141,181,0.32);
+    }
+
+    /* ── Sandbox: Bike Fit card (link out, pairs with inline games) ── */
+    .toy-card {
+      display: flex; align-items: center; gap: 1.75rem;
+      padding: 1.5rem 1.75rem; margin-bottom: 2.5rem;
+      background: var(--surface); border: 1px solid var(--line);
+      border-left: 3px solid var(--page-accent);
+      border-radius: var(--radius); text-decoration: none; color: inherit;
+      transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.3s;
+    }
+    .toy-card:hover {
+      background: rgba(16,163,127,0.05); transform: translateY(-2px);
+      border-color: rgba(16,163,127,0.4);
+      box-shadow: 0 16px 48px -20px var(--page-glow);
+    }
+    .toy-visual {
+      flex-shrink: 0; width: 72px; height: 72px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(16,163,127,0.18), rgba(25,195,125,0.06));
+      border: 1px solid rgba(16,163,127,0.28);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; color: var(--page-accent2);
+    }
+    .toy-body { flex: 1; min-width: 0; }
+    .toy-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mute); margin-bottom: 0.3rem;
+    }
+    .toy-title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem; letter-spacing: -0.01em; }
+    .toy-desc { font-size: 0.9rem; color: var(--dim); line-height: 1.6; }
+    .toy-arrow {
+      flex-shrink: 0; align-self: center; font-size: 1.2rem;
+      color: var(--page-accent); opacity: 0.4; transition: opacity 0.25s, transform 0.25s;
+    }
+    .toy-card:hover .toy-arrow { opacity: 1; transform: translateX(4px); }
+    @media (max-width: 600px) {
+      .toy-card { flex-direction: column; align-items: flex-start; text-align: left; gap: 1rem; padding: 1.25rem; }
+      .toy-arrow { align-self: flex-end; }
+    }
+
+    /* ── Legacy GPTs: small intro pill before the three cards ── */
+    .legacy-note {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.78rem; color: var(--mute); font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em; padding: 0.55rem 0.95rem; border-radius: 999px;
+      background: rgba(255,255,255,0.03); border: 1px dashed var(--line);
+      margin-bottom: 1.75rem;
+    }
+    .legacy-note::before { content: '✦'; color: var(--page-accent); }
     .gpt-grid { display: flex; flex-direction: column; gap: 1.5rem; }
     .gpt-card {
       display: flex; align-items: flex-start; gap: 1.5rem;
@@ -496,65 +636,115 @@
   <div class="hero-inner">
     <p class="hero-eyebrow">Tech</p>
     <h1>AI <span>Sandbox</span></h1>
-    <p class="hero-lead">A sandbox for my AI experiments: custom GPTs built on GPT-4o to solve specific problems, plus the occasional thing I built just for the fun of it.</p>
-    <span class="hero-note">✦ A ChatGPT Plus membership is required to run the tools below</span>
+    <p class="hero-lead">The place where my ideas get hands-on. A couple of shipped products under Ceven Labs, a few interactive toys built from scratch in the browser, and some older experiments kept around for the record.</p>
   </div>
 </section>
 
 <main>
   <div class="container">
 
-    <span class="section-eyebrow wow">Custom GPTs</span>
+    <!-- ══════════════════════════════════════════════════════════════════
+         ══ 1. SHIPPED — live products under Ceven Labs                   ══
+         ══════════════════════════════════════════════════════════════════ -->
+    <section class="section-block wow" aria-label="Shipped products">
+      <span class="section-eyebrow">Shipped</span>
+      <h2 class="section-title">Products that actually left the garage</h2>
+      <p class="section-lede">Two real products I build and ship under <a href="https://cevenlabs.com" target="_blank" rel="noopener" style="color:var(--page-accent2);text-decoration:none;border-bottom:1px solid rgba(25,195,125,0.3);">Ceven Labs</a>, my Danish sole proprietorship. One for people who fly, one for people the flights fly over.</p>
 
-    <div class="gpt-grid">
+      <div class="product-grid">
 
-      <a class="gpt-card wow d1" href="https://chat.openai.com/g/g-nLELAekQe-mini-world-of-me" target="_blank" rel="noopener">
-        <div class="gpt-icon">🌍</div>
-        <div class="gpt-body">
-          <h3>Mini World of Me</h3>
-          <p>How do you introduce yourself without a boring list of bullet points? This GPT generates a personalised 3D mini-world based on your geography and interests; turn it into a slide, open with it, and let it do the talking. Built around my own background as a starting point.</p>
+        <a class="product-card product-card--layovr" href="https://cevenlabs.com/layovr/" target="_blank" rel="noopener">
+          <div class="product-head">
+            <span class="product-logo"><span class="dot"></span>LayOvr</span>
+            <span class="status-pill beta">Beta</span>
+          </div>
+          <span class="product-tagline">Jet lag, planned</span>
+          <p class="product-desc">A science-backed jet-lag companion for business travellers. Plans your sleep, light exposure and caffeine around your actual flights, so you land ready for the meeting you can't afford to miss.</p>
+          <span class="product-link">Open LayOvr</span>
+        </a>
+
+        <a class="product-card product-card--ovrhead" href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">
+          <div class="product-head">
+            <span class="product-logo"><span class="dot"></span>OvrHead</span>
+            <span class="status-pill live">Live</span>
+          </div>
+          <span class="product-tagline">Observatory over Aarhus</span>
+          <p class="product-desc">One antenna on my roof decodes every aircraft passing over Aarhus and turns weeks of the record into a live picture of European airspace: capacity, connectivity, trade. Signal from the sky.</p>
+          <span class="product-link">Open OvrHead</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         ══ 2. SANDBOX — interactive toys built in the browser            ══
+         ══════════════════════════════════════════════════════════════════ -->
+    <section class="section-block wow" aria-label="Interactive sandbox">
+      <span class="section-eyebrow">Built in the browser</span>
+      <h2 class="section-title">The sandbox</h2>
+      <p class="section-lede">Interactive things I built from scratch in vanilla JavaScript, mostly to understand an idea by making it move. Everything below runs locally in your browser, no servers, no accounts, no tracking.</p>
+
+      <!-- ── Grid Race (featured) — F1 cars that teach themselves to drive ── -->
+      <section class="evo-block wow" aria-label="Neural network learning to drive">
+        <span class="toy-eyebrow">Flagship toy</span>
+        <h3 class="evo-title">Grid Race: a field that teaches itself to drive</h3>
+        <p class="evo-intro">No pre-trained model; just a fleet of F1 cars, each steered by a tiny neural network that starts as <strong>random numbers</strong>. They crash instantly at first. Every generation, the survivors that got furthest are bred together with a dash of mutation, and the field slowly learns the circuit. A different livery for every car. <strong>Watch them get faster, generation by generation.</strong></p>
+        <div class="evo-wrap">
+          <div class="evo-stage">
+            <canvas id="evoCanvas" width="820" height="480"></canvas>
+            <div class="evo-overlay" id="evoOverlay">
+              <div class="evo-overlay-inner">
+                <p class="eo-title">Neuroevolution</p>
+                <p class="eo-sub">26 neural nets, zero training data. Hit play and watch them learn to drive the circuit from scratch.</p>
+                <button class="evo-btn" id="evoStart">Start evolution</button>
+              </div>
+            </div>
+          </div>
+          <div class="evo-side">
+            <div class="evo-stat"><span class="evo-stat-lbl">Generation</span><span class="evo-stat-val" id="evoGen">0</span></div>
+            <div class="evo-stat"><span class="evo-stat-lbl">Cars alive</span><span class="evo-stat-val" id="evoAlive">0 <small>/ 26</small></span></div>
+            <div class="evo-stat"><span class="evo-stat-lbl">Best this gen</span><span class="evo-stat-val" id="evoBest">0<small> %</small></span></div>
+            <div class="evo-stat"><span class="evo-stat-lbl">Champion laps</span><span class="evo-stat-val" id="evoChamp">0</span></div>
+            <div class="evo-stat">
+              <span class="evo-stat-lbl">Leader</span>
+              <span class="evo-leader"><span class="swatch" id="evoLeaderSwatch"></span><span id="evoLeaderName">—</span></span>
+            </div>
+            <div class="evo-speed" role="group" aria-label="Simulation speed">
+              <button data-spd="1" class="active">1×</button>
+              <button data-spd="4">4×</button>
+              <button data-spd="12">12×</button>
+            </div>
+            <div class="evo-controls">
+              <label class="evo-toggle"><span>Show sensors</span><input type="checkbox" id="evoSensors" checked></label>
+              <label class="evo-toggle"><span>Show racing lines</span><input type="checkbox" id="evoTrails" checked></label>
+              <button class="evo-btn ghost" id="evoReset">Reset evolution</button>
+            </div>
+          </div>
         </div>
-        <span class="gpt-badge">Personal</span>
-        <span class="gpt-arrow">→</span>
+      </section>
+
+      <!-- ── Bike Fit — browser-only biomechanics tool, lives on cevenlabs.com ── -->
+      <a class="toy-card wow" href="https://cevenlabs.com/pages/solutions/bike-fit/" target="_blank" rel="noopener" style="margin-top:3rem;">
+        <div class="toy-visual" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/>
+            <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            <path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+          </svg>
+        </div>
+        <div class="toy-body">
+          <p class="toy-eyebrow">Biomechanics · browser tool</p>
+          <p class="toy-title">Bike Fit</p>
+          <p class="toy-desc">Enter your height, inseam and flexibility, pick a real frame from ~70 models across every major brand, and watch an animated rider pedal on that geometry with knee, hip and torso angles measured live. Runs entirely in your browser.</p>
+        </div>
+        <span class="toy-arrow" aria-hidden="true">→</span>
       </a>
 
-      <a class="gpt-card wow d2" href="https://chat.openai.com/g/g-eBzwsaNY0-virtual-background-artist" target="_blank" rel="noopener">
-        <div class="gpt-icon">🎨</div>
-        <div class="gpt-body">
-          <h3>Virtual Background Artist</h3>
-          <p>Effortlessly generate a background image for your Teams or Zoom calls. Ask for something professional, something playful, or something seasonally appropriate, then swap it in before your next meeting. No design skills required.</p>
-        </div>
-        <span class="gpt-badge">Creative</span>
-        <span class="gpt-arrow">→</span>
-      </a>
-
-      <a class="gpt-card wow d3" href="https://chat.openai.com/g/g-LoEocHAHX-photography-review" target="_blank" rel="noopener">
-        <div class="gpt-icon">📷</div>
-        <div class="gpt-body">
-          <h3>Photography Review</h3>
-          <p>Upload a photo and get a thorough critique across both technical and artistic dimensions: exposure, contrast, colour temperature, sharpness, composition, rule of thirds, mood. Structured feedback, like having a photography mentor review your work on demand.</p>
-        </div>
-        <span class="gpt-badge">Visual</span>
-        <span class="gpt-arrow">→</span>
-      </a>
-
-      <a class="gpt-card wow d4" href="../../ai-projects/bike-fit.html">
-        <div class="gpt-icon">🚴</div>
-        <div class="gpt-body">
-          <h3>Bike Fit</h3>
-          <p>Enter your height, inseam and flexibility, pick a real frame from ~70 models across every major brand, and watch an animated rider pedal on that geometry with knee, hip and torso angles measured live. Runs entirely in your browser. No account, nothing leaves your machine.</p>
-        </div>
-        <span class="gpt-badge">Biomechanics</span>
-        <span class="gpt-arrow">→</span>
-      </a>
-
-    </div>
-
-    <!-- ══ TETRIS — just for fun ══ -->
-    <section class="tetris-block wow" aria-label="Tetris game">
-      <span class="section-eyebrow">Just for fun</span>
-      <h2 class="tetris-title">Tetris</h2>
-      <p class="tetris-intro">Every sandbox needs a toy. Built from scratch in vanilla JavaScript, no libraries. <strong>← →</strong> move, <strong>↑</strong> rotate, <strong>↓</strong> soft drop, <strong>space</strong> hard drop, <strong>P</strong> to pause.</p>
+      <!-- ── Tetris (compact / lower-key) ── -->
+      <section class="tetris-block wow" aria-label="Tetris game" style="margin-top:3rem;">
+        <span class="toy-eyebrow">Palate cleanser</span>
+        <h3 class="tetris-title">Tetris, built from scratch</h3>
+        <p class="tetris-intro">Because every sandbox should have one. Vanilla JS, no libraries. <strong>← →</strong> move, <strong>↑</strong> rotate, <strong>↓</strong> soft drop, <strong>space</strong> hard drop, <strong>P</strong> to pause.</p>
       <div class="tetris-wrap">
         <div class="tetris-stage">
           <canvas id="tetris" width="240" height="480"></canvas>
@@ -583,44 +773,52 @@
       </div>
     </section>
 
-    <!-- ══ NEUROEVOLUTION — F1 cars that teach themselves to drive ══ -->
-    <section class="evo-block wow" aria-label="Neural network learning to drive">
-      <span class="section-eyebrow">Watch AI learn</span>
-      <h2 class="evo-title">A grid that teaches itself to race</h2>
-      <p class="evo-intro">No pre-trained model; just a fleet of F1 cars, each steered by a tiny neural network that starts as <strong>random numbers</strong>. They crash instantly at first. Every generation, the survivors that got furthest are bred together with a dash of mutation, and the field slowly learns the circuit. Livery a different era of F1 each. <strong>Watch them get faster, generation by generation.</strong></p>
-      <div class="evo-wrap">
-        <div class="evo-stage">
-          <canvas id="evoCanvas" width="820" height="480"></canvas>
-          <div class="evo-overlay" id="evoOverlay">
-            <div class="evo-overlay-inner">
-              <p class="eo-title">Neuroevolution</p>
-              <p class="eo-sub">26 neural nets, zero training data. Hit play and watch them learn to drive the circuit from scratch.</p>
-              <button class="evo-btn" id="evoStart">Start evolution</button>
-            </div>
+    </section><!-- /section-block: sandbox -->
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         ══ 3. LEGACY — early GPT experiments, kept for the record        ══
+         ══════════════════════════════════════════════════════════════════ -->
+    <section class="section-block wow" aria-label="Early GPT experiments">
+      <span class="section-eyebrow">The archive</span>
+      <h2 class="section-title">Early experiments · custom GPTs</h2>
+      <p class="section-lede">A few GPTs I built back when "custom GPT" still meant something, around late 2024. The underlying models have evolved so quickly that these feel more like historical artefacts than daily tools, but the ideas held up and the links still work.</p>
+      <span class="legacy-note">Requires a ChatGPT account to run</span>
+
+      <div class="gpt-grid">
+
+        <a class="gpt-card wow d1" href="https://chat.openai.com/g/g-nLELAekQe-mini-world-of-me" target="_blank" rel="noopener">
+          <div class="gpt-icon">🌍</div>
+          <div class="gpt-body">
+            <h3>Mini World of Me</h3>
+            <p>How do you introduce yourself without a boring list of bullet points? This GPT generates a personalised 3D mini-world based on your geography and interests; turn it into a slide, open with it, and let it do the talking. Built around my own background as a starting point.</p>
           </div>
-        </div>
-        <div class="evo-side">
-          <div class="evo-stat"><span class="evo-stat-lbl">Generation</span><span class="evo-stat-val" id="evoGen">0</span></div>
-          <div class="evo-stat"><span class="evo-stat-lbl">Cars alive</span><span class="evo-stat-val" id="evoAlive">0 <small>/ 26</small></span></div>
-          <div class="evo-stat"><span class="evo-stat-lbl">Best this gen</span><span class="evo-stat-val" id="evoBest">0<small> %</small></span></div>
-          <div class="evo-stat"><span class="evo-stat-lbl">Champion laps</span><span class="evo-stat-val" id="evoChamp">0</span></div>
-          <div class="evo-stat">
-            <span class="evo-stat-lbl">Leader</span>
-            <span class="evo-leader"><span class="swatch" id="evoLeaderSwatch"></span><span id="evoLeaderName">—</span></span>
+          <span class="gpt-badge">Personal</span>
+          <span class="gpt-arrow">→</span>
+        </a>
+
+        <a class="gpt-card wow d2" href="https://chat.openai.com/g/g-eBzwsaNY0-virtual-background-artist" target="_blank" rel="noopener">
+          <div class="gpt-icon">🎨</div>
+          <div class="gpt-body">
+            <h3>Virtual Background Artist</h3>
+            <p>Effortlessly generate a background image for your Teams or Zoom calls. Ask for something professional, something playful, or something seasonally appropriate, then swap it in before your next meeting. No design skills required.</p>
           </div>
-          <div class="evo-speed" role="group" aria-label="Simulation speed">
-            <button data-spd="1" class="active">1×</button>
-            <button data-spd="4">4×</button>
-            <button data-spd="12">12×</button>
+          <span class="gpt-badge">Creative</span>
+          <span class="gpt-arrow">→</span>
+        </a>
+
+        <a class="gpt-card wow d3" href="https://chat.openai.com/g/g-LoEocHAHX-photography-review" target="_blank" rel="noopener">
+          <div class="gpt-icon">📷</div>
+          <div class="gpt-body">
+            <h3>Photography Review</h3>
+            <p>Upload a photo and get a thorough critique across both technical and artistic dimensions: exposure, contrast, colour temperature, sharpness, composition, rule of thirds, mood. Structured feedback, like having a photography mentor review your work on demand.</p>
           </div>
-          <div class="evo-controls">
-            <label class="evo-toggle"><span>Show sensors</span><input type="checkbox" id="evoSensors" checked></label>
-            <label class="evo-toggle"><span>Show racing lines</span><input type="checkbox" id="evoTrails" checked></label>
-            <button class="evo-btn ghost" id="evoReset">Reset evolution</button>
-          </div>
-        </div>
+          <span class="gpt-badge">Visual</span>
+          <span class="gpt-arrow">→</span>
+        </a>
+
       </div>
     </section>
+
   </div>
 </main>
 
