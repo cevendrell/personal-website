@@ -550,31 +550,15 @@
       border-top: 1px solid rgba(255,255,255,0.05);
     }
     .testimonial_inner { max-width: 1040px; margin: 0 auto; padding: 0 40px; }
-    .podcast-head { text-align: center; margin-bottom: 2.25rem; }
-    .podcast-head .eyebrow {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--c-photo); display: block; margin-bottom: 0.6rem;
-    }
-    .podcast-head h3 {
-      font-size: clamp(1.6rem, 2.8vw, 2.1rem); font-weight: 700;
-      letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.5rem;
-    }
-    .podcast-head p { color: rgba(255,255,255,0.55); font-size: 0.95rem; max-width: 54ch; margin: 0 auto; line-height: 1.6; }
-    .podcast-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .podcast-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; align-items: stretch; }
     @media (max-width: 820px) { .podcast-grid { grid-template-columns: 1fr; } }
-    .podcast-card { display: flex; flex-direction: column; gap: 0.75rem; }
-    .podcast-card .ep-meta {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-    }
+    .podcast-card { display: flex; flex-direction: column; gap: 0.75rem; height: 100%; }
     .podcast-card .ep-title { font-size: 0.98rem; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
     .podcast-card .ep-note { font-size: 0.86rem; color: rgba(255,255,255,0.55); line-height: 1.55; }
     .podcast-embed {
       border-radius: 12px; overflow: hidden;
       box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-      margin-top: 0.4rem;
+      margin-top: auto;   /* pushes both iframes to the bottom so cards align */
     }
     .podcast-embed iframe {
       display: block; border: none;
@@ -1089,20 +1073,14 @@
      `.wow` to the *outer* wrapper so the iframe itself is always visible. -->
 <div class="testimonial_area wow">
   <div class="testimonial_inner">
-    <div class="podcast-head">
-      <span class="eyebrow">On the record</span>
-      <h3>A couple of conversations</h3>
-      <p>Two podcast chats where I talk about my career path and the work of taking enterprise AI from an idea on a slide to something people actually use.</p>
-    </div>
     <div class="podcast-grid">
       <div class="podcast-card">
-        <span class="ep-meta">Career Coffee</span>
         <span class="ep-title">Grundfos</span>
         <p class="ep-note">A chat about my path into Grundfos, the Global Graduate rotation program, and how a mechanical engineering degree turned into a career in XR and AI.</p>
         <div class="podcast-embed">
           <iframe
             style="border-radius:12px"
-            src="https://open.spotify.com/embed/episode/32KfFpTYIb7LoLDQVJsyww?utm_source=generator&theme=0"
+            src="https://open.spotify.com/embed/episode/32KfFpTYIb7LoLDQVJsyww?utm_source=generator"
             width="100%" height="152"
             frameborder="0"
             allowfullscreen=""
@@ -1114,7 +1092,6 @@
         </div>
       </div>
       <div class="podcast-card">
-        <span class="ep-meta">Evo DK · #464</span>
         <span class="ep-title">Enterprise AI Scaling: from Idea to Impact</span>
         <p class="ep-note">On what actually makes AI projects stick inside a large organisation; the messy middle between a promising prototype and real business value.</p>
         <div class="podcast-embed">
