@@ -31,10 +31,10 @@
       --line:        rgba(255,255,255,0.08);
       --line-strong: rgba(255,255,255,0.14);
       --radius:      16px;
-      /* Page accent — dusty blue (matches Ceven Labs) */
-      --page-accent:  #6a8db5;
-      --page-accent2: #8aa8c9;
-      --page-glow:    rgba(106,141,181,0.4);
+      /* Page accent — cevenlabs royal blue */
+      --page-accent:  #4d92ff;
+      --page-accent2: #a9c8ff;
+      --page-glow:    rgba(77,146,255,0.28);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -46,10 +46,10 @@
 
     /* ── AMBIENT ── */
     .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.065; animation: drift 20s ease-in-out infinite; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.035; animation: drift 20s ease-in-out infinite; }
     .orb-1 { width: 600px; height: 600px; background: var(--page-accent); top: -15%; left: -10%; animation-duration: 23s; }
     .orb-2 { width: 450px; height: 450px; background: var(--page-accent2); bottom: 10%; right: -10%; animation-duration: 28s; animation-delay: -6s; }
-    .orb-3 { width: 350px; height: 350px; background: var(--page-accent); top: 45%; left: 45%; animation-duration: 31s; animation-delay: -12s; opacity: 0.04; }
+    .orb-3 { width: 350px; height: 350px; background: var(--page-accent); top: 45%; left: 45%; animation-duration: 31s; animation-delay: -12s; opacity: 0.02; }
     @keyframes drift {
       0%, 100% { transform: translate(0,0) scale(1); }
       33%  { transform: translate(40px,-30px) scale(1.05); }
@@ -73,7 +73,7 @@
 
     .preloader { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s; }
     .preloader.done { opacity: 0; visibility: hidden; }
-    .spinner { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(106,141,181,0.15); border-top-color: var(--page-accent); animation: spin 0.9s linear infinite; }
+    .spinner { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(77,146,255,0.15); border-top-color: var(--page-accent); animation: spin 0.9s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── NAV ── */
@@ -135,7 +135,7 @@
     }
     #hero::before {
       content: ''; position: absolute; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(106,141,181,0.1) 0%, transparent 65%);
+      background: radial-gradient(ellipse at 70% 50%, rgba(77,146,255,0.055) 0%, transparent 65%);
     }
     .hero-inner {
       position: relative; z-index: 2;
@@ -177,7 +177,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; letter-spacing: 0.1em; color: var(--mute);
       padding: 0.65rem 1rem; border-radius: 999px;
-      background: rgba(106,141,181,0.08); border: 1px solid rgba(106,141,181,0.2);
+      background: rgba(77,146,255,0.05); border: 1px solid rgba(77,146,255,0.14);
       display: inline-block;
       opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
     }
@@ -224,7 +224,7 @@
     @media (max-width: 760px) { .product-grid { grid-template-columns: 1fr; } }
     .product-card {
       --card-accent: var(--page-accent);
-      --card-accent-soft: rgba(106,141,181,0.10);
+      --card-accent-soft: rgba(77,146,255,0.065);
       --card-glow: var(--page-glow);
       position: relative; display: flex; flex-direction: column; gap: 0.9rem;
       padding: 1.75rem; min-height: 240px;
@@ -263,10 +263,10 @@
       border: 1px solid rgba(255,255,255,0.12); color: var(--dim);
     }
     .status-pill.live {
-      background: rgba(106,141,181,0.12); border-color: rgba(106,141,181,0.4); color: var(--page-accent2);
+      background: rgba(77,146,255,0.09); border-color: rgba(77,146,255,0.3); color: var(--page-accent2);
     }
     .status-pill.beta {
-      background: rgba(200,134,42,0.14); border-color: rgba(200,134,42,0.42); color: #e4b35a;
+      background: rgba(200,134,42,0.14); border-color: rgba(200,134,42,0.42); color: #ffbc7a;
     }
     .product-tagline {
       position: relative; font-size: 0.72rem; font-weight: 600;
@@ -288,14 +288,14 @@
     .product-card:hover .product-link { color: var(--card-accent); }
     .product-card:hover .product-link::after { transform: translateX(4px); }
     .product-card--layovr {
-      --card-accent: #e4b35a;
-      --card-accent-soft: rgba(228,179,90,0.12);
-      --card-glow: rgba(228,179,90,0.3);
+      --card-accent: #ffa040;
+      --card-accent-soft: rgba(255,160,64,0.08);
+      --card-glow: rgba(255,160,64,0.28);
     }
     .product-card--ovrhead {
-      --card-accent: #6a8db5;
-      --card-accent-soft: rgba(106,141,181,0.14);
-      --card-glow: rgba(106,141,181,0.32);
+      --card-accent: #4d92ff;
+      --card-accent-soft: rgba(77,146,255,0.08);
+      --card-glow: rgba(77,146,255,0.32);
     }
 
     /* ── Sandbox: Bike Fit card (link out, pairs with inline games) ── */
@@ -308,14 +308,14 @@
       transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.3s;
     }
     .toy-card:hover {
-      background: rgba(106,141,181,0.05); transform: translateY(-2px);
-      border-color: rgba(106,141,181,0.4);
-      box-shadow: 0 16px 48px -20px var(--page-glow);
+      background: rgba(77,146,255,0.05); transform: translateY(-2px);
+      border-color: rgba(77,146,255,0.3);
+      box-shadow: 0 16px 48px -24px var(--page-glow);
     }
     .toy-visual {
       flex-shrink: 0; width: 72px; height: 72px; border-radius: 14px;
-      background: linear-gradient(135deg, rgba(106,141,181,0.18), rgba(138,168,201,0.06));
-      border: 1px solid rgba(106,141,181,0.28);
+      background: linear-gradient(135deg, rgba(77,146,255,0.11), rgba(169,200,255,0.04));
+      border: 1px solid rgba(77,146,255,0.18);
       display: flex; align-items: center; justify-content: center;
       font-size: 2rem; color: var(--page-accent2);
     }
@@ -341,19 +341,19 @@
     .bikefit-block {
       display: grid; grid-template-columns: 1.2fr 1fr; gap: 0;
       margin-top: 3rem; margin-bottom: 2.5rem;
-      background: linear-gradient(140deg, #080f1e 0%, #0a1120 55%, #0d1626 100%);
-      border: 1px solid rgba(106,141,181,0.18); border-radius: 20px;
+      background: linear-gradient(140deg, #04070e 0%, #080d1a 55%, #0d1626 100%);
+      border: 1px solid rgba(77,146,255,0.12); border-radius: 20px;
       overflow: hidden; text-decoration: none; color: inherit;
       transition: border-color 0.3s, box-shadow 0.35s, transform 0.3s;
     }
     .bikefit-block:hover {
-      border-color: rgba(106,141,181,0.45); transform: translateY(-3px);
-      box-shadow: 0 28px 70px -24px rgba(106,141,181,0.35);
+      border-color: rgba(77,146,255,0.32); transform: translateY(-3px);
+      box-shadow: 0 28px 70px -28px rgba(77,146,255,0.24);
     }
     .bikefit-visual {
       position: relative; min-height: 320px; overflow: hidden;
       background:
-        radial-gradient(ellipse at 70% 30%, rgba(106,141,181,0.14) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 30%, rgba(77,146,255,0.08) 0%, transparent 60%),
         linear-gradient(135deg, #04070e 0%, #080d1a 100%);
     }
     .bikefit-grid {
@@ -395,19 +395,19 @@
     .bf-dot {
       flex-shrink: 0; width: 5px; height: 5px; border-radius: 50%;
       background: var(--page-accent); transform: translateY(-2px);
-      box-shadow: 0 0 0 3px rgba(106,141,181,0.14);
+      box-shadow: 0 0 0 3px rgba(77,146,255,0.14);
     }
     .bikefit-cta {
       align-self: flex-start; margin-top: 0.6rem;
       display: inline-flex; align-items: center; gap: 0.45rem;
       padding: 0.75rem 1.3rem; border-radius: 999px;
-      background: var(--page-accent); color: #fff;
+      background: rgba(77,146,255,0.9); color: #fff;
       font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em;
       transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
     }
     .bikefit-block:hover .bikefit-cta {
       background: var(--page-accent2); transform: translateX(2px);
-      box-shadow: 0 12px 28px -10px rgba(106,141,181,0.5);
+      box-shadow: 0 12px 28px -10px rgba(77,146,255,0.5);
     }
     @media (max-width: 820px) {
       .bikefit-block { grid-template-columns: 1fr; }
@@ -443,15 +443,15 @@
     }
     .gpt-card:hover .gpt-arrow { opacity: 1; transform: translateX(3px); }
     .gpt-card:hover {
-      background: rgba(106,141,181,0.05);
-      border-color: rgba(106,141,181,0.35);
+      background: rgba(77,146,255,0.05);
+      border-color: rgba(77,146,255,0.35);
       box-shadow: 0 16px 48px -16px var(--page-glow);
       transform: translateY(-2px);
     }
     .gpt-icon {
       width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
-      background: linear-gradient(135deg, rgba(106,141,181,0.18), rgba(138,168,201,0.08));
-      border: 1px solid rgba(106,141,181,0.25);
+      background: linear-gradient(135deg, rgba(77,146,255,0.18), rgba(169,200,255,0.08));
+      border: 1px solid rgba(77,146,255,0.25);
       display: flex; align-items: center; justify-content: center;
       font-size: 1.5rem;
     }
@@ -465,8 +465,8 @@
       position: absolute; top: 1rem; right: 1rem;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--page-accent2); background: rgba(138,168,201,0.08);
-      border: 1px solid rgba(138,168,201,0.22); border-radius: 999px;
+      color: var(--page-accent2); background: rgba(169,200,255,0.08);
+      border: 1px solid rgba(169,200,255,0.22); border-radius: 999px;
       padding: 0.25rem 0.55rem;
     }
 
@@ -728,7 +728,7 @@
     <section class="section-block wow" aria-label="Shipped products">
       <span class="section-eyebrow">Shipped</span>
       <h2 class="section-title">Products that actually left the garage</h2>
-      <p class="section-lede">Two real solutions I've built and shipped under <a href="https://cevenlabs.com" target="_blank" rel="noopener" style="color:var(--page-accent2);text-decoration:none;border-bottom:1px solid rgba(138,168,201,0.4);">Ceven Labs</a>. One for people who fly, one for people the flights fly over.</p>
+      <p class="section-lede">Two real solutions I've built and shipped under <a href="https://cevenlabs.com" target="_blank" rel="noopener" style="color:var(--page-accent2);text-decoration:none;border-bottom:1px solid rgba(169,200,255,0.4);">Ceven Labs</a>. One for people who fly, one for people the flights fly over.</p>
 
       <div class="product-grid">
 
@@ -808,42 +808,55 @@
           <div class="bikefit-grid"></div>
           <img class="bikefit-hero" src="../../media/bike-fit/hero.png" alt=""
                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-          <svg class="bikefit-fallback" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg" style="display:none">
-            <!-- blueprint fallback cyclist, rendered procedurally -->
-            <defs><filter id="bfg"><feGaussianBlur stdDeviation="0.6"/></filter></defs>
-            <g stroke="rgba(170,195,230,0.25)" stroke-width="0.6" fill="none">
-              <path d="M0 80 H460 M0 160 H460 M0 240 H460 M80 0 V320 M200 0 V320 M320 0 V320 M400 0 V320"/>
+          <svg class="bikefit-fallback" viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="display:none">
+            <!-- Abstract blueprint: bike-geometry triangle + measurement callouts, no stick figure -->
+            <!-- Faint grid wash -->
+            <g stroke="rgba(169,200,255,0.08)" stroke-width="0.5" fill="none">
+              <path d="M0 60 H480 M0 120 H480 M0 180 H480 M0 240 H480
+                       M80 0 V320 M160 0 V320 M240 0 V320 M320 0 V320 M400 0 V320"/>
             </g>
-            <circle cx="130" cy="230" r="55" fill="none" stroke="#0d1626" stroke-width="7"/>
-            <circle cx="130" cy="230" r="54" fill="none" stroke="#1a3450" stroke-width="1"/>
-            <circle cx="340" cy="230" r="55" fill="none" stroke="#0d1626" stroke-width="7"/>
-            <circle cx="340" cy="230" r="54" fill="none" stroke="#1a3450" stroke-width="1"/>
-            <g stroke="#2d6cd4" stroke-width="6" stroke-linecap="round" fill="none">
-              <path d="M130 230 L220 160 L260 160 L340 230"/>
-              <path d="M260 160 L240 230 M240 230 L130 230"/>
-              <path d="M260 160 L270 110"/>
+            <!-- Wheel circles -->
+            <circle cx="120" cy="235" r="52" fill="none" stroke="rgba(169,200,255,0.22)" stroke-width="1.2"/>
+            <circle cx="120" cy="235" r="52" fill="none" stroke="#4d92ff" stroke-width="1" stroke-dasharray="2 4" opacity="0.7"/>
+            <circle cx="360" cy="235" r="52" fill="none" stroke="rgba(169,200,255,0.22)" stroke-width="1.2"/>
+            <circle cx="360" cy="235" r="52" fill="none" stroke="#4d92ff" stroke-width="1" stroke-dasharray="2 4" opacity="0.7"/>
+            <circle cx="120" cy="235" r="2" fill="#4d92ff"/>
+            <circle cx="360" cy="235" r="2" fill="#4d92ff"/>
+            <!-- Frame triangle (stylized road geometry) -->
+            <g stroke="#4d92ff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M120 235 L240 115 L280 115 L360 235 Z"/>
+              <path d="M240 115 L280 235"/>
+              <path d="M280 115 L310 85"/>
+              <path d="M280 115 L288 155"/>
             </g>
-            <g stroke="#d8964c" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.95">
-              <path d="M240 230 L205 185 L235 150"/>
-              <path d="M235 150 L250 95"/>
-              <path d="M250 95 L320 110 L340 155"/>
+            <!-- Saddle + handlebars -->
+            <g stroke="#ffffff" stroke-width="2" fill="#ffffff" fill-opacity="0.9" stroke-linecap="round">
+              <path d="M232 112 L252 112" opacity="0.9"/>
+              <path d="M304 82 Q314 76 318 86" fill="none" opacity="0.9"/>
             </g>
-            <circle cx="250" cy="95" r="4" fill="#d8964c"/>
-            <circle cx="235" cy="150" r="4" fill="#d8964c"/>
-            <circle cx="205" cy="185" r="4" fill="#d8964c"/>
-            <circle cx="340" cy="155" r="5" fill="#d8964c"/>
-            <circle cx="250" cy="60" r="18" fill="none" stroke="#d8964c" stroke-width="2.5"/>
-            <ellipse cx="240" cy="230" rx="28" ry="4" fill="none" stroke="#e8e8ea" stroke-width="1.5"/>
-            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#aac3e6" letter-spacing="0.1em">
-              <text x="150" y="195" transform="rotate(-62 150 195)">SADDLE 742</text>
-              <text x="350" y="170" transform="rotate(-90 350 170)">STACK 560</text>
-              <text x="212" y="256">REACH 391</text>
-              <text x="400" y="155" transform="rotate(-90 400 155)">DROP 152</text>
-              <text x="252" y="138" fill="#d8964c">135°</text>
-              <text x="214" y="178" fill="#d8964c">33°</text>
+            <!-- Measurement callouts -->
+            <g stroke="rgba(169,200,255,0.55)" stroke-width="0.8" stroke-dasharray="3 3" fill="none">
+              <path d="M240 115 L240 50 M240 50 L440 50 M440 50 L440 115"/>
+              <path d="M280 235 L420 235 M240 115 L240 235"/>
+              <path d="M310 85 L450 85"/>
             </g>
-            <g stroke="#aac3e6" stroke-width="0.8" stroke-dasharray="3 3" fill="none" opacity="0.6">
-              <path d="M240 230 L240 170 M212 256 L340 256 M400 155 L400 230 M380 155 L420 155"/>
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#a9c8ff" letter-spacing="0.14em">
+              <text x="256" y="56">STACK 560</text>
+              <text x="298" y="255">REACH 391</text>
+              <text x="192" y="140" transform="rotate(-54 192 140)">SADDLE 742</text>
+              <text x="376" y="79" fill="#ffa040">DROP 152</text>
+            </g>
+            <!-- Angle markers -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="#ffa040">
+              <path d="M240 155 A40 40 0 0 1 268 136" stroke="#ffa040" stroke-width="1.2" fill="none" opacity="0.8"/>
+              <text x="256" y="150">135°</text>
+              <path d="M275 125 A28 28 0 0 1 300 110" stroke="#ffa040" stroke-width="1.2" fill="none" opacity="0.8"/>
+              <text x="286" y="105">33°</text>
+            </g>
+            <!-- Corner tick marks (very blueprint-y) -->
+            <g stroke="rgba(169,200,255,0.4)" stroke-width="1" fill="none">
+              <path d="M12 12 L28 12 M12 12 L12 28  M468 12 L452 12 M468 12 L468 28
+                       M12 308 L28 308 M12 308 L12 292  M468 308 L452 308 M468 308 L468 292"/>
             </g>
           </svg>
         </div>
@@ -1395,15 +1408,15 @@
     if(!car.alive){ ctx.globalAlpha=0.16; }
     if(isLeader && car.alive){
       const g=ctx.createRadialGradient(0,0,2,0,0,30);
-      g.addColorStop(0,'rgba(106,141,181,0.5)'); g.addColorStop(1,'rgba(106,141,181,0)');
+      g.addColorStop(0,'rgba(77,146,255,0.5)'); g.addColorStop(1,'rgba(77,146,255,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,30,0,7); ctx.fill();
     }
     // sensors (leader only)
     if(showSensors && isLeader && car.alive){
-      ctx.strokeStyle='rgba(106,141,181,0.35)'; ctx.lineWidth=1;
+      ctx.strokeStyle='rgba(77,146,255,0.35)'; ctx.lineWidth=1;
       for(let s=0;s<5;s++){ const d=car.sensors[s]*RANGE, ang=SENSOR_ANGLES[s];
         ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ang)*d,Math.sin(ang)*d); ctx.stroke();
-        ctx.fillStyle='rgba(106,141,181,0.6)'; ctx.beginPath(); ctx.arc(Math.cos(ang)*d,Math.sin(ang)*d,1.8,0,7); ctx.fill();
+        ctx.fillStyle='rgba(77,146,255,0.6)'; ctx.beginPath(); ctx.arc(Math.cos(ang)*d,Math.sin(ang)*d,1.8,0,7); ctx.fill();
       }
     }
     // ── F1 car (forward = +x) ──
@@ -1433,7 +1446,7 @@
     ctx.restore();
     // leader tag
     if(isLeader && car.alive){
-      ctx.fillStyle='#6a8db5'; ctx.font='700 10px JetBrains Mono, monospace'; ctx.textAlign='center';
+      ctx.fillStyle='#4d92ff'; ctx.font='700 10px JetBrains Mono, monospace'; ctx.textAlign='center';
       ctx.fillText('P1', car.x, car.y-24);
     }
   }
