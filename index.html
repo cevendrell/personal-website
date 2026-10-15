@@ -3,17 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Personal website of Carlos Ebrahim Vendrell; XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
+  <meta name="description" content="Personal website of Carlos Ebrahim Vendrell — XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://cevendrell.com/">
+  <meta property="og:url" content="https://cevendrell.github.io/personal-website/">
   <meta property="og:title" content="Carlos Ebrahim Vendrell">
-  <meta property="og:description" content="Personal website of Carlos Ebrahim Vendrell; XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
+  <meta property="og:description" content="Personal website of Carlos Ebrahim Vendrell — XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
   <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Carlos Ebrahim Vendrell">
-  <meta name="twitter:description" content="Personal website of Carlos Ebrahim Vendrell; XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
+  <meta name="twitter:description" content="Personal website of Carlos Ebrahim Vendrell — XR and AI professional based in Aarhus, Denmark. Travels, photography, and tech projects.">
   <title>Carlos Ebrahim Vendrell</title>
-  <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -131,24 +130,10 @@
       .hamburger { display: flex; }
     }
     body.nav-open { overflow: hidden; }
-    body.nav-open nav#navbar {
-      background: #08090e; border-bottom-color: var(--line);
-      backdrop-filter: none; -webkit-backdrop-filter: none;
-      transition: none;
-    }
-    body.nav-open .nav-links {
-      display: flex !important; flex-direction: column;
-      position: fixed; inset: 0; z-index: 999;
-      background: #08090e;
-      padding: 5.5rem 2rem 2rem; gap: 0;
-      align-items: flex-start; overflow-y: auto;
-    }
-    body.nav-open .nav-links > li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.06); }
-    body.nav-open .nav-links > li:last-child { border-bottom: none; }
-    body.nav-open .nav-links > li > a { font-size: 1.4rem; font-weight: 600; color: var(--text); padding: 1rem 0; display: block; width: 100%; }
-    body.nav-open .dropdown { position: static; opacity: 1 !important; visibility: visible !important; transform: none !important; background: transparent; border: none; box-shadow: none; padding: 0 0 0.75rem 1rem; min-width: 0; }
-    body.nav-open .dropdown a { font-size: 1rem; padding: 0.5rem 0; color: var(--dim); display: block; }
-    body.nav-open .hamburger { position: relative; z-index: 1001; }
+    body.nav-open .nav-links { display: flex !important; flex-direction: column; position: fixed; inset: 0; z-index: 999; background: var(--bg); padding: 5.5rem 2rem 2rem; gap: 0; align-items: flex-start; }
+    body.nav-open .nav-links > li > a { font-size: 1.5rem; font-weight: 600; color: var(--text); padding: 0.75rem 0; }
+    body.nav-open .dropdown { position: static; opacity: 1 !important; visibility: visible !important; transform: none !important; background: transparent; border: none; box-shadow: none; padding: 0.25rem 0 0.75rem 1rem; }
+    body.nav-open .dropdown a { font-size: 1rem; padding: 0.4rem 0.5rem; }
     body.nav-open .hamburger span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
     body.nav-open .hamburger span:nth-child(2) { opacity: 0; }
     body.nav-open .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
@@ -246,7 +231,7 @@
       -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
     .home-tagline {
-      font-size: clamp(1.1rem, 1.8vw, 1.45rem); font-weight: 400; line-height: 1.35;
+      font-size: clamp(0.82rem, 1.3vw, 1rem); font-weight: 400; line-height: 1.35;
       color: var(--accent); margin-bottom: 1.75rem; white-space: nowrap;
       opacity: 0; animation: fadeUp 0.8s 0.55s forwards;
     }
@@ -330,7 +315,7 @@
     .passion-tile:hover .passion-tile-overlay { opacity: 1; }
     .passion-tile-overlay .pt-label { display: none; }
     .passion-tile-overlay .pt-title {
-      font-size: clamp(1rem, 3.5vw, 1.4rem); font-weight: 700; color: #fff; letter-spacing: -0.02em; margin: 0;
+      font-size: 1.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; margin: 0;
     }
 
     /* ── CAREER (Melan format) — dark blue ── */
@@ -347,6 +332,7 @@
     .career-grid-melan {
       display: grid;
       grid-template-columns: 1.1fr 1fr;
+      grid-template-rows: auto 1fr;
       grid-template-areas:
         "head    ."
         "stack   image";
@@ -355,7 +341,7 @@
     }
     .career-head      { grid-area: head; }
     .career-tab-stack { grid-area: stack; }
-    .career-img-col   { grid-area: image; align-self: start; margin-top: -3.5rem; }
+    .career-img-col   { grid-area: image; align-self: start; }
     .career-head h2 { margin-bottom: 2.25rem; }
     .career-head h2 {
       font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 800;
@@ -413,15 +399,13 @@
     }
     .career-tab-panel {
       grid-area: stack;
-      opacity: 0;
+      opacity: 0; visibility: hidden;
       pointer-events: none;
-      position: absolute;
       transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
     }
     .career-tab-panel.active {
-      opacity: 1;
+      opacity: 1; visibility: visible;
       pointer-events: auto;
-      position: relative;
     }
     .career-timeline {
       list-style: none; padding: 0.4rem 0 0.5rem 1.4rem;
@@ -473,9 +457,9 @@
     .career-img-header {
       display: flex; align-items: center; justify-content: space-between;
       gap: 1rem; flex-wrap: wrap;
-      margin-top: 1.25rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--line);
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--line);
     }
     .career-company-logo {
       height: 56px; width: auto; max-width: 220px;
@@ -565,10 +549,32 @@
       position: relative; z-index: 2;
       border-top: 1px solid rgba(255,255,255,0.05);
     }
-    .testimonial_inner { max-width: 760px; margin: 0 auto; padding: 0 40px; }
+    .testimonial_inner { max-width: 1040px; margin: 0 auto; padding: 0 40px; }
+    .podcast-head { text-align: center; margin-bottom: 2.25rem; }
+    .podcast-head .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c-photo); display: block; margin-bottom: 0.6rem;
+    }
+    .podcast-head h3 {
+      font-size: clamp(1.6rem, 2.8vw, 2.1rem); font-weight: 700;
+      letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.5rem;
+    }
+    .podcast-head p { color: rgba(255,255,255,0.55); font-size: 0.95rem; max-width: 54ch; margin: 0 auto; line-height: 1.6; }
+    .podcast-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    @media (max-width: 820px) { .podcast-grid { grid-template-columns: 1fr; } }
+    .podcast-card { display: flex; flex-direction: column; gap: 0.75rem; }
+    .podcast-card .ep-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .podcast-card .ep-title { font-size: 0.98rem; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+    .podcast-card .ep-note { font-size: 0.86rem; color: rgba(255,255,255,0.55); line-height: 1.55; }
     .podcast-embed {
       border-radius: 12px; overflow: hidden;
       box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      margin-top: 0.4rem;
     }
     .podcast-embed iframe {
       display: block; border: none;
@@ -587,50 +593,138 @@
     .hobbies-inner { max-width: 1140px; margin: 0 auto; padding: 0 30px; }
 
     /* ══════════════════════════════════════════════════════════════════
-       ══ INTERESTS MARQUEE — two opposing pill streams                ══
-       ══   Clean, modern, no 3D. Edges fade via CSS mask.             ══
-       ══   Hovering pauses motion; hovering a single chip lights it.  ══
+       ══ HOBBY REEL — vertical 3D picker cylinder                     ══
+       ══   Hobbies are cards arranged around the surface of an        ══
+       ══   invisible cylinder. Drag / scroll to rotate it; the card   ══
+       ══   facing front is "in focus" and gets the colour glow.       ══
+       ══   Inspired by Vegas slot reels, iOS pickers, vinyl B-sides.  ══
        ══════════════════════════════════════════════════════════════════ */
-    /* ── "Other stuff" — static two-row pill grid ── */
-    .stuff-wrap {
-      margin-top: 2.75rem;
-      display: flex; flex-direction: column; gap: 0.85rem;
+    .reel-stage {
+      position: relative; height: 480px; margin-top: 2.5rem;
+      perspective: 1400px; perspective-origin: 50% 50%;
+      cursor: grab; user-select: none; touch-action: none;
+      -webkit-user-select: none;
+      overflow: hidden;
     }
-    .stuff-row {
-      display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;
+    .reel-stage:active { cursor: grabbing; }
+
+    /* Soft top/bottom vignette so cards rotating away fade out instead of clipping */
+    .reel-stage::before, .reel-stage::after {
+      content: ''; position: absolute; left: 0; right: 0; height: 32%;
+      pointer-events: none; z-index: 4;
     }
-    .stuff-chip {
-      display: inline-flex; align-items: center; gap: 0.65rem;
-      padding: 0.8rem 1.25rem;
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 999px;
-      font-size: 0.92rem; font-weight: 500;
-      color: var(--dim);
-      white-space: nowrap;
-      transition: background 0.3s ease, border-color 0.3s ease,
-                  color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    .reel-stage::before {
+      top: 0;
+      background: linear-gradient(to bottom, var(--bg) 0%, rgba(8,9,14,0.85) 30%, transparent 100%);
     }
-    .stuff-chip .chip-icon {
-      font-size: 1.1rem;
-      filter: grayscale(0.35);
-      transition: filter 0.3s ease, transform 0.3s ease;
+    .reel-stage::after {
+      bottom: 0;
+      background: linear-gradient(to top, var(--navy) 0%, rgba(5,6,15,0.85) 30%, transparent 100%);
     }
-    .stuff-chip:hover {
-      background: rgba(255,255,255,0.05);
-      border-color: var(--chip-color, var(--accent));
-      color: #fff;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px -10px var(--chip-glow, rgba(232,220,196,0.45));
+
+    /* The two horizontal rails that bracket the focused card */
+    .reel-rails {
+      position: absolute; top: 50%; left: 50%;
+      width: min(360px, 86%); height: 84px;
+      transform: translate(-50%, -50%);
+      border-top:    1px solid rgba(232,220,196,0.18);
+      border-bottom: 1px solid rgba(232,220,196,0.18);
+      pointer-events: none; z-index: 3;
     }
-    .stuff-chip:hover .chip-icon {
-      filter: grayscale(0) drop-shadow(0 0 6px var(--chip-color, var(--accent)));
-      transform: scale(1.15);
+    .reel-rails::before, .reel-rails::after {
+      content: ''; position: absolute; width: 14px; height: 14px;
+      border: 1px solid var(--accent); border-radius: 50%;
+      background: rgba(232,220,196,0.1);
+      box-shadow: 0 0 14px rgba(232,220,196,0.3);
     }
-    .stuff-chip[data-color="travel"] { --chip-color: var(--c-travel); --chip-glow: rgba(106,141,181,0.55); }
-    .stuff-chip[data-color="photo"]  { --chip-color: var(--c-photo);  --chip-glow: rgba(200,120,74,0.55); }
-    .stuff-chip[data-color="tech"]   { --chip-color: var(--c-tech);   --chip-glow: rgba(106,141,181,0.55); }
-    .stuff-chip[data-color="accent"] { --chip-color: var(--accent);   --chip-glow: rgba(232,220,196,0.5); }
+    .reel-rails::before { left: -7px; top: 50%; transform: translateY(-50%); }
+    .reel-rails::after  { right: -7px; top: 50%; transform: translateY(-50%); }
+
+    .reel-scene {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      transform-style: preserve-3d;
+    }
+
+    .reel-cylinder {
+      position: relative;
+      width: min(340px, 80vw); height: 72px;
+      transform-style: preserve-3d;
+      transform: rotateX(0deg);
+      will-change: transform;
+    }
+
+    .reel-card {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.9rem; padding: 0 1.5rem;
+      border-radius: 16px;
+      background:
+        radial-gradient(ellipse at 36% 22%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 50%, transparent 70%),
+        linear-gradient(135deg, rgba(16,18,36,0.85), rgba(5,6,18,0.94));
+      backdrop-filter: blur(8px) saturate(160%);
+      -webkit-backdrop-filter: blur(8px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top: 1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 8px 24px rgba(0,0,0,0.5),
+        0 1px 0 rgba(255,255,255,0.06) inset;
+      backface-visibility: hidden;
+      transition: background 0.35s, border-color 0.35s;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .reel-card .card-icon {
+      font-size: 1.65rem;
+      filter: grayscale(0.3) drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+      transition: filter 0.3s, transform 0.3s;
+    }
+    .reel-card .card-label {
+      font-size: 1.05rem; font-weight: 500; color: var(--dim);
+      letter-spacing: 0.01em; white-space: nowrap;
+      transition: color 0.3s, letter-spacing 0.3s;
+    }
+
+    /* Focused card — the one currently sitting between the rails */
+    .reel-card.focused {
+      background:
+        radial-gradient(ellipse at 36% 22%, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 50%, transparent 70%),
+        linear-gradient(135deg, rgba(22,26,52,0.88), rgba(8,10,28,0.96));
+      border-color: var(--card-color, var(--accent));
+      border-top-color: rgba(255,255,255,0.28);
+      box-shadow:
+        0 0 0 1.5px var(--card-color, var(--accent)) inset,
+        0 18px 50px -10px var(--card-glow, rgba(232,220,196,0.5)),
+        0 8px 24px rgba(0,0,0,0.55),
+        0 1px 0 rgba(255,255,255,0.08) inset;
+    }
+    .reel-card.focused .card-icon {
+      filter: grayscale(0) drop-shadow(0 0 8px var(--card-color, var(--accent)));
+      transform: scale(1.12);
+    }
+    .reel-card.focused .card-label {
+      color: #fff; font-weight: 600; letter-spacing: 0.04em;
+    }
+
+    .reel-card[data-color="travel"] { --card-color: var(--c-travel); --card-glow: rgba(106,141,181,0.55); }
+    .reel-card[data-color="photo"]  { --card-color: var(--c-photo);  --card-glow: rgba(200,120,74,0.55); }
+    .reel-card[data-color="tech"]   { --card-color: var(--c-tech);   --card-glow: rgba(106,141,181,0.55); }
+    .reel-card[data-color="accent"] { --card-color: var(--accent);   --card-glow: rgba(232,220,196,0.5); }
+
+    /* Drag hint */
+    .reel-hint {
+      position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%);
+      color: var(--mute); font-size: 0.6rem; letter-spacing: 0.18em;
+      font-family: 'JetBrains Mono', monospace; text-transform: uppercase;
+      opacity: 0.55; pointer-events: none; z-index: 5;
+      transition: opacity 0.4s;
+    }
+    .reel-hint::before {
+      content: '◆'; margin-right: 0.45rem; color: var(--accent);
+      animation: hintBlink 2s ease-in-out infinite;
+    }
+    @keyframes hintBlink { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+    .reel-stage.has-spun .reel-hint { opacity: 0; }
 
     /* ── FOOTER — slim, copyright + socials only ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
@@ -673,7 +767,7 @@
       .career-img-header { gap: 0.5rem; }
       .portfolio_row_top, .portfolio_row_bottom { grid-template-columns: 1fr; }
       .portfolio_row_top .portfolio_thumb { height: 240px; }
-      .stuff-chip { padding: 0.7rem 1.1rem; font-size: 0.88rem; }
+      .reel-stage { height: 420px; }
     }
     @media (max-width: 768px) {
       /* ── Hero — stack the headshot ABOVE the text (not faded behind it). ── */
@@ -685,21 +779,15 @@
       .hero-img-wrap {
         position: relative; inset: auto;
         width: 100%; height: auto;
-        display: block; text-align: center;
+        display: flex; justify-content: center;
         margin-bottom: 1.5rem;
         transform: none !important;
         will-change: auto;
       }
-      .hero-img-center {
-        position: relative; right: auto; bottom: auto;
-        display: inline-block;
-      }
+      .hero-img-center { position: relative; right: auto; bottom: auto; }
       .hero-parallax-img {
-        display: block;
-        width: auto; height: auto;
-        max-width: 78%;
-        max-height: 40vh;
-        margin: 0 auto;
+        height: clamp(220px, 38vh, 340px);
+        width: auto; max-width: 80%;
         opacity: 1;
       }
       #top::before {
@@ -715,8 +803,7 @@
 
       /* ── Other home sections ── */
       .passion-tiles { grid-template-columns: 1fr; }
-      .passion-words { gap: 0.1em 0.4em; flex-wrap: wrap; justify-content: center; }
-      .pw-word { font-size: clamp(1.8rem, 7vw, 2.8rem); }
+      .passion-words { gap: 0.1em 0.4em; }
       .footer-slim { flex-direction: column; text-align: center; gap: 0.75rem; }
       #service { padding: 60px 0; }
       #career  { padding: 50px 0 70px; }
@@ -734,8 +821,12 @@
       .home-thumb h1 { font-size: 2.5rem; }
       .home-tagline { white-space: normal; font-size: 0.88rem; }
       .cta-wrap { flex-direction: column; }
-      .stuff-chip { padding: 0.6rem 1rem; font-size: 0.82rem; gap: 0.55rem; }
-      .stuff-chip .chip-icon { font-size: 1rem; }
+      .reel-stage { height: 380px; }
+      .reel-cylinder { height: 64px; }
+      .reel-rails { width: 88%; height: 76px; }
+      .reel-card { padding: 0 1rem; gap: 0.7rem; border-radius: 14px; }
+      .reel-card .card-icon { font-size: 1.4rem; }
+      .reel-card .card-label { font-size: 0.95rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -789,9 +880,8 @@
       <ul class="dropdown">
         <li><a href="pages/tech/xr-videos.html">XR Videos</a></li>
         <li><a href="pages/tech/reality-capture.html">Reality Capture</a></li>
-        <li><a href="pages/tech/ai-projects.html">AI Sandbox</a></li>
+        <li><a href="pages/tech/ai-projects.html">AI tools</a></li>
         <li><a href="pages/tech/3d-printing.html">3D Printing</a></li>
-        <li><a href="pages/tech/food-for-thought.html">Food for Thought</a></li>
       </ul>
     </li>
   </ul>
@@ -823,7 +913,7 @@
       <div class="home-thumb">
         <h1>Hey, I'm <span>Carlos</span></h1>
         <p class="home-tagline">Welcome to my <span class="tagline-em">unapologetically diverse</span> site.</p>
-        <p class="lead">I'm from Barcelona, but I've been living in Denmark for the past 8 years. Currently, I'm a Senior AI Project Manager at Grundfos and when possible I love to travel as much as I can and document everything with a worrying amount of detail.</p>
+        <p class="lead">From Barcelona, living in Denmark for the past 7 years. Senior AI Project Manager at GRUNDFOS, passionate traveller, photographer, and perpetual rabbit-hole explorer.</p>
         <div class="cta-wrap">
           <a href="#service" class="btn btn-dark">About me &nbsp;→</a>
           <a href="pages/about/contact.html" class="btn btn-outline">Get in touch</a>
@@ -840,7 +930,7 @@
       </div>
 
       <div class="passion-intro">
-        <p class="wow d1">For better or worse, my interests are incredibly diverse and have evolved considerably over time. I'm someone who can become captivated by a completely new random topic and suddenly find myself immersed in it around the clock; the rabbit hole is my friend.</p>
+        <p class="wow d1">For better or worse, my interests are incredibly diverse and have evolved considerably over time. I'm someone who can become captivated by a completely new random topic and suddenly find myself immersed in it around the clock — the rabbit hole is my friend.</p>
         <p class="wow d2">Despite this curiosity, there are three areas I've been passionate about for a long time:</p>
         <div class="passion-words wow d3">
           <span class="pw-word pw-travel">Travel</span>
@@ -874,7 +964,7 @@
           </div>
         </a>
 
-        <a href="pages/tech/xr-videos.html" class="passion-tile passion-tile--tech wow d2">
+        <a href="pages/tech/ai-projects.html" class="passion-tile passion-tile--tech wow d2">
           <div class="passion-tile-bg">
             <img src="media/home/passion-tech.jpg" alt="Tech" loading="lazy">
           </div>
@@ -972,15 +1062,15 @@
         </div><!-- /career-tab-stack -->
 
         <div class="career-img-col wow d2">
-          <div class="career-img-frame">
-            <img src="media/home/career.jpg" alt="Career at GRUNDFOS"
-                 onerror="this.style.display='none'">
-          </div>
-          <!-- Company logo + tenure sit under the photo, captioning it as
+          <!-- Company logo + tenure sit on top of the photo, framing it as
                "this is where I've been since 2019". -->
           <div class="career-img-header">
             <img src="media/shared/grundfos-logo.png" alt="GRUNDFOS" class="career-company-logo">
             <span class="career-company-date">2019 – Present</span>
+          </div>
+          <div class="career-img-frame">
+            <img src="media/home/career.jpg" alt="Career at GRUNDFOS"
+                 onerror="this.style.display='none'">
           </div>
           <div class="career-dots" aria-hidden="true"></div>
         </div>
@@ -999,17 +1089,48 @@
      `.wow` to the *outer* wrapper so the iframe itself is always visible. -->
 <div class="testimonial_area wow">
   <div class="testimonial_inner">
-    <div class="podcast-embed">
-      <iframe
-        style="border-radius:12px"
-        src="https://open.spotify.com/embed/episode/32KfFpTYIb7LoLDQVJsyww?utm_source=generator&theme=0"
-        width="100%" height="152"
-        frameborder="0"
-        allowfullscreen=""
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        title="Spotify · Career Coffee · Grundfos">
-      </iframe>
+    <div class="podcast-head">
+      <span class="eyebrow">On the record</span>
+      <h3>A couple of conversations</h3>
+      <p>Two podcast chats where I talk about my career path and the work of taking enterprise AI from an idea on a slide to something people actually use.</p>
+    </div>
+    <div class="podcast-grid">
+      <div class="podcast-card">
+        <span class="ep-meta">Career Coffee</span>
+        <span class="ep-title">Grundfos</span>
+        <p class="ep-note">A chat about my path into Grundfos, the Global Graduate rotation program, and how a mechanical engineering degree turned into a career in XR and AI.</p>
+        <div class="podcast-embed">
+          <iframe
+            style="border-radius:12px"
+            src="https://open.spotify.com/embed/episode/32KfFpTYIb7LoLDQVJsyww?utm_source=generator&theme=0"
+            width="100%" height="152"
+            frameborder="0"
+            allowfullscreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            loading="lazy"
+            title="Spotify · Career Coffee · Grundfos">
+          </iframe>
+        </div>
+      </div>
+      <div class="podcast-card">
+        <span class="ep-meta">Evo DK · #464</span>
+        <span class="ep-title">Enterprise AI Scaling: from Idea to Impact</span>
+        <p class="ep-note">On what actually makes AI projects stick inside a large organisation; the messy middle between a promising prototype and real business value.</p>
+        <div class="podcast-embed">
+          <iframe
+            style="border-radius:12px"
+            src="https://open.spotify.com/embed/episode/5wSsuqBewktGb8kIYnGjnE?utm_source=generator"
+            width="100%" height="152"
+            frameborder="0"
+            allowfullscreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            loading="lazy"
+            title="Spotify · Evo DK · Enterprise AI Scaling">
+          </iframe>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1043,9 +1164,9 @@
     <div class="portfolio_row_bottom wow d1">
       <div class="single_Portfolio">
         <div class="portfolio_thumb">
-          <img src="media/Northern Lights/thumbs/DSC_9675.jpg" alt="Northern Lights, Denmark" loading="lazy">
+          <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/237c4114-612d-42d7-83d2-20a184098f62/Nungwi.jpg" alt="Nungwi, Zanzibar" loading="lazy">
         </div>
-        <div class="portfolio_hover"><div class="title"><h3>Northern Lights, Denmark</h3></div></div>
+        <div class="portfolio_hover"><div class="title"><h3>Nungwi, Zanzibar</h3></div></div>
       </div>
       <div class="single_Portfolio">
         <div class="portfolio_thumb">
@@ -1055,9 +1176,9 @@
       </div>
       <div class="single_Portfolio">
         <div class="portfolio_thumb">
-          <img src="media/photography/thumbs/DSC_5058.jpg" alt="Singapore at sunset" loading="lazy">
+          <img src="https://images.squarespace-cdn.com/content/v1/657d9e8b38548f4ab0bbbea0/2cb359f2-e447-4e5d-95cf-5e0eac4824d0/Orschwiller.jpg" alt="Orschwiller, France" loading="lazy">
         </div>
-        <div class="portfolio_hover"><div class="title"><h3>Singapore</h3></div></div>
+        <div class="portfolio_hover"><div class="title"><h3>Orschwiller, France</h3></div></div>
       </div>
     </div>
     <div class="more_portfolio wow d2">
@@ -1071,19 +1192,29 @@
   <div class="hobbies-inner">
     <h2 class="melan-h2 wow">Other stuff I love</h2>
 
-    <div class="stuff-wrap wow d2">
-      <div class="stuff-row">
-        <span class="stuff-chip" data-color="travel"><span class="chip-icon">✈</span> Commercial Aviation</span>
-        <span class="stuff-chip" data-color="photo"><span class="chip-icon">🏎</span> F1</span>
-        <span class="stuff-chip" data-color="tech"><span class="chip-icon">🔭</span> Astronomy</span>
-        <span class="stuff-chip" data-color="accent"><span class="chip-icon">💰</span> Personal Finance</span>
+    <!-- 3-D vertical scroll reel: hobbies are arranged around the surface of
+         an invisible cylinder. Drag or scroll vertically to rotate it; the
+         card sitting between the two horizontal rails is "in focus". -->
+    <div class="reel-stage wow d2" id="reelStage" style="margin-top:2rem;">
+      <div class="reel-rails" aria-hidden="true"></div>
+      <div class="reel-scene">
+        <div class="reel-cylinder" id="reelCylinder">
+          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">✈</span><span class="card-label">Aviation</span></button>
+          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">🏎</span><span class="card-label">Formula 1</span></button>
+          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🔭</span><span class="card-label">Astronomy</span></button>
+          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">🤿</span><span class="card-label">Scuba Diving</span></button>
+          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">📈</span><span class="card-label">Investing</span></button>
+          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">🖨</span><span class="card-label">3D Printing</span></button>
+          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🤖</span><span class="card-label">AI &amp; ML</span></button>
+          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">🌌</span><span class="card-label">Space</span></button>
+          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">🏃</span><span class="card-label">Running</span></button>
+          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">🚴</span><span class="card-label">Cycling</span></button>
+          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">📚</span><span class="card-label">Reading</span></button>
+          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">☕</span><span class="card-label">Coffee</span></button>
+          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🌊</span><span class="card-label">Open Water</span></button>
+        </div>
       </div>
-      <div class="stuff-row">
-        <span class="stuff-chip" data-color="accent"><span class="chip-icon">📈</span> Investing</span>
-        <span class="stuff-chip" data-color="travel"><span class="chip-icon">🏃</span> Running</span>
-        <span class="stuff-chip" data-color="travel"><span class="chip-icon">🚴</span> Cycling</span>
-        <span class="stuff-chip" data-color="travel"><span class="chip-icon">🤿</span> Diving</span>
-      </div>
+      <div class="reel-hint">Scroll or drag to spin</div>
     </div>
   </div>
 </section>
@@ -1091,7 +1222,7 @@
 <!-- ── FOOTER (Melan dark navy, no nav links) ── -->
 <footer>
   <div class="footer-slim">
-    <span class="footer-copy">© <span class="js-year">2026</span> Carlos Ebrahim Vendrell. All rights reserved.</span>
+    <span class="footer-copy">© 2026 Carlos Ebrahim Vendrell. All rights reserved.</span>
     <ul class="footer-socials">
       <li>
         <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener" aria-label="LinkedIn">
@@ -1174,6 +1305,160 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.wow').forEach(el => revealObserver.observe(el));
 
+  /* ── Hobby reel (3D vertical picker cylinder) ── */
+  (function initHobbyReel() {
+    const stage    = document.getElementById('reelStage');
+    const cylinder = document.getElementById('reelCylinder');
+    if (!stage || !cylinder) return;
+
+    const cards = Array.from(cylinder.querySelectorAll('.reel-card'));
+    const N = cards.length;
+    const STEP = 360 / N;                 // degrees between adjacent cards
+    // Radius so card faces sit "behind" the cylinder surface at the right
+    // depth. We use the *visible* cylinder height (CSS-controlled) as the
+    // chord length between adjacent cards; the radius then falls out of
+    // basic trig: chord = 2 R sin(STEP/2).
+    function getRadius() {
+      const h = cylinder.getBoundingClientRect().height;
+      return h / (2 * Math.sin((STEP * Math.PI / 180) / 2));
+    }
+
+    // Place each card at its angular slot around the cylinder.
+    function placeCards() {
+      const R = getRadius();
+      cards.forEach((card, i) => {
+        const a = i * STEP;
+        card.style.transform =
+          `rotateX(${a}deg) translateZ(${R.toFixed(2)}px)`;
+      });
+    }
+    placeCards();
+    window.addEventListener('resize', placeCards);
+
+    // ── State ──
+    let rotation = 0;                     // degrees; positive = scrolling DOWN brings later cards forward
+    let velocity = 0;                     // degrees per second
+    let isDragging = false, didDrag = false;
+    let lastY = 0, lastT = 0, lastFrame = performance.now();
+    let idle = true, idleTO = null, inView = false;
+
+    const io = new IntersectionObserver(([e]) => { inView = e.isIntersecting; }, { threshold: 0.05 });
+    io.observe(stage);
+
+    function applyRotation() {
+      cylinder.style.transform = `rotateX(${(-rotation).toFixed(3)}deg)`;
+      // Mark whichever card is closest to the front (rotation modulo STEP)
+      const norm = ((rotation % 360) + 360) % 360;
+      const focusedIdx = Math.round(norm / STEP) % N;
+      cards.forEach((c, i) => c.classList.toggle('focused', i === focusedIdx));
+    }
+    applyRotation();
+
+    function nearestSnap() {
+      return Math.round(rotation / STEP) * STEP;
+    }
+
+    function tick(now) {
+      const dt = Math.min(0.05, (now - lastFrame) / 1000);
+      lastFrame = now;
+      if (inView && !isDragging) {
+        if (Math.abs(velocity) > 8) {
+          rotation += velocity * dt;
+          velocity *= Math.pow(0.04, dt);          // exponential decay
+        } else if (idle) {
+          // Idle auto-rotate — gentle drift, one card every ~3s.
+          rotation += (STEP / 3) * dt;
+        } else {
+          // Magnetic snap to the nearest card slot.
+          const target = nearestSnap();
+          const ease = 1 - Math.pow(0.0008, dt);
+          rotation += (target - rotation) * ease;
+          if (Math.abs(target - rotation) < 0.05) rotation = target;
+          velocity = 0;
+        }
+        applyRotation();
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    // ── Pointer / touch ──
+    function getY(e) {
+      if (e.touches && e.touches[0]) return e.touches[0].clientY;
+      return e.clientY;
+    }
+    function onDown(e) {
+      isDragging = true; didDrag = false; idle = false;
+      lastY = getY(e); lastT = performance.now(); velocity = 0;
+    }
+    function onMove(e) {
+      if (!isDragging) return;
+      const y = getY(e);
+      const dy = y - lastY;
+      const now = performance.now();
+      const dt = Math.max(1, now - lastT);
+      lastY = y; lastT = now;
+      // 1 pixel of vertical movement → 0.6 deg of cylinder rotation
+      const dDeg = dy * 0.6;
+      rotation += dDeg;
+      velocity = (dDeg / (dt / 1000)) * 0.85;
+      if (!didDrag && Math.abs(dy) > 3) {
+        didDrag = true; stage.classList.add('has-spun');
+      }
+    }
+    function onUp() {
+      if (!isDragging) return;
+      isDragging = false;
+      clearTimeout(idleTO);
+      idleTO = setTimeout(() => { idle = true; }, 4000);
+    }
+    stage.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    stage.addEventListener('touchstart', onDown, { passive: true });
+    window.addEventListener('touchmove', onMove, { passive: true });
+    window.addEventListener('touchend', onUp);
+    window.addEventListener('touchcancel', onUp);
+
+    // Mouse wheel — direct rotation. Prevent the page from scrolling away
+    // when the pointer is over the reel; restore it once we reach a snap.
+    stage.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      idle = false;
+      // Trackpad fast scroll can produce large deltas; clamp so one twitch
+      // doesn't spin half the cylinder.
+      const d = Math.max(-30, Math.min(30, e.deltaY)) * 0.35;
+      rotation += d;
+      velocity = d * 12;        // a little inertia per scroll tick
+      stage.classList.add('has-spun');
+      clearTimeout(idleTO);
+      idleTO = setTimeout(() => { idle = true; }, 4000);
+    }, { passive: false });
+
+    // Click a visible card → snap that card to the front
+    cards.forEach((card, i) => {
+      card.addEventListener('click', () => {
+        if (didDrag) { didDrag = false; return; }
+        idle = false; velocity = 0;
+        // Choose the closest *equivalent* angle so we don't spin the long way
+        const target = i * STEP;
+        const wrap = Math.round((rotation - target) / 360) * 360;
+        rotation = target + wrap;
+        // ease towards target — handled by the snap branch in tick()
+        clearTimeout(idleTO);
+        idleTO = setTimeout(() => { idle = true; }, 4000);
+        stage.classList.add('has-spun');
+      });
+    });
+
+    // Keyboard
+    stage.tabIndex = 0;
+    stage.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { rotation += STEP; idle = false; stage.classList.add('has-spun'); }
+      if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  { rotation -= STEP; idle = false; stage.classList.add('has-spun'); }
+    });
+  })();
+
   /* ── Career tab toggle (Experience / Education) ── */
   (function initCareerTabs() {
     const tabs = document.querySelectorAll('.career-tab');
@@ -1192,6 +1477,5 @@
     });
   })();
 </script>
-<script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body>
 </html>
