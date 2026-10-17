@@ -218,85 +218,75 @@
     .section-block:last-child { margin-bottom: 0; }
 
     /* ── Live products (LayOvr, OvrHead) ── */
+    /* ──────────────────────────────────────────────────────────────
+       Product cards — adopts cevenlabs.com's .solution pattern, but
+       re-skinned in the amber-on-dark system the whole site shares.
+       Keeps the .section-eyebrow + .section-title + .section-lede
+       scaffold used by every other Tech page.
+       ────────────────────────────────────────────────────────────── */
     .product-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
     }
-    @media (max-width: 760px) { .product-grid { grid-template-columns: 1fr; } }
     .product-card {
-      --card-accent: var(--page-accent);
-      --card-accent-soft: rgba(77,146,255,0.065);
-      --card-glow: var(--page-glow);
-      position: relative; display: flex; flex-direction: column; gap: 0.9rem;
-      padding: 1.75rem; min-height: 240px;
-      background: linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.012));
-      border: 1px solid var(--line); border-radius: var(--radius);
-      overflow: hidden; text-decoration: none; color: inherit;
-      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-    }
-    .product-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(circle at 85% 0%, var(--card-accent-soft) 0%, transparent 55%);
-      opacity: 0.9; pointer-events: none;
+      --card-accent: #ffa040;                              /* cevenlabs amber by default */
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 1.25rem; padding: 1.5rem 1.6rem;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 12px;
+      text-decoration: none; color: inherit;
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
     }
     .product-card:hover {
-      border-color: var(--card-accent); transform: translateY(-3px);
-      box-shadow: 0 20px 60px -20px var(--card-glow);
-    }
-    .product-head {
-      position: relative; display: flex; align-items: center;
-      justify-content: space-between; gap: 1rem; margin-bottom: 0.25rem;
+      border-color: var(--card-accent);
+      background: var(--card-hover-bg, rgba(255,160,64,0.07));
+      transform: translateY(-1px);
     }
     .product-logo {
-      font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; color: #fff;
-      display: inline-flex; align-items: center; gap: 0.55rem;
-    }
-    .product-logo .dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--card-accent);
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.04), 0 0 12px var(--card-accent);
-    }
-    .status-pill {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.56rem; font-weight: 700; letter-spacing: 0.18em;
-      text-transform: uppercase; padding: 0.35rem 0.65rem;
-      border-radius: 999px; background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.12); color: var(--dim);
-    }
-    .status-pill.live {
-      background: rgba(77,146,255,0.09); border-color: rgba(77,146,255,0.3); color: var(--page-accent2);
-    }
-    .status-pill.beta {
-      background: rgba(200,134,42,0.14); border-color: rgba(200,134,42,0.42); color: #ffbc7a;
-    }
-    .product-tagline {
-      position: relative; font-size: 0.72rem; font-weight: 600;
-      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--card-accent);
+      font-size: 1.65rem; font-weight: 700;
+      letter-spacing: -0.035em; color: var(--text);
+      margin: 0 0 0.5rem; display: block;
     }
     .product-desc {
-      position: relative; font-size: 0.95rem; color: var(--dim);
-      line-height: 1.7; flex-grow: 1;
+      font-size: 0.9rem; color: var(--dim); line-height: 1.6; margin: 0;
     }
-    .product-link {
-      position: relative; display: inline-flex; align-items: center; gap: 0.4rem;
-      margin-top: 0.4rem; font-size: 0.8rem; font-weight: 600;
-      color: var(--text); transition: gap 0.25s, color 0.25s;
+    .product-right {
+      display: flex; flex-direction: column; align-items: flex-end;
+      gap: 0.5rem; padding-top: 4px;
     }
-    .product-link::after {
-      content: '→'; font-size: 1rem; transition: transform 0.25s;
+    .product-status {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--dim); white-space: nowrap;
     }
-    .product-card:hover .product-link { color: var(--card-accent); }
-    .product-card:hover .product-link::after { transform: translateX(4px); }
+    .product-status::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .product-status.beta::before { background: #ffa040; box-shadow: 0 0 10px #ffa040; }
+    .product-status.live::before { background: #4dd39a; box-shadow: 0 0 10px #4dd39a; }
+    .product-arrow {
+      font-size: 0.85rem; font-weight: 700;
+      color: var(--card-accent);
+      transition: transform 0.25s;
+    }
+    .product-card:hover .product-arrow { transform: translateX(2px); }
     .product-card--layovr {
       --card-accent: #ffa040;
-      --card-accent-soft: rgba(255,160,64,0.08);
-      --card-glow: rgba(255,160,64,0.28);
+      --card-hover-bg: rgba(255,160,64,0.07);
     }
     .product-card--ovrhead {
       --card-accent: #4d92ff;
-      --card-accent-soft: rgba(77,146,255,0.08);
-      --card-glow: rgba(77,146,255,0.32);
+      --card-hover-bg: rgba(77,146,255,0.07);
     }
+    @media (max-width: 780px) { .product-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 520px) {
+      .product-card { grid-template-columns: 1fr; }
+      .product-right { flex-direction: row; align-items: center; justify-content: space-between; padding-top: 0; }
+    }
+
+    /* legacy classnames kept inert for safety — some may still live in markup */
+    .product-head, .product-tagline, .product-link, .status-pill { display: contents; }
 
     /* ── Sandbox: Bike Fit card (link out, pairs with inline games) ── */
     .toy-card {
@@ -733,23 +723,25 @@
       <div class="product-grid">
 
         <a class="product-card product-card--layovr" href="https://cevenlabs.com/layovr/" target="_blank" rel="noopener">
-          <div class="product-head">
-            <span class="product-logo"><span class="dot"></span>LayOvr</span>
-            <span class="status-pill beta">Beta</span>
+          <div>
+            <p class="product-logo">LayOvr</p>
+            <p class="product-desc">When you fly, arrive ready. LayOvr plans your sleep, light and caffeine around your real flights so you land with energy for what actually matters.</p>
           </div>
-          <span class="product-tagline">Jet lag, planned</span>
-          <p class="product-desc">A science-backed jet-lag companion for business travellers. Plans your sleep, light exposure and caffeine around your actual flights, so you land ready for the meeting you can't afford to miss.</p>
-          <span class="product-link">Open LayOvr</span>
+          <div class="product-right">
+            <span class="product-status beta">Beta</span>
+            <span class="product-arrow">View →</span>
+          </div>
         </a>
 
         <a class="product-card product-card--ovrhead" href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">
-          <div class="product-head">
-            <span class="product-logo"><span class="dot"></span>OvrHead</span>
-            <span class="status-pill live">Live</span>
+          <div>
+            <p class="product-logo">OvrHead</p>
+            <p class="product-desc">When aircraft fly over you, learn something. OvrHead reads every plane over Aarhus and turns weeks of the record into a live picture of European airspace.</p>
           </div>
-          <span class="product-tagline">Observatory over Aarhus</span>
-          <p class="product-desc">One antenna on my roof decodes every aircraft passing over Aarhus and turns weeks of the record into a live picture of European airspace: capacity, connectivity, trade. Signal from the sky.</p>
-          <span class="product-link">Open OvrHead</span>
+          <div class="product-right">
+            <span class="product-status live">Live</span>
+            <span class="product-arrow">Open it →</span>
+          </div>
         </a>
 
       </div>
