@@ -2076,6 +2076,27 @@ function runGlobeInit() {
     setTimeout(applyWhenReady, 100);
   })();
 
+  // ── Upgrade to a higher-resolution Earth texture when available ──
+  // The globe starts on the guaranteed 4K texture so it never renders blank.
+  // Drop an 8K (or 16K) equirectangular Blue Marble JPG at the hi-res path below
+  // and the globe swaps to it automatically once it has finished loading — which
+  // lets you zoom in much further before any pixelation shows. No code change is
+  // needed to enable it; just add the file with this exact name.
+  (function upgradeEarthTexture() {
+    const HIRES = '../../media/shared/earth-marble-8k.jpg';
+    const probe = new Image();
+    probe.onload = () => {
+      globe.globeImageUrl(HIRES);
+      // Re-assert max anisotropy on the freshly swapped texture.
+      let t = 0;
+      (function reapply() {
+        if (bumpAnisotropyOnCurrentTextures() || ++t > 40) return;
+        setTimeout(reapply, 100);
+      })();
+    };
+    probe.src = HIRES;   // 404 → onload never fires, so the 4K texture simply stays
+  })();
+
   // (Pin click handler is wired in the .customLayerData chain above.)
 
   // Initial camera position — Europe-ish, ~50% closer than before
@@ -2086,7 +2107,7 @@ function runGlobeInit() {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.rotateSpeed   = 0.6;
-  controls.minDistance   = 110;
+  controls.minDistance   = 104;   // allow a closer zoom now the hi-res texture holds up
   controls.maxDistance   = 700;
   controls.autoRotate    = true;
   controls.autoRotateSpeed = 0.35;
@@ -2094,6 +2115,21 @@ function runGlobeInit() {
   ['pointerdown','wheel','touchstart'].forEach(ev =>
     container.addEventListener(ev, () => { controls.autoRotate = false; hintEl.classList.add('fade'); }, { once: true })
   );
+
+  // ── Zoom-adaptive pin sizing ──────────────────────────────
+  // Pins are 3-D objects of fixed world size, so by default they balloon as you
+  // zoom in and shrink to nothing as you zoom out. Scale them with the camera
+  // distance each frame so their on-screen size stays roughly constant: smaller
+  // when close (lets you read dense regions), larger when far (stays visible).
+  const PIN_REF_DIST = 320;   // distance at which pins render at native size
+  const PIN_MIN_SCALE = 0.34; // floor when zoomed all the way in
+  const PIN_MAX_SCALE = 2.4;  // ceiling when zoomed all the way out
+  (function scalePinsToZoom() {
+    const dist = globe.camera().position.length();   // globe is centred at the origin
+    const s = Math.min(PIN_MAX_SCALE, Math.max(PIN_MIN_SCALE, dist / PIN_REF_DIST));
+    globe.scene().traverse(o => { if (o.__pinData) o.scale.setScalar(s); });
+    requestAnimationFrame(scalePinsToZoom);
+  })();
 
   // Resize handler — globe.gl wants explicit width/height
   function sizeGlobe() {
