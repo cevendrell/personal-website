@@ -284,9 +284,9 @@
       text-transform: uppercase; color: var(--mute);
     }
     .sky-hud--tl { top: 1rem; left: 1rem; }
-    .sky-hud--tr { top: 1rem; right: 1rem; }
+    .sky-hud--tr { top: 1rem; right: 1rem; flex-direction: column; align-items: flex-end; }
     .sky-hud--bl { bottom: 1rem; left: 1rem; }
-    .sky-hud--br { bottom: 1rem; right: 1rem; text-transform: none; letter-spacing: 0.04em; opacity: 0.7; }
+    .sky-hud--br { bottom: 1rem; right: 4.6rem; text-transform: none; letter-spacing: 0.04em; opacity: 0.7; }
     .sky-mode {
       padding: 0.35rem 0.7rem; border-radius: 999px; font-weight: 600;
       background: rgba(5,8,22,0.75); border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim);
@@ -313,7 +313,7 @@
     .sky-grad-lbl { display: flex; justify-content: space-between; width: 180px; font-size: 0.52rem; letter-spacing: 0.04em; }
     .sky-grad-lbl em { font-style: normal; }
     .sky-card {
-      position: absolute; z-index: 3; top: 3.6rem; right: 1rem; width: 230px;
+      position: absolute; z-index: 3; top: 7.6rem; right: 1rem; width: 230px;
       padding: 0.9rem 1rem; border-radius: 12px;
       background: rgba(5,8,22,0.85); backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.1); border-top: 2px solid var(--ac, #6a8db5);
@@ -326,6 +326,52 @@
     .sky-card-grid span { color: var(--mute); }
     .sky-card-grid em { font-style: normal; color: var(--text); text-align: right; }
     .sky-card a { color: var(--c-travel); }
+    .sky-group-lbl { padding: 0.35rem 0.4rem 0.35rem 0.7rem; color: var(--mute); }
+    .sky-paths-info { font-size: 0.56rem; letter-spacing: 0.08em; text-transform: none; color: var(--text-dim); min-height: 1em; }
+    .sky-place.sky-cardinal { font-size: 0.75rem; font-weight: 700; letter-spacing: 0; color: rgba(156,210,255,0.85); }
+    .sky-compass {
+      position: absolute; z-index: 3; right: 1rem; bottom: 0.9rem; width: 46px; height: 46px; padding: 0;
+      border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; background: rgba(5,8,22,0.8); cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .sky-compass:hover { border-color: var(--c-travel); }
+    .sky-compass svg { width: 100%; height: 100%; display: block; }
+    .sky-compass circle { fill: none; stroke: rgba(255,255,255,0.08); }
+    .sky-compass #skyNeedle { transform-origin: 20px 20px; }
+    .sky-compass .n { fill: #ff5a4f; } .sky-compass .s { fill: rgba(232,220,196,0.55); }
+    .sky-compass text { font: 700 5.5px 'JetBrains Mono', monospace; fill: #fff; text-anchor: middle; }
+    .sky-time {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.25rem 0.55rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.015);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; color: var(--mute);
+    }
+    .sky-time[hidden] { display: none; }
+    .sky-time.is-live .sky-play, .sky-time.is-live .sky-speed { display: none; }
+    .sky-play {
+      flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(5,8,22,0.75); cursor: pointer; display: grid; place-items: center; padding: 0;
+    }
+    .sky-play svg { width: 11px; height: 11px; fill: var(--accent); }
+    .sky-play .pl { display: none; }
+    .sky-play[aria-pressed="true"] .pa { display: none; } .sky-play[aria-pressed="true"] .pl { display: inline; }
+    .sky-day {
+      flex: none; font: inherit; color: var(--text); background: rgba(5,8,22,0.75);
+      border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; padding: 0.4rem 0.7rem; cursor: pointer;
+    }
+    .sky-scrub { position: relative; flex: 1; min-width: 0; height: 40px; }
+    .sky-hist { position: absolute; left: 0; right: 0; top: 2px; width: 100%; height: 22px; fill: rgba(106,141,181,0.35); }
+    .sky-scrub input[type=range] {
+      position: absolute; left: 0; right: 0; top: 4px; width: 100%; height: 22px; margin: 0;
+      -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer;
+    }
+    .sky-scrub input[type=range]::-webkit-slider-runnable-track { height: 22px; background: linear-gradient(transparent 20px, rgba(255,255,255,0.12) 20px); }
+    .sky-scrub input[type=range]::-moz-range-track { height: 22px; background: linear-gradient(transparent 20px, rgba(255,255,255,0.12) 20px); }
+    .sky-scrub input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 3px; height: 22px; background: var(--accent); border-radius: 2px; box-shadow: 0 0 10px rgba(232,220,196,0.7); }
+    .sky-scrub input[type=range]::-moz-range-thumb { width: 3px; height: 22px; border: 0; background: var(--accent); border-radius: 2px; }
+    .sky-ticks { position: absolute; left: 0; right: 0; bottom: 0; height: 12px; }
+    .sky-ticks span { position: absolute; transform: translateX(-50%); font-size: 0.55rem; }
+    .sky-live { flex: none; font: inherit; letter-spacing: 0.1em; text-transform: uppercase; color: #22c55e; background: none; border: 1px solid rgba(34,197,94,0.4); border-radius: 999px; padding: 0.4rem 0.7rem; cursor: pointer; }
+    .sky-live[hidden] { display: none; }
     .sky-fallback { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mute); font-size: 0.85rem; }
     .sky-fallback[hidden] { display: none; }
     @media (max-width: 640px) {
@@ -334,6 +380,10 @@
       .sky-card { top: auto; bottom: 4.2rem; right: 0.75rem; width: auto; left: 0.75rem; }
       .sky-hud--tl { right: 0.75rem; left: 0.75rem; top: 0.75rem; }
       .sky-hud--tr { top: 3.2rem; right: 0.75rem; }
+      .sky-paths-info { display: none; }
+      .sky-compass { right: 0.75rem; bottom: 0.75rem; width: 40px; height: 40px; }
+      .sky-time { flex-wrap: wrap; padding: 0.7rem 0.75rem 0.5rem; }
+      .sky-scrub { order: 5; flex-basis: 100%; }
       .sky-hud--bl { left: 0.75rem; bottom: 0.75rem; }
     }
     .status-dot[data-state="replay"] { background: #fbbf24; animation: none; box-shadow: 0 0 0 3px rgba(251,191,36,0.2), 0 0 12px rgba(251,191,36,0.5); }
@@ -1080,21 +1130,40 @@
         <div class="sky-hud sky-hud--tl">
           <span class="sky-mode" id="skyMode" data-state="loading">Connecting</span>
           <span class="sky-clock" id="skyClock">--:--:--</span>
-          <span class="sky-speed" id="skySpeed" hidden>
-            <button type="button" data-spd="1" aria-pressed="true">1×</button><button type="button" data-spd="10" aria-pressed="false">10×</button><button type="button" data-spd="60" aria-pressed="false">60×</button>
-          </span>
         </div>
-        <div class="sky-hud sky-hud--tr sky-views" role="group" aria-label="View">
-          <button type="button" data-view="radar" aria-pressed="false">Radar</button><button type="button" data-view="tilt" aria-pressed="true">Tilt</button><button type="button" data-view="low" aria-pressed="false">Low</button>
+        <div class="sky-hud sky-hud--tr">
+          <div class="sky-views" role="group" aria-label="View">
+            <button type="button" data-view="radar" aria-pressed="false">Radar</button><button type="button" data-view="tilt" aria-pressed="true">Tilt</button><button type="button" data-view="low" aria-pressed="false">Low</button>
+          </div>
+          <div class="sky-views sky-paths" role="group" aria-label="Flight paths">
+            <span class="sky-group-lbl">Paths</span><button type="button" data-paths="off" aria-pressed="true">Off</button><button type="button" data-paths="day" aria-pressed="false">Day</button><button type="button" data-paths="week" aria-pressed="false">Week</button>
+          </div>
+          <span class="sky-paths-info" id="skyPathsInfo"></span>
         </div>
+        <button type="button" class="sky-compass" id="skyCompass" aria-label="Turn to face north" title="Face north">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18.5"/><g id="skyNeedle"><path d="M20 6 L24.5 20 L15.5 20 Z" class="n"/><path d="M20 34 L24.5 20 L15.5 20 Z" class="s"/><text x="20" y="5.2">N</text></g></svg>
+        </button>
         <div class="sky-card" id="skyCard" hidden></div>
         <div class="sky-hud sky-hud--bl sky-legend">
           <span>Altitude</span>
           <i class="sky-grad"></i>
           <span class="sky-grad-lbl"><em>0</em><em>10k</em><em>20k</em><em>30k</em><em>40k ft</em></span>
         </div>
-        <div class="sky-hud sky-hud--br sky-hint">Drag to orbit · click, then scroll to zoom · tap a flight · rings every 75 km</div>
+        <div class="sky-hud sky-hud--br sky-hint">Drag to turn · click, then scroll to zoom · tap a flight · rings every 75 km</div>
         <p class="sky-fallback" id="skyFallback" hidden>This browser can’t draw the 3D view. The table below still updates.</p>
+      </div>
+      <div class="sky-time" id="skyTime" hidden>
+        <button type="button" class="sky-play" id="skyPlay" aria-label="Pause" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><rect class="pa" x="2" y="1.5" width="2.6" height="9" rx="0.6"/><rect class="pa" x="7.4" y="1.5" width="2.6" height="9" rx="0.6"/><path class="pl" d="M3 1.5 L10.5 6 L3 10.5 Z"/></svg></button>
+        <select class="sky-day" id="skyDay" aria-label="Day"></select>
+        <div class="sky-scrub">
+          <svg class="sky-hist" id="skyHist" viewBox="0 0 144 24" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <input type="range" id="skyRange" min="0" max="1" step="30" value="0" aria-label="Time of day">
+          <div class="sky-ticks" id="skyTicks" aria-hidden="true"></div>
+        </div>
+        <span class="sky-speed" id="skySpeed" hidden>
+          <button type="button" data-spd="1" aria-pressed="true">1×</button><button type="button" data-spd="10" aria-pressed="false">10×</button><button type="button" data-spd="60" aria-pressed="false">60×</button>
+        </span>
+        <button type="button" class="sky-live" id="skyLive" hidden>Back to live</button>
       </div>
 
       <div class="aap-panel">
@@ -1452,6 +1521,8 @@
   const L = { k4: $('kpiLbl4'), k5: $('kpiLbl5'), k6: $('kpiLbl6') };
   const aapBody = $('aapBody'), aapMeta = $('aapMeta');
   const sky = $('sky3d'), skyMode = $('skyMode'), skyClock = $('skyClock'), skySpeed = $('skySpeed'), skyCard = $('skyCard'), skyLabels = $('skyLabels');
+  const skyCompass = $('skyCompass'), skyNeedle = $('skyNeedle'), skyTime = $('skyTime'), skyRange = $('skyRange'), skyDay = $('skyDay'), skyPlay = $('skyPlay'),
+    skyHist = $('skyHist'), skyTicks = $('skyTicks'), skyLive = $('skyLive'), skyPathsInfo = $('skyPathsInfo');
   function setStatus(state, label, footMsg) { dot.dataset.state = state; statusLbl.dataset.state = state; statusLbl.textContent = label; if (footMsg != null) foot.innerHTML = footMsg; }
 
   // ─── State ───
@@ -1462,8 +1533,8 @@
   const altY = ft => ft === 'ground' || ft == null ? 0.3 : Math.max(0.3, ft * 0.0003048 * ALT_X);
 
   // ─── 3D scene (three.js is already on the page for the flight globe) ───
-  let T, renderer, scene, camera, raycaster, arrowGeo, glowTex, sweep, sweepAngle = 0, pulse, onScreen = false, built = false;
-  const cam = { r: 520, pol: 0.95, az: 0.6, tr: null, tween: null, lastUser: 0 };
+  let T, renderer, scene, camera, raycaster, arrowGeo, glowTex, onScreen = false, built = false;
+  const cam = { r: 520, pol: 0.95, az: 0, tr: null, tween: null, lastUser: 0 };
   function buildScene() {
     T = window.THREE;
     try { renderer = new T.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' }); }
@@ -1492,21 +1563,10 @@
     scene.add(new T.LineSegments(new T.BufferGeometry().setFromPoints(ticks), ringMat));
     const cross = [new T.Vector3(-RANGE_KM, 0.04, 0), new T.Vector3(RANGE_KM, 0.04, 0), new T.Vector3(0, 0.04, -RANGE_KM), new T.Vector3(0, 0.04, RANGE_KM)];
     scene.add(new T.LineSegments(new T.BufferGeometry().setFromPoints(cross), new T.LineBasicMaterial({ color: 0x6a8db5, transparent: true, opacity: 0.12 })));
-    // Sweep: a fading wedge that turns once every six seconds
-    const wedgeN = 48, wpos = [0, 0.1, 0], wcol = [0.42, 0.75, 1];
-    for (let i = 0; i <= wedgeN; i++) { const a = -i / wedgeN * 0.9; wpos.push(RANGE_KM * Math.sin(a), 0.1, -RANGE_KM * Math.cos(a)); const f = 1 - i / wedgeN; wcol.push(0.42 * f, 0.75 * f, 1 * f); }
-    const widx = []; for (let i = 1; i <= wedgeN; i++) widx.push(0, i, i + 1);
-    const wg = new T.BufferGeometry(); wg.setAttribute('position', new T.Float32BufferAttribute(wpos, 3)); wg.setAttribute('color', new T.Float32BufferAttribute(wcol, 3)); wg.setIndex(widx);
-    sweep = new T.Mesh(wg, new T.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.32, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }));
-    scene.add(sweep);
-    const lead = new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(0, 0.12, 0), new T.Vector3(0, 0.12, -RANGE_KM)]), new T.LineBasicMaterial({ color: 0x9cd2ff, transparent: true, opacity: 0.8 }));
-    sweep.add(lead);
-    // The antenna: a mast with a pulse going out
+    // The antenna
     const mast = new T.Mesh(new T.CylinderGeometry(0.6, 1.2, 14, 12), new T.MeshBasicMaterial({ color: 0xe8dcc4 }));
     mast.position.y = 7; scene.add(mast);
     const tip = new T.Mesh(new T.SphereGeometry(1.6, 16, 12), new T.MeshBasicMaterial({ color: 0xffd9a0 })); tip.position.y = 14.5; scene.add(tip);
-    pulse = new T.Mesh(new T.RingGeometry(0.92, 1, 64), new T.MeshBasicMaterial({ color: 0x9cd2ff, transparent: true, opacity: 0.6, side: T.DoubleSide, depthWrite: false }));
-    pulse.rotation.x = -Math.PI / 2; pulse.position.y = 0.2; scene.add(pulse);
     // Glow sprite texture and the aircraft shape
     const gc = document.createElement('canvas'); gc.width = gc.height = 64;
     { const g = gc.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.25, 'rgba(255,255,255,0.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); }
@@ -1546,6 +1606,7 @@
   const PLACES = [['Aarhus', 56.162, 10.203], ['Aalborg', 57.048, 9.92], ['Billund', 55.74, 9.15], ['Copenhagen', 55.676, 12.568], ['Hamburg', 53.551, 9.993], ['Gothenburg', 57.709, 11.974], ['Odense', 55.403, 10.402]];
   const placeEls = [];
   function addPlaceLabels() {
+    for (const [n, a] of [['N', 0], ['E', 90], ['S', 180], ['W', 270]]) { const d = document.createElement('div'); d.className = 'sky-place sky-cardinal'; d.textContent = n; skyLabels.appendChild(d); const r = RANGE_KM + 14, rad = a * Math.PI / 180; placeEls.push({ el: d, v: new T.Vector3(r * Math.sin(rad), 0.5, -r * Math.cos(rad)) }); }
     for (const [n, la, lo] of PLACES) { const d = document.createElement('div'); d.className = 'sky-place'; d.textContent = n; skyLabels.appendChild(d); placeEls.push({ el: d, v: new T.Vector3(kmX(lo), 0.5, -kmN(la)) }); }
   }
   const VIEWS = { radar: { r: 640, pol: 0.03 }, tilt: { r: 560, pol: 0.95 }, low: { r: 430, pol: 1.38 } };
@@ -1555,6 +1616,11 @@
     if (instant) { cam.r = t.r; cam.pol = t.pol; return; }
     cam.tween = { r0: cam.r, p0: cam.pol, r1: t.r, p1: t.pol, k: 0 };
   }
+  // Compass: the needle shows where north is on screen; a click turns the view back to north-up
+  skyCompass.addEventListener('click', () => {
+    const a0 = ((cam.az % (Math.PI * 2)) + Math.PI * 3) % (Math.PI * 2) - Math.PI;   // shortest way round
+    cam.tween = { r0: cam.r, p0: cam.pol, r1: cam.r, p1: cam.pol, a0, a1: 0, k: 0 };
+  });
   document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => { setView(b.dataset.view); cam.lastUser = performance.now(); }));
   function resize() {
     if (!renderer) return; const w = sky.clientWidth, h = sky.clientHeight; if (!w || !h) return;
@@ -1563,7 +1629,7 @@
 
   // ─── Aircraft objects ───
   function makePlane(hex) {
-    const p = { hex, data: null, pos: null, tgt: new T.Vector3(), cur: null, hist: [], ping: 0, seenAt: 0 };
+    const p = { hex, data: null, pos: null, tgt: new T.Vector3(), cur: null, hist: [], seenAt: 0 };
     const col = new T.Color('#ffffff');
     p.g = new T.Group();
     p.body = new T.Mesh(arrowGeo, new T.MeshBasicMaterial({ color: col }));
@@ -1677,15 +1743,15 @@
     return null;
   }
   function startLive(first) {
-    mode = 'live'; simT = Date.now() / 1000; skySpeed.hidden = true;
+    mode = 'live'; simT = Date.now() / 1000; skySpeed.hidden = true; skyTime.hidden = false; skyLive.hidden = true; skyTime.classList.add('is-live');
     skyMode.textContent = 'Live'; skyMode.dataset.state = 'live';
     setStatus('live', 'Feeding live', `Live from this receiver · aircraft every ${POLL_MS / 1000} s`);
     subtitle.textContent = 'tar1090 · readsb · Aarhus, Denmark';
     L.k4.textContent = 'msgs / sec'; L.k5.textContent = 'avg signal (dBFS)'; L.k6.textContent = 'uptime';
     const take = d => { ingest(normalize(d), Date.now() / 1000); kpis({ total: (d.aircraft || []).length }); renderTable(); updateCard(); tick.innerHTML = `Updated · <strong>${fmtClock(Date.now() / 1000)}</strong>`; };
     take(first);
-    liveTimer = setInterval(() => fetchJSON(liveBase + 'aircraft.json').then(take).catch(() => setStatus('loading', 'Reconnecting…')), POLL_MS);
-    const stats = () => fetchJSON(liveBase + 'stats.json').then(s => {
+    liveTimer = setInterval(() => mode === 'live' && fetchJSON(liveBase + 'aircraft.json').then(take).catch(() => setStatus('loading', 'Reconnecting…')), POLL_MS);
+    const stats = () => mode === 'live' && fetchJSON(liveBase + 'stats.json').then(s => {
       const latest = s.latest || s.last1min || {}, total = s.total || {}, local = latest.local || total.local || {};
       const win = latest.end && latest.start ? Math.max(1, latest.end - latest.start) : 60;
       K.k4.textContent = latest.messages ? Math.round(latest.messages / win).toLocaleString() : '—';
@@ -1693,45 +1759,68 @@
       K.k6.textContent = fmtUptime(total.end && total.start ? total.end - total.start : null);
     }).catch(() => {});
     stats(); statsTimer = setInterval(stats, STATS_MS);
+    // the time bar shows the last recorded day; picking a moment switches to the replay
+    loadManifest().then(() => loadDay(snaps.length - 1)).then(d => { if (mode !== 'live') return; buildTimebar(d); skyDay.value = String(d.i); skyRange.value = d.frameTs[0] + (Date.now() / 1000) % 86400; }).catch(() => {});
   }
 
   // ─── Source 2: replay of this antenna's own recording ───
-  let frames = null, frameTs = [], fi = 0, recDay = '', recUnique = 0;
-  async function startRecord() {
+  // Each day is one Parquet file from OvrHead: a snapshot of every aircraft every 30 s.
+  let man = null, snaps = [], hp = null, hz = null, D = null, frames = null, frameTs = [], fi = 0, playing = true, scrubbing = false;
+  const days = new Map();
+  async function loadManifest() {
+    if (man) return;
+    man = await fetchJSON(RECORD_BASE + 'manifest.json');
+    snaps = (man.snapshots || []).filter(s => s.bytes > 100000).slice(-7);        // the last full week
+    if (!snaps.length) throw new Error('no snapshots');
+    if (mode !== 'live' && man.origin && man.origin.lat != null) rx = { lat: man.origin.lat, lon: man.origin.lng ?? man.origin.lon };
+    skyDay.innerHTML = snaps.map((s, i) => `<option value="${i}">${dayLabel(dayOf(s))}</option>`).reverse().join('');
+  }
+  const dayOf = s => (s.name.match(/(\d{4}-\d{2}-\d{2})/) || [])[1] || '';
+  const dayLabel = d => d ? new Date(d + 'T12:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+  async function loadDay(i) {
+    if (days.has(i)) return days.get(i);
+    if (!hp) [hp, hz] = await Promise.all([import(HYPARQUET), import(HYPARQUET_Z)]);
+    const snap = snaps[i];
+    const buf = await fetch(RECORD_BASE + snap.path.replace(/^data\/adsb\//, '')).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); });
+    const rows = await hp.parquetReadObjects({ file: buf, compressors: hz.compressors, columns: ['ts', 'hex', 'flight', 'lat', 'lon', 'alt_baro', 'gs', 'track', 'squawk', 'seen_pos'] });
+    const fr = new Map(), tracks = new Map();
+    for (const r of rows) {
+      const ts = Number(r.ts); let f = fr.get(ts); if (!f) fr.set(ts, f = []);
+      const alt = r.alt_baro == null ? null : Number(r.alt_baro);
+      f.push({ hex: r.hex, flight: (r.flight || '').trim(), lat: r.lat, lon: r.lon, alt_baro: alt, gs: r.gs, track: r.track, squawk: r.squawk, seen_pos: r.seen_pos });
+      if (r.lat != null && r.lon != null) { let tk = tracks.get(r.hex); if (!tk) tracks.set(r.hex, tk = []); tk.push([ts, r.lat, r.lon, alt]); }
+    }
+    const ts = [...fr.keys()].sort((a, b) => a - b);
+    const d = { i, day: dayOf(snap), frames: fr, frameTs: ts, tracks, unique: new Set(rows.map(r => r.hex)).size };
+    days.set(i, d); return d;
+  }
+  async function startRecord(i, at) {
     setStatus('loading', 'Loading the record…', 'Reading the antenna’s recording from OvrHead…');
     skyMode.textContent = 'Loading record'; skyMode.dataset.state = 'loading';
-    const man = await fetchJSON(RECORD_BASE + 'manifest.json');
-    const snaps = (man.snapshots || []).filter(s => s.bytes > 100000);
-    if (!snaps.length) throw new Error('no snapshots');
-    const snap = snaps[snaps.length - 1];
-    if (man.origin && man.origin.lat != null) rx = { lat: man.origin.lat, lon: man.origin.lng ?? man.origin.lon };
-    const [buf, hp, hz] = await Promise.all([
-      fetch(RECORD_BASE + snap.path.replace(/^data\/adsb\//, '')).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); }),
-      import(HYPARQUET), import(HYPARQUET_Z)
-    ]);
-    const rows = await hp.parquetReadObjects({ file: buf, compressors: hz.compressors, columns: ['ts', 'hex', 'flight', 'lat', 'lon', 'alt_baro', 'gs', 'track', 'squawk', 'seen_pos'] });
-    frames = new Map(); const hexes = new Set();
-    for (const r of rows) {
-      const ts = Number(r.ts); let f = frames.get(ts); if (!f) frames.set(ts, f = []);
-      hexes.add(r.hex);
-      f.push({ hex: r.hex, flight: (r.flight || '').trim(), lat: r.lat, lon: r.lon, alt_baro: r.alt_baro == null ? null : Number(r.alt_baro), gs: r.gs, track: r.track, squawk: r.squawk, seen_pos: r.seen_pos });
-    }
-    frameTs = [...frames.keys()].sort((a, b) => a - b);
-    recUnique = hexes.size;
-    recDay = (snap.name.match(/(\d{4}-\d{2}-\d{2})/) || [])[1] || '';
-    // Start at the same time of day as now, on the recorded day
-    const day0 = Math.floor(frameTs[0] / 86400) * 86400, want = day0 + (Date.now() / 1000) % 86400;
-    fi = frameTs.findIndex(t => t >= want); if (fi < 0) fi = 0;
-    // Warm up the trails with the previous ten minutes
-    for (let k = Math.max(0, fi - 20); k < fi; k++) { ingest(normalize({ aircraft: frames.get(frameTs[k]) }), frameTs[k]); for (const p of planes.values()) pushTrail(p, frameTs[k], true); }
-    simT = frameTs[fi]; applyFrame(fi);
-    mode = 'record'; skySpeed.hidden = false;
-    const dayTxt = recDay ? new Date(recDay + 'T12:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'the last full day';
+    await loadManifest();
+    if (i == null) i = snaps.length - 1;
+    D = await loadDay(i); frames = D.frames; frameTs = D.frameTs;
+    mode = 'record'; skySpeed.hidden = false; skyTime.hidden = false; skyTime.classList.remove('is-live'); skyLive.hidden = !liveBase;
+    skyDay.value = String(i);
+    // default: the same time of day as now, on the recorded day
+    const day0 = Math.floor(frameTs[0] / 86400) * 86400;
+    buildTimebar();
+    jumpTo(at != null ? at : day0 + (Date.now() / 1000) % 86400);
+    const dayTxt = dayLabel(D.day) || 'the last full day';
     skyMode.textContent = `Replay · ${dayTxt}`; skyMode.dataset.state = 'record';
-    setStatus('replay', 'Replaying the record', `The live feed only reaches this page from the home network. Elsewhere you see this antenna’s own recording from ${dayTxt}, at the same time of day, published daily by <a href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">OvrHead</a>.`);
+    setStatus('replay', 'Replaying the record', `The live feed only reaches this page from the home network. Elsewhere you see this antenna’s own recording, published daily by <a href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">OvrHead</a>. Pick any day of the last week and any hour.`);
     subtitle.textContent = `Recording · ${dayTxt} · Aarhus, Denmark`;
     L.k4.textContent = 'recorded on'; L.k5.textContent = 'aircraft that day'; L.k6.textContent = 'snapshots that day';
-    K.k4.textContent = dayTxt; K.k5.textContent = recUnique.toLocaleString(); K.k6.textContent = frameTs.length.toLocaleString();
+    K.k4.textContent = dayTxt; K.k5.textContent = D.unique.toLocaleString(); K.k6.textContent = frameTs.length.toLocaleString();
+    if (pathsMode === 'day') setPaths('day');
+  }
+  // Jump to a moment: clear the sky, rebuild the last ten minutes of trails, carry on from there
+  function jumpTo(t) {
+    for (const p of [...planes.values()]) dropPlane(p);
+    fi = frameTs.findIndex(x => x >= t); if (fi < 0) fi = frameTs.length - 1;
+    for (let k = Math.max(0, fi - 20); k < fi; k++) { ingest(normalize({ aircraft: frames.get(frameTs[k]) }), frameTs[k]); for (const p of planes.values()) pushTrail(p, frameTs[k], true); }
+    simT = frameTs[fi]; applyFrame(fi);
+    skyRange.value = simT; skyClock.textContent = fmtClock(simT);
   }
   function applyFrame(k) {
     const f = frames.get(frameTs[k]);
@@ -1739,15 +1828,83 @@
     kpis({ total: f.length }); renderTable(); updateCard();
   }
   function stepRecord(dt) {
+    if (!playing || scrubbing) return;
     simT += dt * speed;
     while (fi + 1 < frameTs.length && frameTs[fi + 1] <= simT) { fi++; applyFrame(fi); }
-    if (fi + 1 >= frameTs.length && simT > frameTs[fi] + 60) { fi = 0; simT = frameTs[0]; for (const p of [...planes.values()]) dropPlane(p); applyFrame(0); }
+    if (fi + 1 >= frameTs.length && simT > frameTs[fi] + 60) jumpTo(frameTs[0]);
   }
-  document.querySelectorAll('[data-spd]').forEach(b => b.addEventListener('click', () => { speed = +b.dataset.spd; document.querySelectorAll('[data-spd]').forEach(x => x.setAttribute('aria-pressed', x === b)); }));
+  // Time bar: traffic through the day behind the slider, hour marks in Danish time
+  const hourCph = ts => +new Date(ts * 1000).toLocaleString('en-GB', { hour: '2-digit', hour12: false, timeZone: 'Europe/Copenhagen' }) % 24;
+  function buildTimebar(d = D) {
+    const frameTs = d.frameTs, frames = d.frames, t0 = frameTs[0], t1 = frameTs[frameTs.length - 1], span = Math.max(1, t1 - t0);
+    skyRange.min = t0; skyRange.max = t1; skyRange.step = 30;
+    const B = 144, cnt = new Array(B).fill(0), n = new Array(B).fill(0);
+    for (const ts of frameTs) { const b = Math.min(B - 1, Math.floor((ts - t0) / span * B)); cnt[b] += frames.get(ts).filter(a => a.lat != null).length; n[b]++; }
+    const avg = cnt.map((c, i) => n[i] ? c / n[i] : 0), mx = Math.max(1, ...avg);
+    skyHist.innerHTML = avg.map((v, i) => `<rect x="${i}" y="${(24 - v / mx * 22).toFixed(1)}" width="0.8" height="${(v / mx * 22).toFixed(1)}"/>`).join('');
+    let ticks = '';
+    for (let ts = Math.ceil(t0 / 3600) * 3600; ts <= t1; ts += 3600) { const h = hourCph(ts); if (h % 3 === 0) ticks += `<span style="left:${((ts - t0) / span * 100).toFixed(2)}%">${String(h).padStart(2, '0')}</span>`; }
+    skyTicks.innerHTML = ticks;
+  }
+  skyRange.addEventListener('input', () => {
+    scrubbing = true; const t = +skyRange.value;
+    if (mode !== 'record') return;
+    simT = t; skyClock.textContent = fmtClock(t);
+  });
+  skyRange.addEventListener('change', async () => {
+    const t = +skyRange.value;
+    if (mode === 'live') { scrubbing = false; await startRecord(+skyDay.value, t); return; }
+    scrubbing = false; jumpTo(t);
+  });
+  skyDay.addEventListener('change', async () => {
+    const i = +skyDay.value, frac = frameTs.length ? (simT - frameTs[0]) / 86400 : 0;
+    await loadManifest(); const d = await loadDay(i);
+    await startRecord(i, d.frameTs[0] + Math.max(0, frac) * 86400);
+  });
+  skyPlay.addEventListener('click', () => { playing = !playing; skyPlay.setAttribute('aria-pressed', !playing); skyPlay.setAttribute('aria-label', playing ? 'Pause' : 'Play'); });
+  skyLive.addEventListener('click', () => { if (!liveBase) return; for (const p of [...planes.values()]) dropPlane(p); fetchJSON(liveBase + 'aircraft.json').then(d => { clearInterval(liveTimer); clearInterval(statsTimer); startLive(d); }).catch(() => {}); });
+  document.querySelectorAll('[data-spd]').forEach(b => b.addEventListener('click', () => { speed = +b.dataset.spd; playing = true; skyPlay.setAttribute('aria-pressed', false); document.querySelectorAll('[data-spd]').forEach(x => x.setAttribute('aria-pressed', x === b)); }));
+
+  // ─── Paths: every track from the day, or the whole week, drawn in 3D ───
+  let pathsMode = 'off', pathsObj = null, pathsJob = 0;
+  async function setPaths(m) {
+    pathsMode = m; const job = ++pathsJob;
+    document.querySelectorAll('[data-paths]').forEach(b => b.setAttribute('aria-pressed', b.dataset.paths === m));
+    if (pathsObj) { scene.remove(pathsObj); pathsObj.geometry.dispose(); pathsObj.material.dispose(); pathsObj = null; }
+    skyPathsInfo.textContent = '';
+    if (m === 'off') return;
+    try {
+      await loadManifest();
+      const want = m === 'day' ? [D ? D.i : snaps.length - 1] : snaps.map((_, i) => i);
+      const list = [];
+      for (const i of want) { skyPathsInfo.textContent = `Loading ${list.length + 1} / ${want.length}…`; list.push(await loadDay(i)); if (job !== pathsJob) return; }
+      const pos = [], col = [], c = new T.Color(), hexes = new Set();
+      let segs = 0;
+      for (const d of list) for (const [hex, tk] of d.tracks) {
+        hexes.add(hex);
+        for (let k = 1; k < tk.length; k++) {
+          const [t0, la0, lo0, al0] = tk[k - 1], [t1, la1, lo1, al1] = tk[k];
+          if (t1 - t0 > 300) continue;                              // a gap: the aircraft left and came back
+          const x0 = kmX(lo0), z0 = -kmN(la0), x1 = kmX(lo1), z1 = -kmN(la1);
+          if ((x1 - x0) ** 2 + (z1 - z0) ** 2 > 40 * 40) continue;    // a bad position fix
+          if (x0 * x0 + z0 * z0 > RANGE_KM * RANGE_KM * 1.1) continue;
+          pos.push(x0, altY(al0), z0, x1, altY(al1), z1);
+          c.set(altitudeColor(al0)); col.push(c.r, c.g, c.b); c.set(altitudeColor(al1)); col.push(c.r, c.g, c.b);
+          segs++;
+        }
+      }
+      const g = new T.BufferGeometry();
+      g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new T.Float32BufferAttribute(col, 3));
+      pathsObj = new T.LineSegments(g, new T.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: m === 'week' ? 0.16 : 0.32, blending: T.AdditiveBlending, depthWrite: false }));
+      scene.add(pathsObj);
+      skyPathsInfo.textContent = `${hexes.size.toLocaleString()} aircraft · ${m === 'week' ? list.length + ' days' : dayLabel(list[0].day)}`;
+    } catch (e) { console.error('[adsb] paths failed', e); skyPathsInfo.textContent = 'Couldn’t load the record'; }
+  }
+  document.querySelectorAll('[data-paths]').forEach(b => b.addEventListener('click', () => setPaths(b.dataset.paths)));
 
   // ─── Source 3: synthetic traffic ───
   function startDemo(reason) {
-    mode = 'demo'; simT = Date.now() / 1000; skySpeed.hidden = true;
+    mode = 'demo'; simT = Date.now() / 1000; skySpeed.hidden = true; skyTime.hidden = true;
     skyMode.textContent = 'Demo traffic'; skyMode.dataset.state = 'demo'; subtitle.textContent = 'Synthetic traffic · Aarhus, Denmark';
     setStatus('offline', reason ? 'No data' : 'Demo mode', reason ? `Couldn’t reach the receiver or the record (${reason}). Showing synthetic traffic.` : 'Synthetic aircraft. Remove <code>?demo=1</code> to see real data.');
     const r = (s => () => (s = (s * 16807) % 2147483647) / 2147483647)(7);
@@ -1761,7 +1918,7 @@
     setInterval(() => { const t = Date.now() / 1000; for (const p of planes.values()) { const a = p.data; const q = reckon(p, t, new T.Vector3()); a.lon = rx.lon + q.x / (111.32 * Math.cos(rx.lat * Math.PI / 180)); a.lat = rx.lat - q.z / 110.574; p.t0 = t; p.seenAt = t; if (haversineKm(rx.lat, rx.lon, a.lat, a.lon) > RANGE_KM) { a.track = (a.track + 180) % 360; } } kpis({}); renderTable(); updateCard(); }, 3000);
   }
 
-  // ─── Per frame: move, trail, sweep, labels ───
+  // ─── Per frame: move, trail, labels ───
   function pushTrail(p, t, force) {
     const v = reckon(p, t, new T.Vector3());
     const last = p.hist[p.hist.length - 1];
@@ -1775,16 +1932,10 @@
     frameN++;
     if (mode === 'record') stepRecord(dt); else simT = Date.now() / 1000;
     // Camera
-    if (cam.tween) { const tw = cam.tween; tw.k = Math.min(1, tw.k + dt / 0.9); const e = tw.k * tw.k * (3 - 2 * tw.k); cam.r = tw.r0 + (tw.r1 - tw.r0) * e; cam.pol = tw.p0 + (tw.p1 - tw.p0) * e; if (tw.k >= 1) cam.tween = null; }
-    if (now - cam.lastUser > 7000) cam.az += dt * 0.05;
+    if (cam.tween) { const tw = cam.tween; tw.k = Math.min(1, tw.k + dt / 0.9); const e = tw.k * tw.k * (3 - 2 * tw.k); cam.r = tw.r0 + (tw.r1 - tw.r0) * e; cam.pol = tw.p0 + (tw.p1 - tw.p0) * e; if (tw.a1 != null) cam.az = tw.a0 + (tw.a1 - tw.a0) * e; if (tw.k >= 1) cam.tween = null; }
     camera.position.set(cam.r * Math.sin(cam.pol) * Math.sin(cam.az), cam.r * Math.cos(cam.pol) + 8, cam.r * Math.sin(cam.pol) * Math.cos(cam.az));
     camera.lookAt(0, cam.pol > 1.2 ? 30 : 0, 0);
-    // Sweep and antenna pulse
-    sweepAngle = (sweepAngle + dt * Math.PI * 2 / 6) % (Math.PI * 2);
-    sweep.rotation.y = -sweepAngle;
-    const pk = (now / 2000) % 1; pulse.scale.setScalar(4 + pk * 60); pulse.material.opacity = 0.55 * (1 - pk);
     // Aircraft
-    const sweepDeg = sweepAngle * 180 / Math.PI;
     for (const p of planes.values()) {
       if (!p.data) continue;
       reckon(p, simT, p.tgt);
@@ -1797,19 +1948,15 @@
       const ta = p.trail.geometry.attributes.position, n = p.hist.length;
       for (let i = 0; i < n; i++) ta.setXYZ(i, p.hist[i].x, p.hist[i].y, p.hist[i].z);
       ta.needsUpdate = true; p.trail.geometry.setDrawRange(0, n);
-      // Light up as the sweep passes over it
-      const diff = ((sweepDeg - (p.data.brg || 0)) % 360 + 360) % 360;
-      if (diff < 4) p.ping = 1;
-      p.ping *= Math.exp(-dt * 1.4);
       const sel = p.hex === selected;
-      const s = (sel ? 26 : 13) + 14 * p.ping; p.glow.scale.set(s, s, 1);
-      p.glow.material.opacity = (p.data.stale ? 0.3 : 0.55) + 0.45 * p.ping;
+      const s = sel ? 26 : 13; p.glow.scale.set(s, s, 1);
+      p.glow.material.opacity = p.data.stale ? 0.3 : 0.6;
       p.body.scale.setScalar(sel ? 1.6 : 1);
     }
     renderer.render(scene, camera);
     // HTML labels: places, the selected flight and the nearest few
     const w = sky.clientWidth, h = sky.clientHeight, proj = new T.Vector3();
-    for (const pl of placeEls) { proj.copy(pl.v).project(camera); const vis = proj.z < 1 && Math.abs(proj.x) < 1.05 && Math.abs(proj.y) < 1.05; pl.el.style.opacity = vis ? 0.75 : 0; if (vis) pl.el.style.transform = `translate(${(proj.x * 0.5 + 0.5) * w}px,${(-proj.y * 0.5 + 0.5) * h}px) translate(-50%,-50%)`; }
+    for (const pl of placeEls) { proj.copy(pl.v).project(camera); const vis = proj.z < 1 && Math.abs(proj.x) < 1.05 && Math.abs(proj.y) < 1.05; pl.el.style.opacity = vis ? 1 : 0; if (vis) pl.el.style.transform = `translate(${(proj.x * 0.5 + 0.5) * w}px,${(-proj.y * 0.5 + 0.5) * h}px) translate(-50%,-50%)`; }
     const near = [...planes.values()].filter(p => p.data && p.cur).sort((a, b) => a.data.dist - b.data.dist);
     const show = new Set(near.slice(0, 7).map(p => p.hex)); if (selected) show.add(selected);
     for (const p of planes.values()) {
@@ -1821,7 +1968,10 @@
       p.label.textContent = `${p.data.flight || p.hex.toUpperCase()} · ${fmtAlt(p.data.altFt)}`;
       p.label.style.transform = `translate(${(proj.x * 0.5 + 0.5) * w + 10}px,${(-proj.y * 0.5 + 0.5) * h - 10}px)`;
     }
-    if (frameN % 15 === 0) skyClock.textContent = fmtClock(simT);
+    // compass needle: screen direction of north from the antenna
+    { const o = proj.set(0, 0, 0).project(camera), ox = o.x, oy = o.y, n = proj.set(0, 0, -100).project(camera);
+      const ang = Math.atan2((n.x - ox) * w, (n.y - oy) * h); skyNeedle.style.transform = `rotate(${ang}rad)`; }
+    if (frameN % 15 === 0) { skyClock.textContent = fmtClock(simT); if (mode === 'record' && !scrubbing) skyRange.value = simT; }
   }
 
   // ─── Boot when the section comes into view ───
