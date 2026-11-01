@@ -104,7 +104,7 @@
     .hero p { color: rgba(255,255,255,0.82); max-width: 760px; font-size: 1.02rem; }
 
     /* ── SIMULATOR ── */
-    .sim { max-width: 1400px; margin: -1px auto 0; padding: 1.5rem 2.5rem 0; display: grid; grid-template-columns: 150px minmax(0, 1fr) 340px; gap: 1rem 1.5rem; }
+    .sim { max-width: 1400px; margin: -1px auto 0; padding: 1.5rem 2.5rem 0; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 1rem; }
     .stage {
       position: relative; height: clamp(520px, calc(100vh - 150px), 860px);
       border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
@@ -115,8 +115,14 @@
     .stage canvas { display: block; width: 100%; height: 100%; outline: none; }
     .stage-hud { position: absolute; left: 14px; top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--mute); pointer-events: none; line-height: 1.5; }
     .stage-hud b { color: var(--dim); font-weight: 500; }
-    .tour-badge { position: absolute; right: 14px; top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fff; background: var(--blue); border-radius: 999px; padding: 4px 10px; opacity: 0; transition: opacity 0.4s; pointer-events: none; }
-    .tour-badge.on { opacity: 1; }
+    /* Auto tour: the main call to action on the viewer */
+    .tour-btn { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); z-index: 2; display: inline-flex; align-items: center; gap: 0.55rem; font: inherit; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.01em; color: #fff; background: var(--blue); border: none; border-radius: 999px; padding: 0.55rem 1.15rem 0.55rem 0.95rem; cursor: pointer; box-shadow: 0 8px 22px -10px rgba(11,42,74,0.7), 0 0 0 4px rgba(17,73,123,0.12); transition: background 0.2s, box-shadow 0.2s; white-space: nowrap; }
+    .tour-btn:hover { background: var(--blue-2); }
+    .tour-btn:focus-visible { outline: 2px solid var(--blue-2); outline-offset: 3px; }
+    .tour-dot { width: 0; height: 0; border-style: solid; border-width: 5px 0 5px 8px; border-color: transparent transparent transparent #fff; }
+    .tour-btn[aria-pressed="true"] { background: var(--red); box-shadow: 0 8px 22px -10px rgba(200,16,46,0.7), 0 0 0 4px rgba(200,16,46,0.14); }
+    .tour-btn[aria-pressed="true"] .tour-dot { width: 8px; height: 8px; border: none; border-radius: 50%; background: #fff; animation: tourPulse 1.4s ease-in-out infinite; }
+    @keyframes tourPulse { 50% { opacity: 0.35; } }
     .labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
     /* Part callouts: a dot on the part, a hairline and a small caption, no boxes */
     .tag { position: absolute; left: 0; top: 0; margin-top: -22px; transform: translate(-50%, -100%); white-space: nowrap; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); background: rgba(255,255,255,0.62); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 3px; padding: 1px 5px; transition: opacity 0.3s; }
@@ -134,6 +140,7 @@
     .btn[aria-pressed="true"] { color: #fff; background: var(--blue); border-color: var(--blue); }
     .btn:focus-visible { outline: 2px solid var(--blue-2); outline-offset: 2px; }
     .toggles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 0.75rem; }
+    .toggles.two { grid-template-columns: repeat(2, 1fr); margin-top: 6px; }
     .row { margin-top: 0.65rem; }
     .row label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--dim); margin-bottom: 0.25rem; }
     .row label output { font-family: 'JetBrains Mono', monospace; color: var(--text); }
@@ -152,11 +159,12 @@
     .fallback { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 2rem; color: var(--dim); background: rgba(243,245,248,0.92); }
 
     /* Duty point: bare numbers beside the 3D view, like the flight log's figures beside the globe */
-    .figs { display: flex; flex-direction: column; justify-content: center; gap: clamp(0.45rem, 1.5vh, 1.05rem); min-width: 0; }
-    .fig-num { font-size: clamp(1.3rem, min(2vw, 3.2vh), 1.95rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; background: linear-gradient(135deg, var(--navy), var(--blue-2)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .fig-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.14em; color: var(--blue-2); text-transform: uppercase; margin-top: 0.3rem; }
-    .fig-lbl { font-size: 0.74rem; color: var(--mute); margin-top: 0.15rem; line-height: 1.3; }
+    .figs { position: absolute; left: 18px; top: 58px; bottom: 58px; z-index: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(0.4rem, 1.4vh, 0.95rem); pointer-events: none; }
+    .fig-num { font-size: clamp(1.2rem, min(1.8vw, 3vh), 1.75rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; background: linear-gradient(135deg, var(--navy), var(--blue-2)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .fig-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.1em; color: var(--blue-2); -webkit-text-fill-color: var(--blue-2); text-transform: uppercase; margin-left: 0.35rem; vertical-align: 0.15em; }
+    .fig-lbl { font-size: 0.72rem; color: var(--mute); margin-top: 0.2rem; line-height: 1.25; }
     .fig.hot .fig-num { background: linear-gradient(135deg, #8e0b21, var(--red)); -webkit-background-clip: text; background-clip: text; }
+    .fig.hot .fig-unit { color: var(--red); -webkit-text-fill-color: var(--red); }
     .stage .flag { position: absolute; left: 12px; bottom: 12px; max-width: min(560px, calc(100% - 24px)); margin: 0; font-size: 0.78rem; line-height: 1.45; color: var(--navy); background: rgba(255,255,255,0.88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-left: 3px solid var(--red); border-radius: 4px; padding: 0.4rem 0.7rem; pointer-events: none; }
     .stage .flag:empty { display: none; }
 
@@ -246,8 +254,6 @@
     }
     @media (max-width: 1024px) {
       .sim { grid-template-columns: 1fr; }
-      .figs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1rem 1.2rem; order: 2; }
-      .stage { order: 1; } .panel { order: 3; }
       .eng-grid { grid-template-columns: 1fr; }
       .panel { display: grid; grid-template-columns: 1fr 1fr; }
     }
@@ -263,7 +269,9 @@
       .bar b { grid-column: 1 / -1; text-align: left; }
       #chart { height: 360px; }
       .grid { grid-template-columns: 1fr; }
-      .figs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .figs { position: static; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.9rem 1rem; padding: 0.9rem 16px; background: #fff; border-top: 1px solid var(--line); }
+      .tour-btn { top: 10px; font-size: 0.78rem; padding: 0.45rem 0.95rem 0.45rem 0.8rem; }
+      .stage-hud { display: none; }
       .stage .flag { position: static; max-width: none; border-radius: 0; }
       .stage { display: flex; flex-direction: column; height: auto; }
       .stage canvas { height: 56vh; min-height: 340px; }
@@ -341,27 +349,45 @@
 </header></div>
 
 <section class="sim" aria-label="Pump simulator">
-  <div class="figs" aria-live="polite" aria-label="Duty point">
-    <div class="fig"><div class="fig-num" id="rSpeed">–</div><div class="fig-unit">rpm</div><div class="fig-lbl">Impeller speed</div></div>
-    <div class="fig"><div class="fig-num" id="rQ">–</div><div class="fig-unit">m³/h</div><div class="fig-lbl">Flow, estimated</div></div>
-    <div class="fig"><div class="fig-num" id="rH">–</div><div class="fig-unit">m</div><div class="fig-lbl">Head</div></div>
-    <div class="fig"><div class="fig-num" id="rDp">–</div><div class="fig-unit">kPa</div><div class="fig-lbl">Δp at the sensor</div></div>
-    <div class="fig hot"><div class="fig-num" id="rP">–</div><div class="fig-unit">W</div><div class="fig-lbl">Power in, P1</div></div>
-    <div class="fig"><div class="fig-num" id="rEta">–</div><div class="fig-unit">%</div><div class="fig-lbl">Wire to water</div></div>
-    <div class="fig"><div class="fig-num" id="rI">–</div><div class="fig-unit">A</div><div class="fig-lbl">Current</div></div>
-    <div class="fig"><div class="fig-num" id="rT">–</div><div class="fig-unit">N·m</div><div class="fig-lbl">Shaft torque</div></div>
-    <div class="fig"><div class="fig-num" id="rNpsh">–</div><div class="fig-unit">m</div><div class="fig-lbl">NPSH available</div></div>
-  </div>
   <div class="stage" id="stage">
     <div class="labels" id="labels"></div>
     <div class="stage-hud" id="hud">Drag to orbit · scroll to zoom<br><b id="hudSpeed">Visual speed 1/20 of real rpm</b></div>
-    <div class="tour-badge" id="tourBadge">Auto tour · touch to take over</div>
+    <button class="tour-btn" id="tTour" aria-pressed="false"><span class="tour-dot"></span><span id="tourTxt">Start auto tour</span></button>
+    <div class="figs" aria-live="polite" aria-label="Duty point">
+      <div class="fig"><div class="fig-num"><span id="rSpeed">–</span><span class="fig-unit">rpm</span></div><div class="fig-lbl">Impeller speed</div></div>
+      <div class="fig"><div class="fig-num"><span id="rQ">–</span><span class="fig-unit">m³/h</span></div><div class="fig-lbl">Flow, estimated</div></div>
+      <div class="fig"><div class="fig-num"><span id="rH">–</span><span class="fig-unit">m</span></div><div class="fig-lbl">Head</div></div>
+      <div class="fig"><div class="fig-num"><span id="rDp">–</span><span class="fig-unit">kPa</span></div><div class="fig-lbl">Δp at the sensor</div></div>
+      <div class="fig hot"><div class="fig-num"><span id="rP">–</span><span class="fig-unit">W</span></div><div class="fig-lbl">Power in, P1</div></div>
+      <div class="fig"><div class="fig-num"><span id="rEta">–</span><span class="fig-unit">%</span></div><div class="fig-lbl">Wire to water</div></div>
+      <div class="fig"><div class="fig-num"><span id="rI">–</span><span class="fig-unit">A</span></div><div class="fig-lbl">Current</div></div>
+      <div class="fig"><div class="fig-num"><span id="rT">–</span><span class="fig-unit">N·m</span></div><div class="fig-lbl">Shaft torque</div></div>
+      <div class="fig"><div class="fig-num"><span id="rNpsh">–</span><span class="fig-unit">m</span></div><div class="fig-lbl">NPSH available</div></div>
+    </div>
     <div class="loading" id="loading">Loading the CAD model…</div>
     <div class="flag" id="flag" aria-live="polite"></div>
     <div class="fallback" id="fallback">This simulator needs WebGL, which isn't available in this browser.</div>
   </div>
 
   <aside class="panel">
+    <div class="card">
+      <h3>View</h3>
+      <div class="toggles" style="margin-top:0">
+        <button class="btn" id="tCut" aria-pressed="false">Cutaway</button>
+        <button class="btn" id="tFlow" aria-pressed="true">Flow</button>
+        <button class="btn" id="tLabels" aria-pressed="true">Labels</button>
+      </div>
+      <div class="toggles two">
+        <button class="btn" id="tReset">Reset view</button>
+        <button class="btn" id="tStop" aria-pressed="false">Stop pump</button>
+      </div>
+      <div class="row">
+        <label for="explode"><span>Exploded view</span><output id="explodeOut">0 %</output></label>
+        <input type="range" id="explode" min="0" max="100" step="1" value="0">
+      </div>
+      <div class="keys"><kbd>1</kbd>–<kbd>4</kbd> mode · <kbd>E</kbd> explode · <kbd>C</kbd> cut · <kbd>F</kbd> flow · <kbd>L</kbd> labels · <kbd>↑</kbd><kbd>↓</kbd> valves</div>
+    </div>
+
     <div class="card">
       <h3>Control mode</h3>
       <div class="modes" role="group" aria-label="Control mode">
@@ -386,21 +412,6 @@
         <label for="temp"><span id="tempLabel">Liquid temperature</span><output id="tempOut">60 °C</output></label>
         <input type="range" id="temp" min="-10" max="110" step="1" value="60">
       </div>
-      <div class="row">
-        <label for="explode"><span>Exploded view</span><output id="explodeOut">0 %</output></label>
-        <input type="range" id="explode" min="0" max="100" step="1" value="0">
-      </div>
-      <div class="toggles">
-        <button class="btn" id="tCut" aria-pressed="false">Cutaway</button>
-        <button class="btn" id="tFlow" aria-pressed="true">Flow</button>
-        <button class="btn" id="tLabels" aria-pressed="true">Labels</button>
-      </div>
-      <div class="toggles">
-        <button class="btn" id="tTour" aria-pressed="false">Auto tour</button>
-        <button class="btn" id="tReset">Reset view</button>
-        <button class="btn" id="tStop" aria-pressed="false">Stop pump</button>
-      </div>
-      <div class="keys"><kbd>1</kbd>–<kbd>4</kbd> mode · <kbd>E</kbd> explode · <kbd>C</kbd> cut · <kbd>F</kbd> flow · <kbd>L</kbd> labels · <kbd>↑</kbd><kbd>↓</kbd> valves</div>
     </div>
 
     <div class="card">
@@ -1642,7 +1653,7 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function setTour(on) {
     touring = on; tourT = 0; tourCutOwn = false;
-    $('tTour').setAttribute('aria-pressed', on); $('tourBadge').classList.toggle('on', on);
+    $('tTour').setAttribute('aria-pressed', on); $('tourTxt').textContent = on ? 'Auto tour on · tap to stop' : 'Start auto tour';
     if (on && !lowPower) setLabels(true);
   }
 
