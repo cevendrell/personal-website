@@ -2445,19 +2445,19 @@ function start() {
     // Light travelling down from the surface and then to the eye loses red first, then green
     vec3 water(vec3 col, vec3 wp) {
       float d = length(wp - uCam), z = max(0.0, -wp.y);
-      col *= exp(-vec3(0.36, 0.075, 0.04) * (z * 0.55 + d * 0.45));
+      col *= exp(-vec3(0.22, 0.06, 0.035) * (z * 0.5 + d * 0.4));
       return mix(col, fogCol(), clamp(1.0 - exp(-d * uDensity), 0.0, 1.0));
     }
-    // Sharp caustic net: light focused by the moving surface
+    // Caustic net: light focused by the moving surface (tileable form, stays within 0..~1.3)
     float caustic(vec2 p, float t) {
-      p *= 0.55; vec2 i = p; float c = 1.0;
-      for (int n = 0; n < 4; n++) {
+      p = mod(p * 0.5, 6.2831853) - 250.0; vec2 i = p; float c = 1.0;
+      for (int n = 0; n < 5; n++) {
         float tt = t * (1.0 - 3.5 / float(n + 1));
         i = p + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
-        c += 1.0 / length(vec2(p.x / (sin(i.x + tt) / 0.006), p.y / (cos(i.y + tt) / 0.006)));
+        c += 1.0 / length(vec2(p.x / (sin(i.x + tt) / 0.005), p.y / (cos(i.y + tt) / 0.005)));
       }
-      c = 1.17 - pow(c / 4.0, 1.4);
-      return pow(abs(c), 7.0);
+      c = 1.17 - pow(c / 5.0, 1.4);
+      return min(pow(abs(c), 8.0), 1.2);
     }
     float sunlight(float y) { return exp(y / 7.5) * uLight; }
   `;
@@ -2478,8 +2478,8 @@ function start() {
         float a = atan(d.x, -d.y), r = length(d);
         float rays = n1(a * 22.0 + uTime * 0.12) * n1(a * 9.0 - uTime * 0.07 + 3.0);
         rays = pow(rays, 2.2) * SS(1.6, 0.0, r) * uLight;
-        col += vec3(0.75, 0.95, 1.0) * rays * 0.22;
-        col += vec3(0.8, 0.97, 1.0) * SS(1.2, 0.0, r) * 0.10 * uLight;
+        col += vec3(0.62, 0.90, 0.96) * rays * 0.12;
+        col += vec3(0.62, 0.90, 0.96) * SS(1.2, 0.0, r) * 0.05 * uLight;
         // faint backscatter grain so flat gradients don't band
         col += (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) / 255.0;
         gl_FragColor = vec4(col, 1.0);
@@ -2502,9 +2502,9 @@ function start() {
         vec3 v = normalize(vW - uCam);
         float cosT = dot(v, n);                       // angle from the local surface normal
         float inside = smoothstep(0.63, 0.69, cosT);  // cos 48.6° ≈ 0.66: the critical angle for water
-        vec3 sky = vec3(0.86, 0.98, 1.0) * (0.85 + 0.6 * caustic(p * 1.4, t * 0.8));
+        vec3 sky = mix(uTop, vec3(0.80, 0.95, 0.98), 0.45) * (0.9 + 0.18 * caustic(p * 1.4, t * 0.8));
         vec3 tir = fogCol() * 0.82;                   // outside the window the surface mirrors the deep
-        vec3 col = mix(tir, sky, inside) + vec3(1.0) * SS(0.02, 0.0, abs(cosT - 0.66)) * 0.35;
+        vec3 col = mix(tir, sky, inside) + vec3(0.85, 0.97, 1.0) * SS(0.03, 0.0, abs(cosT - 0.66)) * 0.12;
         float d = length(vW - uCam);
         col = mix(col, fogCol(), clamp(1.0 - exp(-d * uDensity * 0.9), 0.0, 1.0));
         gl_FragColor = vec4(col, 1.0);
@@ -2524,9 +2524,9 @@ function start() {
         void main(){
           float edge = pow(sin(vUv.x * 3.14159), 2.0);
           float flick = 0.55 + 0.45 * sin(uTime * 0.37 + uSeed) * sin(uTime * 0.23 + uSeed * 1.7);
-          float a = edge * pow(vUv.y, 1.6) * flick * uLight * 0.16;
+          float a = edge * pow(vUv.y, 1.6) * flick * uLight * 0.09;
           a *= exp(-length(vW - uCam) * uDensity * 0.6);
-          gl_FragColor = vec4(vec3(0.8, 0.97, 1.0) * a, 1.0);
+          gl_FragColor = vec4(vec3(0.66, 0.92, 0.97) * a, 1.0);
         }`
     }));
     m.position.set(rand(-28, 28), 0.3, rand(-38, -7)); m.rotation.z = rand(-0.22, -0.08);
@@ -2545,7 +2545,7 @@ function start() {
         float grain = fract(sin(dot(floor(vW.xz*14.0), vec2(12.9898,78.233)))*43758.5453);
         vec3 sand = vec3(0.86, 0.80, 0.64) * (0.85 + 0.15 * grain);
         float l = 0.45 + 0.55 * max(vN.y, 0.0);
-        vec3 col = sand * l * (0.55 + 1.3 * caustic(vW.xz, uTime * 0.6) * (0.35 + uLight));
+        vec3 col = sand * l * (0.6 + 0.55 * caustic(vW.xz * 0.8, uTime * 0.6) * (0.3 + uLight));
         gl_FragColor = vec4(water(col, vW), 1.0);
       }`
   });
@@ -2557,7 +2557,7 @@ function start() {
     fragmentShader: WATER + `varying vec3 vW; varying vec3 vN;
       void main(){ float l = 0.3 + 0.7 * max(vN.y, 0.0);
         vec3 col = mix(vec3(0.32,0.30,0.28), vec3(0.45,0.38,0.42), fract(vW.x*0.13+vW.z*0.07)) * l;
-        col *= 0.6 + 1.1 * caustic(vW.xz * 1.2, uTime * 0.6) * (0.35 + uLight) * max(vN.y, 0.0);
+        col *= 0.65 + 0.45 * caustic(vW.xz, uTime * 0.6) * (0.3 + uLight) * max(vN.y, 0.0);
         gl_FragColor = vec4(water(col, vW), 1.0); }`
   });
   for (let i = 0; i < 16; i++) {
@@ -2579,7 +2579,7 @@ function start() {
           vec4 w = modelMatrix * instanceMatrix * vec4(p,1.0); w.x += sway * p.y * p.y * 0.5; w.z += sway * p.y * p.y * 0.2;
           vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
       fragmentShader: WATER + `varying vec3 vW; varying float vH;
-        void main(){ vec3 col = mix(vec3(0.16,0.32,0.18), vec3(0.45,0.66,0.32), vH) * (0.7 + 0.8 * sunlight(vW.y) * 5.0);
+        void main(){ vec3 col = mix(vec3(0.22,0.38,0.24), vec3(0.52,0.70,0.36), vH) * (0.9 + 0.6 * uLight);
           gl_FragColor = vec4(water(col, vW), 1.0); }`
     }), N);
     const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
@@ -2594,62 +2594,125 @@ function start() {
   }
 
   /* ── Fish: instanced bodies that bend with a travelling swim wave, steered by boids ── */
-  function fishGeometry(len, height, width) {
-    const g = new THREE.SphereGeometry(1, 16, 10), p = g.attributes.position, v = new THREE.Vector3();
-    for (let k = 0; k < p.count; k++) {
-      v.fromBufferAttribute(p, k);
-      const taper = 1 - 0.55 * smooth(-0.2, -1, v.z);   // thinner toward the tail
-      p.setXYZ(k, v.x * width * taper, v.y * height * taper, v.z * len);
+  // Body: elliptical cross-sections along a fusiform profile. Fins: thin sheets with their own UVs.
+  // aPart: 0 body, 1 tail, 2 dorsal/anal, 3 pectoral. aUv: body (s along, cos θ around); fins (u, v).
+  function fishGeometry(sp) {
+    const L = sp.len, H = sp.h, Wd = sp.w, pos = [], uv = [], part = [], idx = [];
+    const prof = s => { const b = Math.pow(Math.sin(Math.PI * Math.pow(s, sp.nose)), 0.75) * (1 - 0.3 * s); return s > 0.5 ? Math.max(0.1, b) : b; };
+    const zOf = s => L * 0.5 - s * L;
+    const NS = 30, NR = 18;
+    for (let i = 0; i <= NS; i++) {
+      const s = i / NS, h = H * 0.5 * prof(s), w = Wd * 0.5 * prof(s) * (1 - 0.35 * s);
+      for (let j = 0; j <= NR; j++) { const th = j / NR * TAU; pos.push(Math.sin(th) * w, Math.cos(th) * h, zOf(s)); uv.push(s, Math.cos(th)); part.push(0); }
     }
-    g.computeVertexNormals();
-    const ni = g.toNonIndexed(), L = len;
-    // forked tail and a dorsal fin as flat triangles
-    const fin = [0, 0, -L * 0.85, 0, height * 1.1, -L * 1.45, 0, 0.1 * height, -L * 1.2,
-      0, 0, -L * 0.85, 0, -0.1 * height, -L * 1.2, 0, -height * 1.1, -L * 1.45,
-      0, height * 0.8, L * 0.15, 0, height * 1.5, -L * 0.25, 0, height * 0.75, -L * 0.6];
-    const bp = ni.attributes.position.array, bn = ni.attributes.normal.array;
-    const pos = new Float32Array(bp.length + fin.length), nor = new Float32Array(bp.length + fin.length);
-    pos.set(bp); pos.set(fin, bp.length); nor.set(bn);
-    for (let k = bp.length; k < nor.length; k += 3) { nor[k] = 1; nor[k + 1] = 0.25; }
-    const out = new THREE.BufferGeometry();
-    out.setAttribute('position', new THREE.BufferAttribute(pos, 3)); out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
-    return out;
+    for (let i = 0; i < NS; i++) for (let j = 0; j < NR; j++) { const a = i * (NR + 1) + j, b = a + NR + 1; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+    const sheet = (U, V, fn, id) => {
+      const base = pos.length / 3;
+      for (let i = 0; i <= U; i++) for (let j = 0; j <= V; j++) { const u = i / U, v = j / V, q = fn(u, v); pos.push(q[0], q[1], q[2]); uv.push(u, v); part.push(id); }
+      for (let i = 0; i < U; i++) for (let j = 0; j < V; j++) { const a = base + i * (V + 1) + j, b = a + V + 1; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+    };
+    const T = sp.tail, D = sp.dorsal, A = sp.anal;
+    // caudal fin: forked, the lobes reaching further back than the middle
+    sheet(6, 10, (u, v) => { const vv = v * 2 - 1; return [0, vv * T.h * 0.5 * (0.22 + 0.78 * u), zOf(1) + 0.004 - u * T.l * (1 - T.fork + T.fork * Math.pow(Math.abs(vv), 1.3))]; }, 1);
+    // dorsal and anal fins: raked sheets along the back and belly
+    const fin = (F, sign) => sheet(10, 3, (u, v) => { const s = F.s0 + (F.s1 - F.s0) * u; const root = H * 0.5 * prof(s) * 0.92; const hh = F.h * Math.pow(Math.sin(Math.PI * Math.pow(u, F.peak || 0.6)), 0.8); return [0, sign * (root + v * hh), zOf(s) - v * hh * 0.6]; }, 2);
+    fin(D, 1); if (A) fin(A, -1);
+    // pectoral fins, one each side
+    for (const side of [-1, 1]) sheet(4, 3, (u, v) => { const s = 0.26, w0 = Wd * 0.5 * prof(s) * 0.95; return [side * (w0 + u * sp.pect * 0.45), -H * 0.08 + (v - 0.5) * sp.pect * 0.35 * (1 - 0.5 * u), zOf(s) - u * sp.pect * 0.8]; }, 3);
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('aUv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setAttribute('aPart', new THREE.Float32BufferAttribute(part, 1));
+    g.setIndex(idx); g.computeVertexNormals();
+    return g;
   }
-  const fishMat = (opts) => mat({
+  const fishMat = (sp) => mat({
     side: THREE.DoubleSide,
-    uniforms: { uLen: { value: opts.len }, uBack: { value: new THREE.Color(opts.back) }, uBelly: { value: new THREE.Color(opts.belly) }, uSpec: { value: opts.spec }, uWave: { value: opts.wave }, uGlow: { value: new THREE.Color(opts.glow || '#000000') } },
-    vertexShader: `attribute float aPhase; attribute float aBeat; uniform float uWave, uLen, uTime;
-      varying vec3 vW; varying vec3 vN; varying float vY;
+    uniforms: { uLen: { value: sp.len }, uH: { value: sp.h }, uWave: { value: sp.wave }, uPat: { value: sp.pat }, uScaleN: { value: sp.scales }, uSpec: { value: sp.spec },
+      uBack: { value: new THREE.Color(sp.back) }, uBelly: { value: new THREE.Color(sp.belly) }, uFin: { value: new THREE.Color(sp.fin) }, uAccent: { value: new THREE.Color(sp.accent) }, uGlow: { value: new THREE.Color(sp.glow || '#000000') } },
+    vertexShader: `attribute float aPhase; attribute float aBeat; attribute vec2 aUv; attribute float aPart; uniform float uWave, uLen, uTime;
+      varying vec3 vW; varying vec3 vN; varying vec2 vUv; varying float vPart; varying vec3 vLoc;
       void main(){
-        vec3 p = position; float back = SS(0.3, -1.45, p.z / uLen);
+        vec3 p = position; vLoc = p; vUv = aUv; vPart = aPart;
+        float back = SS(0.15, -1.2, p.z / uLen);
         p.x += sin(p.z / uLen * 2.6 - uTime * aBeat + aPhase) * uWave * back;
-        vY = normal.y;
+        if (aPart > 2.5) p.y += sin(uTime * aBeat * 0.3 + aPhase) * aUv.x * uLen * 0.12;   // pectorals scull
         vN = normalize(mat3(modelMatrix * instanceMatrix) * normal);
         vec4 w = modelMatrix * instanceMatrix * vec4(p, 1.0); vW = w.xyz;
         gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: WATER + `uniform vec3 uBack, uBelly, uGlow; uniform float uSpec;
-      varying vec3 vW; varying vec3 vN; varying float vY;
+    fragmentShader: WATER + `uniform vec3 uBack, uBelly, uFin, uAccent, uGlow; uniform float uSpec, uPat, uScaleN, uLen, uH;
+      varying vec3 vW; varying vec3 vN; varying vec2 vUv; varying float vPart; varying vec3 vLoc;
+      float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       void main(){
-        vec3 n = normalize(vN), v = normalize(uCam - vW);
-        vec3 col = mix(uBelly, uBack, smoothstep(-0.3, 0.5, vY));          // countershading: dark back, pale belly
-        col *= 0.55 + 0.6 * max(n.y, 0.0) * (0.5 + uLight);
+        vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
+        vec3 v = normalize(uCam - vW), sun = normalize(vec3(0.25, 1.0, 0.3));
         float fres = pow(1.0 - abs(dot(n, v)), 3.0);
-        col += vec3(0.8, 0.95, 1.0) * fres * uSpec * (0.4 + uLight);        // silver flank glint
-        col += 0.6 * caustic(vW.xz * 2.0, uTime) * sunlight(vW.y) * max(n.y, 0.0);
+        vec3 col; float glint = 0.0;
+        if (vPart < 0.5) {
+          float s = vUv.x, up = vUv.y;
+          col = mix(uBelly, uBack, SS(-0.4, 0.5, up));                         // countershading
+          // scales: offset rows of rounded plates, each catching light on its own
+          vec2 sc = vec2(s * uScaleN, (up + 1.0) * uScaleN * 0.22); sc.x += 0.5 * mod(floor(sc.y), 2.0);
+          vec2 cf = fract(sc) - 0.5; float edge = SS(0.28, 0.5, length(cf));
+          col *= 1.0 - 0.14 * edge * SS(0.12, 0.25, s);
+          glint = pow(hash(floor(sc)), 14.0) * uSpec;
+          if (uPat < 0.5) {            // yellow tang: white scalpel spine near the tail, paler face
+            col = mix(col, vec3(1.0, 0.97, 0.9), SS(0.05, 0.02, length(vec2((s - 0.88) * 2.2, up * 0.12))));
+            col = mix(col, uBelly * 1.05, SS(0.18, 0.0, s) * 0.35);
+          } else if (uPat < 1.5) {     // chromis: deep blue back, a dark scale outline
+            col *= 1.0 - 0.18 * edge;
+          } else if (uPat < 2.5) {     // sardine: a row of dark spots, iridescent flank band
+            float cs = s * 13.0; vec2 sp2 = vec2((fract(cs) - 0.5) / 13.0, (up - 0.38) * 0.035);
+            col = mix(col, uAccent, SS(0.012, 0.007, length(sp2)) * step(0.14, s) * step(s, 0.55) * step(0.5, hash(vec2(floor(cs), 3.0))) );
+            vec3 irid = 0.5 + 0.5 * cos(6.2831 * (dot(n, v) * 1.6 + vec3(0.0, 0.33, 0.67)));
+            col = mix(col, irid * 0.9 + 0.1, SS(0.18, 0.0, abs(up - 0.08)) * 0.45);
+          } else {                     // barracuda: slanted dark bars on the upper flank, scattered spots behind
+            float bar = SS(0.42, 0.5, fract(s * 17.0 - up * 0.9)) * SS(0.05, 0.45, up) * step(0.18, s) * step(s, 0.9);
+            col = mix(col, uAccent, bar * 0.55);
+            col = mix(col, uAccent, step(0.93, hash(floor(vec2(s * 60.0, up * 9.0)))) * step(0.55, s) * SS(-0.2, 0.2, up) * 0.7);
+          }
+          // lateral line and gill cover
+          col *= 1.0 - 0.22 * SS(0.016, 0.0, abs(up - (0.32 - 0.18 * s))) * SS(0.2, 0.3, s);
+          col *= 1.0 - 0.3 * SS(0.012, 0.0, abs(s - 0.2 - 0.05 * up * up)) * SS(0.9, 0.5, abs(up));
+          // eye: gold iris, black pupil, a catchlight
+          vec2 e = vec2(vLoc.z - uLen * 0.405, vLoc.y - uH * 0.1); float er = length(e) / (uLen * 0.045);
+          col = mix(col, mix(vec3(0.85, 0.7, 0.3), vec3(0.02), SS(0.62, 0.55, er)), SS(1.0, 0.92, er));
+          col += SS(0.3, 0.1, length(e / (uLen * 0.045) - vec2(0.25, 0.3))) * 0.7;
+        } else {
+          // fins: fan of rays over a membrane you can half see through
+          float ray = vPart < 1.5 ? abs(fract(vUv.y * 14.0) - 0.5) : abs(fract(vUv.x * 12.0) - 0.5);
+          col = uFin * (0.82 + 0.25 * SS(0.35, 0.5, ray));
+          if (vPart < 1.5) col = mix(col, uAccent, SS(0.75, 0.95, abs(vUv.y * 2.0 - 1.0)) * SS(0.4, 0.9, vUv.x));
+          col = mix(col, fogCol(), 0.32);
+        }
+        float lam = 0.45 + 0.55 * max(dot(n, sun), 0.0);
+        col *= lam * (0.55 + 0.55 * uLight);
+        col += vec3(0.85, 0.96, 1.0) * (fres * 0.6 + glint * 0.5) * uSpec * (0.25 + uLight) * 0.5;
+        col += vec3(1.0) * pow(max(dot(n, normalize(sun + v)), 0.0), 48.0) * uSpec * 0.35 * uLight;
+        col += 0.35 * caustic(vW.xz * 3.0, uTime) * sunlight(vW.y) * max(n.y, 0.0);
+        col *= vec3(1.35, 1.05, 0.9);                                      // the eye adapts: reef colours stay warm
         col = water(col, vW);
-        col += uGlow * uBio * (0.6 + 0.4 * sin(uTime * 3.0 + vW.x));       // photophores in the deep
+        if (vPart < 0.5) col += uGlow * uBio * SS(0.02, 0.0, abs(vUv.y + 0.35)) * (0.6 + 0.4 * sin(uTime * 3.0 + vUv.x * 30.0));
         gl_FragColor = vec4(col, 1.0); }`
   });
   const SPECIES = [
-    { n: 46, len: 0.16, h: 0.13, w: 0.04, y: [-2.5, -8], back: '#ffd23f', belly: '#fff2a8', spec: 0.3, wave: 0.03, speed: [1.3, 2.4], beat: 11, tight: 1.2, school: 2 },  // yellow tangs
-    { n: 70, len: 0.09, h: 0.05, w: 0.03, y: [-3, -9], back: '#2f6fe0', belly: '#9fd7ff', spec: 0.5, wave: 0.02, speed: [1.5, 2.8], beat: 16, tight: 0.9, school: 2 },  // blue chromis
-    { n: mobile ? 140 : 240, len: 0.15, h: 0.04, w: 0.025, y: [-7, -14], back: '#3c5c78', belly: '#e6eef5', spec: 1.6, wave: 0.03, speed: [2.2, 3.4], beat: 18, tight: 0.55, school: 1 },  // sardine bait ball
-    { n: 14, len: 0.75, h: 0.1, w: 0.07, y: [-13, -20], back: '#4b5f6b', belly: '#c8d4dc', spec: 0.9, wave: 0.04, speed: [0.6, 1.1], beat: 4, tight: 2.6, school: 1, glow: '#2fe6ff' }, // barracuda
+    { n: 46, len: 0.18, h: 0.12, w: 0.035, nose: 0.68, pat: 0, scales: 34, back: '#ffd21a', belly: '#ffe680', fin: '#ffcf1a', accent: '#f2b705', spec: 0.25, wave: 0.012,
+      tail: { l: 0.05, h: 0.09, fork: 0.2 }, dorsal: { s0: 0.24, s1: 0.86, h: 0.028, peak: 0.45 }, anal: { s0: 0.52, s1: 0.86, h: 0.022 }, pect: 0.045,
+      y: [-2.5, -8], speed: [1.3, 2.4], beat: 11, tight: 1.2, school: 2 },                                                   // yellow tangs
+    { n: 70, len: 0.085, h: 0.04, w: 0.02, nose: 0.75, pat: 1, scales: 22, back: '#1f7fe0', belly: '#9fdcff', fin: '#5ab4f0', accent: '#0e2e58', spec: 0.6, wave: 0.008,
+      tail: { l: 0.035, h: 0.05, fork: 0.65 }, dorsal: { s0: 0.25, s1: 0.8, h: 0.018 }, anal: { s0: 0.6, s1: 0.82, h: 0.014 }, pect: 0.025,
+      y: [-3, -9], speed: [1.5, 2.8], beat: 16, tight: 0.9, school: 2 },                                                     // blue chromis
+    { n: mobile ? 140 : 240, len: 0.15, h: 0.034, w: 0.022, nose: 0.95, pat: 2, scales: 30, back: '#1d4a66', belly: '#e8eff4', fin: '#b9c8d2', accent: '#0b1c26', spec: 1.6, wave: 0.01,
+      tail: { l: 0.04, h: 0.045, fork: 0.7 }, dorsal: { s0: 0.36, s1: 0.56, h: 0.014 }, anal: { s0: 0.72, s1: 0.86, h: 0.008 }, pect: 0.022,
+      y: [-7, -14], speed: [2.2, 3.4], beat: 18, tight: 0.55, school: 1 },                                                   // sardine bait ball
+    { n: 14, len: 0.85, h: 0.11, w: 0.085, nose: 1.15, pat: 3, scales: 70, back: '#3a4c57', belly: '#dfe7ec', fin: '#2b353c', accent: '#151c21', spec: 1.0, wave: 0.03,
+      tail: { l: 0.16, h: 0.18, fork: 0.5 }, dorsal: { s0: 0.55, s1: 0.7, h: 0.06 }, anal: { s0: 0.66, s1: 0.78, h: 0.05 }, pect: 0.07,
+      y: [-13, -20], speed: [0.6, 1.1], beat: 4, tight: 2.6, school: 1, glow: '#2fe6ff' },                                  // barracuda
   ];
   const schools = [];
   const dummy = new THREE.Object3D();
   for (const sp of SPECIES) {
-    const geo = fishGeometry(sp.len, sp.h, sp.w);
+    const geo = fishGeometry(sp);
     const inst = new THREE.InstancedMesh(geo, fishMat(sp), sp.n);
     const ph = new Float32Array(sp.n), bt = new Float32Array(sp.n);
     for (let i = 0; i < sp.n; i++) { ph[i] = rand(0, TAU); bt[i] = sp.beat * rand(0.8, 1.2); }
@@ -2705,14 +2768,18 @@ function start() {
   const jellyMat = mat({
     transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
     uniforms: { uPulse: { value: 0 }, uHue: { value: new THREE.Color() } },
-    vertexShader: `uniform float uPulse; varying vec3 vW; varying vec3 vN; varying float vRim;
-      void main(){ vec3 p = position; float rim = 1.0 - clamp(p.y, 0.0, 1.0); vRim = rim;
+    vertexShader: `uniform float uPulse; varying vec3 vW; varying vec3 vN; varying float vRim; varying vec3 vL;
+      void main(){ vec3 p = position; vL = position; float rim = 1.0 - clamp(p.y, 0.0, 1.0); vRim = rim;
         p.xz *= 1.0 - uPulse * 0.28 * rim; p.y *= 1.0 + uPulse * 0.18;
         vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(p,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: WATER + `uniform vec3 uHue; varying vec3 vW; varying vec3 vN; varying float vRim;
+    fragmentShader: WATER + `uniform vec3 uHue; varying vec3 vW; varying vec3 vN; varying float vRim; varying vec3 vL;
       void main(){ vec3 v = normalize(uCam - vW); float fres = pow(1.0 - abs(dot(normalize(vN), v)), 2.2);
         float d = length(vW - uCam), fade = exp(-d * uDensity);
-        vec3 col = uHue * (0.25 + fres * 0.9 + vRim * 0.25) * (0.35 + uLight * 0.7);
+        float ang = atan(vL.z, vL.x), rr = length(vL.xz), gon = 0.0;
+        for (int k = 0; k < 4; k++) { float a = float(k) * 1.5708 + 0.785; gon += SS(0.05, 0.015, abs(length(vL.xz - 0.34 * vec2(cos(a), sin(a))) - 0.15)); }
+        float canal = SS(0.08, 0.0, abs(fract(ang / 6.2831 * 16.0) - 0.5)) * SS(0.2, 0.6, rr);
+        float frill = vRim * (0.6 + 0.4 * sin(ang * 48.0));
+        vec3 col = uHue * (0.2 + fres * 0.8 + frill * 0.35 + gon * 0.9 * SS(0.4, 0.8, vL.y) + canal * 0.25) * (0.35 + uLight * 0.7);
         col += uHue * uBio * (0.9 + 0.5 * sin(uTime * 2.0 + vW.y * 4.0)) * (0.4 + fres);
         gl_FragColor = vec4(col * fade * 0.75, 1.0); }`
   });
@@ -2756,17 +2823,41 @@ function start() {
   }
 
   /* ── Big animals: a gliding manta, a paddling turtle and a rare, distant humpback ── */
-  const skinMat = (top, belly, extra) => mat({
+  // uPat: 0 plain, 1 manta (white shoulder chevrons above, spotted belly), 2 turtle skin (polygon scales), 3 whale (ventral pleats)
+  const skinMat = (top, belly, extra, pat) => mat({
     side: THREE.DoubleSide,
-    uniforms: { uTopC: { value: new THREE.Color(top) }, uBellyC: { value: new THREE.Color(belly) }, uFlap: { value: 0 } },
+    uniforms: { uTopC: { value: new THREE.Color(top) }, uBellyC: { value: new THREE.Color(belly) }, uFlap: { value: 0 }, uPat: { value: pat || 0 } },
     vertexShader: `uniform float uFlap; varying vec3 vW; varying vec3 vN; varying vec3 vL;
       void main(){ vec3 p = position; vL = p; ${extra || ''}
         vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(p,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: WATER + `uniform vec3 uTopC, uBellyC; varying vec3 vW; varying vec3 vN; varying vec3 vL;
+    fragmentShader: WATER + `uniform vec3 uTopC, uBellyC; uniform float uPat; varying vec3 vW; varying vec3 vN; varying vec3 vL;
+      vec2 h2(vec2 p){ p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3))); return fract(sin(p) * 43758.5453); }
+      float vor(vec2 p, out float edge){ vec2 i = floor(p), f = fract(p); float m = 9.0, m2 = 9.0;
+        for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++) { vec2 o = vec2(x, y); float d = length(o + h2(i + o) - f); if (d < m) { m2 = m; m = d; } else if (d < m2) m2 = d; }
+        edge = m2 - m; return m; }
       void main(){ vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
-        vec3 col = mix(uBellyC, uTopC, smoothstep(-0.25, 0.25, n.y));
+        float topness = SS(-0.25, 0.25, n.y);
+        vec3 col = mix(uBellyC, uTopC, topness); float e;
+        if (uPat > 0.5 && uPat < 1.5) {
+          float ax = abs(vL.x);
+          if (!gl_FrontFacing) {
+            float chev = SS(0.26, 0.1, abs(vL.z - (0.98 - 0.42 * ax))) * SS(0.35, 0.75, ax) * SS(2.3, 1.7, ax);
+            col = mix(uTopC, vec3(0.72, 0.76, 0.78), chev);
+            col *= 0.92 + 0.08 * vor(vL.xz * 6.0, e);
+          } else {
+            vec2 c = vL.xz * 2.4; float m = vor(c, e);
+            col = mix(uBellyC, vec3(0.16, 0.18, 0.2), SS(0.2, 0.12, m) * step(0.55, h2(floor(c + 0.5)).x) * SS(1.6, 0.8, ax));
+            col = mix(col, vec3(0.3, 0.34, 0.38), SS(0.6, 1.4, ax) * 0.6);
+          }
+        } else if (uPat > 1.5 && uPat < 2.5) {
+          float m = vor(vL.xz * 9.0 + vL.y * 4.0, e);
+          col = mix(col * 1.25 + 0.06, col * 0.55, SS(0.0, 0.1, e)) * (0.85 + 0.15 * m);
+        } else if (uPat > 2.5) {
+          col = mix(col, col * 0.55, (1.0 - topness) * SS(0.55, 0.95, 0.5 + 0.5 * sin(vL.x * 16.0)));
+          col *= 0.9 + 0.1 * step(0.97, h2(floor(vL.xz * 5.0)).x);
+        }
         col *= 0.45 + 0.7 * max(n.y, 0.0) * (0.4 + uLight);
-        col += 0.5 * caustic(vW.xz * 1.5, uTime) * sunlight(vW.y) * max(n.y, 0.0);
+        col += 0.3 * caustic(vW.xz * 1.5, uTime) * sunlight(vW.y) * max(n.y, 0.0);
         gl_FragColor = vec4(water(col, vW), 1.0); }`
   });
   // Manta: a flat diamond whose wingtips trace a slow travelling wave
@@ -2775,13 +2866,17 @@ function start() {
     const g = new THREE.PlaneGeometry(1, 1, 40, 20).rotateX(-Math.PI / 2), p = g.attributes.position;
     for (let k = 0; k < p.count; k++) {
       const u = p.getX(k) * 2, w = p.getZ(k) * 2;           // u ∈ [-1,1] across the span, w along the body
-      const span = 3.2, chord = 1.9 * (1 - Math.pow(Math.abs(u), 1.6)) + 0.05;
-      const sweep = Math.pow(Math.abs(u), 1.4) * 0.9;
+      const span = 3.2, chord = 2.3 * (1 - Math.pow(Math.abs(u), 1.8)) + 0.08;
+      const sweep = Math.pow(Math.abs(u), 1.6) * 0.75;
       p.setXYZ(k, u * span, -0.18 * (1 - u * u) * (1 - w * w), -(w * chord * 0.5) - sweep + 0.4);
     }
     g.computeVertexNormals();
-    const body = new THREE.Mesh(g, skinMat('#1e2a33', '#e9eef2', `float s = abs(p.x) / 3.2; p.y += sin(uFlap - s * 1.6) * 0.75 * pow(s, 1.6);`));
+    const flapGL = `float s = abs(p.x) / 3.2; p.y += sin(uFlap - s * 1.6) * 0.75 * pow(s, 1.6);`;
+    const body = new THREE.Mesh(g, skinMat('#1b242b', '#eef2f4', flapGL, 1));
     const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.05, 2.2, 5).rotateX(Math.PI / 2).translate(0, 0, -1.9), skinMat('#1e2a33', '#1e2a33'));
+    // cephalic fins: the two lobes either side of the mouth
+    const lobeMat = skinMat('#1b242b', '#3a444b');
+    for (const sd of [-1, 1]) { const lobe = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), lobeMat); lobe.scale.set(0.07, 0.05, 0.3); lobe.position.set(sd * 0.36, -0.06, 1.42); lobe.rotation.set(0.35, sd * 0.12, 0); manta.add(lobe); }
     manta.add(body, tail); manta.userData.body = body; scene.add(manta);
   }
   // Turtle: shell, head and four flippers on pivots
@@ -2799,14 +2894,14 @@ function start() {
           col += 0.6 * caustic(vW.xz * 1.5, uTime) * sunlight(vW.y) * max(n.y, 0.0);
           gl_FragColor = vec4(water(col, vW), 1.0); }`
     });
-    const skin = skinMat('#5d6b4a', '#c9c3a0');
+    const skin = skinMat('#4f5b3c', '#d8cfa6', '', 2);
     const shell = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 16), shellMat); shell.scale.set(0.55, 0.2, 0.7);
     const plastron = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 10), skin); plastron.scale.set(0.5, 0.12, 0.64); plastron.position.y = -0.05;
     const head = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 10), skin); head.scale.set(0.13, 0.11, 0.2); head.position.set(0, 0.02, 0.82);
     turtle.add(shell, plastron, head);
     const flip = (x, z, len, rear) => {
       const piv = new THREE.Group(); piv.position.set(x, 0, z);
-      const f = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 8), skin); f.scale.set(len, 0.03, len * (rear ? 0.45 : 0.28));
+      const f = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 8), skin); f.scale.set(len, 0.028, len * (rear ? 0.42 : 0.22));
       f.position.x = Math.sign(x) * len * 0.9; f.rotation.y = Math.sign(x) * (rear ? 0.5 : -0.35);
       piv.add(f); turtle.add(piv); return piv;
     };
@@ -2818,7 +2913,7 @@ function start() {
   // Humpback: long body, very long pectoral fins, flukes. Seen only as a shape in the haze.
   const whale = new THREE.Group();
   {
-    const skin = skinMat('#2a3440', '#9aa6ae', `p.y += sin(p.z * 0.35 - uFlap) * 0.25 * SS(0.0, -7.0, p.z);`);
+    const skin = skinMat('#26303a', '#b8c2c8', `p.y += sin(p.z * 0.35 - uFlap) * 0.25 * SS(0.0, -7.0, p.z);`, 3);
     const g = new THREE.SphereGeometry(1, 32, 16), p = g.attributes.position;
     for (let k = 0; k < p.count; k++) { const z = p.getZ(k), taper = z < 0 ? 1 - 0.75 * Math.pow(-z, 1.3) : 1 - 0.25 * z * z; p.setXYZ(k, p.getX(k) * 1.5 * taper, p.getY(k) * 1.4 * taper, z * 7.5); }
     g.computeVertexNormals();
