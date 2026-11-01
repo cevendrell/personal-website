@@ -3,203 +3,325 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Interactive bike fit studio: enter your measurements, pick from 70 frames across every major brand, and watch an animated rider pedal on real geometry with knee, hip and torso angles measured live. Runs entirely in your browser.">
+  <meta name="description" content="Interactive 3D bike fit studio: enter your measurements, pick from 87 frames across every major brand, and watch a rider pedal a carbon bike built from that frame's real geometry, with knee, hip and torso angles measured live.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cevendrell.com/ai-projects/bike-fit.html">
-  <meta property="og:title" content="Bike Fit: interactive geometry studio">
-  <meta property="og:description" content="Animated rider on real frame geometry, measured live. No account, nothing leaves your browser.">
+  <meta property="og:title" content="Bike Fit Studio | Carlos Ebrahim Vendrell">
+  <meta property="og:description" content="A rider on real frame geometry in 3D, measured live. Nothing leaves your browser.">
   <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
-  <title>Bike Fit: interactive geometry studio | Carlos Ebrahim Vendrell</title>
-  <link rel="icon" href="/favicon.png" type="image/svg+xml">
+  <title>Bike Fit Studio - Carlos Ebrahim Vendrell</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* Carbon: graphite and weave in the header and the studio, light sections for reading, one hot accent */
     :root {
-      --bg: #04070e; --bg-2: #060b15; --panel: #080d1a; --panel-2: #0a101f;
-      --accent: #d2955c;
-      --accent-l: #e5b183;
-      --accent-dim: rgba(210, 149, 92,0.12);
-      --blue: #3b82f6; --blue-l: #93c5fd;
-      --text: #f0f4ff; --dim: #8899bb; --mute: #3d4f6e;
-      --line: rgba(255,255,255,0.07);
-      --warn: #f59e0b; --error: #ef4444;
+      --bg: #f2f3f5; --bg-2: #e9ebee; --panel: #ffffff; --panel-2: #f7f8fa;
+      --carbon: #111214; --carbon-2: #1a1c20; --carbon-3: #24272c;
+      --text: #121418; --dim: #4b5260; --mute: #8a909c;
+      --accent: #e8552a; --accent-l: #ff7a45; --accent-dim: rgba(232,85,42,0.1);
+      --ok: #1f9d6b; --warn: #d98a0b; --error: #d63a2f; --blue: #2f6fd0;
+      --line: rgba(17,20,24,0.1); --line-2: rgba(17,20,24,0.18);
+      --radius: 14px;
+      --shadow: 0 1px 2px rgba(17,20,24,0.05), 0 10px 28px -16px rgba(17,20,24,0.28);
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
     a { text-decoration: none; color: inherit; }
     ::selection { background: var(--accent); color: #fff; }
     :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-    nav { position: sticky; top: 0; z-index: 100; padding: 1.1rem 2rem; display: flex; align-items: center; justify-content: space-between; background: rgba(4,7,14,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
-    .nav-logo { display: flex; align-items: center; gap: 0.6rem; font-size: 0.95rem; font-weight: 700; }
-    .nav-mark { width: 26px; height: 26px; border-radius: 6px; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0; }
-    .nav-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-l); background: var(--accent-dim); padding: 3px 9px; border-radius: 3px; }
-    .nav-back { font-size: 0.82rem; color: var(--dim); transition: color 0.2s; }
-    .nav-back:hover { color: var(--text); }
-    @media (max-width: 560px) { nav { padding: 1rem 1.25rem; } .nav-tag { display: none; } }
-
-    /* HERO */
-    .tool-hero { max-width: 1400px; margin: 0 auto; padding: 2.75rem 2rem 0.5rem; }
-    .tool-hero h1 { font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 800; letter-spacing: -0.045em; line-height: 1.02; margin-bottom: 0.7rem; }
-    .tool-hero h1 span { color: var(--accent); }
-    .tool-hero > p { font-size: 0.92rem; color: var(--dim); line-height: 1.75; max-width: 660px; }
-    .method-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.1rem; }
-    .method-chip { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mute); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
-
-    /* LAYOUT */
-    .tool-wrap { max-width: 1400px; margin: 0 auto; padding: 1.75rem 2rem 1.5rem; display: grid; grid-template-columns: 340px 1fr; gap: 1.75rem; align-items: start; }
-    @media (max-width: 980px) {
-      .tool-wrap { grid-template-columns: 1fr; padding: 1.25rem 1.25rem; }
-      .tool-left { order: 2; }
-      .tool-right { order: 1; }
-      .tool-hero { padding: 1.75rem 1.25rem 0; }
+    /* The weave, in pure CSS: a 2x2 twill of light and dark tows */
+    .carbon {
+      background-color: #16171a;
+      background-image:
+        linear-gradient(27deg, #131416 5px, transparent 5px),
+        linear-gradient(207deg, #131416 5px, transparent 5px),
+        linear-gradient(27deg, #202226 5px, transparent 5px),
+        linear-gradient(207deg, #202226 5px, transparent 5px),
+        linear-gradient(90deg, #1a1b1e 10px, transparent 10px),
+        linear-gradient(#1b1c1f 25%, #18191c 25%, #18191c 50%, transparent 50%, transparent 75%, #25272b 75%, #25272b);
+      background-position: 0 5px, 10px 0, 0 10px, 10px 5px, 0 0, 0 0;
+      background-size: 20px 20px;
     }
 
-    /* INPUT CARDS */
-    .form-section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem 1.25rem 1.35rem; margin-bottom: 1rem; }
-    .form-section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent-l); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+    /* ── NAV (shared structure, carbon on this page) ── */
+    nav#navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 1.25rem 2.5rem; display: flex; align-items: center; justify-content: space-between;
+      background: rgba(14,15,17,0.55); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border-bottom: 1px solid transparent; transition: all 0.3s ease;
+    }
+    nav#navbar.scrolled { padding: 0.85rem 2.5rem; background: rgba(14,15,17,0.94); border-bottom-color: rgba(255,255,255,0.08); }
+    .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; color: #fff; }
+    .nav-links { display: flex; gap: 2.25rem; list-style: none; align-items: center; }
+    .nav-item { position: relative; }
+    .nav-links > li > a { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.7); position: relative; padding: 0.5rem 0; transition: color 0.2s; }
+    .nav-links > li > a:hover { color: #fff; }
+    .nav-links > li > a::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--accent); transition: width 0.25s ease; }
+    .nav-links > li > a:hover::after { width: 100%; }
+    .dropdown { position: absolute; top: calc(100% + 0.5rem); left: -1rem; min-width: 200px; background: #17181b; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.4rem 0; list-style: none; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.2s; box-shadow: 0 16px 40px -12px rgba(0,0,0,0.6); }
+    .dropdown li { list-style: none; }
+    .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown a { display: block; padding: 0.65rem 1rem; font-size: 0.87rem; color: rgba(255,255,255,0.7); transition: background 0.15s, color 0.15s; }
+    .dropdown a:hover { background: rgba(232,85,42,0.12); color: #fff; }
+    .nav-right { display: flex; align-items: center; gap: 0.9rem; }
+    .nav-socials { display: flex; align-items: center; gap: 0.75rem; }
+    .nav-social-link { color: rgba(255,255,255,0.55); display: flex; align-items: center; transition: color 0.2s; }
+    .nav-social-link:hover { color: #fff; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 6px; background: none; border: none; cursor: pointer; }
+    .hamburger span { width: 22px; height: 1.5px; background: #fff; display: block; transition: all 0.3s; }
+    @media (max-width: 768px) {
+      nav#navbar { padding: 1rem 1.5rem; }
+      .nav-links, .nav-socials { display: none; }
+      .hamburger { display: flex; }
+    }
+    body.nav-open { overflow: hidden; }
+    body.nav-open nav#navbar { background: #111214; backdrop-filter: none; -webkit-backdrop-filter: none; transition: none; }
+    body.nav-open .hamburger { position: relative; z-index: 1001; }
+    body.nav-open .nav-links { display: flex !important; flex-direction: column; position: fixed; inset: 0; z-index: 999; background: #111214; padding: 5.5rem 2rem 2rem; gap: 0; align-items: flex-start; }
+    body.nav-open .nav-links > li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    body.nav-open .nav-links > li:last-child { border-bottom: none; }
+    body.nav-open .nav-links > li > a { display: block; width: 100%; font-size: 1.5rem; font-weight: 600; color: #fff; padding: 0.75rem 0; }
+    body.nav-open .dropdown { position: static; opacity: 1 !important; visibility: visible !important; transform: none !important; background: transparent; border: none; box-shadow: none; padding: 0.25rem 0 0.75rem 1rem; }
+    body.nav-open .dropdown a { font-size: 1rem; padding: 0.4rem 0.5rem; }
+    body.nav-open .hamburger span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
+    body.nav-open .hamburger span:nth-child(2) { opacity: 0; }
+    body.nav-open .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
+
+    /* ── HERO: carbon band ── */
+    .hero-band { position: relative; color: #fff; overflow: hidden; }
+    .hero-band::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 120% at 85% 0%, rgba(232,85,42,0.22), transparent 60%), linear-gradient(180deg, rgba(10,11,13,0.25), rgba(10,11,13,0.75)); pointer-events: none; }
+    .hero { position: relative; max-width: 1400px; margin: 0 auto; padding: 7.5rem 2.5rem 2.6rem; }
+    .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+    .eyebrow::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 0.6rem; vertical-align: 1px; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; margin: 0.6rem 0 0.9rem; }
+    .hero h1 span { color: var(--accent-l); }
+    .hero p { color: rgba(255,255,255,0.78); max-width: 760px; font-size: 1.02rem; }
+    .method-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.2rem; }
+    .method-chip { font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.72); border: 1px solid rgba(255,255,255,0.16); background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: 999px; }
+
+    /* ── LAYOUT ── */
+    .tool-wrap { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2.5rem 1.5rem; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+    @media (max-width: 980px) {
+      .tool-wrap { grid-template-columns: 1fr; padding: 1.25rem 16px; }
+      .tool-left { order: 2; }
+      .tool-right { order: 1; }
+    }
+
+    /* ── INPUT CARDS ── */
+    .form-section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.15rem 1.2rem; margin-bottom: 0.9rem; box-shadow: var(--shadow); }
+    .form-section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent); margin-bottom: 0.9rem; display: flex; align-items: center; gap: 0.6rem; }
     .form-section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
-
-    .field { margin-bottom: 1.05rem; }
+    .field { margin-bottom: 0.95rem; }
     .field:last-child { margin-bottom: 0; }
-    .field-row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+    .field-row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
     .field-row label { font-size: 0.82rem; font-weight: 600; color: var(--text); }
-    .field-val { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-l); font-variant-numeric: tabular-nums; }
-
-    /* number box paired with a slider */
-    .num-box { display: flex; align-items: center; gap: 4px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px 2px 8px; transition: border-color 0.15s; }
+    .field-val { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--dim); font-variant-numeric: tabular-nums; }
+    .num-box { display: flex; align-items: center; gap: 4px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px 2px 8px; transition: border-color 0.15s; }
     .num-box:focus-within { border-color: var(--accent); }
-    .num-box input { width: 46px; background: none; border: none; color: var(--accent-l); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; text-align: right; -moz-appearance: textfield; font-variant-numeric: tabular-nums; }
+    .num-box input { width: 46px; background: none; border: none; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; text-align: right; -moz-appearance: textfield; font-variant-numeric: tabular-nums; }
     .num-box input::-webkit-inner-spin-button, .num-box input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     .num-box input:focus { outline: none; }
     .num-box span { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--mute); }
-
     input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; height: 20px; }
-    select, .txt {
-      width: 100%; background: var(--bg-2); color: var(--text); border: 1px solid var(--line);
-      border-radius: 7px; padding: 9px 10px; font-family: 'Inter', sans-serif; font-size: 0.85rem;
-    }
-    select { cursor: pointer; appearance: none; -webkit-appearance: none; padding-right: 30px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238899bb'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 12px center; }
+    select, .txt { width: 100%; background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 7px; padding: 9px 10px; font-family: 'Inter', sans-serif; font-size: 0.85rem; }
+    select { cursor: pointer; appearance: none; -webkit-appearance: none; padding-right: 30px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a909c'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
     select:focus, .txt:focus { outline: none; border-color: var(--accent); }
     select:disabled { opacity: 0.4; cursor: not-allowed; }
     .txt::placeholder { color: var(--mute); }
-
     .seg { display: flex; gap: 5px; }
-    .seg button { flex: 1; background: var(--bg-2); border: 1px solid var(--line); color: var(--dim); font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 8px 4px; border-radius: 7px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-    .seg button:hover { border-color: var(--mute); color: var(--text); }
-    .seg button.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent-l); }
+    .seg button { flex: 1; background: var(--panel); border: 1px solid var(--line-2); color: var(--dim); font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 8px 4px; border-radius: 7px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .seg button:hover { border-color: var(--text); color: var(--text); }
+    .seg button.active { background: var(--carbon); border-color: var(--carbon); color: #fff; }
     .seg.wrap { flex-wrap: wrap; }
     .seg.wrap button { flex: 0 1 auto; padding: 6px 11px; font-size: 0.73rem; }
-
-    .hint { font-size: 0.72rem; color: var(--mute); line-height: 1.6; margin-top: 0.45rem; }
-    .hint button { background: none; border: none; color: var(--accent-l); font-family: inherit; font-size: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+    .hint { font-size: 0.72rem; color: var(--mute); line-height: 1.55; margin-top: 0.4rem; }
+    .hint button { background: none; border: none; color: var(--accent); font-family: inherit; font-size: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
-
-    details.guide { margin-top: 0.55rem; }
+    details.guide { margin-top: 0.5rem; }
     details.guide summary { font-size: 0.72rem; color: var(--dim); cursor: pointer; list-style: none; display: flex; align-items: center; gap: 0.35rem; }
     details.guide summary::-webkit-details-marker { display: none; }
     details.guide summary::before { content: '▸'; font-size: 0.6rem; color: var(--mute); transition: transform 0.15s; }
     details.guide[open] summary::before { transform: rotate(90deg); }
-    details.guide summary:hover { color: var(--text); }
-    details.guide ol { font-size: 0.72rem; color: var(--mute); line-height: 1.75; margin: 0.55rem 0 0 1.1rem; }
-
-    #custom-geo { display: none; border-top: 1px dashed var(--line); padding-top: 1rem; margin-top: 1.1rem; }
+    details.guide ol { font-size: 0.72rem; color: var(--mute); line-height: 1.7; margin: 0.5rem 0 0 1.1rem; }
+    #custom-geo { display: none; border-top: 1px dashed var(--line-2); padding-top: 1rem; margin-top: 1.1rem; }
     #custom-geo.visible { display: block; }
-
     .row-btns { display: flex; gap: 6px; margin-top: 0.25rem; }
-    .mini-btn { flex: 1; background: var(--bg-2); border: 1px solid var(--line); color: var(--dim); font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600; padding: 8px 6px; border-radius: 7px; cursor: pointer; transition: all 0.15s; }
-    .mini-btn:hover { border-color: var(--accent); color: var(--accent-l); }
+    .mini-btn { flex: 1; background: var(--panel); border: 1px solid var(--line-2); color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.76rem; font-weight: 600; padding: 9px 6px; border-radius: 7px; cursor: pointer; transition: all 0.15s; }
+    .mini-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .mini-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .mini-btn.primary:hover { background: var(--accent-l); color: #fff; }
 
-    /* VIZ PANEL */
-    .viz-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-    .viz-head { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; padding: 0.8rem 1.1rem; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-    .viz-head-left { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; min-width: 0; }
-    .viz-title { font-size: 0.8rem; font-weight: 600; color: var(--text); }
-    .viz-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--mute); }
-    .fit-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
-    .fit-badge.ok { color: var(--blue-l); border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.08); }
-    .fit-badge.warn { color: var(--warn); border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
-    .fit-badge.error { color: var(--error); border-color: rgba(239,68,68,0.45); background: rgba(239,68,68,0.1); }
-    .viz-controls { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip-btn { font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); background: var(--bg-2); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; cursor: pointer; transition: all 0.15s; }
-    .chip-btn:hover { color: var(--text); border-color: var(--mute); }
-    .chip-btn.on { color: var(--accent-l); border-color: rgba(210, 149, 92,0.45); background: var(--accent-dim); }
+    /* ── STUDIO (3D) ── */
+    .viz-panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .studio { position: relative; height: clamp(460px, 64vh, 760px); background: radial-gradient(ellipse 70% 60% at 55% 45%, #2a2c31 0%, #17181b 60%, #0e0f11 100%); touch-action: none; }
+    .studio canvas { display: block; width: 100%; height: 100%; outline: none; }
+    #bike-svg { display: none; position: absolute; inset: 0; width: 100%; height: 100%; }
+    body.flat #bike-svg { display: block; }
+    body.flat .only3d { display: none !important; }
+    .s-bar { position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; padding: 0.8rem 0.9rem; pointer-events: none; background: linear-gradient(180deg, rgba(10,11,13,0.6), transparent); flex-wrap: wrap; }
+    .s-bar > * { pointer-events: auto; }
+    .viz-head-left { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; min-width: 0; }
+    .viz-title { font-size: 0.95rem; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+    .viz-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.55); }
+    .fit-badge { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 11px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+    .fit-badge.ok { color: #7be0b5; border-color: rgba(31,157,107,0.6); background: rgba(31,157,107,0.16); }
+    .fit-badge.warn { color: #ffc861; border-color: rgba(217,138,11,0.6); background: rgba(217,138,11,0.16); }
+    .fit-badge.error { color: #ff8b80; border-color: rgba(214,58,47,0.65); background: rgba(214,58,47,0.18); }
+    .viz-controls { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+    .chip-btn { font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.72); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); padding: 6px 11px; border-radius: 999px; cursor: pointer; transition: all 0.15s; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .chip-btn:hover { color: #fff; border-color: rgba(255,255,255,0.35); }
+    .chip-btn.on { color: #fff; border-color: var(--accent); background: rgba(232,85,42,0.28); }
+    .chip-sep { width: 1px; background: rgba(255,255,255,0.16); margin: 0 3px; }
 
-    #bike-svg { display: block; width: 100%; height: auto; background:
-      radial-gradient(ellipse 80% 65% at 52% 40%, rgba(59,130,246,0.055) 0%, transparent 72%),
-      linear-gradient(180deg, transparent 55%, rgba(59,130,246,0.02) 100%); }
+    /* Live figures on the left of the studio, as on the pump simulator */
+    .figs { position: absolute; left: 18px; top: 74px; bottom: 54px; z-index: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(0.4rem, 1.4vh, 0.9rem); pointer-events: none; }
+    .fig-num { font-size: clamp(1.2rem, min(1.8vw, 3vh), 1.75rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; color: #fff; }
+    .fig-unit { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.1em; color: var(--accent-l); text-transform: uppercase; margin-left: 0.35rem; vertical-align: 0.15em; }
+    .fig-lbl { font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-top: 0.2rem; line-height: 1.25; }
+    .fig.live .fig-num { color: var(--accent-l); }
+    .s-hint { position: absolute; right: 14px; bottom: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: rgba(255,255,255,0.38); pointer-events: none; }
+    .tags { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .tag { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: #fff; background: rgba(14,15,17,0.72); border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; padding: 1px 6px; white-space: nowrap; transition: opacity 0.2s; }
+    .tag.dim { color: #cfe0ff; border-color: rgba(147,197,253,0.35); }
+    .tag.ang { color: #fff; border-color: rgba(232,85,42,0.7); background: rgba(232,85,42,0.85); }
+    .tag.bad { background: var(--error); border-color: var(--error); }
+    .s-load { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); pointer-events: none; transition: opacity 0.4s; }
+    .s-load.done { opacity: 0; }
 
-    #alerts { display: flex; flex-direction: column; gap: 8px; padding: 0 1.1rem; }
-    #alerts:not(:empty) { padding-bottom: 1rem; }
-    .alert { font-size: 0.82rem; line-height: 1.6; padding: 10px 14px; border-radius: 8px; border: 1px solid; }
-    .alert.warn { color: #fbd38d; border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.07); }
-    .alert.error { color: #fca5a5; border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.08); }
+    #alerts { display: flex; flex-direction: column; gap: 8px; padding: 0.9rem 1.1rem 0; }
+    #alerts:empty { display: none; }
+    .alert { font-size: 0.82rem; line-height: 1.55; padding: 9px 13px; border-radius: 8px; border: 1px solid; border-left-width: 3px; }
+    .alert.warn { color: #7a4d05; border-color: rgba(217,138,11,0.45); background: rgba(217,138,11,0.08); }
+    .alert.error { color: #8f1f17; border-color: rgba(214,58,47,0.45); background: rgba(214,58,47,0.07); }
 
-    /* METRICS */
-    .metrics-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.85rem 1.1rem 0.6rem; border-top: 1px solid var(--line); flex-wrap: wrap; }
-    .metrics-head h2 { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--mute); font-weight: 500; }
+    /* ── METRICS ── */
+    .metrics-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.1rem 0.6rem; flex-wrap: wrap; }
+    .metrics-head h2 { font-size: 1rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
     .legend { display: flex; gap: 0.9rem; flex-wrap: wrap; }
-    .legend span { font-size: 0.68rem; color: var(--mute); display: flex; align-items: center; gap: 0.35rem; }
+    .legend span { font-size: 0.7rem; color: var(--mute); display: flex; align-items: center; gap: 0.35rem; }
     .legend i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-
-    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 8px; padding: 0 1.1rem 1.1rem; }
-    .metric { background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px; padding: 0.7rem 0.8rem 0.75rem; }
-    .metric-label { font-family: 'JetBrains Mono', monospace; font-size: 0.57rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--mute); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.4rem; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; padding: 0 1.1rem 1.1rem; }
+    .metric { background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px; padding: 0.65rem 0.8rem 0.7rem; }
+    .metric-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mute); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.4rem; }
     .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; display: none; }
-    .dot.ok { display: inline-block; background: var(--blue); box-shadow: 0 0 6px rgba(59,130,246,0.7); }
-    .dot.warn { display: inline-block; background: var(--warn); box-shadow: 0 0 6px rgba(245,158,11,0.7); }
-    .dot.err { display: inline-block; background: var(--error); box-shadow: 0 0 6px rgba(239,68,68,0.7); }
-    .metric-val { font-family: 'JetBrains Mono', monospace; font-size: 1.02rem; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
-    .metric-val small { font-size: 0.64rem; color: var(--dim); font-weight: 400; }
-    .metric-sub { font-size: 0.64rem; color: var(--mute); margin-top: 0.22rem; line-height: 1.45; }
+    .dot.ok { display: inline-block; background: var(--ok); }
+    .dot.warn { display: inline-block; background: var(--warn); }
+    .dot.err { display: inline-block; background: var(--error); }
+    .metric-val { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text); font-variant-numeric: tabular-nums; }
+    .metric-val small { font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; color: var(--mute); font-weight: 500; letter-spacing: 0.06em; margin-left: 2px; }
+    .metric-sub { font-size: 0.66rem; color: var(--mute); margin-top: 0.2rem; line-height: 1.4; }
+    .metric-group { grid-column: 1 / -1; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); padding-top: 0.4rem; }
 
-    /* DISCLAIMER + FOOTER */
-    .disclaimer { max-width: 1400px; margin: 0 auto 2.5rem; padding: 0 2rem; }
-    .disclaimer-inner { font-size: 0.76rem; color: var(--mute); line-height: 1.7; padding: 1rem 1.25rem; background: rgba(255,255,255,0.02); border: 1px solid var(--line); border-radius: 10px; }
-    .disclaimer-inner strong { color: var(--dim); }
-    .disclaimer-inner a { color: var(--dim); text-decoration: underline; }
-    @media (max-width: 980px) { .disclaimer { padding: 0 1.25rem; } }
+    /* Pedal stroke chart */
+    .cycle-wrap { border-top: 1px solid var(--line); padding: 1rem 1.1rem 1.1rem; }
+    .cycle-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+    .cycle-head h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+    .cycle-head p { font-size: 0.78rem; color: var(--mute); max-width: 62ch; }
+    #cycle { width: 100%; height: 200px; display: block; }
 
-    footer { background: var(--bg-2); }
-    .footer-slim { max-width: 1400px; margin: 0 auto; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
-    .footer-copy { font-size: 0.82rem; color: rgba(255,255,255,0.25); }
-    .footer-copy a { color: rgba(255,255,255,0.35); transition: color 0.2s; }
-    .footer-copy a:hover { color: var(--accent-l); }
-    .footer-links { display: flex; gap: 1.5rem; }
-    .footer-links a { font-size: 0.82rem; color: rgba(255,255,255,0.25); transition: color 0.2s; }
-    .footer-links a:hover { color: var(--dim); }
-    @media (max-width: 560px) { .footer-slim { flex-direction: column; text-align: center; } .footer-links { flex-wrap: wrap; justify-content: center; } }
+    /* ── DISCLAIMER + FOOTER ── */
+    .disclaimer { max-width: 1400px; margin: 0 auto 2.5rem; padding: 0 2.5rem; }
+    .disclaimer-inner { font-size: 0.78rem; color: var(--dim); line-height: 1.7; padding: 1rem 1.25rem; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; }
+    .disclaimer-inner strong { color: var(--text); }
+    @media (max-width: 980px) { .disclaimer { padding: 0 16px; } }
+    footer { background: var(--carbon); }
+    .footer-slim { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copy { font-size: 0.82rem; color: rgba(255,255,255,0.55); }
+    .footer-socials { display: flex; gap: 8px; list-style: none; padding: 0; align-items: center; }
+    .footer-socials li a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.75); transition: all 0.2s; }
+    .footer-socials li a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+    @media (max-width: 768px) {
+      .hero { padding: 6rem 16px 2rem; }
+      .studio { height: auto; display: flex; flex-direction: column; }
+      .studio canvas { height: 58vh; min-height: 340px; }
+      #bike-svg { position: static; height: 58vh; }
+      .figs { position: static; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem 1rem; padding: 0.9rem 16px; background: var(--carbon-2); }
+      .s-bar { position: static; background: var(--carbon-2); }
+      .s-hint { display: none; }
+      .footer-slim { flex-direction: column; text-align: center; gap: 0.85rem; padding: 1.5rem 16px; }
+    }
     .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
 
-<nav>
-  <a href="../index.html" class="nav-logo">
-    <div class="nav-mark">CV</div>
-    Carlos Ebrahim Vendrell
-  </a>
-  <div style="display:flex;align-items:center;gap:1rem;">
-    <span class="nav-tag">Biomechanics</span>
-    <a href="../pages/tech/ai-projects.html" class="nav-back">← AI Sandbox</a>
+<nav id="navbar">
+  <a href="../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
+  <ul class="nav-links">
+    <li class="nav-item">
+      <a href="../index.html">Home</a>
+      <ul class="dropdown">
+        <li><a href="../index.html#service">About me</a></li>
+        <li><a href="../pages/about/contact.html">Contact</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../pages/travel/travel-map.html">Travel</a>
+      <ul class="dropdown">
+        <li><a href="../pages/travel/travel-map.html">Travel Map</a></li>
+        <li><a href="../pages/travel/volunteering.html">Volunteering</a></li>
+        <li><a href="../pages/travel/flight-log.html">Flight Log</a></li>
+        <li><a href="../pages/travel/dive-log.html">Dive Log</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../pages/photography/gallery.html">Photography</a>
+      <ul class="dropdown">
+        <li><a href="../pages/photography/gallery.html">Gallery</a></li>
+        <li><a href="../pages/photography/northern-lights.html">Northern Lights</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../pages/tech/ai-projects.html">Tech</a>
+      <ul class="dropdown">
+        <li><a href="../pages/tech/xr-videos.html">XR Videos</a></li>
+        <li><a href="../pages/tech/reality-capture.html">Reality Capture</a></li>
+        <li><a href="../pages/tech/ai-projects.html">AI Playground</a></li>
+        <li><a href="../pages/tech/3d-printing.html">3D Printing</a></li>
+        <li><a href="../pages/tech/food-for-thought.html">Food for Thought</a></li>
+      </ul>
+    </li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-socials">
+      <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener" aria-label="LinkedIn" class="nav-social-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener" aria-label="Instagram" class="nav-social-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+    </div>
   </div>
+  <button class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
-<header class="tool-hero">
-  <h1>Bike Fit <span>studio</span>.</h1>
-  <p>Set your measurements, pick a frame, choose where your hands go, then watch yourself pedal on it. The bike is drawn from the real geometry chart of whichever model you select, and every angle is measured live. Everything runs in your browser and nothing is sent anywhere.</p>
+<div class="hero-band carbon"><header class="hero">
+  <div class="eyebrow">Tech · Fit studio</div>
+  <h1>Bike Fit <span>Studio</span></h1>
+  <p>Set your measurements, pick a frame, choose where your hands go, then watch yourself pedal it in 3D. The bike is built from the real geometry chart of the model you pick, down to the head angle and the chainstays. Every joint angle is measured live. Everything runs in your browser and nothing is sent anywhere.</p>
   <div class="method-chips">
-    <span class="method-chip">87 frames, 6 categories</span>
+    <span class="method-chip">87 frames · 6 categories</span>
     <span class="method-chip">LeMond 0.883 saddle height</span>
     <span class="method-chip">Two-link inverse kinematics</span>
-    <span class="method-chip">Live joint angles</span>
+    <span class="method-chip">Knee over pedal · trail · toe overlap</span>
+    <span class="method-chip">Aero drag estimate</span>
   </div>
-</header>
+</header></div>
 
 <div class="tool-wrap">
 
@@ -208,7 +330,6 @@
 
     <div class="form-section">
       <p class="form-section-label">Your body</p>
-
       <div class="field">
         <div class="field-row">
           <label for="in-height">Height</label>
@@ -216,7 +337,6 @@
         </div>
         <input type="range" id="in-height" min="150" max="205" value="178" step="1" aria-label="Height slider">
       </div>
-
       <div class="field">
         <div class="field-row">
           <label for="in-inseam">Inseam</label>
@@ -234,7 +354,11 @@
           </ol>
         </details>
       </div>
-
+      <div class="field">
+        <div class="field-row"><label for="in-weight">Weight</label><span class="field-val" id="val-weight">72 kg</span></div>
+        <input type="range" id="in-weight" min="45" max="120" value="72" step="1" aria-label="Weight slider">
+        <p class="hint">Only used for the aero and rolling resistance estimate.</p>
+      </div>
       <div class="field">
         <div class="field-row"><label>Units</label></div>
         <div class="seg" id="in-units">
@@ -242,7 +366,6 @@
           <button data-units="imperial">Inches</button>
         </div>
       </div>
-
       <div class="field">
         <div class="field-row"><label>Flexibility</label></div>
         <div class="seg" id="in-flex">
@@ -256,7 +379,6 @@
 
     <div class="form-section">
       <p class="form-section-label">The bike</p>
-
       <div class="field">
         <div class="field-row"><label for="in-search">Category</label></div>
         <div class="seg wrap" id="in-cat">
@@ -269,16 +391,13 @@
           <button data-cat="Time trial">TT</button>
         </div>
       </div>
-
       <div class="field">
         <input type="search" class="txt" id="in-search" placeholder="Search 87 frames, e.g. Tarmac" aria-label="Search frames">
       </div>
-
       <div class="field">
         <div class="field-row"><label for="in-model">Frame</label><span class="field-val" id="count-models"></span></div>
         <select id="in-model" aria-label="Frame model"></select>
       </div>
-
       <div class="two-col field">
         <div>
           <div class="field-row"><label for="in-size">Size</label></div>
@@ -297,7 +416,6 @@
           </select>
         </div>
       </div>
-
       <div class="field">
         <div class="field-row">
           <label for="in-stem">Stem length</label>
@@ -305,7 +423,6 @@
         </div>
         <input type="range" id="in-stem" min="60" max="150" value="100" step="5" aria-label="Stem length slider">
       </div>
-
       <div class="two-col field">
         <div>
           <div class="field-row"><label for="in-stemangle">Stem angle</label></div>
@@ -323,7 +440,6 @@
           <input type="range" id="in-spacers" min="0" max="45" value="20" step="5" aria-label="Spacer stack">
         </div>
       </div>
-
       <div id="custom-geo">
         <div class="field">
           <div class="field-row"><label for="in-cstack">Stack</label><span class="field-val" id="val-cstack">560 mm</span></div>
@@ -355,77 +471,122 @@
         <p class="hint">Where your hands sit on the bar. The rider and every angle follow.</p>
       </div>
       <div class="field">
+        <div class="field-row"><label>Power for the speed estimate</label></div>
+        <div class="seg" id="in-watts">
+          <button data-watts="150">150 W</button>
+          <button data-watts="200" class="active">200 W</button>
+          <button data-watts="250">250 W</button>
+          <button data-watts="300">300 W</button>
+        </div>
+      </div>
+      <div class="field">
         <div class="row-btns">
           <button type="button" class="mini-btn" id="btn-reset">Reset all</button>
-          <button type="button" class="mini-btn" id="btn-fitme">Fit me to this frame</button>
+          <button type="button" class="mini-btn primary" id="btn-fitme">Fit me to this frame</button>
         </div>
         <p class="hint">Fit me picks the suggested size and tunes stem and spacers to land your angles in range.</p>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT: DRAWING -->
+  <!-- RIGHT: STUDIO -->
   <div class="tool-right">
     <div class="viz-panel">
-      <div class="viz-head">
-        <div class="viz-head-left">
-          <span class="viz-title" id="viz-title">Frame</span>
-          <span class="viz-sub" id="viz-sub"></span>
-          <span class="fit-badge ok" id="fit-badge">Balanced</span>
+      <div class="studio carbon-studio" id="studio">
+        <div class="tags" id="tags"></div>
+        <div class="s-bar">
+          <div class="viz-head-left">
+            <span class="viz-title" id="viz-title">Frame</span>
+            <span class="viz-sub" id="viz-sub"></span>
+            <span class="fit-badge ok" id="fit-badge">Balanced</span>
+          </div>
+          <div class="viz-controls">
+            <button class="chip-btn on" id="btn-play" aria-pressed="true" title="Space">Pause</button>
+            <button class="chip-btn on" id="btn-dims" aria-pressed="true" title="D">Dims</button>
+            <button class="chip-btn only3d" id="btn-trace" aria-pressed="false" title="T">Knee path</button>
+            <span class="chip-sep only3d"></span>
+            <button class="chip-btn on only3d" data-view="side" aria-pressed="true" title="1">Side</button>
+            <button class="chip-btn only3d" data-view="three" aria-pressed="false" title="2">3/4</button>
+            <button class="chip-btn only3d" data-view="front" aria-pressed="false" title="3">Front</button>
+            <button class="chip-btn only3d" data-view="top" aria-pressed="false" title="4">Top</button>
+            <span class="chip-sep"></span>
+            <button class="chip-btn" id="btn-link">Copy link</button>
+            <button class="chip-btn" id="btn-copy">Copy fit</button>
+          </div>
         </div>
-        <div class="viz-controls">
-          <button class="chip-btn on" id="btn-play" aria-pressed="true" title="Space">⏸ Pause</button>
-          <button class="chip-btn on" id="btn-dims" aria-pressed="true" title="D">Dims</button>
-          <button class="chip-btn" id="btn-link">Copy link</button>
-          <button class="chip-btn" id="btn-copy">Copy fit</button>
+        <div class="figs" aria-live="off">
+          <div class="fig live"><div class="fig-num"><span id="f-knee">–</span><span class="fig-unit">°</span></div><div class="fig-lbl">Knee, right now</div></div>
+          <div class="fig live"><div class="fig-num"><span id="f-hip">–</span><span class="fig-unit">°</span></div><div class="fig-lbl">Hip, right now</div></div>
+          <div class="fig"><div class="fig-num"><span id="f-torso">–</span><span class="fig-unit">°</span></div><div class="fig-lbl">Torso angle</div></div>
+          <div class="fig"><div class="fig-num"><span id="f-saddle">–</span><span class="fig-unit">mm</span></div><div class="fig-lbl">Saddle height</div></div>
+          <div class="fig"><div class="fig-num"><span id="f-speed">–</span><span class="fig-unit">km/h</span></div><div class="fig-lbl" id="f-speed-l">At 200 W, flat road</div></div>
         </div>
+        <div class="s-load only3d" id="s-load">Building the bike…</div>
+        <div class="s-hint only3d">Drag to orbit · scroll to zoom</div>
+        <svg id="bike-svg" viewBox="-950 -1350 2540 1680" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated side view of the selected bike with a pedalling rider">
+          <defs>
+            <pattern id="bp-grid" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.045)" stroke-width="2"/>
+            </pattern>
+            <linearGradient id="pg" x1="0" y1="0" x2="0.35" y2="1">
+              <stop offset="0%" id="pg0"/><stop offset="55%" id="pg1"/><stop offset="100%" id="pg2"/>
+            </linearGradient>
+            <linearGradient id="rg" x1="0" y1="0" x2="0.4" y2="1">
+              <stop offset="0%" stop-color="#3a3d44"/><stop offset="50%" stop-color="#1e2024"/><stop offset="100%" stop-color="#111214"/>
+            </linearGradient>
+            <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2b2d32"/><stop offset="100%" stop-color="#151619"/>
+            </linearGradient>
+            <linearGradient id="jg" x1="0" y1="0" x2="0.3" y2="1">
+              <stop offset="0%" stop-color="#ff9a6b"/><stop offset="60%" stop-color="#e8552a"/><stop offset="100%" stop-color="#a8381a"/>
+            </linearGradient>
+          </defs>
+          <g id="g-grid"></g>
+          <g id="g-back"></g>
+          <g id="g-static"></g>
+          <g id="g-front"></g>
+        </svg>
       </div>
-
-      <svg id="bike-svg" viewBox="-950 -1350 2540 1680" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated side view of the selected bike with a pedalling rider">
-        <defs>
-          <pattern id="bp-grid" width="100" height="100" patternUnits="userSpaceOnUse">
-            <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(147,197,253,0.045)" stroke-width="2"/>
-          </pattern>
-          <linearGradient id="pg" x1="0" y1="0" x2="0.35" y2="1">
-            <stop offset="0%" id="pg0"/><stop offset="55%" id="pg1"/><stop offset="100%" id="pg2"/>
-          </linearGradient>
-          <linearGradient id="rg" x1="0" y1="0" x2="0.4" y2="1">
-            <stop offset="0%" stop-color="#2a3a5c"/><stop offset="50%" stop-color="#16233c"/><stop offset="100%" stop-color="#0d1626"/>
-          </linearGradient>
-          <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#2b3242"/><stop offset="100%" stop-color="#171c27"/>
-          </linearGradient>
-          <linearGradient id="jg" x1="0" y1="0" x2="0.3" y2="1">
-            <stop offset="0%" stop-color="#edc59a"/><stop offset="60%" stop-color="#d2955c"/><stop offset="100%" stop-color="#a06f3d"/>
-          </linearGradient>
-        </defs>
-        <g id="g-grid"></g>
-        <g id="g-back"></g>
-        <g id="g-static"></g>
-        <g id="g-front"></g>
-      </svg>
 
       <div id="alerts"></div>
 
       <div class="metrics-head">
         <h2>Measured fit</h2>
         <div class="legend">
-          <span><i style="background:#3b82f6"></i>in range</span>
-          <span><i style="background:#f59e0b"></i>borderline</span>
-          <span><i style="background:#ef4444"></i>out of range</span>
+          <span><i style="background:var(--ok)"></i>in range</span>
+          <span><i style="background:var(--warn)"></i>borderline</span>
+          <span><i style="background:var(--error)"></i>out of range</span>
         </div>
       </div>
       <div class="metrics">
+        <div class="metric-group">Size and saddle</div>
         <div class="metric"><div class="metric-label"><span class="dot" id="d-size"></span>Suggested size</div><div class="metric-val" id="m-size">—</div><div class="metric-sub" id="s-size">from height and inseam</div></div>
         <div class="metric"><div class="metric-label">Saddle height</div><div class="metric-val" id="m-saddle">—</div><div class="metric-sub">BB to saddle top, LeMond</div></div>
         <div class="metric"><div class="metric-label">Saddle setback</div><div class="metric-val" id="m-setback">—</div><div class="metric-sub">behind the bottom bracket</div></div>
-        <div class="metric"><div class="metric-label"><span class="dot" id="d-knee"></span>Knee angle</div><div class="metric-val" id="m-knee">—</div><div class="metric-sub">bottom of stroke, target 138-148°</div></div>
+        <div class="metric"><div class="metric-label"><span class="dot" id="d-kops"></span>Knee over pedal</div><div class="metric-val" id="m-kops">—</div><div class="metric-sub" id="s-kops">front of knee vs spindle, crank forward</div></div>
+        <div class="metric-group">Joint angles</div>
+        <div class="metric"><div class="metric-label"><span class="dot" id="d-knee"></span>Knee, bottom</div><div class="metric-val" id="m-knee">—</div><div class="metric-sub">bottom of stroke, target 138-148°</div></div>
+        <div class="metric"><div class="metric-label"><span class="dot" id="d-kneetdc"></span>Knee, top</div><div class="metric-val" id="m-kneetdc">—</div><div class="metric-sub">top of stroke, keep above 68°</div></div>
         <div class="metric"><div class="metric-label"><span class="dot" id="d-hip"></span>Hip angle</div><div class="metric-val" id="m-hip">—</div><div class="metric-sub">top of stroke, keep above 45°</div></div>
         <div class="metric"><div class="metric-label"><span class="dot" id="d-torso"></span>Torso angle</div><div class="metric-val" id="m-torso">—</div><div class="metric-sub" id="s-torso">from horizontal</div></div>
+        <div class="metric-group">Cockpit</div>
         <div class="metric"><div class="metric-label"><span class="dot" id="d-drop"></span>Saddle to bar drop</div><div class="metric-val" id="m-drop">—</div><div class="metric-sub" id="s-drop">saddle top to bar clamp</div></div>
         <div class="metric"><div class="metric-label">Reach to hands</div><div class="metric-val" id="m-reach">—</div><div class="metric-sub">saddle to grip, horizontal</div></div>
         <div class="metric"><div class="metric-label"><span class="dot" id="d-stretch"></span>Stretch</div><div class="metric-val" id="m-stretch">—</div><div class="metric-sub">of torso plus arm span</div></div>
         <div class="metric"><div class="metric-label">Stack to reach</div><div class="metric-val" id="m-ratio">—</div><div class="metric-sub" id="s-ratio">frame proportion</div></div>
+        <div class="metric-group">Handling and speed</div>
+        <div class="metric"><div class="metric-label">Trail</div><div class="metric-val" id="m-trail">—</div><div class="metric-sub" id="s-trail">steering stability</div></div>
+        <div class="metric"><div class="metric-label"><span class="dot" id="d-toe"></span>Toe clearance</div><div class="metric-val" id="m-toe">—</div><div class="metric-sub" id="s-toe">shoe to front tyre</div></div>
+        <div class="metric"><div class="metric-label">Drag area CdA</div><div class="metric-val" id="m-cda">—</div><div class="metric-sub" id="s-cda">estimate from body and torso</div></div>
+        <div class="metric"><div class="metric-label">Speed</div><div class="metric-val" id="m-speed">—</div><div class="metric-sub" id="s-speed">flat road, no wind</div></div>
+      </div>
+
+      <div class="cycle-wrap">
+        <div class="cycle-head">
+          <h2>Through one pedal stroke</h2>
+          <p>Knee and hip angle all the way round the crank, for the near leg. The shaded band is the target knee extension at the bottom; the marker follows the rider.</p>
+        </div>
+        <canvas id="cycle" aria-label="Knee and hip angle against crank angle"></canvas>
       </div>
     </div>
   </div>
@@ -434,19 +595,33 @@
 
 <div class="disclaimer">
   <div class="disclaimer-inner">
-    <strong>These are starting points, not a professional fit.</strong> Frame data is representative of published geometry charts and may differ from the current model year, so verify with the manufacturer before buying. Rider proportions use population averages, and your own torso and arm lengths will shift the result. Make position changes gradually, a few millimetres at a time, and stop if you get pain or numbness. Use of these estimates is at your own risk. See our <a href="../../legal/terms.html">Terms of Use</a>.
+    <strong>These are starting points, not a professional fit.</strong> Frame data is representative of published geometry charts and may differ from the current model year, so verify with the manufacturer before buying. Rider proportions use population averages, and your own torso and arm lengths will shift the result. The drag and speed numbers are rough estimates from body size and torso angle. Make position changes gradually, a few millimetres at a time, and stop if you get pain or numbness. Use of these estimates is at your own risk.
   </div>
 </div>
 
 <footer>
   <div class="footer-slim">
-    <span class="footer-copy">© <span class="js-year">2025</span> Carlos Ebrahim Vendrell · Built for fun in Aarhus, Denmark</span>
-    <div class="footer-links">
-      <a href="../pages/about/contact.html">Contact</a>
-      <a href="../pages/tech/ai-projects.html">More projects</a>
-    </div>
+    <span class="footer-copy">© <span class="js-year">2026</span> Carlos Ebrahim Vendrell. All rights reserved.</span>
+    <ul class="footer-socials">
+      <li><a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a></li>
+      <li><a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a></li>
+    </ul>
   </div>
 </footer>
+
+<script>
+  // Shared nav behaviour
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+  document.querySelector('.hamburger').addEventListener('click', () => document.body.classList.toggle('nav-open'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => document.body.classList.remove('nav-open')));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('nav-open'); });
+  document.querySelectorAll('.js-year').forEach(e => { e.textContent = new Date().getFullYear(); });
+</script>
 
 <script>
 'use strict';
@@ -787,8 +962,22 @@ const HAND = {
   aero:   { tops: { x: 10, y: 30 }, hoods: { x: 210, y: 46 }, drops: { x: 205, y: 40 } }
 };
 
+/* Typical fork offset (rake) per style, used for trail */
+const RAKE = { aero: 45, race: 45, endurance: 50, gravel: 50, tt: 45 };
+
+/* Flat-road power balance: P·η = (½·ρ·CdA·v² + Crr·m·g)·v. Returns km/h. */
+function speedAt(P, cda, crr, m) {
+  const rho = 1.225, eta = 0.976, g = 9.81;
+  let lo = 0, hi = 30;
+  for (let i = 0; i < 50; i++) {
+    const v = (lo + hi) / 2;
+    if ((0.5 * rho * cda * v * v + crr * m * g) * v / eta > P) hi = v; else lo = v;
+  }
+  return (lo + hi) / 2 * 3.6;
+}
+
 const $ = id => document.getElementById(id);
-const DEFAULTS = { height: 178, inseam: 84, flex: 'med', model: 'tarmac', size: '56',
+const DEFAULTS = { height: 178, inseam: 84, weight: 72, watts: 200, flex: 'med', model: 'tarmac', size: '56',
                    stem: 100, stemAngle: -6, spacers: 20, crank: 172.5, pos: 'hoods',
                    cstack: 560, creach: 385, csta: 73.5, chta: 73 };
 let state = Object.assign({}, DEFAULTS);
@@ -974,7 +1163,8 @@ function computeScene() {
   const hOff = (HAND[sty.bar] || HAND.round)[state.pos];
   const hand = { x: bar.x + hOff.x, y: bar.y + hOff.y };
 
-  const hip = { x: saddle.x - 8, y: saddle.y + 62 };
+  /* Hip joint above the sit bones, which rest about 4 cm behind the saddle clamp */
+  const hip = { x: saddle.x - 40, y: saddle.y + 62 };
   const femur = A_FEMUR * I, tibia = A_TIBIA * I;
   const torso = A_TORSO * H, arm = A_ARM * H;
   const headR = A_HEAD_R * H;
@@ -1049,7 +1239,26 @@ function computeScene() {
     alerts.push({ level: 'warn', msg: 'Hip angle is quite closed at the top of the stroke. A taller bar position or shorter cranks may open it up.' });
   }
 
-  return { g, sty, H, I, CRANK, WHEEL_R, RIM_IN, CROWN_Y, GROUND: BB_DROP - WHEEL_R,
+  /* Knee over pedal spindle with the crank forward at 3 o'clock. The front of the knee sits about 40 mm ahead of the joint centre. */
+  const ankle3 = { x: CRANK + FOOT_VEC.x, y: FOOT_VEC.y };
+  const k3 = ik(hip, ankle3, femur, tibia), knee3 = k3.left.x > k3.right.x ? k3.left : k3.right;
+  const kops = knee3.x + 40 - CRANK;
+  const kneeTDC = jointAngle(kneeTDCpt, hip, ankleTDC);
+  /* Trail from head angle, wheel radius and a typical fork offset for the category */
+  const rake = RAKE[(BIKES[state.model] || BIKES.tarmac).style] || 45;
+  const trail = (WHEEL_R * Math.cos(g.hta * D2R) - rake) / Math.sin(g.hta * D2R);
+  /* Toe overlap: the shoe tip sits about 4.7 % of body height ahead of the spindle (foot length × 0.27, plus the shoe), crank forward */
+  const tyreBack = frontAxle.x - Math.sqrt(Math.max(WHEEL_R * WHEEL_R - BB_DROP * BB_DROP, 0));
+  const toe = tyreBack - (CRANK + 0.047 * H);
+  /* Aero: drag area from body surface area (Du Bois) and torso angle, then the flat-road power balance */
+  const bsa = 0.007184 * Math.pow(state.weight, 0.425) * Math.pow(state.height, 0.725);
+  const cda = bsa * (0.106 + 0.00159 * Math.max(5, torsoA)) + (state.pos === 'tops' ? 0.03 : 0);
+  const crr = sty.tyre >= 40 ? 0.0055 : sty.tyre >= 32 ? 0.0045 : 0.004;
+  const mass = state.weight + (sty.tyre >= 40 ? 9 : 8);
+  const speed = speedAt(state.watts, cda, crr, mass);
+
+  return { kops, knee3, kneeTDC, rake, trail, toe, bsa, cda, crr, mass, speed,
+           g, sty, H, I, CRANK, WHEEL_R, RIM_IN, CROWN_Y, GROUND: BB_DROP - WHEEL_R,
            rearAxle, frontAxle, headTop, headBot, htDir, staDir, stTop, bb,
            saddleH, post, saddle, spacers, clamp, bar, hand, hip, femur, tibia, torso, arm,
            headR, shoulder, elbow, head, torsoA, stretch, kneeBDC, hipA, drop, setback,
@@ -1373,6 +1582,25 @@ function renderPanel() {
   $('m-reach').innerHTML = `${Math.round(S.hand.x - S.saddle.x)} <small>mm</small>`;
   $('m-stretch').innerHTML = `${Math.round(S.stretch * 100)}<small>%</small>`;
   setDot('d-stretch', S.stretch < 0.78 ? 'ok' : S.stretch < 0.84 ? 'warn' : 'err');
+  $('m-kops').innerHTML = `${S.kops > 0 ? '+' : ''}${Math.round(S.kops)} <small>mm</small>`;
+  const ttPos = S.sty.cockpit === 'aerobar';
+  $('s-kops').textContent = ttPos ? 'TT positions sit forward on purpose' : Math.abs(S.kops) <= 20 ? 'knee over the spindle' : S.kops > 0 ? 'knee ahead: saddle back a little' : 'knee behind: saddle forward a little';
+  setDot('d-kops', ttPos ? '' : Math.abs(S.kops) <= 20 ? 'ok' : Math.abs(S.kops) <= 35 ? 'warn' : 'err');
+  $('m-kneetdc').innerHTML = `${Math.round(S.kneeTDC)}<small>°</small>`;
+  setDot('d-kneetdc', S.kneeTDC >= 68 ? 'ok' : S.kneeTDC >= 62 ? 'warn' : 'err');
+  $('m-trail').innerHTML = `${Math.round(S.trail)} <small>mm</small>`;
+  $('s-trail').textContent = S.trail < 52 ? 'quick, light steering' : S.trail < 63 ? 'neutral road handling' : S.trail < 72 ? 'stable, calm steering' : 'very stable, slow to turn';
+  $('m-toe').innerHTML = `${Math.round(S.toe)} <small>mm</small>`;
+  $('s-toe').textContent = S.toe < 0 ? 'overlaps when turning slowly' : S.toe < 20 ? 'only just clears' : 'clear of the tyre';
+  setDot('d-toe', S.toe >= 20 ? 'ok' : 'warn');
+  $('m-cda').innerHTML = `${S.cda.toFixed(3)} <small>m²</small>`;
+  $('m-speed').innerHTML = `${S.speed.toFixed(1)} <small>km/h</small>`;
+  $('s-speed').textContent = `at ${state.watts} W, flat road, no wind`;
+  $('f-torso').textContent = Math.round(S.torsoA);
+  $('f-saddle').textContent = Math.round(S.saddleH);
+  $('f-speed').textContent = S.speed.toFixed(1);
+  $('f-speed-l').textContent = `At ${state.watts} W, flat road`;
+
   const sr = S.g.stack / S.g.reach;
   $('m-ratio').textContent = sr.toFixed(2);
   $('s-ratio').textContent = sr < 1.45 ? 'long and low' : sr < 1.55 ? 'balanced' : sr < 1.65 ? 'relaxed' : 'very upright';
@@ -1399,19 +1627,72 @@ function renderPanel() {
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let playing = !reducedMotion;
 let lastT = 0;
+let cycFrame = 0;
 function loop(t) {
-  if (playing && lastT) {
-    phi += Math.min(t - lastT, 60) * 0.001 * (CADENCE / 60) * 2 * Math.PI;
-    renderDynamic();
-  }
-  lastT = t;
   requestAnimationFrame(loop);
+  if (document.hidden) { lastT = 0; return; }
+  if (playing && lastT) phi += Math.min(t - lastT, 60) * 0.001 * (CADENCE / 60) * 2 * Math.PI;
+  lastT = t;
+  if (window.BIKE3D && window.BIKE3D.ok) window.BIKE3D.frame(phi);
+  else if (playing) renderDynamic();
+  if (++cycFrame % 3 === 0) { liveFigs(); drawCycle(); }
+}
+
+/* ============================================================
+   POSE AND THE PEDAL STROKE
+   ============================================================ */
+/* Both legs at crank angle ph (0 = near pedal at the top, turning forward) */
+function pose(ph) {
+  const { bb, hip, femur, tibia, CRANK } = S;
+  const leg = sgn => {
+    const pedal = { x: bb.x + sgn * CRANK * Math.sin(ph), y: bb.y + sgn * CRANK * Math.cos(ph) };
+    const ankle = { x: pedal.x + FOOT_VEC.x, y: pedal.y + FOOT_VEC.y };
+    const k = ik(hip, ankle, femur, tibia);
+    const knee = k.left.x > k.right.x ? k.left : k.right;
+    return { pedal, ankle, knee, kneeA: jointAngle(knee, hip, ankle) };
+  };
+  const near = leg(1);
+  return { near, far: leg(-1), hipA: jointAngle(hip, S.shoulder, near.knee) };
+}
+let CYC = null;
+function computeCycle() {
+  const n = 120, knee = [], hipA = [];
+  for (let i = 0; i <= n; i++) { const p = pose(i / n * 2 * Math.PI); knee.push(p.near.kneeA); hipA.push(p.hipA); }
+  CYC = { n, knee, hipA };
+}
+function liveFigs() {
+  if (!S) return;
+  const p = pose(phi);
+  $('f-knee').textContent = Math.round(p.near.kneeA);
+  $('f-hip').textContent = Math.round(p.hipA);
+}
+function drawCycle() {
+  const c = $('cycle'); if (!c || !CYC) return;
+  const dpr = Math.min(devicePixelRatio, 2), w = c.clientWidth, h = c.clientHeight;
+  if (!w) return;
+  if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+  const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const pad = { l: 36, r: 12, t: 10, b: 24 }, lo = 30, hi = 160;
+  const X = a => pad.l + a / 360 * (w - pad.l - pad.r), Y = v => h - pad.b - (v - lo) / (hi - lo) * (h - pad.t - pad.b);
+  g.font = '10px JetBrains Mono, monospace';
+  g.fillStyle = 'rgba(31,157,107,0.12)'; g.fillRect(X(0), Y(148), X(360) - X(0), Y(138) - Y(148));
+  g.strokeStyle = 'rgba(17,20,24,0.08)'; g.fillStyle = '#8a909c'; g.lineWidth = 1;
+  for (let v = 40; v <= 160; v += 20) { g.beginPath(); g.moveTo(X(0), Y(v)); g.lineTo(X(360), Y(v)); g.stroke(); g.fillText(v + '°', 2, Y(v) + 3); }
+  for (let a = 0; a <= 360; a += 90) { g.beginPath(); g.moveTo(X(a), Y(lo)); g.lineTo(X(a), Y(hi)); g.stroke(); g.fillText(a === 0 ? 'top' : a === 90 ? '3 o’clock' : a === 180 ? 'bottom' : a === 270 ? '9 o’clock' : '', X(a) + 3, h - 8); }
+  const line = (arr, col, wid) => { g.strokeStyle = col; g.lineWidth = wid; g.beginPath(); arr.forEach((v, i) => { const x = X(i / CYC.n * 360), y = Y(v); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke(); };
+  line(CYC.hipA, '#2f6fd0', 1.8);
+  line(CYC.knee, '#e8552a', 2.2);
+  g.fillStyle = '#e8552a'; g.fillText('knee', X(200), Y(CYC.knee[Math.round(CYC.n * 200 / 360)]) - 6);
+  g.fillStyle = '#2f6fd0'; g.fillText('hip', X(20), Y(CYC.hipA[Math.round(CYC.n * 20 / 360)]) - 6);
+  const a = ((phi / D2R) % 360 + 360) % 360, p = pose(phi);
+  g.strokeStyle = 'rgba(17,20,24,0.35)'; g.setLineDash([3, 3]); g.beginPath(); g.moveTo(X(a), Y(lo)); g.lineTo(X(a), Y(hi)); g.stroke(); g.setLineDash([]);
+  for (const [v, col] of [[p.near.kneeA, '#e8552a'], [p.hipA, '#2f6fd0']]) { g.beginPath(); g.fillStyle = col; g.arc(X(a), Y(v), 4, 0, Math.PI * 2); g.fill(); }
 }
 
 /* ============================================================
    URL STATE
    ============================================================ */
-const HASH_KEYS = ['height', 'inseam', 'flex', 'model', 'size', 'stem', 'stemAngle',
+const HASH_KEYS = ['height', 'inseam', 'weight', 'watts', 'flex', 'model', 'size', 'stem', 'stemAngle',
                    'spacers', 'crank', 'pos', 'cstack', 'creach', 'csta', 'chta'];
 const STR_KEYS = ['flex', 'model', 'size', 'pos'];
 let hashTimer = null;
@@ -1437,6 +1718,8 @@ function readHash() {
   if (!HAND.round[state.pos]) state.pos = DEFAULTS.pos;
   state.spacers = Math.max(0, Math.min(45, state.spacers));
   state.stem = Math.max(60, Math.min(150, state.stem));
+  state.weight = Math.max(45, Math.min(120, state.weight));
+  if (![150, 200, 250, 300].includes(state.watts)) state.watts = DEFAULTS.watts;
 }
 
 /* ============================================================
@@ -1498,7 +1781,10 @@ function fillSizes(selectSuggested) {
   sel.disabled = state.model === 'custom';
 }
 
-function update() { renderStatic(); renderDynamic(); writeHash(); }
+function update() {
+  renderStatic(); renderDynamic(); writeHash(); computeCycle(); drawCycle();
+  if (window.BIKE3D && window.BIKE3D.ok) window.BIKE3D.rebuild();
+}
 
 /* Nudge stem and spacers until the angles land in range. Deliberately
    conservative: it only touches the two things you can actually change
@@ -1620,6 +1906,15 @@ function initControls() {
     });
   };
   wireSeg('in-flex', 'flex', 'flex');
+  document.querySelectorAll('#in-watts button').forEach(btn => {
+    btn.classList.toggle('active', +btn.dataset.watts === state.watts);
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#in-watts button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active'); state.watts = +btn.dataset.watts; update();
+    });
+  });
+  $('in-weight').value = state.weight; $('val-weight').textContent = `${state.weight} kg`;
+  $('in-weight').addEventListener('input', () => { state.weight = +$('in-weight').value; $('val-weight').textContent = `${state.weight} kg`; update(); });
   wireSeg('in-pos', 'pos', 'pos');
 
   /* units */
@@ -1647,6 +1942,8 @@ function initControls() {
     document.querySelectorAll('#in-cat button').forEach(b => b.classList.toggle('active', b.dataset.cat === 'all'));
     document.querySelectorAll('#in-flex button').forEach(b => b.classList.toggle('active', b.dataset.flex === state.flex));
     document.querySelectorAll('#in-pos button').forEach(b => b.classList.toggle('active', b.dataset.pos === state.pos));
+    document.querySelectorAll('#in-watts button').forEach(b => b.classList.toggle('active', +b.dataset.watts === state.watts));
+    $('in-weight').value = state.weight; $('val-weight').textContent = `${state.weight} kg`;
     $('in-crank').value = String(state.crank);
     $('in-stemangle').value = String(state.stemAngle);
     $('in-stem').value = state.stem; $('num-stem').value = state.stem;
@@ -1669,7 +1966,7 @@ function initControls() {
   /* viz controls */
   const playBtn = $('btn-play');
   const syncPlay = () => {
-    playBtn.textContent = playing ? '⏸ Pause' : '▶ Play';
+    playBtn.textContent = playing ? 'Pause' : 'Play';
     playBtn.classList.toggle('on', playing);
     playBtn.setAttribute('aria-pressed', String(playing));
   };
@@ -1682,6 +1979,7 @@ function initControls() {
     dimsBtn.classList.toggle('on', showDims);
     dimsBtn.setAttribute('aria-pressed', String(showDims));
     renderStatic();
+    if (window.BIKE3D && window.BIKE3D.ok) window.BIKE3D.setDims(showDims);
   });
 
   const flash = (btn, ok) => {
@@ -1710,6 +2008,9 @@ function initControls() {
       `Knee angle at bottom of stroke: ${Math.round(S.kneeBDC)}° (target 138 to 148)`,
       `Hip angle at top of stroke: ${Math.round(S.hipA)}°`,
       `Torso angle: ${Math.round(S.torsoA)}°, stretch ${Math.round(S.stretch * 100)}%`,
+      `Knee over pedal: ${Math.round(S.kops)} mm · knee at top ${Math.round(S.kneeTDC)}°`,
+      `Trail: ${Math.round(S.trail)} mm · toe clearance ${Math.round(S.toe)} mm`,
+      `Drag area: ${S.cda.toFixed(3)} m², about ${S.speed.toFixed(1)} km/h at ${state.watts} W`,
       '',
       'Estimates only. This is not a professional bike fit.'
     ].join('\n');
@@ -1729,14 +2030,573 @@ function initControls() {
 /* ============================================================
    BOOT
    ============================================================ */
+/* Hooks for the 3D studio (module script below). The SVG drawing stays as the fallback. */
+function use2D() { window.BIKE3D = null; document.body.classList.add('flat'); renderStatic(); renderDynamic(); }
+window.BF = {
+  get S() { return S; }, get state() { return state; }, get showDims() { return showDims; }, get playing() { return playing; },
+  pose, tangent, use2D, BEAD_R, BB_DROP, GEAR, D2R, FOOT_VEC, HAND,
+  styleKey: () => (BIKES[state.model] || BIKES.tarmac).style
+};
+
 readHash();
 initControls();
 fillModels();
 fillSizes(false);
 renderStatic();
 renderDynamic();
+computeCycle();
 requestAnimationFrame(loop);
+setTimeout(() => { if (!window.BIKE3D) use2D(); }, 8000);
 </script>
-<script>document.querySelectorAll('.js-year').forEach(e => e.textContent = new Date().getFullYear());</script>
+
+<script type="module">
+/* ============================================================
+   3D STUDIO. Reads the fit scene from the classic script (window.BF)
+   and builds a carbon bike and rider from it. World units are metres:
+   x forward, y up, z to the rider's right (the drive side faces the camera).
+   ============================================================ */
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const BF = window.BF, $ = id => document.getElementById(id);
+const studio = $('studio');
+const V3 = THREE.Vector3, MM = 0.001;
+const small = matchMedia('(max-width: 768px)').matches;
+
+try { init(); } catch (e) { console.error(e); BF.use2D(); }
+
+function init() {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, small ? 1.5 : 1.75));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.domElement.setAttribute('aria-label', '3D view of the bike and rider. Drag to orbit.');
+  renderer.domElement.tabIndex = 0;
+  studio.prepend(renderer.domElement);
+  renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); BF.use2D(); });
+
+  const scene = new THREE.Scene();
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(new RoomEnvironment(), 0.03).texture;
+  pm.dispose();
+
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 60);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.minDistance = 1.0; controls.maxDistance = 9;
+  controls.maxPolarAngle = Math.PI * 0.495;
+  controls.enablePan = false;
+
+  // ── Studio light: a soft key, a warm rim in the accent colour, a cool fill ──
+  const key = new THREE.DirectionalLight(0xffffff, 2.3);
+  key.position.set(1.8, 4.2, 3.2); key.castShadow = true;
+  key.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
+  Object.assign(key.shadow.camera, { left: -1.8, right: 1.8, top: 1.8, bottom: -0.6, near: 0.5, far: 12 });
+  key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+  key.target.position.set(0.2, 0.5, 0);
+  const rim = new THREE.DirectionalLight(0xff8a5c, 1.6); rim.position.set(-3, 2.2, -2.6);
+  const fill = new THREE.DirectionalLight(0xbcd2ff, 0.55); fill.position.set(-2, 1.4, 3);
+  scene.add(key, key.target, rim, fill, new THREE.HemisphereLight(0xffffff, 0x0e0f11, 0.35));
+
+  // Floor that fades into the backdrop, plus a faint grid
+  const fade = document.createElement('canvas'); fade.width = fade.height = 256;
+  { const g = fade.getContext('2d'), gr = g.createRadialGradient(128, 128, 10, 128, 128, 128); gr.addColorStop(0, '#fff'); gr.addColorStop(0.55, '#888'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); }
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(4, 96).rotateX(-Math.PI / 2),
+    new THREE.MeshStandardMaterial({ color: 0x1a1b1e, roughness: 0.42, metalness: 0.0, transparent: true, alphaMap: new THREE.CanvasTexture(fade) }));
+  floor.receiveShadow = true; scene.add(floor);
+  const grid = new THREE.GridHelper(3.2, 32, 0x34363b, 0x26282c);
+  grid.material.transparent = true; grid.material.opacity = 0.35; grid.position.y = 0.0008; scene.add(grid);
+
+  // ── Carbon fibre: a 2x2 twill drawn on a canvas, under a clear coat ──
+  function weave() {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d'), n = 8, s = 256 / n;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      const horiz = ((i + j) % 4) < 2, x = i * s, y = j * s;
+      const gr = horiz ? g.createLinearGradient(x, y, x, y + s) : g.createLinearGradient(x, y, x + s, y);
+      gr.addColorStop(0, '#09090a'); gr.addColorStop(0.5, horiz ? '#3c3d42' : '#2a2b2f'); gr.addColorStop(1, '#09090a');
+      g.fillStyle = gr; g.fillRect(x, y, s, s);
+      g.strokeStyle = 'rgba(255,255,255,0.04)'; g.lineWidth = 1;
+      for (let k = 1; k < 8; k++) {
+        g.beginPath();
+        if (horiz) { g.moveTo(x, y + k * s / 8); g.lineTo(x + s, y + k * s / 8); } else { g.moveTo(x + k * s / 8, y); g.lineTo(x + k * s / 8, y + s); }
+        g.stroke();
+      }
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    return t;
+  }
+  const W = weave();
+  const phys = p => new THREE.MeshPhysicalMaterial(p), std = p => new THREE.MeshStandardMaterial(p);
+  const M = {
+    carbon: phys({ map: W, roughness: 0.36, metalness: 0.15, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.15 }),
+    matte: phys({ map: W, color: 0xb8b8b8, roughness: 0.62, metalness: 0.1, clearcoat: 0.25, clearcoatRoughness: 0.45 }),
+    accent: phys({ color: 0xe8552a, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 }),
+    alloy: std({ color: 0xa4aab2, metalness: 1, roughness: 0.28 }),
+    dark: std({ color: 0x1c1d20, metalness: 0.7, roughness: 0.32 }),
+    rubber: std({ color: 0x151517, roughness: 0.88 }),
+    tape: std({ color: 0x18191b, roughness: 0.78 }),
+    chain: std({ color: 0x8f959d, metalness: 1, roughness: 0.38 }),
+    saddle: phys({ color: 0x17181a, roughness: 0.6, clearcoat: 0.25, clearcoatRoughness: 0.5 }),
+    bottle: phys({ color: 0x2b2d31, roughness: 0.25, transmission: 0.35, thickness: 0.01, transparent: true, opacity: 0.85 }),
+    jersey: phys({ color: 0xe8552a, roughness: 0.66, sheen: 1, sheenColor: new THREE.Color(0xffb08a), sheenRoughness: 0.5 }),
+    shorts: phys({ color: 0x101113, roughness: 0.5, sheen: 0.8, sheenColor: new THREE.Color(0x4a4a4a), sheenRoughness: 0.4 }),
+    skin: phys({ color: 0xc98f6c, roughness: 0.55, sheen: 0.3, sheenColor: new THREE.Color(0xffd0b0) }),
+    glove: std({ color: 0x1b1c1f, roughness: 0.7 }),
+    shoe: phys({ color: 0xf1f1f1, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.2 }),
+    sole: std({ color: 0x202124, roughness: 0.5 }),
+    helmet: phys({ map: W, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.04 }),
+    lens: phys({ color: 0x0c0c0d, metalness: 0.9, roughness: 0.05, iridescence: 1, iridescenceIOR: 1.6 }),
+    dims: new THREE.LineBasicMaterial({ color: 0x9cc3ff, transparent: true, opacity: 0.75, depthTest: false }),
+    guide: new THREE.LineDashedMaterial({ color: 0x9cc3ff, transparent: true, opacity: 0.45, depthTest: false, dashSize: 0.015, gapSize: 0.012 }),
+    arc: new THREE.LineBasicMaterial({ color: 0xff7a45, transparent: true, opacity: 0.95, depthTest: false }),
+    trace: new THREE.LineBasicMaterial({ color: 0xff7a45, transparent: true, opacity: 0.85, depthTest: false })
+  };
+
+  // ── Geometry helpers ──
+  let S = BF.S;
+  const P3 = (p, z = 0) => new V3(p.x * MM, (p.y - S.GROUND) * MM, z);
+  const Y = new V3(0, 1, 0), tmpM = new THREE.Matrix4();
+  // Point a mesh's local +y from a to b, keeping its local z as close to the lateral axis as possible
+  function orient(obj, a, b) {
+    const y = new V3().subVectors(b, a), len = y.length() || 1e-6; y.divideScalar(len);
+    let z = new V3(0, 0, 1); if (Math.abs(y.z) > 0.9) z.set(1, 0, 0);
+    const x = new V3().crossVectors(y, z).normalize(); z.crossVectors(x, y).normalize();
+    obj.quaternion.setFromRotationMatrix(tmpM.makeBasis(x, y, z));
+    obj.position.copy(a).add(b).multiplyScalar(0.5);
+    return len;
+  }
+  const scaleUV = (geo, su, sv) => { const uv = geo.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * su, uv.getY(i) * sv); uv.needsUpdate = true; return geo; };
+  const TILE = 0.024; // one weave repeat is 24 mm: 8 tows of 3 mm
+  let bike = new THREE.Group(); scene.add(bike);
+  const add = (m, parent = bike) => { m.castShadow = true; m.receiveShadow = true; parent.add(m); return m; };
+  function tube(a, b, ra, rb, mat, o = {}) {
+    const len = a.distanceTo(b);
+    const geo = scaleUV(new THREE.CylinderGeometry(rb, ra, len, o.seg || 28, 1, !!o.open), Math.PI * (ra + rb) / TILE, len / TILE);
+    const m = new THREE.Mesh(geo, mat); orient(m, a, b);
+    if (o.oval) m.scale.z = o.oval;
+    return add(m, o.parent);
+  }
+  function ball(p, r, mat, parent = bike, sx = 1, sy = 1, sz = 1) {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(r, 24, 16), mat); m.position.copy(p); m.scale.set(sx, sy, sz); return add(m, parent);
+  }
+  function curveTube(pts, r, mat, segs = 64, parent = bike, closed = false) {
+    const c = new THREE.CatmullRomCurve3(pts, closed, 'centripetal');
+    const geo = new THREE.TubeGeometry(c, segs, r, 12, closed);
+    scaleUV(geo, c.getLength() / TILE, 2 * Math.PI * r / TILE);
+    return add(new THREE.Mesh(geo, mat), parent);
+  }
+  function disposeTree(g) { g.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
+
+  // Moving parts, rebuilt with the bike
+  let wheels = [], crankNear = null, crankFar = null, pedalNear = null, pedalFar = null;
+  let traceLine = null, dimsGroup = null;
+  let showTrace = false;
+
+  // ── Build the bike from the fit scene ──
+  function rebuild() {
+    S = BF.S;
+    if (!S) return;
+    scene.remove(bike); disposeTree(bike);
+    bike = new THREE.Group(); scene.add(bike);
+    const sty = S.sty, kind = BF.styleKey(), aero = kind === 'aero' || kind === 'tt', tt = kind === 'tt', gravel = kind === 'gravel';
+    const bb = P3(S.bb), stTop = P3(S.stTop), hTop = P3(S.headTop), hBot = P3(S.headBot);
+    const ra = P3(S.rearAxle), fa = P3(S.frontAxle);
+    const htU = hTop.clone().sub(hBot).normalize(), stU = stTop.clone().sub(bb).normalize();
+    const onSeat = d => bb.clone().addScaledVector(stU, d);
+    const z = (p, dz) => p.clone().setZ(dz);
+
+    // Main triangle
+    tube(hBot.clone().addScaledVector(htU, -0.014), hTop.clone().addScaledVector(htU, 0.006), 0.026, 0.021, M.carbon, { oval: aero ? 0.62 : 0.95 });
+    const dtTop = hBot.clone().addScaledVector(htU, Math.min(0.045, hTop.distanceTo(hBot) * 0.35));
+    tube(bb, dtTop, 0.022 * sty.dt, 0.02 * sty.dt, M.carbon, { oval: aero ? 0.5 : 0.85 });
+    const stLen = S.g.st * MM;
+    tube(onSeat(-0.01), stTop, 0.017 * sty.stw, 0.0155 * sty.stw, M.carbon, { oval: aero ? 0.55 : 1 });
+    tube(onSeat(stLen - 0.022), hTop.clone().addScaledVector(htU, -0.02), 0.0145 * sty.tt, 0.0145 * sty.tt, M.carbon, { oval: aero ? 0.7 : 0.92 });
+    tube(z(bb, -0.045), z(bb, 0.045), 0.024, 0.024, M.carbon);                       // BB shell
+    tube(stTop.clone().addScaledVector(stU, -0.012), stTop.clone().addScaledVector(stU, 0.002), 0.0172 * sty.stw, 0.0172 * sty.stw, M.accent, { oval: aero ? 0.57 : 1 }); // seat collar
+    // Rear triangle: dropped stays meet the seat tube well below the top tube on modern frames
+    const ssJ = onSeat(stLen - (sty.stay === 'dropped' ? 0.1 : 0.02));
+    for (const s of [-1, 1]) {
+      tube(z(bb, s * 0.034), z(ra, s * 0.064), 0.012, 0.0085, M.carbon, { oval: 0.85 });
+      tube(z(ssJ, s * 0.014), z(ra, s * 0.062), 0.0095, 0.007, M.carbon, { oval: aero ? 0.7 : 1 });
+      add(new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.03, 0.008), M.dark)).position.copy(z(ra, s * 0.066));
+    }
+    tube(z(ra, -0.075), z(ra, 0.075), 0.0062, 0.0062, M.dark);                          // thru axle
+    // A decal stripe on the down tube
+    { const a = bb.clone().lerp(dtTop, 0.62), b = bb.clone().lerp(dtTop, 0.66); tube(a, b, 0.0222 * sty.dt * 1.01, 0.0201 * sty.dt * 1.01, M.accent, { oval: aero ? 0.5 : 0.85 }); }
+
+    // Fork: two blades from the crown to the axle, with the rake built in
+    const crown = hBot.clone().addScaledVector(htU, -0.012);
+    tube(z(crown, -0.05), z(crown, 0.05), 0.02, 0.02, M.carbon, { oval: 0.9 });
+    for (const s of [-1, 1]) {
+      const top = z(crown, s * 0.043), bot = z(fa, s * 0.054);
+      const mid = top.clone().lerp(bot, 0.55).add(new V3(0.008, 0, 0));
+      curveTube([top, mid, bot], aero ? 0.0135 : 0.012, M.carbon, 24);
+    }
+    tube(z(fa, -0.07), z(fa, 0.07), 0.006, 0.006, M.dark);
+
+    // Steerer, spacers, top cap, stem and bar
+    const nSp = Math.round(S.spacers / 5);
+    for (let i = 0; i < nSp; i++) tube(hTop.clone().addScaledVector(htU, i * 0.005 + 0.0004), hTop.clone().addScaledVector(htU, i * 0.005 + 0.0046), 0.0178, 0.0178, M.matte);
+    const clamp = P3(S.clamp), bar = P3(S.bar);
+    tube(clamp.clone().addScaledVector(htU, -0.02), clamp.clone().addScaledVector(htU, 0.02), 0.0195, 0.0195, aero ? M.carbon : M.dark);
+    ball(clamp.clone().addScaledVector(htU, 0.021), 0.012, M.dark, bike, 1.4, 0.4, 1.4);
+    tube(clamp, bar, aero ? 0.02 : 0.0165, aero ? 0.017 : 0.0155, aero ? M.carbon : M.dark, { oval: aero ? 0.75 : 1 });
+    if (sty.cockpit === 'aerobar') buildAerobar(bar);
+    else buildDropBar(bar, sty.bar === 'flared');
+
+    // Seatpost and saddle
+    const post = P3(S.post);
+    tube(onSeat(stLen - 0.06), post, 0.0136, 0.0136, M.carbon, { oval: aero ? 0.6 : 1 });
+    buildSaddle(P3(S.saddle), post, tt);
+
+    // Wheels, cassette and brake rotors
+    wheels = [buildWheel(fa, false, sty), buildWheel(ra, true, sty)];
+    buildDrivetrain(bb, ra, gravel);
+
+    // Bottle on the down tube
+    { const a = bb.clone().lerp(dtTop, 0.3), b = bb.clone().lerp(dtTop, 0.62), n = new V3().subVectors(b, a).normalize();
+      const up = new V3(-n.y, n.x, 0).multiplyScalar(0.022 * sty.dt * (aero ? 1 : 0.9) + 0.04);
+      tube(a.clone().add(up), b.clone().add(up), 0.036, 0.036, M.bottle, { seg: 32 });
+      tube(b.clone().add(up), b.clone().add(up).addScaledVector(n, 0.02), 0.036, 0.016, M.dark); }
+
+    buildRiderOnce();
+    buildDims();
+    buildTrace();
+    fitCamera(false);
+    $('s-load').classList.add('done');
+  }
+
+  function buildDropBar(bar, flared) {
+    const Wh = 0.2, Wd = flared ? 0.24 : 0.205;
+    const half = s => [
+      new V3(-0.025, -0.127, s * Wd), new V3(0.03, -0.128, s * Wd), new V3(0.075, -0.1, s * Wd), new V3(0.088, -0.05, s * (Wh + Wd) / 2),
+      new V3(0.078, -0.008, s * Wh), new V3(0.048, 0, s * Wh), new V3(0.012, 0, s * (Wh - 0.025)), new V3(0, 0, s * 0.11)
+    ];
+    const pts = [...half(-1), new V3(0, 0, 0), ...half(1).reverse()].map(p => p.add(bar));
+    curveTube(pts, 0.0118, M.tape, 160);
+    tube(bar.clone().setZ(-0.05), bar.clone().setZ(0.05), 0.0159, 0.0159, M.carbon);
+    // Hoods and levers
+    for (const s of [-1, 1]) {
+      const h0 = bar.clone().add(new V3(0.062, 0.002, s * Wh)), h1 = bar.clone().add(new V3(0.108, 0.03, s * Wh));
+      tube(h0, h1, 0.0135, 0.0115, M.rubber);
+      ball(h1, 0.012, M.rubber, bike, 1, 1.2, 1);
+      tube(h1.clone().add(new V3(-0.004, -0.004, 0)), bar.clone().add(new V3(0.092, -0.085, s * (Wh + 0.004))), 0.005, 0.004, M.carbon, { oval: 0.6 });
+    }
+  }
+  function buildAerobar(bar) {
+    // Base bar with bullhorn ends, extensions and arm pads
+    for (const s of [-1, 1]) {
+      curveTube([bar.clone().setZ(0), bar.clone().add(new V3(0.0, 0, s * 0.15)), bar.clone().add(new V3(0.07, -0.02, s * 0.2)), bar.clone().add(new V3(0.13, -0.055, s * 0.2))].map((p, i) => i === 0 ? p : p), 0.0125, M.carbon, 40);
+      const e0 = bar.clone().add(new V3(-0.02, 0.055, s * 0.07)), e1 = bar.clone().add(new V3(0.36, 0.075, s * 0.065));
+      tube(e0, e1, 0.011, 0.011, M.carbon);
+      curveTube([e1, e1.clone().add(new V3(0.03, 0.01, 0)), e1.clone().add(new V3(0.045, 0.05, 0))], 0.011, M.tape, 16);
+      tube(bar.clone().add(new V3(0.0, 0.0, s * 0.075)), bar.clone().add(new V3(0.0, 0.055, s * 0.075)), 0.008, 0.008, M.dark);
+      add(new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.018, 0.075), M.rubber)).position.copy(bar.clone().add(new V3(0.0, 0.07, s * 0.08)));
+    }
+  }
+  function buildSaddle(top, post, tt) {
+    const len = tt ? 0.25 : 0.27, back = -0.135, w = u => { const f = (u - back) / len; return f < 0.45 ? 0.07 - f * 0.03 : Math.max(0.017, 0.0565 - (f - 0.45) * 0.075); };
+    const sh = new THREE.Shape(); const N = 24;
+    for (let i = 0; i <= N; i++) { const u = back + i / N * len; i ? sh.lineTo(u, w(u)) : sh.moveTo(u, w(u)); }
+    for (let i = N; i >= 0; i--) { const u = back + i / N * len; sh.lineTo(u, -w(u)); }
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: 0.01, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 4, curveSegments: 6 }).rotateX(Math.PI / 2);
+    const m = add(new THREE.Mesh(geo, M.saddle)); m.position.copy(top).add(new V3(0.005, -0.008, 0));
+    for (const s of [-1, 1]) tube(top.clone().add(new V3(-0.07, -0.03, s * 0.034)), top.clone().add(new V3(0.07, -0.03, s * 0.018)), 0.0035, 0.0035, M.carbon);
+    tube(post.clone().add(new V3(0, -0.005, -0.03)), post.clone().add(new V3(0, -0.005, 0.03)), 0.011, 0.011, M.dark);
+  }
+
+  function buildWheel(axle, rear, sty) {
+    const g = new THREE.Group(); g.position.copy(axle); bike.add(g);
+    const bead = BF.BEAD_R * MM, tyreR = sty.tyre / 2 * MM, rimIn = S.RIM_IN * MM, depth = bead - rimIn, w = sty.tyre >= 40 ? 0.031 : 0.027;
+    // Tyre
+    add(new THREE.Mesh(new THREE.TorusGeometry(bead + tyreR * 0.9, tyreR, 18, 120), M.rubber), g);
+    // Deep-section carbon rim, turned from a profile
+    const prof = [[rimIn, 0], [rimIn + 0.004, w * 0.3], [rimIn + depth * 0.5, w * 0.5], [bead - 0.002, w * 0.47], [bead, w * 0.42], [bead, -w * 0.42], [bead - 0.002, -w * 0.47], [rimIn + depth * 0.5, -w * 0.5], [rimIn + 0.004, -w * 0.3], [rimIn, 0]];
+    const rimGeo = new THREE.LatheGeometry(prof.map(([r, y]) => new THREE.Vector2(r, y)), 120).rotateX(Math.PI / 2);
+    scaleUV(rimGeo, 2 * Math.PI * bead / TILE, (depth * 2 + w) / TILE);
+    add(new THREE.Mesh(rimGeo, M.carbon), g);
+    for (const s of [-1, 1]) { const d = add(new THREE.Mesh(new THREE.TorusGeometry(rimIn + depth * 0.62, 0.0012, 6, 120), M.accent), g); d.position.z = s * (w * 0.49 + 0.0004); }
+    // Hub
+    tube(new V3(0, 0, -0.05), new V3(0, 0, rear ? 0.06 : 0.05), 0.016, 0.016, M.dark, { parent: g });
+    for (const s of [-1, 1]) tube(new V3(0, 0, s * 0.03 - 0.002), new V3(0, 0, s * 0.03 + 0.002), 0.027, 0.027, M.dark, { parent: g });
+    // Spokes, or a disc on the back of a TT bike
+    if (rear && sty.rim >= 70) {
+      for (const s of [-1, 1]) {
+        const cone = new THREE.LatheGeometry([new THREE.Vector2(0.028, s * 0.03), new THREE.Vector2(rimIn + 0.002, s * w * 0.32)], 96).rotateX(Math.PI / 2);
+        scaleUV(cone, 2 * Math.PI * 0.2 / TILE, 0.3 / TILE);
+        add(new THREE.Mesh(cone, M.carbon), g);
+      }
+    } else {
+      const n = rear ? 24 : 20, geo = new THREE.CylinderGeometry(0.0011, 0.0011, 1, 6);
+      const inst = new THREE.InstancedMesh(geo, M.alloy, n); inst.castShadow = true;
+      const o = new THREE.Object3D();
+      for (let i = 0; i < n; i++) {
+        const side = i % 2 ? 1 : -1, a = i / n * Math.PI * 2, lace = rear ? side * 0.42 : 0;
+        const p0 = new V3(0.026 * Math.cos(a), 0.026 * Math.sin(a), side * 0.03);
+        const p1 = new V3((rimIn + 0.003) * Math.cos(a + lace), (rimIn + 0.003) * Math.sin(a + lace), side * 0.004);
+        const len = orient(o, p0, p1); o.scale.set(1, len, 1); o.updateMatrix(); inst.setMatrixAt(i, o.matrix);
+      }
+      g.add(inst);
+    }
+    // Brake rotor on the non-drive side
+    const rr = rear ? 0.07 : 0.08;
+    const rotor = new THREE.Mesh(new THREE.RingGeometry(rr - 0.016, rr, 64), M.alloy); rotor.position.z = -0.058; g.add(rotor);
+    tube(new V3(0, 0, -0.0585), new V3(0, 0, -0.0575), rr - 0.016, rr - 0.016, M.dark, { parent: g });
+    if (rear) {
+      // Cassette: 11 to 34 teeth, 12 cogs
+      const cogs = [34, 30, 27, 24, 21, 19, 17, 15, 14, 13, 12, 11];
+      cogs.forEach((t, i) => { const r = 0.0127 * t / (2 * Math.PI); tube(new V3(0, 0, 0.022 + i * 0.0019), new V3(0, 0, 0.0232 + i * 0.0019), r, r, M.alloy, { parent: g, seg: 36 }); });
+    }
+    // Calipers stay still, so they're added to the bike, not the wheel
+    const cal = add(new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.026, 0.024), M.dark));
+    cal.position.copy(axle).add(new V3(-rr * 0.55, rear ? rr * 0.85 : rr * 0.84, -0.058));
+    return g;
+  }
+
+  function buildDrivetrain(bb, ra, gravel) {
+    const ringT = gravel ? 42 : 52, R1 = 0.0127 * ringT / (2 * Math.PI), CZ = 0.044;
+    const gear = (T, r) => {
+      const sh = new THREE.Shape(), n = T * 2;
+      for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, rr = i % 2 ? r + 0.0028 : r - 0.003; i ? sh.lineTo(rr * Math.cos(a), rr * Math.sin(a)) : sh.moveTo(rr * Math.cos(a), rr * Math.sin(a)); }
+      const hole = new THREE.Path(); hole.absarc(0, 0, r - 0.014, 0, Math.PI * 2, true); sh.holes.push(hole);
+      return new THREE.ExtrudeGeometry(sh, { depth: 0.0035, bevelEnabled: false, curveSegments: 4 });
+    };
+    const ring = add(new THREE.Mesh(gear(ringT, R1), M.dark)); ring.position.copy(bb).setZ(CZ);
+    if (!gravel) { const r2 = add(new THREE.Mesh(gear(36, 0.0127 * 36 / (2 * Math.PI)), M.dark)); r2.position.copy(bb).setZ(CZ - 0.007); }
+    tube(bb.clone().setZ(CZ - 0.008), bb.clone().setZ(CZ + 0.006), 0.062, 0.062, M.carbon);   // spider disc
+    // Crank arms: pivot groups at the BB, rotated every frame
+    const L = S.CRANK * MM;
+    const arm = (zArm, zPedal) => {
+      const pv = new THREE.Group(); pv.position.copy(bb); bike.add(pv);
+      tube(new V3(0, 0, zArm), new V3(0, L, zArm), 0.0135, 0.0095, M.carbon, { parent: pv, oval: 0.55 });
+      ball(new V3(0, L, zArm), 0.011, M.carbon, pv, 1, 1, 0.6);
+      const ped = new THREE.Group(); ped.position.set(0, L, zPedal); pv.add(ped);
+      add(new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.012, 0.066), M.carbon), ped);
+      tube(new V3(0, 0, -Math.sign(zPedal) * 0.03), new V3(0, 0, Math.sign(zPedal) * 0.03), 0.005, 0.005, M.alloy, { parent: ped });
+      return [pv, ped];
+    };
+    [crankNear, pedalNear] = arm(0.062, 0.1);
+    [crankFar, pedalFar] = arm(-0.062, -0.1);
+    tube(bb.clone().setZ(-0.07), bb.clone().setZ(0.07), 0.012, 0.012, M.dark);
+
+    // Chain: top run to a mid cog, wrap the cog, through the rear derailleur, back to the ring
+    const Rc = 0.0127 * 17 / (2 * Math.PI), rJ = 0.0127 * 12 / (2 * Math.PI);
+    const c1 = { x: bb.x, y: bb.y }, c2 = { x: ra.x, y: ra.y };
+    const J1 = { x: ra.x + 0.006, y: ra.y - 0.058 }, J2 = { x: ra.x + 0.024, y: ra.y - 0.122 };
+    const [u1, u2] = BF.tangent(c1, R1, c2, Rc, -1);
+    const [l1, l2] = BF.tangent(J2, rJ, c1, R1, 1);
+    const arcPts = (c, r, a0, a1, n) => { const out = []; for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n; out.push({ x: c.x + r * Math.cos(a), y: c.y + r * Math.sin(a) }); } return out; };
+    const ang = (c, p) => Math.atan2(p.y - c.y, p.x - c.x);
+    const line = (a, b, n) => { const out = []; for (let i = 1; i < n; i++) out.push({ x: a.x + (b.x - a.x) * i / n, y: a.y + (b.y - a.y) * i / n }); return out; };
+    let aU = ang(c2, u2), aEnd = -1.05; while (aEnd < aU) aEnd += Math.PI * 2;
+    const cogArc = arcPts(c2, Rc, aU, aEnd, 16);
+    const j1a = { x: J1.x + rJ, y: J1.y }, j1b = { x: J1.x, y: J1.y - rJ }, j2a = { x: J2.x - rJ, y: J2.y }, j2b = { x: J2.x, y: J2.y - rJ };
+    let aL = ang(c1, l2), aU1 = ang(c1, u1); while (aU1 < aL) aU1 += Math.PI * 2;
+    const ringArc = arcPts(c1, R1, aL, aU1, 28);
+    const seq = [u1, ...line(u1, u2, 10), ...cogArc, ...line(cogArc[cogArc.length - 1], j1a, 4), j1a, j1b, ...line(j1b, j2a, 5), j2a, j2b, ...line(j2b, l2, 10), ...ringArc.slice(0, -1)];
+    // Chainline: from the big ring out front to the 17-tooth cog at the back
+    const zCog = 0.022 + 6 * 0.0019 + 0.0006, zRing = CZ + 0.0018;
+    curveTube(seq.map(p => new V3(p.x, p.y, zCog + (zRing - zCog) * Math.min(1, Math.max(0, (p.x - ra.x) / (bb.x - ra.x))))), 0.0034, M.chain, 420, bike, true);
+    // Derailleur cage and pulleys
+    for (const J of [J1, J2]) tube(new V3(J.x, J.y, CZ - 0.004), new V3(J.x, J.y, CZ + 0.008), rJ - 0.002, rJ - 0.002, M.dark, { seg: 20 });
+    tube(new V3(J1.x, J1.y, CZ + 0.009), new V3(J2.x, J2.y, CZ + 0.009), 0.012, 0.012, M.carbon, { oval: 0.25 });
+    tube(new V3(ra.x, ra.y - 0.01, 0.07), new V3(J1.x, J1.y + 0.01, CZ + 0.012), 0.009, 0.009, M.dark);
+  }
+
+  // ── Rider: built once, posed every frame ──
+  const rider = new THREE.Group(); scene.add(rider);
+  const limbs = {};
+  let riderBuilt = false;
+  const unitCyl = (rTop, rBot) => new THREE.CylinderGeometry(rTop, rBot, 1, 24, 1);
+  function limb(name, rA, rB, mat, oval = 1) { const m = add(new THREE.Mesh(unitCyl(rB, rA), mat), rider); m.userData.oval = oval; limbs[name] = m; return m; }
+  function joint(name, r, mat, sx = 1, sy = 1, sz = 1) { const m = ball(new V3(), r, mat, rider, sx, sy, sz); limbs[name] = m; return m; }
+  function buildRiderOnce() {
+    if (riderBuilt) return; riderBuilt = true;
+    limb('torso', 0.115, 0.125, M.jersey, 1.5);
+    joint('pelvis', 0.11, M.shorts, 1.05, 0.8, 1.45);
+    joint('chest', 0.118, M.jersey, 0.95, 0.85, 1.55);
+    limb('neck', 0.045, 0.042, M.skin);
+    joint('head', 0.08, M.skin, 1.05, 1.1, 0.92);
+    const hel = new THREE.Mesh(new THREE.SphereGeometry(0.098, 36, 18, 0, Math.PI * 2, 0, Math.PI * 0.56), M.helmet);
+    hel.scale.set(1.28, 0.95, 1.0); add(hel, rider); limbs.helmet = hel;
+    const stripe = new THREE.Mesh(new THREE.TorusGeometry(0.0985, 0.004, 8, 48, Math.PI), M.accent); add(stripe, hel); stripe.rotation.y = Math.PI / 2; stripe.scale.set(1, 1, 1);
+    const lens = new THREE.Mesh(new THREE.SphereGeometry(0.086, 24, 8, Math.PI - 0.75, 1.5, Math.PI * 0.42, Math.PI * 0.14), M.lens); add(lens, rider); limbs.lens = lens;
+    for (const s of ['N', 'F']) {
+      limb('thigh' + s, 0.075, 0.056, M.shorts); joint('knee' + s, 0.054, M.skin);
+      limb('calf' + s, 0.052, 0.034, M.skin); joint('ankle' + s, 0.034, M.skin);
+      limb('shoe' + s, 0.04, 0.034, M.shoe, 0.8); limb('sole' + s, 0.041, 0.035, M.sole, 0.82);
+      joint('hipJ' + s, 0.078, M.shorts);
+      limb('upper' + s, 0.047, 0.04, M.jersey); joint('shoulder' + s, 0.058, M.jersey);
+      joint('elbow' + s, 0.039, M.skin); limb('fore' + s, 0.037, 0.03, M.skin); joint('hand' + s, 0.036, M.glove, 1.2, 0.85, 1);
+    }
+  }
+  function setLimb(name, a, b) { const m = limbs[name]; const len = orient(m, a, b); m.scale.set(1, len, m.userData.oval || 1); }
+  function setJoint(name, p) { limbs[name].position.copy(p); }
+  function poseRider(P) {
+    const st = BF.state, sty = S.sty, tt = sty.cockpit === 'aerobar';
+    const hip = P3(S.hip), sh = P3(S.shoulder), el = P3(S.elbow), hand = P3(S.hand), head = P3(S.head);
+    const handW = tt ? 0.07 : st.pos === 'tops' ? 0.13 : st.pos === 'drops' ? (sty.bar === 'flared' ? 0.24 : 0.205) : 0.2;
+    // Torso from the pelvis to the base of the neck
+    const pelvis = hip.clone().add(new V3(-0.03, 0.02, 0));
+    const tDir = sh.clone().sub(pelvis).normalize();
+    const chest = sh.clone().addScaledVector(tDir, -0.07);
+    setJoint('pelvis', pelvis); setLimb('torso', pelvis, chest); setJoint('chest', chest);
+    limbs.pelvis.quaternion.copy(limbs.torso.quaternion); limbs.chest.quaternion.copy(limbs.torso.quaternion);
+    const neckTop = head.clone().addScaledVector(tDir, -0.05);
+    setLimb('neck', sh, neckTop);
+    setJoint('head', head);
+    const pitch = Math.atan2(tDir.y, tDir.x);
+    limbs.helmet.position.copy(head).add(new V3(-0.01, 0.012, 0)); limbs.helmet.rotation.set(0, 0, Math.max(-0.25, pitch - 0.9));
+    limbs.lens.position.copy(head);
+    for (const [s, leg, zs] of [['N', P.near, 1], ['F', P.far, -1]]) {
+      const hz = zs * 0.088;
+      const hipP = hip.clone().setZ(hz), knee = P3(leg.knee, zs * 0.094), ankle = P3(leg.ankle, zs * 0.1), pedal = P3(leg.pedal, zs * 0.1);
+      setJoint('hipJ' + s, hipP); setLimb('thigh' + s, hipP, knee); setJoint('knee' + s, knee);
+      setLimb('calf' + s, knee, ankle); setJoint('ankle' + s, ankle);
+      const heel = ankle.clone().add(new V3(-0.035, -0.015, 0)), toe = pedal.clone().add(new V3(0.105, 0.012, 0));
+      setLimb('shoe' + s, heel, toe);
+      setLimb('sole' + s, heel.clone().add(new V3(0, -0.012, 0)), toe.clone().add(new V3(0, -0.014, 0)));
+      const shP = sh.clone().setZ(zs * 0.175), elP = el.clone().setZ(zs * (0.175 + handW) / 2 + zs * 0.02), hP = hand.clone().setZ(zs * handW);
+      setJoint('shoulder' + s, shP); setLimb('upper' + s, shP, elP); setJoint('elbow' + s, elP);
+      setLimb('fore' + s, elP, hP); setJoint('hand' + s, hP);
+    }
+    const bad = S.legErr || S.overReach;
+    M.skin.emissive.setHex(bad ? 0x5a0d08 : 0x000000); M.shorts.emissive.setHex(bad ? 0x3a0705 : 0x000000);
+  }
+
+  // ── Dimensions, knee path and live angle arcs ──
+  const tagsEl = $('tags'), TAGS = {};
+  function tag(id, cls) { if (!TAGS[id]) { const el = document.createElement('div'); el.className = 'tag ' + cls; tagsEl.appendChild(el); TAGS[id] = { el, p: new V3() }; } return TAGS[id]; }
+  const segLine = (a, b, mat) => { const g = new THREE.BufferGeometry().setFromPoints([a, b]); const l = new THREE.Line(g, mat); l.renderOrder = 10; if (mat.isLineDashedMaterial) l.computeLineDistances(); return l; };
+  function buildDims() {
+    if (dimsGroup) { scene.remove(dimsGroup); disposeTree(dimsGroup); }
+    dimsGroup = new THREE.Group(); dimsGroup.visible = BF.showDims; scene.add(dimsGroup);
+    const ZD = 0.16, bb = P3(S.bb, ZD), ht = P3(S.headTop, ZD), sad = P3(S.saddle, ZD);
+    const corner = new V3(ht.x, bb.y, ZD), top = new V3(bb.x, ht.y, ZD);
+    dimsGroup.add(segLine(corner, ht, M.dims), segLine(top, ht, M.dims), segLine(bb, top, M.guide), segLine(bb, corner, M.guide), segLine(bb, sad, M.dims));
+    const tk = 0.018;
+    for (const [p, dx, dy] of [[corner, tk, 0], [ht, tk, 0], [top, 0, tk], [ht.clone(), 0, tk]]) dimsGroup.add(segLine(p.clone().add(new V3(-dx, -dy, 0)), p.clone().add(new V3(dx, dy, 0)), M.dims));
+    tag('stack', 'dim').p.copy(corner.clone().lerp(ht, 0.5)).add(new V3(0.05, 0, 0)); TAGS.stack.el.textContent = `Stack ${Math.round(S.g.stack)}`;
+    tag('reach', 'dim').p.copy(top.clone().lerp(ht, 0.5)).add(new V3(0, 0.03, 0)); TAGS.reach.el.textContent = `Reach ${Math.round(S.g.reach)}`;
+    tag('saddle', 'dim').p.copy(bb.clone().lerp(sad, 0.55)).add(new V3(-0.07, 0, 0)); TAGS.saddle.el.textContent = `Saddle ${Math.round(S.saddleH)}`;
+    tag('torso', 'dim').p.copy(P3(S.hip, 0.2).lerp(P3(S.shoulder, 0.2), 0.5)).add(new V3(0, 0.07, 0)); TAGS.torso.el.textContent = `Torso ${Math.round(S.torsoA)}°`;
+  }
+  function buildTrace() {
+    if (traceLine) { scene.remove(traceLine); traceLine.geometry.dispose(); }
+    const pts = [];
+    for (let i = 0; i <= 72; i++) pts.push(P3(BF.pose(i / 72 * Math.PI * 2).near.knee, 0.15));
+    traceLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), M.trace);
+    traceLine.renderOrder = 11; traceLine.visible = showTrace; scene.add(traceLine);
+    // Plumb line from the knee at 3 o'clock, the classic fitter's check
+    const k3 = P3(S.knee3, 0.15), sp = P3({ x: S.CRANK, y: 0 }, 0.15);
+    const plumb = segLine(k3.clone().add(new V3(0.04, 0, 0)), new V3(k3.x + 0.04, sp.y - 0.03, 0.15), M.guide);
+    traceLine.add(plumb);
+  }
+  const ARCN = 18;
+  const arcGeo = new THREE.BufferGeometry(); arcGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ARCN + 1) * 3), 3));
+  const arcLine = new THREE.Line(arcGeo, M.arc); arcLine.renderOrder = 12; arcLine.frustumCulled = false; scene.add(arcLine);
+  const hipGeo = arcGeo.clone(); const hipLine = new THREE.Line(hipGeo, M.arc); hipLine.renderOrder = 12; hipLine.frustumCulled = false; scene.add(hipLine);
+  function setArc(geo, c, a, b, r, zz) {
+    const a1 = Math.atan2(a.y - c.y, a.x - c.x); let d = Math.atan2(b.y - c.y, b.x - c.x) - a1;
+    while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+    const pos = geo.attributes.position;
+    for (let i = 0; i <= ARCN; i++) { const t = a1 + d * i / ARCN; pos.setXYZ(i, c.x + r * Math.cos(t), c.y + r * Math.sin(t), zz); }
+    pos.needsUpdate = true;
+  }
+
+  // ── Camera views ──
+  const views = { side: new V3(0, 0.08, 1), three: new V3(0.62, 0.32, 0.72), front: new V3(1, 0.14, 0.12), top: new V3(0.02, 1, 0.08) };
+  let view = 'side', camAnim = null;
+  function frameTarget() { const ra = P3(S.rearAxle), fa = P3(S.frontAxle); return new V3((ra.x + fa.x) / 2 + 0.05, 0.72, 0); }
+  function fitDist(dir) {
+    const w = 2.05, h = 1.9, a = camera.aspect || 1.6, tv = Math.tan(camera.fov * Math.PI / 360);
+    const side = Math.abs(dir.z) > 0.5 || Math.abs(dir.y) > 0.8;
+    return Math.max((side ? w : 1.0) / 2 / (tv * a), h / 2 / tv) * 1.12 + 0.3;
+  }
+  function fitCamera(animate = true, v = view) {
+    const dir = views[v].clone().normalize(), tgt = frameTarget(), pos = tgt.clone().addScaledVector(dir, fitDist(dir));
+    if (!animate) { controls.target.copy(tgt); camera.position.copy(pos); controls.update(); return; }
+    camAnim = { t: 0, p0: camera.position.clone(), p1: pos, q0: controls.target.clone(), q1: tgt };
+  }
+  function setView(v) {
+    view = v; fitCamera(true);
+    document.querySelectorAll('[data-view]').forEach(b => { const on = b.dataset.view === v; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  }
+  document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+  const traceBtn = $('btn-trace');
+  traceBtn.addEventListener('click', () => { showTrace = !showTrace; traceBtn.classList.toggle('on', showTrace); traceBtn.setAttribute('aria-pressed', showTrace); if (traceLine) traceLine.visible = showTrace; });
+  document.addEventListener('keydown', e => {
+    const t = e.target.tagName; if (t === 'INPUT' || t === 'SELECT' || t === 'TEXTAREA') return;
+    if (e.key === 't' || e.key === 'T') traceBtn.click();
+    else if (e.key >= '1' && e.key <= '4') setView(['side', 'three', 'front', 'top'][+e.key - 1]);
+  });
+
+  // ── Size and visibility ──
+  function resize() {
+    const w = renderer.domElement.clientWidth || studio.clientWidth, h = renderer.domElement.clientHeight || studio.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(() => { resize(); }).observe(studio);
+  let onScreen = true, pageActive = true;
+  new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; }).observe(studio);
+  addEventListener('pagehide', () => { pageActive = false; });
+  addEventListener('pageshow', () => { pageActive = true; });
+
+  // ── Per frame: pose, spin, project tags, render ──
+  let last = performance.now();
+  const proj = new V3();
+  function placeTag(T, p) {
+    proj.copy(p).project(camera);
+    if (proj.z > 1 || Math.abs(proj.x) > 1.1 || Math.abs(proj.y) > 1.1) { T.el.style.opacity = 0; return; }
+    const w = renderer.domElement.clientWidth, h = renderer.domElement.clientHeight;
+    T.el.style.opacity = 1;
+    T.el.style.transform = `translate(${(proj.x * 0.5 + 0.5) * w}px, ${(-proj.y * 0.5 + 0.5) * h}px) translate(-50%, -50%)`;
+  }
+  function frame(phi) {
+    const now = performance.now(), dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (!onScreen || !pageActive || !S) return;
+    if (camAnim) {
+      camAnim.t = Math.min(1, camAnim.t + dt / 0.8); const e = camAnim.t * camAnim.t * (3 - 2 * camAnim.t);
+      camera.position.lerpVectors(camAnim.p0, camAnim.p1, e); controls.target.lerpVectors(camAnim.q0, camAnim.q1, e);
+      if (camAnim.t >= 1) camAnim = null;
+    }
+    const P = BF.pose(phi);
+    if (crankNear) { crankNear.rotation.z = -phi; crankFar.rotation.z = -phi + Math.PI; pedalNear.rotation.z = phi; pedalFar.rotation.z = phi - Math.PI; }
+    for (const w of wheels) w.rotation.z = -phi * BF.GEAR;
+    poseRider(P);
+    // Live knee and hip angle arcs on the near side
+    const kn = P3(P.near.knee, 0.16), hp = P3(S.hip, 0.16);
+    setArc(arcGeo, kn, P3(S.hip, 0.16), P3(P.near.ankle, 0.16), 0.075, 0.16);
+    setArc(hipGeo, hp, P3(S.shoulder, 0.16), kn, 0.085, 0.16);
+    const kt = tag('knee', 'ang'), ht = tag('hip', 'ang');
+    kt.el.textContent = `${Math.round(P.near.kneeA)}°`; ht.el.textContent = `${Math.round(P.hipA)}°`;
+    const bad = S.legErr || S.overReach; kt.el.classList.toggle('bad', bad);
+    placeTag(kt, kn.clone().add(new V3(0.11, 0.02, 0))); placeTag(ht, hp.clone().add(new V3(-0.07, 0.1, 0)));
+    for (const id of ['stack', 'reach', 'saddle', 'torso']) { const T = TAGS[id]; if (!T) continue; if (!BF.showDims) { T.el.style.opacity = 0; continue; } placeTag(T, T.p); }
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  window.BIKE3D = {
+    ok: true,
+    rebuild() { try { rebuild(); } catch (e) { console.error(e); BF.use2D(); } },
+    frame(phi) { try { frame(phi); } catch (e) { console.error(e); BF.use2D(); } },
+    setDims(on) { if (dimsGroup) dimsGroup.visible = on; }
+  };
+  document.body.classList.remove('flat');
+  resize();
+  rebuild();
+  fitCamera(false);
+}
+</script>
+
 </body>
 </html>
