@@ -812,6 +812,80 @@
           </div>
         </div>
       </section>
+
+      <!-- EXP-04 · MAGNA3 pump teardown -->
+      <section class="exp wow" aria-label="MAGNA3 pump simulator">
+        <div class="exp-head">
+          <div class="exp-id"><em>EXP-04</em> <b>Pump Teardown</b></div>
+          <div class="exp-tags">
+            <span class="exp-tag">3D · three.js</span>
+            <span class="exp-tag">Real pump curves</span>
+          </div>
+        </div>
+        <div class="exp-body" style="padding:0;">
+          <a class="bikefit-block" href="magna3-simulator.html">
+            <div class="bikefit-visual" aria-hidden="true">
+              <div class="bikefit-grid"></div>
+              <svg class="bikefit-fallback" viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="display:block">
+                <defs>
+                  <radialGradient id="pumpglow" cx="45%" cy="50%" r="60%">
+                    <stop offset="0%" stop-color="#4d92ff" stop-opacity="0.14"/>
+                    <stop offset="100%" stop-color="#4d92ff" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <rect width="480" height="320" fill="url(#pumpglow)"/>
+                <!-- pipes + flanges -->
+                <g stroke="#6f90c8" stroke-width="1" fill="none" opacity="0.5" stroke-dasharray="3 4">
+                  <path d="M118 0 V52 M142 0 V52 M118 268 V320 M142 268 V320"/>
+                </g>
+                <g fill="#1a2438" stroke="#a9c8ff" stroke-width="2">
+                  <rect x="82" y="52" width="96" height="14" rx="2"/>
+                  <rect x="82" y="254" width="96" height="14" rx="2"/>
+                </g>
+                <!-- S-shaped housing -->
+                <path d="M112 66 C110 100 104 118 96 136 C84 160 84 176 96 196 C104 214 110 232 112 254 L148 254 C146 230 138 208 132 192 C124 174 126 158 136 144 C146 128 150 96 148 66 Z" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
+                <rect x="150" y="124" width="28" height="72" rx="6" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
+                <!-- clamp ring, neck, fins -->
+                <rect x="178" y="112" width="14" height="96" rx="3" fill="#2a3550" stroke="#eef1f6" stroke-width="1.5"/>
+                <rect x="192" y="128" width="40" height="64" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
+                <g fill="#1a2438" stroke="#a9c8ff" stroke-width="1.6">
+                  <rect x="232" y="98" width="6" height="124" rx="3"/><rect x="246" y="98" width="6" height="124" rx="3"/>
+                  <rect x="260" y="98" width="6" height="124" rx="3"/><rect x="274" y="98" width="6" height="124" rx="3"/>
+                  <rect x="288" y="98" width="6" height="124" rx="3"/><rect x="302" y="98" width="6" height="124" rx="3"/>
+                  <rect x="316" y="98" width="6" height="124" rx="3"/><rect x="330" y="98" width="6" height="124" rx="3"/>
+                </g>
+                <!-- control box: red band + front cover -->
+                <rect x="338" y="86" width="46" height="148" rx="8" fill="#9d0027" stroke="#ff6a7a" stroke-width="1.5" opacity="0.9"/>
+                <rect x="384" y="84" width="14" height="152" rx="5" fill="#2a3550" stroke="#eef1f6" stroke-width="1.5"/>
+                <!-- flow arrows -->
+                <g stroke="#ffa040" stroke-width="2" fill="none" stroke-linecap="round">
+                  <path d="M130 300 V280 M124 286 L130 280 L136 286"/>
+                  <path d="M130 40 V20 M124 26 L130 20 L136 26"/>
+                </g>
+                <!-- blueprint callout -->
+                <g stroke="rgba(169,200,255,0.5)" stroke-width="0.8" stroke-dasharray="3 3" fill="none">
+                  <path d="M60 59 H40 M60 261 H40 M44 59 V261"/>
+                </g>
+                <g font-family="JetBrains Mono, monospace" font-size="9" fill="#a9c8ff" letter-spacing="0.12em">
+                  <text x="12" y="164" transform="rotate(-90 22 160)">220 MM</text>
+                </g>
+                <text x="232" y="300" font-family="JetBrains Mono, monospace" font-size="9" fill="#ffa040" letter-spacing="0.14em">REAL CURVES · LIVE DUTY POINT</text>
+              </svg>
+            </div>
+            <div class="bikefit-copy">
+              <span class="bikefit-eyebrow">3D · Simulator</span>
+              <h3 class="bikefit-title">MAGNA3 Pump Teardown</h3>
+              <p class="bikefit-lede">An interactive 3D teardown of a Grundfos MAGNA3 32-120 F circulator, built to the dimensions of the manufacturer's CAD model. Switch control modes, close the radiator valves, explode it or cut it open, and watch flow, head and power follow the official pump curves.</p>
+              <ul class="bikefit-features">
+                <li><span class="bf-dot"></span>Exploded view and cutaway of every part</li>
+                <li><span class="bf-dot"></span>Physics fitted to Grundfos's published curves</li>
+                <li><span class="bf-dot"></span>Live flow, Q–H chart and the pump's own display</li>
+              </ul>
+              <span class="bikefit-cta">Open the simulator <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+        </div>
+      </section>
     </section>
 
     <!-- ══ 03. ARCHIVE ══ -->
