@@ -620,7 +620,9 @@
       width: 100vw; height: 100vh;
       pointer-events: none;
     }
-    @media (prefers-reduced-motion: reduce) { #oceanCanvas { display: none; } }
+    #oceanGL { position: fixed; inset: 0; z-index: 1; width: 100vw; height: 100vh; display: block; pointer-events: none; }
+    html.gl-ocean #oceanCanvas, html.gl-ocean .surface-fx { display: none; }
+    @media (prefers-reduced-motion: reduce) { #oceanCanvas, #oceanGL { display: none; } }
 
     /* ══════════════════════════════════════════════════════════════════
        ══ DEPTH VIGNETTE — closes in as you descend                    ══
@@ -641,48 +643,87 @@
       position: fixed; left: 50%; bottom: 1.25rem;
       transform: translateX(-50%);
       z-index: 60; pointer-events: none;
-      display: flex; align-items: center; gap: 1.5rem;
-      padding: 0.7rem 1.25rem;
-      background: rgba(2,20,31,0.78);
-      backdrop-filter: blur(14px) saturate(140%);
-      -webkit-backdrop-filter: blur(14px) saturate(140%);
-      border: 1px solid rgba(232,220,196,0.2);
-      border-radius: 999px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+      display: flex; align-items: stretch; gap: 0;
+      padding: 0.6rem 0.5rem 0.6rem 0.9rem;
+      background: linear-gradient(180deg, rgba(4,26,40,0.82), rgba(1,12,20,0.88));
+      backdrop-filter: blur(16px) saturate(150%);
+      -webkit-backdrop-filter: blur(16px) saturate(150%);
+      border: 1px solid rgba(111,198,232,0.22);
+      border-radius: 18px;
+      box-shadow: 0 14px 44px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
       font-family: 'JetBrains Mono', monospace;
       color: var(--text);
-      transition: opacity 0.3s ease;
     }
-    .dive-hud .hud-block {
-      display: flex; flex-direction: column; gap: 2px; align-items: center;
-      padding: 0 0.5rem;
-      border-right: 1px solid rgba(232,220,196,0.18);
+    .dive-hud .hud-main {
+      display: grid; grid-template-columns: auto 120px; grid-template-rows: auto auto;
+      column-gap: 0.75rem; align-items: end; padding-right: 0.9rem;
+      border-right: 1px solid rgba(111,198,232,0.16);
     }
-    .dive-hud .hud-block:last-child { border-right: none; }
-    .dive-hud .hud-label {
-      font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: rgba(232,220,196,0.7);
+    .dive-hud .hud-main .hud-label { grid-column: 1 / 3; display: flex; justify-content: space-between; }
+    .dive-hud .hud-max { font-style: normal; color: rgba(244,249,252,0.45); letter-spacing: 0.1em; }
+    .dive-hud .hud-depth {
+      font-size: 2rem; font-weight: 700; line-height: 0.95; letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 3px;
+      text-shadow: 0 0 18px rgba(111,198,232,0.35);
     }
-    .dive-hud .hud-value {
-      font-size: 1.25rem; font-weight: 700; color: #fff;
-      letter-spacing: -0.02em; line-height: 1;
-      display: flex; align-items: baseline; gap: 3px;
-    }
-    .dive-hud .hud-value em {
-      font-style: normal; font-size: 0.62rem; letter-spacing: 0.18em;
+    .dive-hud .hud-depth em, .dive-hud .hud-value em {
+      font-style: normal; font-size: 0.6rem; letter-spacing: 0.16em;
       color: var(--accent); text-transform: uppercase;
     }
-    .dive-hud .hud-value-sm {
-      font-size: 0.95rem; font-weight: 600; color: #fff; line-height: 1;
+    .dive-hud .hud-profile { width: 120px; height: 32px; display: block; }
+    .dive-hud .hud-block {
+      display: flex; flex-direction: column; justify-content: space-between; gap: 4px; align-items: flex-start;
+      padding: 0 0.85rem; min-width: 4.4rem;
+      border-right: 1px solid rgba(111,198,232,0.16);
     }
-    .dive-hud .tank-svg {
-      width: 96px; height: 36px; margin-top: 2px;
+    .dive-hud .hud-block:last-of-type { border-right: none; }
+    .dive-hud .hud-label {
+      font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(111,198,232,0.85);
     }
-    @media (max-width: 540px) {
-      .dive-hud { gap: 1rem; padding: 0.55rem 0.9rem; bottom: 0.75rem; }
-      .dive-hud .hud-block { padding: 0 0.35rem; }
-      .dive-hud .tank-svg { width: 70px; height: 28px; }
-      .dive-hud .hud-value { font-size: 1.05rem; }
+    .dive-hud .hud-value {
+      font-size: 1.15rem; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em; line-height: 1; display: flex; align-items: baseline; gap: 3px;
+    }
+    .dive-hud .hud-value.warn { color: var(--accent-hot); }
+    .dive-hud .hud-value-sm { font-size: 1.05rem; font-weight: 600; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+    .dive-hud .tank-svg { width: 76px; height: 24px; }
+    .asc-bars { display: flex; gap: 3px; align-items: flex-end; height: 18px; }
+    .asc-bars i { display: block; width: 6px; border-radius: 1.5px; background: rgba(255,255,255,0.12); transition: background 0.15s; }
+    .asc-bars i:nth-child(1) { height: 6px; } .asc-bars i:nth-child(2) { height: 9px; } .asc-bars i:nth-child(3) { height: 12px; }
+    .asc-bars i:nth-child(4) { height: 15px; } .asc-bars i:nth-child(5) { height: 18px; }
+    .asc-bars i.on { background: #5fd99a; box-shadow: 0 0 6px rgba(95,217,154,0.6); }
+    .asc-bars i.on.hi { background: #ffd47a; box-shadow: 0 0 6px rgba(255,212,122,0.6); }
+    .asc-bars i.on.max { background: #ff7a6a; box-shadow: 0 0 8px rgba(255,122,106,0.8); }
+    .hud-asc { position: relative; }
+    .hud-alarm {
+      position: absolute; right: 0.6rem; top: -0.1rem;
+      font-size: 0.5rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+      color: #ff7a6a; opacity: 0;
+    }
+    .dive-hud.alarm .hud-alarm { animation: hudBlink 0.5s steps(1) infinite; }
+    .dive-hud.alarm { border-color: rgba(255,122,106,0.55); }
+    @keyframes hudBlink { 0% { opacity: 1; } 50% { opacity: 0; } }
+    .hud-stop {
+      position: absolute; left: 50%; bottom: calc(100% + 0.5rem); transform: translateX(-50%);
+      white-space: nowrap; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent-hot); padding: 0.4rem 0.85rem; border-radius: 999px;
+      background: rgba(2,20,31,0.85); border: 1px solid rgba(255,212,122,0.4);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+    .hud-stop[hidden] { display: none; }
+    .hud-stop b { color: #fff; font-weight: 700; }
+    .hud-stop.done { color: #5fd99a; border-color: rgba(95,217,154,0.45); }
+    @media (max-width: 900px) { .dive-hud .hud-press { display: none; } }
+    @media (max-width: 640px) {
+      .dive-hud { bottom: 0.75rem; padding: 0.5rem 0.3rem 0.5rem 0.7rem; border-radius: 14px; max-width: calc(100vw - 1.5rem); }
+      .dive-hud .hud-main { grid-template-columns: auto 64px; column-gap: 0.5rem; padding-right: 0.6rem; }
+      .dive-hud .hud-profile { width: 64px; }
+      .dive-hud .hud-depth { font-size: 1.55rem; }
+      .dive-hud .hud-block { padding: 0 0.55rem; min-width: 0; }
+      .dive-hud .hud-tank { display: none; }
+      .dive-hud .hud-value { font-size: 1rem; }
+      .dive-hud .hud-max { display: none; }
     }
 
     /* (legacy classes kept inert; not used by current markup) */
@@ -1087,6 +1128,7 @@
 </div>
 <!-- Procedural ocean: every creature below is simulated and drawn in real time -->
 <canvas id="oceanCanvas" aria-hidden="true"></canvas>
+<canvas id="oceanGL" aria-hidden="true"></canvas>
 <!-- Depth vignette — closes in as we go deeper -->
 <div class="depth-vignette" id="depthVignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
@@ -1148,36 +1190,45 @@
 
 <!-- ══════════ DIVE HUD (sticky bottom — simple) ══════════ -->
 <aside class="dive-hud" id="diveHUD" aria-hidden="true">
-  <div class="hud-block">
-    <span class="hud-label">Depth</span>
-    <span class="hud-value"><span id="hudDepth">0</span><em>m</em></span>
+  <div class="hud-main">
+    <span class="hud-label">Depth <i class="hud-max">max <span id="hudMax">0.0</span></i></span>
+    <span class="hud-depth"><span id="hudDepth">0.0</span><em>m</em></span>
+    <svg class="hud-profile" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true">
+      <path id="hudProfileFill" fill="rgba(111,198,232,0.16)"/>
+      <path id="hudProfile" fill="none" stroke="#6fc6e8" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+    </svg>
   </div>
   <div class="hud-block">
-    <span class="hud-label">Pressure</span>
-    <span class="hud-value"><span id="hudPressure">1.0</span><em>ata</em></span>
+    <span class="hud-label">NDL</span>
+    <span class="hud-value"><span id="hudNdl">99</span><em>min</em></span>
+  </div>
+  <div class="hud-block hud-asc">
+    <span class="hud-label">Ascent</span>
+    <span class="asc-bars" id="hudAsc"><i></i><i></i><i></i><i></i><i></i></span>
+    <span class="hud-alarm" id="hudAlarm">Slow</span>
+  </div>
+  <div class="hud-block hud-press">
+    <span class="hud-label">Ambient</span>
+    <span class="hud-value"><span id="hudPressure">1.0</span><em>bar</em></span>
   </div>
   <div class="hud-block hud-tank">
     <span class="hud-label">Tank · <span id="hudTankBar">200</span> bar</span>
     <svg class="tank-svg" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- Tank body only — no valve shapes -->
       <rect x="3" y="3" width="64" height="24" rx="11" fill="none" stroke="rgba(232,220,196,0.55)" stroke-width="1.5"/>
       <clipPath id="tankClip"><rect x="5" y="5" width="60" height="20" rx="9"/></clipPath>
-      <rect id="tankFill" x="5" y="5" width="60" height="20" rx="9"
-            clip-path="url(#tankClip)"
-            fill="url(#tankGrad)"/>
+      <rect id="tankFill" x="5" y="5" width="60" height="20" rx="9" clip-path="url(#tankClip)" fill="url(#tankGrad)"/>
       <defs>
         <linearGradient id="tankGrad" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0%"   stop-color="#5fd99a"/>
-          <stop offset="60%"  stop-color="#ffd47a"/>
-          <stop offset="100%" stop-color="#ff7a6a"/>
+          <stop offset="0%" stop-color="#ff7a6a"/><stop offset="35%" stop-color="#ffd47a"/><stop offset="100%" stop-color="#5fd99a"/>
         </linearGradient>
       </defs>
     </svg>
   </div>
   <div class="hud-block">
-    <span class="hud-label">Duration</span>
+    <span class="hud-label">Dive time</span>
     <span class="hud-value-sm" id="hudTime">00:00</span>
   </div>
+  <div class="hud-stop" id="hudStop" hidden>Safety stop · <b id="hudStopT">3:00</b></div>
 </aside>
 
 <!-- ══════════ HERO ══════════ -->
@@ -1272,90 +1323,110 @@
   }, { threshold: 0.18 });
   document.querySelectorAll('.dive-card').forEach(c => cardObserver.observe(c));
 
-  /* ── Descent driver — drives the simplified bottom HUD ──
-     Tank physics:
-       • Starts at 200 bar
-       • Consumption per second = baseRate × (1 + depth/10)  — i.e. ∝ ATA
-       • Tank pressure is monotonically non-increasing (never refills, even as you surface)
-       • Bottom time accumulates as soon as we leave the surface (depth > 0)        */
+  /* ── Dive computer ──
+     Scrolling the log is the descent: 0 m at the top of the stream, 20 m at the end.
+       • Ambient pressure: 1 bar + 1 bar per 10 m of seawater
+       • Gas use scales with ambient pressure (twice as fast at 10 m as at the surface)
+       • NDL: PADI air table limits, with nitrogen loading carried between depths
+       • Ascent rate: smoothed over a few seconds; above 9 m/min the computer says SLOW
+       • Safety stop: 3 minutes between 3 and 6 m, after any dive deeper than 10 m   */
   let __currentDepth = 0;
-  (function depthTracker() {
-    const stream    = document.getElementById('diveStream');
-    const caustics  = document.getElementById('causticsLayer');
-    const vignette  = document.getElementById('depthVignette');
-    const hudDepth  = document.getElementById('hudDepth');
-    const hudTank   = document.getElementById('hudTankBar');
-    const hudPress  = document.getElementById('hudPressure');
-    const hudTime   = document.getElementById('hudTime');
-    const tankFill  = document.getElementById('tankFill');
-    if (!stream || !hudDepth) return;
+  window.__diveDepthF = 0;
+  (function diveComputer() {
+    const stream   = document.getElementById('diveStream');
+    const vignette = document.getElementById('depthVignette');
+    const hud      = document.getElementById('diveHUD');
+    const $ = id => document.getElementById(id);
+    const el = { depth: $('hudDepth'), max: $('hudMax'), ndl: $('hudNdl'), press: $('hudPressure'), tank: $('hudTankBar'), fill: $('tankFill'),
+      time: $('hudTime'), prof: $('hudProfile'), profFill: $('hudProfileFill'), stop: $('hudStop'), stopT: $('hudStopT') };
+    const bars = [...document.querySelectorAll('#hudAsc i')];
+    if (!stream || !el.depth) return;
 
     const MAX_DEPTH = 20;
-    let diveStartTs = null;
-    let tankBar     = 200;            // current tank pressure (bar) — monotonic ↓
-    let lastTick    = Date.now();
+    const NDL_TABLE = [[10, 219], [12, 147], [14, 98], [16, 72], [18, 56], [20, 45], [22, 37]];
+    const ndlAt = d => {
+      if (d < 10) return Infinity;
+      for (let i = 1; i < NDL_TABLE.length; i++) if (d <= NDL_TABLE[i][0]) {
+        const [d0, n0] = NDL_TABLE[i - 1], [d1, n1] = NDL_TABLE[i]; return n0 + (n1 - n0) * (d - d0) / (d1 - d0);
+      }
+      return NDL_TABLE[NDL_TABLE.length - 1][1];
+    };
+    const fmtTime = secs => String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(Math.floor(secs % 60)).padStart(2, '0');
 
-    function fmtTime(secs) {
-      const m = Math.floor(secs / 60), s = Math.floor(secs % 60);
-      return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    }
+    let depth = 0, maxDepth = 0, startTs = null, tank = 200, load = 0;
+    let rate = 0, lastDepth = 0, lastTs = performance.now();
+    let stopLeft = 180, stopArmed = false, stopDoneAt = 0;
+    const profile = [];
 
-    function computeDepth() {
+    function readDepth() {
       const rect = stream.getBoundingClientRect();
-      const top  = rect.top + window.scrollY;
-      const span = rect.height;
-      const here = window.scrollY + window.innerHeight * 0.45;
-      let t = (here - top) / span;
-      t = Math.max(0, Math.min(1, t));
-      return Math.round(t * MAX_DEPTH);
+      const t = (innerHeight * 0.45 - rect.top) / rect.height;
+      return Math.max(0, Math.min(1, t)) * MAX_DEPTH;
+    }
+    function onScroll() {
+      depth = readDepth();
+      __currentDepth = Math.round(depth); window.__diveDepthF = depth;
+      if (depth > 0.2 && startTs === null) startTs = Date.now();
+      maxDepth = Math.max(maxDepth, depth);
+      el.depth.textContent = depth.toFixed(1);
+      el.max.textContent = maxDepth.toFixed(1);
+      el.press.textContent = (1 + depth / 10).toFixed(1);
+      if (vignette) vignette.style.setProperty('--vig', Math.min(0.75, depth / MAX_DEPTH * 0.85).toFixed(2));
     }
 
-    function updateDisplay() {
-      const depth = computeDepth();
-      __currentDepth = depth;
-      if (depth > 0 && diveStartTs === null) diveStartTs = Date.now();
+    // fast loop: ascent rate (needs smooth timing)
+    function fast() {
+      const now = performance.now(), dt = Math.max(1e-3, (now - lastTs) / 1000); lastTs = now;
+      const inst = (lastDepth - depth) / dt * 60;                     // m/min, positive going up
+      rate += (inst - rate) * (1 - Math.exp(-dt / 0.8)); lastDepth = depth;
+      const up = Math.max(0, rate), lit = Math.min(5, Math.ceil(up / 3 - 0.01));   // one bar per 3 m/min
+      bars.forEach((b, i) => { b.className = i < lit ? 'on' + (i >= 4 ? ' max' : i >= 2 ? ' hi' : '') : ''; });
+      hud.classList.toggle('alarm', up > 9 && depth > 0.5);
+      requestAnimationFrame(fast);
+    }
 
-      hudDepth.textContent = depth;
+    // slow loop: gas, nitrogen, clock, profile, safety stop
+    let lastTick = Date.now();
+    function tick() {
+      const now = Date.now(), dt = (now - lastTick) / 1000; lastTick = now;
+      const ata = 1 + depth / 10;
+      if (startTs !== null) tank = Math.max(50, tank - 0.3 * ata * dt);
+      // nitrogen: use up the no-stop allowance below 10 m, off-gas slowly when shallower
+      const lim = ndlAt(depth);
+      load = isFinite(lim) ? Math.min(1, load + dt / 60 / lim) : Math.max(0, load - dt / 60 / 120);
+      const left = isFinite(lim) ? lim * (1 - load) : Infinity;
+      el.ndl.textContent = left > 99 ? '99' : Math.max(0, Math.floor(left));
+      el.ndl.parentElement.classList.toggle('warn', left < 5);
+      el.tank.textContent = Math.round(tank);
+      if (el.fill) el.fill.setAttribute('width', (60 * tank / 200).toFixed(1));
+      if (startTs !== null) el.time.textContent = fmtTime((now - startTs) / 1000);
 
-      // Ambient pressure: 1 ata + 0.1 per metre
-      const ata = (1 + depth * 0.1);
-      if (hudPress) hudPress.textContent = ata.toFixed(1);
-
-      // Render tank (already deplete-only, see tickConsumption)
-      if (hudTank)  hudTank.textContent = Math.round(tankBar);
-      if (tankFill) {
-        const pct = tankBar / 200;
-        tankFill.setAttribute('width', (60 * pct).toFixed(1));
+      // safety stop after a dive below 10 m
+      if (maxDepth >= 10) stopArmed = true;
+      if (stopArmed && stopLeft > 0 && depth <= 6 && depth >= 3) stopLeft -= dt;
+      if (stopArmed && stopLeft <= 0 && !stopDoneAt) stopDoneAt = now;
+      const showStop = stopArmed && depth < 7.5 && (stopLeft > 0 || now - stopDoneAt < 4000);
+      el.stop.hidden = !showStop;
+      if (showStop) {
+        el.stop.classList.toggle('done', stopLeft <= 0);
+        el.stop.firstChild.nodeValue = stopLeft <= 0 ? 'Safety stop done · ' : 'Safety stop · ';
+        el.stopT.textContent = stopLeft <= 0 ? '✓' : fmtTime(Math.max(0, stopLeft)).replace(/^0/, '');
       }
 
-      // Caustics fade with depth
-      if (caustics) caustics.style.opacity = Math.max(0, 0.6 * (1 - depth / 12)).toFixed(2);
-      // Vignette closes in
-      if (vignette) vignette.style.setProperty('--vig',
-        Math.min(0.75, (depth / MAX_DEPTH) * 0.85).toFixed(2));
-    }
-
-    // Tank consumption tick — runs every second
-    function tickConsumption() {
-      const now = Date.now();
-      const dt  = (now - lastTick) / 1000;          // seconds elapsed
-      lastTick = now;
-      const depth = __currentDepth;
-      // Base consumption: ~0.3 bar/s at surface, scales with ATA
-      const ata = 1 + depth * 0.1;
-      const consumed = 0.3 * ata * dt;
-      // Monotonic decline — never increases
-      tankBar = Math.max(50, tankBar - consumed);
-      if (diveStartTs && hudTime) {
-        hudTime.textContent = fmtTime((now - diveStartTs) / 1000);
+      // depth profile, last three minutes
+      if (startTs !== null) { profile.push(depth); if (profile.length > 180) profile.shift(); }
+      if (profile.length > 1) {
+        const n = profile.length, x = i => (i / 179) * 120 + (180 - n) / 179 * 120, y = d => 2 + d / MAX_DEPTH * 28;
+        const line = profile.map((d, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(d).toFixed(1)).join('');
+        el.prof.setAttribute('d', line);
+        el.profFill.setAttribute('d', line + `L${x(n - 1).toFixed(1)} 32L${x(0).toFixed(1)} 32Z`);
       }
-      updateDisplay();
     }
-    setInterval(tickConsumption, 1000);
-
-    updateDisplay();
-    window.addEventListener('scroll', updateDisplay, { passive: true });
-    window.addEventListener('resize', updateDisplay);
+    onScroll(); tick();
+    setInterval(tick, 1000);
+    requestAnimationFrame(fast);
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
   })();
 
   /* ==================================================================
@@ -1366,7 +1437,8 @@
      ==   snow, wobbling bubbles and depth-reactive bioluminescence. ==
      ==   No libraries, no sprites. Move the cursor: fish flee it.   ==
      ================================================================== */
-  (function oceanEngine() {
+  window.__ocean2D = function oceanEngine() {
+    if (window.__ocean2Dstarted || window.__oceanGL) return; window.__ocean2Dstarted = true;
     var canvas = document.getElementById('oceanCanvas');
     if (!canvas || !canvas.getContext) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -2079,6 +2151,12 @@
     try {
       console.log('%c~ whale song ~  This ocean is procedural: spine-driven fish, boids schooling, pulse-jet jellies, depth-gated bioluminescence. No libraries, no sprites. Crafted with Claude.', 'color:#5fc9c0;font-size:12px');
     } catch (e) {}
+  };
+  // The 3D ocean (module below) takes over when WebGL is available; otherwise this 2D one runs.
+  (function () {
+    var c = document.createElement('canvas'), gl = null;
+    try { gl = c.getContext('webgl2') || c.getContext('webgl'); } catch (e) {}
+    if (!gl) window.__ocean2D(); else setTimeout(function () { if (!window.__oceanGL) window.__ocean2D(); }, 6000);
   })();
 
   /* ── Build dive stream — plain photo list, no cards, sorted by NN_ prefix.
@@ -2316,6 +2394,601 @@
     const hsDives = document.getElementById('hsDives');
     if (hsDives) hsDives.textContent = files.filter(f => !isVid(f)).length + 1;
   })();
+</script>
+
+<script type="module">
+/* ==================================================================
+   == 3D OCEAN                                                      ==
+   ==   The camera is a diver: scrolling the log is the descent.    ==
+   ==   1 unit = 1 metre. Light follows real water optics: red is   ==
+   ==   absorbed within a few metres, then green, leaving blue.     ==
+   ==   Bubbles grow as they rise (Boyle's law). Plankton glows     ==
+   ==   when disturbed. The 2D engine above is the fallback.        ==
+   ================================================================== */
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+const canvas = document.getElementById('oceanGL');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fallback = () => { if (canvas) canvas.remove(); if (window.__ocean2D) window.__ocean2D(); };
+let renderer;
+if (!canvas || reduced || window.__ocean2Dstarted) { if (canvas) canvas.remove(); }
+else {
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'high-performance' }); }
+  catch (e) { renderer = null; fallback(); }
+}
+if (renderer) start();
+
+function start() {
+  window.__oceanGL = true;
+  document.documentElement.classList.add('gl-ocean');
+  THREE.ColorManagement.enabled = false;            // colours stay in display space, so the water matches the CSS gradient
+  renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+  const mobile = matchMedia('(max-width: 768px)').matches;
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.5));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 400);
+  const TAU = Math.PI * 2, rand = (a, b) => a + Math.random() * (b - a);
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+  const FLOOR_Y = -23.6;
+
+  /* ── Shared water optics: absorption, scattering, fog matched to the page gradient ── */
+  const U = {
+    uTime: { value: 0 }, uTop: { value: new THREE.Color() }, uBot: { value: new THREE.Color() },
+    uRes: { value: new THREE.Vector2(1, 1) }, uLight: { value: 1 }, uDensity: { value: 0.05 },
+    uBio: { value: 0 }, uCam: { value: new THREE.Vector3() }, uSun: { value: new THREE.Vector2(0.5, 1.2) }
+  };
+  const WATER = /* glsl */`
+    uniform float uTime, uLight, uDensity, uBio; uniform vec3 uTop, uBot, uCam; uniform vec2 uRes, uSun;
+    vec3 fogCol() { return mix(uBot, uTop, clamp(gl_FragCoord.y / uRes.y, 0.0, 1.0)); }
+    // Light travelling down from the surface and then to the eye loses red first, then green
+    vec3 water(vec3 col, vec3 wp) {
+      float d = length(wp - uCam), z = max(0.0, -wp.y);
+      col *= exp(-vec3(0.36, 0.075, 0.04) * (z * 0.55 + d * 0.45));
+      return mix(col, fogCol(), clamp(1.0 - exp(-d * uDensity), 0.0, 1.0));
+    }
+    // Sharp caustic net: light focused by the moving surface
+    float caustic(vec2 p, float t) {
+      p *= 0.55; vec2 i = p; float c = 1.0;
+      for (int n = 0; n < 4; n++) {
+        float tt = t * (1.0 - 3.5 / float(n + 1));
+        i = p + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
+        c += 1.0 / length(vec2(p.x / (sin(i.x + tt) / 0.006), p.y / (cos(i.y + tt) / 0.006)));
+      }
+      c = 1.17 - pow(c / 4.0, 1.4);
+      return pow(abs(c), 7.0);
+    }
+    float sunlight(float y) { return exp(y / 7.5) * uLight; }
+  `;
+  const SS = '#define SS(a,b,x) smoothstep(0.0, 1.0, clamp(((x) - (a)) / ((b) - (a)), 0.0, 1.0))\n';
+  const mat = (o) => new THREE.ShaderMaterial(Object.assign({}, o, { uniforms: Object.assign({}, U, o.uniforms || {}), vertexShader: SS + o.vertexShader, fragmentShader: SS + o.fragmentShader }));
+
+  /* ── Background: the water column itself, plus sun shafts in screen space ── */
+  const bg = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat({
+    depthWrite: false, depthTest: false,
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.9999, 1.0); }`,
+    fragmentShader: WATER + `
+      varying vec2 vUv;
+      float hash(float n){ return fract(sin(n) * 43758.5453); }
+      float n1(float x){ float i = floor(x), f = fract(x); f = f*f*(3.0-2.0*f); return mix(hash(i), hash(i+1.0), f); }
+      void main(){
+        vec3 col = fogCol();
+        vec2 d = vUv - uSun; d.x *= uRes.x / uRes.y;
+        float a = atan(d.x, -d.y), r = length(d);
+        float rays = n1(a * 22.0 + uTime * 0.12) * n1(a * 9.0 - uTime * 0.07 + 3.0);
+        rays = pow(rays, 2.2) * SS(1.6, 0.0, r) * uLight;
+        col += vec3(0.75, 0.95, 1.0) * rays * 0.22;
+        col += vec3(0.8, 0.97, 1.0) * SS(1.2, 0.0, r) * 0.10 * uLight;
+        // faint backscatter grain so flat gradients don't band
+        col += (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) / 255.0;
+        gl_FragColor = vec4(col, 1.0);
+      }`
+  }));
+  bg.frustumCulled = false; bg.renderOrder = -10; scene.add(bg);
+
+  /* ── The surface seen from below: Snell's window and total internal reflection ── */
+  const surface = new THREE.Mesh(new THREE.PlaneGeometry(400, 400, 1, 1).rotateX(Math.PI / 2), mat({
+    side: THREE.DoubleSide, depthWrite: false,
+    vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: WATER + `
+      varying vec3 vW;
+      void main(){
+        vec2 p = vW.xz; float t = uTime;
+        vec3 n = normalize(vec3(
+          0.18*sin(p.x*0.9+t*1.3) + 0.12*sin(p.x*2.3 - p.y*1.1 + t*2.1) + 0.06*sin(p.y*4.7+t*3.0),
+          1.0,
+          0.18*cos(p.y*0.8+t*1.1) + 0.12*cos(p.y*2.1 + p.x*1.4 + t*1.8) + 0.06*cos(p.x*5.1-t*2.6)));
+        vec3 v = normalize(vW - uCam);
+        float cosT = dot(v, n);                       // angle from the local surface normal
+        float inside = smoothstep(0.63, 0.69, cosT);  // cos 48.6° ≈ 0.66: the critical angle for water
+        vec3 sky = vec3(0.86, 0.98, 1.0) * (0.85 + 0.6 * caustic(p * 1.4, t * 0.8));
+        vec3 tir = fogCol() * 0.82;                   // outside the window the surface mirrors the deep
+        vec3 col = mix(tir, sky, inside) + vec3(1.0) * SS(0.02, 0.0, abs(cosT - 0.66)) * 0.35;
+        float d = length(vW - uCam);
+        col = mix(col, fogCol(), clamp(1.0 - exp(-d * uDensity * 0.9), 0.0, 1.0));
+        gl_FragColor = vec4(col, 1.0);
+      }`
+  }));
+  surface.position.y = 0; scene.add(surface);
+
+  /* ── Light shafts: tall additive sheets that turn to face the diver ── */
+  const shafts = [];
+  for (let i = 0; i < 9; i++) {
+    const w = rand(2, 7), m = new THREE.Mesh(new THREE.PlaneGeometry(w, 34, 1, 1).translate(0, -17, 0), mat({
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      uniforms: { uSeed: { value: rand(0, 100) } },
+      vertexShader: `varying vec2 vUv; varying vec3 vW; void main(){ vUv = uv; vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+      fragmentShader: WATER + `
+        uniform float uSeed; varying vec2 vUv; varying vec3 vW;
+        void main(){
+          float edge = pow(sin(vUv.x * 3.14159), 2.0);
+          float flick = 0.55 + 0.45 * sin(uTime * 0.37 + uSeed) * sin(uTime * 0.23 + uSeed * 1.7);
+          float a = edge * pow(vUv.y, 1.6) * flick * uLight * 0.16;
+          a *= exp(-length(vW - uCam) * uDensity * 0.6);
+          gl_FragColor = vec4(vec3(0.8, 0.97, 1.0) * a, 1.0);
+        }`
+    }));
+    m.position.set(rand(-28, 28), 0.3, rand(-38, -7)); m.rotation.z = rand(-0.22, -0.08);
+    m.userData.tilt = m.rotation.z; shafts.push(m); scene.add(m);
+  }
+
+  /* ── Seabed: rippled sand, rocks and swaying seagrass under caustics ── */
+  const floorMat = mat({
+    vertexShader: `varying vec3 vW; varying vec3 vN;
+      float h(vec2 p){ return 0.35*sin(p.x*0.35 + sin(p.y*0.12)*2.0) + 0.12*sin(p.x*1.7 + p.y*0.4) + 0.6*sin(p.y*0.07 + p.x*0.05); }
+      void main(){ vec3 p = position; p.y += h(p.xz);
+        float e = 0.2; vN = normalize(vec3(h(p.xz - vec2(e,0.0)) - h(p.xz + vec2(e,0.0)), 2.0*e, h(p.xz - vec2(0.0,e)) - h(p.xz + vec2(0.0,e))));
+        vec4 w = modelMatrix * vec4(p,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: WATER + `varying vec3 vW; varying vec3 vN;
+      void main(){
+        float grain = fract(sin(dot(floor(vW.xz*14.0), vec2(12.9898,78.233)))*43758.5453);
+        vec3 sand = vec3(0.86, 0.80, 0.64) * (0.85 + 0.15 * grain);
+        float l = 0.45 + 0.55 * max(vN.y, 0.0);
+        vec3 col = sand * l * (0.55 + 1.3 * caustic(vW.xz, uTime * 0.6) * (0.35 + uLight));
+        gl_FragColor = vec4(water(col, vW), 1.0);
+      }`
+  });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(240, 240, 160, 160).rotateX(-Math.PI / 2), floorMat);
+  floor.position.y = FLOOR_Y; scene.add(floor);
+
+  const rockMat = mat({
+    vertexShader: `varying vec3 vW; varying vec3 vN; void main(){ vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: WATER + `varying vec3 vW; varying vec3 vN;
+      void main(){ float l = 0.3 + 0.7 * max(vN.y, 0.0);
+        vec3 col = mix(vec3(0.32,0.30,0.28), vec3(0.45,0.38,0.42), fract(vW.x*0.13+vW.z*0.07)) * l;
+        col *= 0.6 + 1.1 * caustic(vW.xz * 1.2, uTime * 0.6) * (0.35 + uLight) * max(vN.y, 0.0);
+        gl_FragColor = vec4(water(col, vW), 1.0); }`
+  });
+  for (let i = 0; i < 16; i++) {
+    const g = new THREE.IcosahedronGeometry(1, 3), p = g.attributes.position, v = new THREE.Vector3(), s = rand(0, 10);
+    for (let k = 0; k < p.count; k++) { v.fromBufferAttribute(p, k); const n = 1 + 0.22 * Math.sin(v.x * 3 + s) * Math.sin(v.y * 2.4 + s) + 0.12 * Math.sin(v.z * 5 + s * 2); v.multiplyScalar(n); p.setXYZ(k, v.x, v.y, v.z); }
+    g.computeVertexNormals();
+    const r = new THREE.Mesh(g, rockMat), sc = rand(0.8, 3.6);
+    r.scale.set(sc * rand(1, 1.8), sc * rand(0.5, 0.9), sc * rand(1, 1.6));
+    r.position.set(rand(-34, 34), FLOOR_Y + sc * 0.2, rand(-45, -6)); r.rotation.y = rand(0, TAU); scene.add(r);
+  }
+  {
+    const N = mobile ? 500 : 1100, blade = new THREE.PlaneGeometry(0.07, 1, 1, 6).translate(0, 0.5, 0);
+    const grass = new THREE.InstancedMesh(blade, mat({
+      side: THREE.DoubleSide,
+      vertexShader: `uniform float uTime; varying vec3 vW; varying float vH;
+        void main(){ vec3 p = position; vH = p.y;
+          vec4 base = instanceMatrix * vec4(0.0,0.0,0.0,1.0);
+          float sway = sin(uTime*0.9 + base.x*0.35 + base.z*0.2) * 0.6 + sin(uTime*2.1 + base.x) * 0.12;
+          vec4 w = modelMatrix * instanceMatrix * vec4(p,1.0); w.x += sway * p.y * p.y * 0.5; w.z += sway * p.y * p.y * 0.2;
+          vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+      fragmentShader: WATER + `varying vec3 vW; varying float vH;
+        void main(){ vec3 col = mix(vec3(0.16,0.32,0.18), vec3(0.45,0.66,0.32), vH) * (0.7 + 0.8 * sunlight(vW.y) * 5.0);
+          gl_FragColor = vec4(water(col, vW), 1.0); }`
+    }), N);
+    const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+    for (let i = 0; i < N; i++) {
+      // grow in meadows rather than evenly
+      const cx = [-18, 6, 22][i % 3], cz = [-16, -26, -12][i % 3], a = rand(0, TAU), rr = Math.sqrt(Math.random()) * 11;
+      e.set(rand(-0.15, 0.15), rand(0, TAU), rand(-0.15, 0.15)); q.setFromEuler(e);
+      m4.compose(new THREE.Vector3(cx + Math.cos(a) * rr * 1.6, FLOOR_Y - 0.1, cz + Math.sin(a) * rr), q, new THREE.Vector3(rand(0.8, 1.6), rand(0.6, 2.2), 1));
+      grass.setMatrixAt(i, m4);
+    }
+    scene.add(grass);
+  }
+
+  /* ── Fish: instanced bodies that bend with a travelling swim wave, steered by boids ── */
+  function fishGeometry(len, height, width) {
+    const g = new THREE.SphereGeometry(1, 16, 10), p = g.attributes.position, v = new THREE.Vector3();
+    for (let k = 0; k < p.count; k++) {
+      v.fromBufferAttribute(p, k);
+      const taper = 1 - 0.55 * smooth(-0.2, -1, v.z);   // thinner toward the tail
+      p.setXYZ(k, v.x * width * taper, v.y * height * taper, v.z * len);
+    }
+    g.computeVertexNormals();
+    const ni = g.toNonIndexed(), L = len;
+    // forked tail and a dorsal fin as flat triangles
+    const fin = [0, 0, -L * 0.85, 0, height * 1.1, -L * 1.45, 0, 0.1 * height, -L * 1.2,
+      0, 0, -L * 0.85, 0, -0.1 * height, -L * 1.2, 0, -height * 1.1, -L * 1.45,
+      0, height * 0.8, L * 0.15, 0, height * 1.5, -L * 0.25, 0, height * 0.75, -L * 0.6];
+    const bp = ni.attributes.position.array, bn = ni.attributes.normal.array;
+    const pos = new Float32Array(bp.length + fin.length), nor = new Float32Array(bp.length + fin.length);
+    pos.set(bp); pos.set(fin, bp.length); nor.set(bn);
+    for (let k = bp.length; k < nor.length; k += 3) { nor[k] = 1; nor[k + 1] = 0.25; }
+    const out = new THREE.BufferGeometry();
+    out.setAttribute('position', new THREE.BufferAttribute(pos, 3)); out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    return out;
+  }
+  const fishMat = (opts) => mat({
+    side: THREE.DoubleSide,
+    uniforms: { uLen: { value: opts.len }, uBack: { value: new THREE.Color(opts.back) }, uBelly: { value: new THREE.Color(opts.belly) }, uSpec: { value: opts.spec }, uWave: { value: opts.wave }, uGlow: { value: new THREE.Color(opts.glow || '#000000') } },
+    vertexShader: `attribute float aPhase; attribute float aBeat; uniform float uWave, uLen, uTime;
+      varying vec3 vW; varying vec3 vN; varying float vY;
+      void main(){
+        vec3 p = position; float back = SS(0.3, -1.45, p.z / uLen);
+        p.x += sin(p.z / uLen * 2.6 - uTime * aBeat + aPhase) * uWave * back;
+        vY = normal.y;
+        vN = normalize(mat3(modelMatrix * instanceMatrix) * normal);
+        vec4 w = modelMatrix * instanceMatrix * vec4(p, 1.0); vW = w.xyz;
+        gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: WATER + `uniform vec3 uBack, uBelly, uGlow; uniform float uSpec;
+      varying vec3 vW; varying vec3 vN; varying float vY;
+      void main(){
+        vec3 n = normalize(vN), v = normalize(uCam - vW);
+        vec3 col = mix(uBelly, uBack, smoothstep(-0.3, 0.5, vY));          // countershading: dark back, pale belly
+        col *= 0.55 + 0.6 * max(n.y, 0.0) * (0.5 + uLight);
+        float fres = pow(1.0 - abs(dot(n, v)), 3.0);
+        col += vec3(0.8, 0.95, 1.0) * fres * uSpec * (0.4 + uLight);        // silver flank glint
+        col += 0.6 * caustic(vW.xz * 2.0, uTime) * sunlight(vW.y) * max(n.y, 0.0);
+        col = water(col, vW);
+        col += uGlow * uBio * (0.6 + 0.4 * sin(uTime * 3.0 + vW.x));       // photophores in the deep
+        gl_FragColor = vec4(col, 1.0); }`
+  });
+  const SPECIES = [
+    { n: 46, len: 0.16, h: 0.13, w: 0.04, y: [-2.5, -8], back: '#ffd23f', belly: '#fff2a8', spec: 0.3, wave: 0.03, speed: [1.3, 2.4], beat: 11, tight: 1.2, school: 2 },  // yellow tangs
+    { n: 70, len: 0.09, h: 0.05, w: 0.03, y: [-3, -9], back: '#2f6fe0', belly: '#9fd7ff', spec: 0.5, wave: 0.02, speed: [1.5, 2.8], beat: 16, tight: 0.9, school: 2 },  // blue chromis
+    { n: mobile ? 140 : 240, len: 0.15, h: 0.04, w: 0.025, y: [-7, -14], back: '#3c5c78', belly: '#e6eef5', spec: 1.6, wave: 0.03, speed: [2.2, 3.4], beat: 18, tight: 0.55, school: 1 },  // sardine bait ball
+    { n: 14, len: 0.75, h: 0.1, w: 0.07, y: [-13, -20], back: '#4b5f6b', belly: '#c8d4dc', spec: 0.9, wave: 0.04, speed: [0.6, 1.1], beat: 4, tight: 2.6, school: 1, glow: '#2fe6ff' }, // barracuda
+  ];
+  const schools = [];
+  const dummy = new THREE.Object3D();
+  for (const sp of SPECIES) {
+    const geo = fishGeometry(sp.len, sp.h, sp.w);
+    const inst = new THREE.InstancedMesh(geo, fishMat(sp), sp.n);
+    const ph = new Float32Array(sp.n), bt = new Float32Array(sp.n);
+    for (let i = 0; i < sp.n; i++) { ph[i] = rand(0, TAU); bt[i] = sp.beat * rand(0.8, 1.2); }
+    geo.setAttribute('aPhase', new THREE.InstancedBufferAttribute(ph, 1));
+    geo.setAttribute('aBeat', new THREE.InstancedBufferAttribute(bt, 1));
+    inst.frustumCulled = false; scene.add(inst);
+    const per = Math.ceil(sp.n / sp.school);
+    for (let s = 0; s < sp.school; s++) {
+      const sc = { sp, inst, from: s * per, to: Math.min(sp.n, (s + 1) * per), seed: rand(0, 100),
+        anchor: new THREE.Vector3(), fish: [] };
+      sc.cy = rand(sp.y[1], sp.y[0]);
+      for (let i = sc.from; i < sc.to; i++) sc.fish.push({ i, p: new THREE.Vector3(rand(-3, 3), sc.cy + rand(-1, 1), rand(-16, -10)), v: new THREE.Vector3(rand(-1, 1), 0, rand(-1, 1)) });
+      schools.push(sc);
+    }
+  }
+  const ray = new THREE.Ray(), tmp = new THREE.Vector3(), tmp2 = new THREE.Vector3(), steer = new THREE.Vector3(), sepv = new THREE.Vector3();
+  function stepSchool(sc, dt, t) {
+    const sp = sc.sp, k = sc.seed;
+    // the school's centre wanders on a slow Lissajous path inside its depth band
+    sc.anchor.set(Math.sin(t * 0.045 + k) * 22, sc.cy + Math.sin(t * 0.07 + k * 2) * 1.5, -16 + Math.sin(t * 0.06 + k * 3) * 8);
+    const F = sc.fish, n = F.length, R = sp.tight * 1.4, sep = sp.len * 2.4;
+    for (let a = 0; a < n; a++) {
+      const f = F[a]; steer.set(0, 0, 0);
+      let cnt = 0; tmp.set(0, 0, 0); tmp2.set(0, 0, 0);
+      sepv.set(0, 0, 0);
+      for (let b = 0; b < n; b++) {
+        if (a === b) continue; const o = F[b];
+        const dx = o.p.x - f.p.x, dy = o.p.y - f.p.y, dz = o.p.z - f.p.z, d2 = dx * dx + dy * dy + dz * dz;
+        if (d2 < R * R) { cnt++; tmp.add(o.p); tmp2.add(o.v); if (d2 < sep * sep && d2 > 1e-6) { const inv = 1 / d2; sepv.x -= dx * inv; sepv.y -= dy * inv; sepv.z -= dz * inv; } }
+      }
+      if (cnt) { tmp.multiplyScalar(1 / cnt).sub(f.p).multiplyScalar(0.9); tmp2.multiplyScalar(1 / cnt).sub(f.v).multiplyScalar(1.4); steer.add(tmp).add(tmp2); }
+      steer.addScaledVector(sepv, sp.len * 1.2);
+      steer.addScaledVector(tmp.copy(sc.anchor).sub(f.p), 0.12);
+      // flee the pointer ray, and never swim into the diver's mask
+      tmp.copy(f.p).sub(ray.origin); const along = tmp.dot(ray.direction);
+      if (along > 0) { tmp2.copy(ray.direction).multiplyScalar(along).add(ray.origin); const dd = f.p.distanceTo(tmp2); if (dd < 2.4) steer.addScaledVector(tmp.copy(f.p).sub(tmp2).normalize(), 26 * (1 - dd / 2.4)); }
+      if (f.p.z > -4.5) steer.z -= (f.p.z + 4.5) * 4;
+      if (f.p.y > -0.8) steer.y -= 4;
+      f.v.addScaledVector(steer, dt);
+      const sp2 = f.v.length(), lo = sp.speed[0], hi = sp.speed[1] * (steer.length() > 12 ? 2.2 : 1);
+      if (sp2 > hi) f.v.multiplyScalar(hi / sp2); else if (sp2 < lo) f.v.multiplyScalar(lo / Math.max(sp2, 1e-3));
+      f.v.y *= 0.96;
+      f.p.addScaledVector(f.v, dt);
+      dummy.position.copy(f.p); dummy.lookAt(tmp.copy(f.p).add(f.v)); dummy.updateMatrix();
+      sc.inst.setMatrixAt(f.i, dummy.matrix);
+    }
+    sc.inst.instanceMatrix.needsUpdate = true;
+  }
+
+  /* ── Jellyfish: pulse-jet bells with trailing tentacles, bioluminescent in the deep ── */
+  const jellies = [];
+  const bellGeo = new THREE.SphereGeometry(1, 28, 14, 0, TAU, 0, Math.PI * 0.52);
+  const jellyMat = mat({
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+    uniforms: { uPulse: { value: 0 }, uHue: { value: new THREE.Color() } },
+    vertexShader: `uniform float uPulse; varying vec3 vW; varying vec3 vN; varying float vRim;
+      void main(){ vec3 p = position; float rim = 1.0 - clamp(p.y, 0.0, 1.0); vRim = rim;
+        p.xz *= 1.0 - uPulse * 0.28 * rim; p.y *= 1.0 + uPulse * 0.18;
+        vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(p,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: WATER + `uniform vec3 uHue; varying vec3 vW; varying vec3 vN; varying float vRim;
+      void main(){ vec3 v = normalize(uCam - vW); float fres = pow(1.0 - abs(dot(normalize(vN), v)), 2.2);
+        float d = length(vW - uCam), fade = exp(-d * uDensity);
+        vec3 col = uHue * (0.25 + fres * 0.9 + vRim * 0.25) * (0.35 + uLight * 0.7);
+        col += uHue * uBio * (0.9 + 0.5 * sin(uTime * 2.0 + vW.y * 4.0)) * (0.4 + fres);
+        gl_FragColor = vec4(col * fade * 0.75, 1.0); }`
+  });
+  const HUES = ['#9fe8ff', '#ffb3f0', '#c7b6ff', '#8affd8'];
+  for (let i = 0; i < (mobile ? 5 : 8); i++) {
+    const m = jellyMat.clone(); m.uniforms = Object.assign({}, U, { uPulse: { value: 0 }, uHue: { value: new THREE.Color(HUES[i % 4]) } });
+    const bell = new THREE.Mesh(bellGeo, m), size = rand(0.25, 0.6);
+    bell.scale.setScalar(size);
+    const j = { bell, size, vy: 0, phase: rand(0, TAU), rate: rand(0.5, 0.85), drift: rand(-0.12, 0.12),
+      band: [rand(-19, -10), 0], tent: [] };
+    j.band[1] = j.band[0] + rand(3, 6);
+    bell.position.set(rand(-14, 14), rand(j.band[0], j.band[1]), rand(-18, -6));
+    const tMat = new THREE.LineBasicMaterial({ color: new THREE.Color(HUES[i % 4]), transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false });
+    for (let k = 0; k < 10; k++) {
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(16 * 3), 3));
+      const line = new THREE.Line(g, tMat); line.frustumCulled = false; scene.add(line);
+      j.tent.push({ line, a: k / 10 * TAU, len: size * rand(3, 7), pts: Array.from({ length: 16 }, () => bell.position.clone()) });
+    }
+    jellies.push(j); scene.add(bell);
+  }
+  function stepJelly(j, dt, t) {
+    const ph = (t * j.rate + j.phase) % 1, contract = ph < 0.3 ? Math.sin(ph / 0.3 * Math.PI) : 0;
+    j.bell.material.uniforms.uPulse.value = contract;
+    j.vy += (contract * 1.6 * j.size - 0.18) * dt; j.vy *= Math.exp(-dt * 1.4);   // jet up on contraction, drag and slow sink
+    const b = j.bell.position; b.y += j.vy * dt; b.x += (j.drift + Math.sin(t * 0.1 + j.phase) * 0.05) * dt;
+    if (b.y > j.band[1]) j.vy -= 0.4 * dt; if (b.y < j.band[0]) j.vy += 0.6 * dt;
+    if (b.x > 18) j.drift = -Math.abs(j.drift); if (b.x < -18) j.drift = Math.abs(j.drift);
+    for (const tn of j.tent) {
+      const P = tn.pts, seg = tn.len / P.length;
+      P[0].set(b.x + Math.cos(tn.a) * j.size * 0.8 * (1 - contract * 0.25), b.y, b.z + Math.sin(tn.a) * j.size * 0.8);
+      for (let k = 1; k < P.length; k++) {
+        // each segment trails the one above it, swinging gently
+        const target = tmp.set(P[k - 1].x + Math.sin(t * 1.3 + k * 0.4 + tn.a) * 0.02, P[k - 1].y - seg, P[k - 1].z);
+        P[k].lerp(target, 1 - Math.exp(-dt * 9));
+        tmp2.copy(P[k]).sub(P[k - 1]); if (tmp2.length() > seg) P[k].copy(P[k - 1]).addScaledVector(tmp2.normalize(), seg);
+      }
+      const arr = tn.line.geometry.attributes.position;
+      for (let k = 0; k < P.length; k++) arr.setXYZ(k, P[k].x, P[k].y, P[k].z);
+      arr.needsUpdate = true;
+    }
+  }
+
+  /* ── Big animals: a gliding manta, a paddling turtle and a rare, distant humpback ── */
+  const skinMat = (top, belly, extra) => mat({
+    side: THREE.DoubleSide,
+    uniforms: { uTopC: { value: new THREE.Color(top) }, uBellyC: { value: new THREE.Color(belly) }, uFlap: { value: 0 } },
+    vertexShader: `uniform float uFlap; varying vec3 vW; varying vec3 vN; varying vec3 vL;
+      void main(){ vec3 p = position; vL = p; ${extra || ''}
+        vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(p,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: WATER + `uniform vec3 uTopC, uBellyC; varying vec3 vW; varying vec3 vN; varying vec3 vL;
+      void main(){ vec3 n = normalize(vN); if (!gl_FrontFacing) n = -n;
+        vec3 col = mix(uBellyC, uTopC, smoothstep(-0.25, 0.25, n.y));
+        col *= 0.45 + 0.7 * max(n.y, 0.0) * (0.4 + uLight);
+        col += 0.5 * caustic(vW.xz * 1.5, uTime) * sunlight(vW.y) * max(n.y, 0.0);
+        gl_FragColor = vec4(water(col, vW), 1.0); }`
+  });
+  // Manta: a flat diamond whose wingtips trace a slow travelling wave
+  const manta = new THREE.Group();
+  {
+    const g = new THREE.PlaneGeometry(1, 1, 40, 20).rotateX(-Math.PI / 2), p = g.attributes.position;
+    for (let k = 0; k < p.count; k++) {
+      const u = p.getX(k) * 2, w = p.getZ(k) * 2;           // u ∈ [-1,1] across the span, w along the body
+      const span = 3.2, chord = 1.9 * (1 - Math.pow(Math.abs(u), 1.6)) + 0.05;
+      const sweep = Math.pow(Math.abs(u), 1.4) * 0.9;
+      p.setXYZ(k, u * span, -0.18 * (1 - u * u) * (1 - w * w), -(w * chord * 0.5) - sweep + 0.4);
+    }
+    g.computeVertexNormals();
+    const body = new THREE.Mesh(g, skinMat('#1e2a33', '#e9eef2', `float s = abs(p.x) / 3.2; p.y += sin(uFlap - s * 1.6) * 0.75 * pow(s, 1.6);`));
+    const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.05, 2.2, 5).rotateX(Math.PI / 2).translate(0, 0, -1.9), skinMat('#1e2a33', '#1e2a33'));
+    manta.add(body, tail); manta.userData.body = body; scene.add(manta);
+  }
+  // Turtle: shell, head and four flippers on pivots
+  const turtle = new THREE.Group();
+  {
+    const shellMat = mat({
+      vertexShader: `varying vec3 vW; varying vec3 vN; varying vec3 vL; void main(){ vL = position; vN = normalize(mat3(modelMatrix) * normal); vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+      fragmentShader: WATER + `varying vec3 vW; varying vec3 vN; varying vec3 vL;
+        vec2 h2(vec2 p){ p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3))); return fract(sin(p)*43758.5453); }
+        void main(){ vec2 g = vL.xz * 3.2; vec2 i = floor(g), f = fract(g); float m = 9.0, m2 = 9.0;
+          for (int y=-1;y<=1;y++) for (int x=-1;x<=1;x++){ vec2 o = vec2(x,y); float d = length(o + h2(i+o) - f); if (d<m){ m2=m; m=d; } else if (d<m2) m2=d; }
+          float seam = smoothstep(0.0, 0.08, m2 - m);       // scutes
+          vec3 n = normalize(vN); vec3 col = mix(vec3(0.22,0.17,0.09), mix(vec3(0.55,0.42,0.22), vec3(0.42,0.36,0.18), m), seam);
+          col *= 0.45 + 0.75 * max(n.y, 0.0) * (0.4 + uLight);
+          col += 0.6 * caustic(vW.xz * 1.5, uTime) * sunlight(vW.y) * max(n.y, 0.0);
+          gl_FragColor = vec4(water(col, vW), 1.0); }`
+    });
+    const skin = skinMat('#5d6b4a', '#c9c3a0');
+    const shell = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 16), shellMat); shell.scale.set(0.55, 0.2, 0.7);
+    const plastron = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 10), skin); plastron.scale.set(0.5, 0.12, 0.64); plastron.position.y = -0.05;
+    const head = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 10), skin); head.scale.set(0.13, 0.11, 0.2); head.position.set(0, 0.02, 0.82);
+    turtle.add(shell, plastron, head);
+    const flip = (x, z, len, rear) => {
+      const piv = new THREE.Group(); piv.position.set(x, 0, z);
+      const f = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 8), skin); f.scale.set(len, 0.03, len * (rear ? 0.45 : 0.28));
+      f.position.x = Math.sign(x) * len * 0.9; f.rotation.y = Math.sign(x) * (rear ? 0.5 : -0.35);
+      piv.add(f); turtle.add(piv); return piv;
+    };
+    turtle.userData.f = [flip(0.42, 0.35, 0.55, false), flip(-0.42, 0.35, 0.55, false), flip(0.3, -0.5, 0.22, true), flip(-0.3, -0.5, 0.22, true)];
+    scene.add(turtle);
+  }
+  const turtleS = { dir: 1, x: -26, y: -5, z: -12, speed: 0.75 };
+  function resetTurtle() { turtleS.dir *= -1; turtleS.x = -30 * turtleS.dir; turtleS.y = rand(-9, -3); turtleS.z = rand(-18, -9); }
+  // Humpback: long body, very long pectoral fins, flukes. Seen only as a shape in the haze.
+  const whale = new THREE.Group();
+  {
+    const skin = skinMat('#2a3440', '#9aa6ae', `p.y += sin(p.z * 0.35 - uFlap) * 0.25 * SS(0.0, -7.0, p.z);`);
+    const g = new THREE.SphereGeometry(1, 32, 16), p = g.attributes.position;
+    for (let k = 0; k < p.count; k++) { const z = p.getZ(k), taper = z < 0 ? 1 - 0.75 * Math.pow(-z, 1.3) : 1 - 0.25 * z * z; p.setXYZ(k, p.getX(k) * 1.5 * taper, p.getY(k) * 1.4 * taper, z * 7.5); }
+    g.computeVertexNormals();
+    const body = new THREE.Mesh(g, skin);
+    const fin = (s) => { const f = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 6), skin); f.scale.set(2.4, 0.12, 0.5); f.position.set(s * 2.6, -0.6, 2.2); f.rotation.set(0, s * 0.5, s * -0.35); return f; };
+    const fluke = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 6), skin); fluke.scale.set(2.2, 0.08, 0.6); fluke.position.set(0, 0, -7.3);
+    whale.add(body, fin(1), fin(-1), fluke); whale.visible = false; whale.userData.mats = [skin]; scene.add(whale);
+  }
+  const whaleS = { on: false, next: 25 + Math.random() * 40, x: 0, dir: 1 };
+
+  /* ── Particles: marine snow around the diver, bubbles, and plankton that glows when disturbed ── */
+  const BOX = new THREE.Vector3(50, 30, 50);
+  const snowN = mobile ? 1400 : 2600, snowPos = new Float32Array(snowN * 3), snowSz = new Float32Array(snowN);
+  for (let i = 0; i < snowN; i++) { snowPos[i * 3] = rand(0, BOX.x); snowPos[i * 3 + 1] = rand(0, BOX.y); snowPos[i * 3 + 2] = rand(0, BOX.z); snowSz[i] = rand(0.6, 1.8); }
+  const snowG = new THREE.BufferGeometry(); snowG.setAttribute('position', new THREE.BufferAttribute(snowPos, 3)); snowG.setAttribute('aSize', new THREE.BufferAttribute(snowSz, 1));
+  const ptrTrail = Array.from({ length: 10 }, () => new THREE.Vector3(9, 9, -1));   // NDC x, y, age
+  const snow = new THREE.Points(snowG, mat({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uBox: { value: BOX }, uTrail: { value: ptrTrail }, uPx: { value: 1 } },
+    vertexShader: `uniform vec3 uBox; uniform vec3 uTrail[10]; uniform float uPx, uTime, uBio; uniform vec3 uCam; attribute float aSize; varying float vA; varying float vGlow;
+      void main(){
+        vec3 p = position; p.y -= uTime * 0.05 * aSize; p.x += sin(uTime * 0.2 + p.z) * 0.3;
+        vec3 o = uCam - uBox * vec3(0.5, 0.5, 1.0);         // the box follows the diver, wrapping round
+        p = mod(p - o, uBox) + o;
+        vec4 mv = viewMatrix * vec4(p, 1.0); gl_Position = projectionMatrix * mv;
+        float d = -mv.z;
+        vec2 ndc = gl_Position.xy / gl_Position.w; float g = 0.0;
+        for (int i = 0; i < 10; i++) { vec2 dd = (ndc - uTrail[i].xy) * vec2(1.6, 1.0); g += exp(-dot(dd, dd) * 90.0) * (1.0 - uTrail[i].z); }
+        vGlow = clamp(g, 0.0, 1.0) * uBio * step(fract(aSize * 7.31), 0.5);
+        vA = smoothstep(0.3, 2.5, d) * exp(-d * 0.06);
+        gl_PointSize = (aSize * (1.0 + vGlow * 3.0)) * uPx * 26.0 / d;
+      }`,
+    fragmentShader: `varying float vA; varying float vGlow; uniform float uLight;
+      void main(){ vec2 c = gl_PointCoord - 0.5; float a = SS(0.5, 0.0, length(c));
+        vec3 col = mix(vec3(0.85, 0.92, 0.95) * (0.25 + 0.4 * uLight), vec3(0.3, 1.0, 0.95), vGlow);
+        gl_FragColor = vec4(col * a * (vA * 0.5 + vGlow * 1.6), 1.0); }`
+  }));
+  snow.frustumCulled = false; scene.add(snow);
+
+  const BUB = 420, bubPos = new Float32Array(BUB * 3), bubSz = new Float32Array(BUB), bubs = [];
+  for (let i = 0; i < BUB; i++) bubs.push({ live: false, p: new THREE.Vector3(), r0: 0, d0: 0, ph: 0 });
+  const bubG = new THREE.BufferGeometry(); bubG.setAttribute('position', new THREE.BufferAttribute(bubPos, 3)); bubG.setAttribute('aSize', new THREE.BufferAttribute(bubSz, 1));
+  const bubbles = new THREE.Points(bubG, mat({
+    transparent: true, depthWrite: false, uniforms: { uPx: { value: 1 } },
+    vertexShader: `uniform float uPx; attribute float aSize; varying float vD; varying vec3 vW;
+      void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vec4 mv = viewMatrix * w; gl_Position = projectionMatrix * mv; vD = -mv.z;
+        gl_PointSize = aSize * uPx * 9000.0 / max(vD, 0.5); }`,
+    fragmentShader: `uniform float uLight, uDensity; varying float vD; varying vec3 vW;
+      void main(){ vec2 c = gl_PointCoord - 0.5; float r = length(c); if (r > 0.5) discard;
+        float ring = smoothstep(0.30, 0.48, r) * SS(0.5, 0.46, r);
+        float hi = SS(0.16, 0.0, length(c - vec2(-0.16, 0.16)));
+        float a = (ring * 0.7 + hi * 0.9 + 0.06) * exp(-vD * uDensity * 0.8);
+        gl_FragColor = vec4(vec3(0.92, 0.98, 1.0) * (0.55 + 0.45 * uLight), a); }`
+  }));
+  bubbles.frustumCulled = false; scene.add(bubbles);
+  function spawnBubble(x, y, z, r) {
+    const b = bubs.find(b => !b.live); if (!b) return;
+    b.live = true; b.p.set(x, y, z); b.r0 = r; b.d0 = Math.max(0, -y); b.ph = rand(0, TAU);
+  }
+  function stepBubbles(dt, t) {
+    for (let i = 0; i < BUB; i++) {
+      const b = bubs[i];
+      if (!b.live) { bubSz[i] = 0; continue; }
+      const d = Math.max(0, -b.p.y);
+      // Boyle: volume ∝ 1/P, so radius grows with the cube root of the pressure ratio
+      const r = b.r0 * Math.cbrt((1 + b.d0 / 10) / (1 + d / 10));
+      const rise = 0.35 + r * 55;                                  // bigger bubbles rise faster
+      b.p.y += rise * dt; b.p.x += Math.sin(t * 7 + b.ph) * r * 6 * dt; b.p.z += Math.cos(t * 6 + b.ph) * r * 4 * dt;
+      if (b.p.y > -0.05 || b.p.y > camera.position.y + 18) b.live = false;
+      bubPos[i * 3] = b.p.x; bubPos[i * 3 + 1] = b.p.y; bubPos[i * 3 + 2] = b.p.z; bubSz[i] = r;
+    }
+    bubG.attributes.position.needsUpdate = true; bubG.attributes.aSize.needsUpdate = true;
+  }
+  // another diver somewhere below, breathing every few seconds
+  const buddy = { x: 5, z: -9, next: 2 };
+
+  /* ── Diver state: scroll depth, gentle buoyancy bob, pointer parallax ── */
+  const STOPS = [[0, '#b8f2f7'], [.04, '#8fe4ee'], [.10, '#5fcde0'], [.20, '#36b0cc'], [.32, '#1d8eb1'], [.45, '#126d92'], [.58, '#094f70'], [.70, '#053650'], [.82, '#021f33'], [.92, '#010a14'], [1, '#00040a']].map(([p, h]) => [p, new THREE.Color(h)]);
+  function gradAt(f, out) {
+    f = clamp(f, 0, 1);
+    for (let i = 1; i < STOPS.length; i++) if (f <= STOPS[i][0]) { const [p0, c0] = STOPS[i - 1], [p1, c1] = STOPS[i]; return out.copy(c0).lerp(c1, (f - p0) / (p1 - p0)); }
+    return out.copy(STOPS[STOPS.length - 1][1]);
+  }
+  const ptr = { x: 0, y: 0, nx: 0, ny: 0, moved: 0 };
+  addEventListener('pointermove', e => {
+    const nx = e.clientX / innerWidth * 2 - 1, ny = -(e.clientY / innerHeight * 2 - 1);
+    ptr.moved += Math.hypot(nx - ptr.nx, ny - ptr.ny); ptr.nx = nx; ptr.ny = ny;
+  }, { passive: true });
+  addEventListener('pointerdown', e => {
+    if (e.target.closest && e.target.closest('a,button,video,nav')) return;
+    const nx = e.clientX / innerWidth * 2 - 1, ny = -(e.clientY / innerHeight * 2 - 1);
+    const rc = new THREE.Raycaster(); rc.setFromCamera(new THREE.Vector2(nx, ny), camera);
+    const at = rc.ray.at(6, new THREE.Vector3());
+    for (let i = 0; i < 26; i++) spawnBubble(at.x + rand(-0.15, 0.15), at.y + rand(-0.2, 0.1), at.z + rand(-0.15, 0.15), rand(0.002, 0.009));
+    ptr.moved += 0.6;
+  }, { passive: true });
+  let camDepth = 0, trailT = 0;
+
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.getDrawingBufferSize(U.uRes.value);
+    snow.material.uniforms.uPx.value = bubbles.material.uniforms.uPx.value = renderer.getPixelRatio() * h / 900;
+  }
+  addEventListener('resize', resize); resize();
+
+  /* ── Main loop ── */
+  const clock = new THREE.Clock(); let t = 0;
+  const cTop = new THREE.Color(), cBot = new THREE.Color();
+  function frame() {
+    requestAnimationFrame(frame);
+    if (document.hidden) { clock.getDelta(); return; }
+    const dt = Math.min(0.05, clock.getDelta()); t += dt;
+    // depth: continuous version of the HUD's scroll depth (0–20 m across the log)
+    const target = typeof window.__diveDepthF === 'number' ? window.__diveDepthF : 0;
+    camDepth += (target - camDepth) * (1 - Math.exp(-dt * 3));
+    const y = -0.9 - camDepth + Math.sin(t * 0.5) * 0.12;          // breathing makes a diver rise and sink slightly
+    camera.position.set(Math.sin(t * 0.07) * 0.6 + ptr.nx * 0.5, y, 0);
+    const pitch = 0.26 - smooth(0, 20, camDepth) * 0.42 + ptr.ny * 0.05;
+    camera.rotation.set(pitch, Math.sin(t * 0.05) * 0.08 - ptr.nx * 0.06, Math.sin(t * 0.33) * 0.008, 'YXZ');
+    camera.updateMatrixWorld();
+    ray.origin.copy(camera.position); ray.direction.set(ptr.nx, ptr.ny, 0.5).unproject(camera).sub(camera.position).normalize();
+
+    // water colours straight from the page gradient at this scroll position
+    const docH = Math.max(1, document.body.scrollHeight);
+    gradAt(scrollY / docH, cTop); gradAt((scrollY + innerHeight) / docH, cBot);
+    U.uTop.value.copy(cTop); U.uBot.value.copy(cBot);
+    U.uTime.value = t; U.uCam.value.copy(camera.position);
+    U.uLight.value = clamp(Math.exp(-camDepth / 9), 0.1, 1);
+    U.uDensity.value = 0.045 + camDepth * 0.0028;
+    U.uBio.value = smooth(10, 18, camDepth);
+    const sun = new THREE.Vector3(-8, 40, -30).project(camera); U.uSun.value.set(sun.x * 0.5 + 0.5, Math.max(sun.y * 0.5 + 0.5, 0.9));
+
+    // pointer wake for the plankton
+    trailT += dt;
+    for (const p of ptrTrail) p.z = Math.min(1, p.z + dt * 0.7);
+    if (ptr.moved > 0.015 && trailT > 0.04) { trailT = 0; const o = ptrTrail.pop(); o.set(ptr.nx, ptr.ny, 0); ptrTrail.unshift(o); ptr.moved = 0; }
+
+    for (const s of shafts) { s.rotation.y = Math.atan2(camera.position.x - s.position.x, camera.position.z - s.position.z); s.rotation.z = s.userData.tilt; }
+    for (const sc of schools) stepSchool(sc, dt, t);
+    for (const j of jellies) stepJelly(j, dt, t);
+
+    // manta: a wide loop with banking
+    { const a = t * 0.045, R = 16; manta.position.set(Math.sin(a) * R, -11 + Math.sin(t * 0.13) * 2.5, -24 + Math.cos(a) * 9);
+      manta.rotation.set(Math.sin(t * 0.13 + 1.2) * 0.12, Math.atan2(Math.cos(a) * R, -Math.sin(a) * 9), -0.22);
+      manta.userData.body.material.uniforms.uFlap.value = t * 1.15; }
+    // turtle: power stroke with the front flippers, then glide
+    { const s = turtleS; s.x += s.dir * s.speed * dt * (0.7 + 0.5 * Math.max(0, Math.sin(t * 1.4))); s.y += Math.sin(t * 0.3) * 0.08 * dt;
+      if (Math.abs(s.x) > 32) resetTurtle();
+      turtle.position.set(s.x, s.y, s.z); turtle.rotation.set(Math.sin(t * 1.4) * 0.05, s.dir > 0 ? Math.PI / 2 : -Math.PI / 2, Math.sin(t * 0.7) * 0.08);
+      const f = turtle.userData.f, st = Math.sin(t * 1.4);
+      f[0].rotation.set(0, st * 0.35, st * 0.7); f[1].rotation.set(0, -st * 0.35, -st * 0.7);
+      f[2].rotation.set(0, Math.sin(t * 1.4 + 1) * 0.3, 0); f[3].rotation.set(0, -Math.sin(t * 1.4 + 1) * 0.3, 0); }
+    // humpback: every few minutes, crossing far off in the haze
+    if (!whaleS.on && t > whaleS.next) { whaleS.on = true; whaleS.dir = Math.random() < 0.5 ? 1 : -1; whaleS.x = -70 * whaleS.dir; whale.visible = true; whale.position.y = camera.position.y - rand(2, 6); }
+    if (whaleS.on) {
+      whaleS.x += whaleS.dir * 2.4 * dt; whale.position.set(whaleS.x, whale.position.y, -36);
+      whale.rotation.set(0.04 * Math.sin(t * 0.4), whaleS.dir > 0 ? Math.PI / 2 : -Math.PI / 2, 0);
+      whale.userData.mats[0].uniforms.uFlap.value = t * 0.9;
+      if (Math.abs(whaleS.x) > 72) { whaleS.on = false; whale.visible = false; whaleS.next = t + rand(150, 260); }
+    }
+    // bubbles from a buddy below
+    if (t > buddy.next) { buddy.next = t + rand(3.5, 6); buddy.x = rand(-7, 7); buddy.z = rand(-12, -6); buddy.burst = 0.9; }
+    if (buddy.burst > 0) { buddy.burst -= dt; for (let k = 0; k < 2; k++) spawnBubble(buddy.x + rand(-0.2, 0.2), Math.min(-0.5, camera.position.y - 9 + rand(-0.3, 0.3)), buddy.z + rand(-0.2, 0.2), rand(0.002, 0.011)); }
+    stepBubbles(dt, t);
+
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(frame);
+}
 </script>
 
 <script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
