@@ -150,17 +150,40 @@
     .keys kbd { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--dim); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 4px; padding: 0 4px; }
     .fallback { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 2rem; color: var(--dim); background: rgba(243,245,248,0.92); }
 
+    /* Duty point, overlaid on the 3D view */
+    .duty { position: absolute; left: 12px; bottom: 12px; width: min(420px, calc(100% - 24px)); background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 8px; padding: 0.6rem 0.8rem; box-shadow: var(--shadow); }
+    .duty-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.35rem 0.8rem; }
+    .duty .ro span { font-size: 0.6rem; }
+    .duty .ro b { font-size: 0.95rem; }
+    .duty .ro b em { font-size: 0.62rem; }
+    .duty .flag { margin-top: 0.35rem; min-height: 0; font-size: 0.74rem; }
+    .duty .flag:empty { display: none; }
+
+    /* Interactive pump curve */
+    .curve-sec { max-width: 1400px; margin: 0 auto; padding: 1rem 2.5rem 0; }
+    .curve-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.2rem 1.4rem 1rem; }
+    .curve-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+    .curve-head h2 { font-size: 1.3rem; color: var(--navy); letter-spacing: -0.01em; }
+    .curve-head p { font-size: 0.85rem; color: var(--dim); max-width: 60ch; }
+    .series { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { font: inherit; font-size: 0.75rem; font-weight: 600; color: var(--dim); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 999px; padding: 0.3rem 0.75rem; cursor: pointer; }
+    .chip i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+    .chip[aria-pressed="false"] { opacity: 0.45; text-decoration: line-through; }
+    #chart { width: 100%; height: 440px; display: block; cursor: crosshair; touch-action: none; }
+
     /* ── EXPLAINER ── */
     .explain { max-width: 1400px; margin: 0 auto; padding: 4rem 2.5rem 4.5rem; }
     .explain h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1.4rem; color: var(--navy); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+    .method-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 2.5rem; align-items: start; margin-top: 2.5rem; }
+    .method h3 { font-size: 1.15rem; color: var(--navy); margin-bottom: 0.6rem; }
     .grid .card { border-top: 3px solid var(--blue); }
     .grid .card p { color: var(--dim); font-size: 0.92rem; }
     .grid .card h4 { font-size: 1rem; margin-bottom: 0.35rem; color: var(--navy); }
-    .method { margin-top: 2.5rem; color: var(--dim); font-size: 0.92rem; max-width: 900px; }
+    .method { color: var(--dim); font-size: 0.92rem; }
     .method p + p { margin-top: 0.8rem; }
     .method a { color: var(--blue-2); border-bottom: 1px solid rgba(10,107,181,0.35); }
-    .specs { margin-top: 1rem; width: 100%; max-width: 680px; border-collapse: collapse; font-size: 0.85rem; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); }
+    .specs { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); }
     .specs td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--line); color: var(--dim); }
     .specs tr:nth-child(even) td { background: var(--surface); }
     .specs td:first-child { color: var(--navy); font-weight: 500; }
@@ -174,6 +197,10 @@
     .footer-socials li a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); transition: all 0.2s; }
     .footer-socials li a:hover { background: #fff; color: var(--blue); border-color: #fff; }
 
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .method-wrap { grid-template-columns: 1fr; }
+    }
     @media (max-width: 1024px) {
       .sim { grid-template-columns: 1fr; }
       .panel { display: grid; grid-template-columns: 1fr 1fr; }
@@ -182,6 +209,13 @@
       .hero, .sim, .explain { padding-left: 16px; padding-right: 16px; }
       .hero { padding-top: 6rem; }
       .stage { height: 62vh; min-height: 380px; }
+      .curve-sec { padding-left: 16px; padding-right: 16px; }
+      #chart { height: 360px; }
+      .grid { grid-template-columns: 1fr; }
+      .duty { position: static; width: auto; margin: 0; border-radius: 0; border-left: none; border-top: 3px solid var(--blue); box-shadow: none; }
+      .duty-grid { grid-template-columns: repeat(2, 1fr); }
+      .stage { display: flex; flex-direction: column; height: auto; }
+      .stage canvas { height: 56vh; min-height: 340px; }
       .panel { display: flex; }
       .footer-slim { flex-direction: column; text-align: center; gap: 0.85rem; padding: 1.5rem 16px; }
     }
@@ -261,6 +295,19 @@
     <div class="stage-hud" id="hud">Drag to orbit · scroll to zoom<br><b id="hudSpeed">Visual speed 1/20 of real rpm</b></div>
     <div class="tour-badge" id="tourBadge">Auto tour · touch to take over</div>
     <div class="loading" id="loading">Loading the CAD model…</div>
+    <div class="duty" id="duty" aria-live="polite">
+      <div class="duty-grid">
+        <div class="ro"><span>Speed</span><b id="rSpeed">–</b></div>
+        <div class="ro"><span>Flow Q</span><b id="rQ">–</b></div>
+        <div class="ro"><span>Head H</span><b id="rH">–</b></div>
+        <div class="ro"><span>Δp sensor</span><b id="rDp">–</b></div>
+        <div class="ro"><span>Power P1</span><b id="rP">–</b></div>
+        <div class="ro"><span>Efficiency</span><b id="rEta">–</b></div>
+        <div class="ro"><span>Current</span><b id="rI">–</b></div>
+        <div class="ro"><span>Min. inlet p</span><b id="rPin">–</b></div>
+      </div>
+      <div class="flag" id="flag"></div>
+    </div>
     <div class="fallback" id="fallback">This simulator needs WebGL, which isn't available in this browser.</div>
   </div>
 
@@ -306,32 +353,25 @@
       <div class="keys"><kbd>1</kbd>–<kbd>4</kbd> mode · <kbd>E</kbd> explode · <kbd>C</kbd> cut · <kbd>F</kbd> flow · <kbd>L</kbd> labels · <kbd>↑</kbd><kbd>↓</kbd> valves</div>
     </div>
 
-    <div class="card">
-      <h3>Duty point</h3>
-      <div class="readouts">
-        <div class="ro"><span>Speed</span><b id="rSpeed">–</b></div>
-        <div class="ro"><span>Flow Q</span><b id="rQ">–</b></div>
-        <div class="ro"><span>Head H</span><b id="rH">–</b></div>
-        <div class="ro"><span>Δp sensor</span><b id="rDp">–</b></div>
-        <div class="ro"><span>Power P1</span><b id="rP">–</b></div>
-        <div class="ro"><span>Efficiency</span><b id="rEta">–</b></div>
-        <div class="ro"><span>Current</span><b id="rI">–</b></div>
-        <div class="ro"><span>Min. inlet p</span><b id="rPin">–</b></div>
-      </div>
-      <div class="flag" id="flag"></div>
-    </div>
-
-    <div class="card">
-      <h3>Pump curve (Q–H)</h3>
-      <canvas id="chart" aria-label="Pump curve chart showing the duty point"></canvas>
-      <div class="legend">
-        <span><i style="background:var(--accent)"></i>Official max envelope</span>
-        <span><i style="background:var(--cold)"></i>Current speed</span>
-        <span><i style="background:var(--ok)"></i>System</span>
-        <span><i style="background:var(--hot)"></i>Control curve</span>
-      </div>
-    </div>
   </aside>
+</section>
+
+<section class="curve-sec" aria-label="Pump curve">
+  <div class="curve-card">
+    <div class="curve-head">
+      <div>
+        <h2>Pump curve</h2>
+        <p>Hover to read any point. Drag across the chart to move the system curve, which opens or closes the radiator valves.</p>
+      </div>
+      <div class="series" role="group" aria-label="Show curves">
+        <button class="chip" data-series="env" aria-pressed="true"><i style="background:var(--blue)"></i>Max envelope</button>
+        <button class="chip" data-series="speed" aria-pressed="true"><i style="background:var(--cold)"></i>Current speed</button>
+        <button class="chip" data-series="sys" aria-pressed="true"><i style="background:var(--ok)"></i>System</button>
+        <button class="chip" data-series="ctrl" aria-pressed="true"><i style="background:var(--red)"></i>Control curve</button>
+      </div>
+    </div>
+    <canvas id="chart" aria-label="Interactive pump curve showing head and power against flow, with the live duty point"></canvas>
+  </div>
 </section>
 
 
@@ -344,9 +384,12 @@
     <div class="card"><h4>Limits you can hit</h4><p>Between about 5 and 20 m³/h the pump reaches its 333 W input limit before top speed. FLOW LIMIT caps the flow between 25% and 90% of max. Hot water needs inlet pressure: 0.7 bar at 110 °C to avoid cavitation.</p></div>
   </div>
 
+  <div class="method-wrap">
   <div class="method">
+    <h3>How it was built</h3>
     <p>Built with the <a href="https://thakicloud.com/tech-blog/en/tutorials/teardown-3d-skill/" target="_blank" rel="noopener">teardown method</a>: real numbers first, one physics function that drives every part and gauge, and an idle auto tour that takes over after 25 seconds.</p>
     <p>The outer shell is Grundfos's own CAD model of product 97924259 (housing, motor head and control box), turned into a web mesh and recoloured to match the product photo. The pump curves are fitted to the official performance chart. Control behaviour, inlet pressures and limits follow the MAGNA3 installation and operating instructions. The internals (impeller, rotor, can, stator) aren't in the public CAD, so they're drawn in code to plausible proportions. This is an illustration, not an engineering tool.</p>
+  </div>
     <table class="specs">
       <tr><td>Max head</td><td>Grundfos</td><td>12 m (11.8 m regulated)</td></tr>
       <tr><td>Nominal duty point</td><td>Grundfos</td><td>11.22 m³/h @ 7.24 m</td></tr>
@@ -869,46 +912,119 @@
       : st.lowFlow ? 'Low flow (under 10 % of Qmax): the display shows "low flow".' : '';
   }
 
+  // ── Interactive pump curve: Q–H on top, P1 below, like the Grundfos data sheet ──
   const chart = $('chart'), cx = chart.getContext('2d');
+  const showSeries = { env: true, speed: true, sys: true, ctrl: true };
+  let hover = null, dragging = false;
+  const QX = 22, HY = 13, PY = 360;
+  function chartGeom() {
+    const w = chart.clientWidth, h = chart.clientHeight, pad = { l: 44, r: 16, t: 14, b: 30 };
+    const split = Math.round(h * 0.66);
+    return {
+      w, h, pad, split,
+      X: q => pad.l + q / QX * (w - pad.l - pad.r),
+      Q: x => (x - pad.l) / (w - pad.l - pad.r) * QX,
+      Yh: H => split - 22 - H / HY * (split - 22 - pad.t),
+      Hy: y => (split - 22 - y) / (split - 22 - pad.t) * HY,
+      Yp: P => h - pad.b - P / PY * (h - pad.b - split - 6)
+    };
+  }
   function drawChart() {
-    const dpr = Math.min(devicePixelRatio, 2), w = chart.clientWidth, h = chart.clientHeight;
+    const dpr = Math.min(devicePixelRatio, 2), g = chartGeom(), { w, h, pad, X, Yh, Yp } = g;
     if (!w) return;
-    if (chart.width !== Math.round(w * dpr)) { chart.width = Math.round(w * dpr); chart.height = Math.round(h * dpr); }
+    if (chart.width !== Math.round(w * dpr) || chart.height !== Math.round(h * dpr)) { chart.width = Math.round(w * dpr); chart.height = Math.round(h * dpr); }
     cx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cx.clearRect(0, 0, w, h);
-    const pad = { l: 30, r: 8, t: 8, b: 26 }, QX = 22, HY = 13;
-    const X = q => pad.l + q / QX * (w - pad.l - pad.r), Y = H => h - pad.b - H / HY * (h - pad.t - pad.b);
-    cx.beginPath(); cx.moveTo(X(0), Y(0));
-    for (let i = 0; i <= 120; i++) { const q = i / 120 * PUMP.Qmax; cx.lineTo(X(q), Y(maxCurveH(q))); }
-    cx.lineTo(X(PUMP.Qmax), Y(0)); cx.closePath(); cx.fillStyle = 'rgba(17,73,123,0.06)'; cx.fill();
-    cx.font = '11px JetBrains Mono, monospace'; cx.fillStyle = '#7a8798'; cx.strokeStyle = 'rgba(17,73,123,0.09)'; cx.lineWidth = 1;
-    for (let q = 0; q <= 20; q += 4) { cx.beginPath(); cx.moveTo(X(q), Y(0)); cx.lineTo(X(q), Y(HY)); cx.stroke(); cx.fillText(q, X(q) - 4, h - 9); }
-    for (let H = 0; H <= 12; H += 3) { cx.beginPath(); cx.moveTo(X(0), Y(H)); cx.lineTo(X(QX), Y(H)); cx.stroke(); cx.fillText(H, 6, Y(H) + 4); }
-    cx.fillText('m³/h', w - 36, h - 9);
-    const curve = (fn, color, dash = [], width = 2, qMax = QX) => {
+    cx.font = '11px JetBrains Mono, monospace'; cx.lineWidth = 1;
+    // Grids and axes
+    const grid = (y0, y1, ticks, Y, unit) => {
+      cx.strokeStyle = 'rgba(17,73,123,0.09)'; cx.fillStyle = '#7a8798';
+      for (let q = 0; q <= 22; q += 2) { cx.beginPath(); cx.moveTo(X(q), y0); cx.lineTo(X(q), y1); cx.stroke(); }
+      for (const v of ticks) { cx.beginPath(); cx.moveTo(X(0), Y(v)); cx.lineTo(X(QX), Y(v)); cx.stroke(); cx.fillText(v, 8, Y(v) + 4); }
+      cx.fillStyle = '#11497b'; cx.fillText(unit, 8, y1 + 2);
+    };
+    grid(Yh(HY), Yh(0), [0, 2, 4, 6, 8, 10, 12], Yh, 'H [m]');
+    grid(Yp(PY), Yp(0), [0, 100, 200, 300], Yp, 'P1 [W]');
+    cx.fillStyle = '#7a8798';
+    for (let q = 0; q <= 22; q += 2) cx.fillText(q, X(q) - (q > 9 ? 7 : 3), h - 10);
+    cx.fillStyle = '#11497b'; cx.fillText('Q [m³/h]', w - pad.r - 62, h - 10);
+
+    // Shaded operating area of the pump
+    cx.beginPath(); cx.moveTo(X(0), Yh(0));
+    for (let i = 0; i <= 120; i++) { const q = i / 120 * PUMP.Qmax; cx.lineTo(X(q), Yh(maxCurveH(q))); }
+    cx.lineTo(X(PUMP.Qmax), Yh(0)); cx.closePath(); cx.fillStyle = 'rgba(17,73,123,0.06)'; cx.fill();
+
+    const curve = (fn, Y, color, dash = [], width = 2, qMax = QX, yMax = HY) => {
       cx.beginPath(); cx.setLineDash(dash); cx.strokeStyle = color; cx.lineWidth = width;
       let started = false;
-      for (let i = 0; i <= 140; i++) {
-        const q = i / 140 * qMax, H = fn(q);
-        if (H == null || H < 0 || H > HY) { started = false; continue; }
-        started ? cx.lineTo(X(q), Y(H)) : cx.moveTo(X(q), Y(H)); started = true;
+      for (let i = 0; i <= 200; i++) {
+        const q = i / 200 * qMax, v = fn(q);
+        if (v == null || v < 0 || v > yMax) { started = false; continue; }
+        started ? cx.lineTo(X(q), Y(v)) : cx.moveTo(X(q), Y(v)); started = true;
       }
       cx.stroke(); cx.setLineDash([]);
     };
-    curve(q => maxCurveH(q), '#11497b', [], 2, PUMP.Qmax);
-    if (input.running) curve(q => Math.min(pumpH(q, st.s), maxCurveH(q)), '#2a8fd6', [6, 4], 2, PUMP.Qmax);
-    curve(q => st.k * q * q, '#6b7d93', [], 1.5);
+    const onSpeed = q => { const H = pumpH(q, st.s); return H <= maxCurveH(q) + 1e-6 ? H : null; };
+    if (showSeries.env) {
+      curve(q => maxCurveH(q), Yh, '#11497b', [], 2.2, PUMP.Qmax);
+      curve(q => q < PUMP.Qmax ? PUMP.Pmax : null, Yp, '#11497b', [], 1.6, PUMP.Qmax, PY);
+    }
+    if (showSeries.speed && input.running) {
+      curve(onSpeed, Yh, '#2a8fd6', [6, 4], 2, PUMP.Qmax);
+      curve(q => onSpeed(q) == null ? null : pumpP1(q, st.s, st.rho), Yp, '#2a8fd6', [6, 4], 2, PUMP.Qmax, PY);
+    }
+    if (showSeries.sys) curve(q => st.k * q * q, Yh, '#6b7d93', [], 1.6);
     const L = controlLine(input.mode, st.set);
-    if (L) curve(q => { const H = L.h0 + L.slope * q; return H <= maxCurveH(q) + 0.01 ? H : null; }, '#c8102e', [3, 3], 1.5, PUMP.Qmax);
+    if (showSeries.ctrl && L) curve(q => { const H = L.h0 + L.slope * q; return H <= maxCurveH(q) + 0.01 ? H : null; }, Yh, '#c8102e', [3, 3], 1.6, PUMP.Qmax);
     if (input.limitPct < 91) {
       const xq = X(input.limitPct / 100 * PUMP.Qmax);
-      cx.setLineDash([2, 3]); cx.strokeStyle = 'rgba(200,16,46,0.5)'; cx.beginPath(); cx.moveTo(xq, Y(0)); cx.lineTo(xq, Y(HY)); cx.stroke(); cx.setLineDash([]);
+      cx.setLineDash([2, 3]); cx.strokeStyle = 'rgba(200,16,46,0.5)'; cx.beginPath(); cx.moveTo(xq, Yh(HY)); cx.lineTo(xq, Yp(0)); cx.stroke(); cx.setLineDash([]);
+      cx.fillStyle = '#c8102e'; cx.fillText('FLOW LIMIT', xq + 4, Yh(HY) + 10);
     }
-    cx.strokeStyle = 'rgba(17,73,123,0.75)'; cx.lineWidth = 1.2;
-    cx.beginPath(); const nx = X(PUMP.Qnom), ny = Y(PUMP.Hnom); cx.moveTo(nx, ny - 5); cx.lineTo(nx + 5, ny); cx.lineTo(nx, ny + 5); cx.lineTo(nx - 5, ny); cx.closePath(); cx.stroke();
-    cx.beginPath(); cx.fillStyle = '#c8102e'; cx.arc(X(st.Q), Y(st.H), 4.5, 0, Math.PI * 2); cx.fill();
-    cx.beginPath(); cx.strokeStyle = 'rgba(200,16,46,0.35)'; cx.arc(X(st.Q), Y(st.H), 8, 0, Math.PI * 2); cx.stroke();
+    // Nominal duty point from the data sheet
+    cx.strokeStyle = 'rgba(17,73,123,0.8)'; cx.lineWidth = 1.2;
+    const nx = X(PUMP.Qnom), ny = Yh(PUMP.Hnom);
+    cx.beginPath(); cx.moveTo(nx, ny - 5); cx.lineTo(nx + 5, ny); cx.lineTo(nx, ny + 5); cx.lineTo(nx - 5, ny); cx.closePath(); cx.stroke();
+    // Live duty point, in both panes
+    for (const [px, py] of [[X(st.Q), Yh(st.H)], [X(st.Q), Yp(st.P1)]]) {
+      cx.beginPath(); cx.fillStyle = '#c8102e'; cx.arc(px, py, 5, 0, Math.PI * 2); cx.fill();
+      cx.beginPath(); cx.strokeStyle = 'rgba(200,16,46,0.3)'; cx.lineWidth = 1; cx.arc(px, py, 9, 0, Math.PI * 2); cx.stroke();
+    }
+    // Hover crosshair and read-out
+    if (hover) {
+      const q = hover.q, hx = X(q);
+      cx.strokeStyle = 'rgba(13,34,64,0.35)'; cx.setLineDash([2, 2]);
+      cx.beginPath(); cx.moveTo(hx, Yh(HY)); cx.lineTo(hx, Yp(0)); cx.stroke(); cx.setLineDash([]);
+      const rows = [`Q ${q.toFixed(1)} m³/h`, `Max curve ${maxCurveH(q).toFixed(2)} m`];
+      const hs = onSpeed(q); if (input.running && hs != null) rows.push(`At current speed ${hs.toFixed(2)} m · ${pumpP1(q, st.s, st.rho).toFixed(0)} W`);
+      rows.push(`System ${(st.k * q * q).toFixed(2)} m`);
+      cx.font = '12px Inter, sans-serif';
+      const bw = Math.max(...rows.map(r => cx.measureText(r).width)) + 20, bh = rows.length * 18 + 12;
+      const bx = hx + bw + 14 > w ? hx - bw - 12 : hx + 12, by = Yh(HY) + 6;
+      cx.fillStyle = 'rgba(255,255,255,0.96)'; cx.strokeStyle = 'rgba(17,73,123,0.25)';
+      cx.beginPath(); cx.rect(bx, by, bw, bh); cx.fill(); cx.stroke();
+      cx.fillStyle = '#0d2240'; rows.forEach((r, i) => cx.fillText(r, bx + 10, by + 20 + i * 18));
+    }
   }
+  // Drag on the chart to move the system curve (sets how far the radiator valves are open)
+  function chartPoint(e) {
+    const r = chart.getBoundingClientRect(), g = chartGeom();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    return { q: Math.max(0, Math.min(QX, g.Q(x))), h: g.Hy(y), inTop: y < g.split };
+  }
+  function dragTo(p) {
+    if (!p.inTop || p.q < 0.4 || p.h <= 0.05) return;
+    const k = p.h / (p.q * p.q);
+    setValve(Math.round(100 * Math.sqrt(PUMP.Kopen / k)));
+  }
+  chart.addEventListener('pointerdown', e => { dragging = true; chart.setPointerCapture(e.pointerId); dragTo(chartPoint(e)); drawChart(); });
+  chart.addEventListener('pointermove', e => { const p = chartPoint(e); hover = p; if (dragging) dragTo(p); drawChart(); });
+  chart.addEventListener('pointerup', () => { dragging = false; });
+  chart.addEventListener('pointerleave', () => { hover = null; dragging = false; drawChart(); });
+  document.querySelectorAll('[data-series]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.series; showSeries[k] = !showSeries[k]; b.setAttribute('aria-pressed', showSeries[k]); drawChart();
+  }));
+  new ResizeObserver(() => drawChart()).observe(chart);
 
   // Home screen, laid out like the real MAGNA3 display: four tiles
   const MODE_NAME = { aa: 'AUTOADAPT', pp: 'Prop. press.', cp: 'Const. press.', cc: 'Const. curve' };
@@ -1017,14 +1133,18 @@
   });
 
   // ── Resize & visibility ──
+  // Size from the canvas box: on phones the duty panel sits under the canvas inside the stage
+  const viewSize = () => ({ w: renderer.domElement.clientWidth || stage.clientWidth, h: renderer.domElement.clientHeight || stage.clientHeight });
   function resize() {
-    const w = stage.clientWidth, h = stage.clientHeight;
+    const { w, h } = viewSize();
     if (!w || !h) return;
     renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(stage);
-  let onScreen = true;
+  let onScreen = true, pageActive = true;
   new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; }).observe(stage);
+  addEventListener('pagehide', () => { pageActive = false; });
+  addEventListener('pageshow', () => { pageActive = true; last = performance.now(); });
 
   // ── Frame ──
   const VIS_SPEED = 1 / 20;
@@ -1032,7 +1152,7 @@
   function loop(now) {
     requestAnimationFrame(loop);
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    if (!onScreen || document.hidden) return;
+    if (!onScreen || !pageActive || document.hidden) return;
     frame++;
 
     if (!touring && !reduceMotion && now - lastInput > 25000) setTour(true);
@@ -1094,7 +1214,7 @@
     renderer.render(scene, camera);
 
     const showInternal = disp.explode > 0.3 || view.cut;
-    const w = stage.clientWidth, h = stage.clientHeight;
+    const { w, h } = viewSize();
     for (const L of LABELS) {
       const visible = view.labels && (!L.internal || showInternal);
       if (!visible) { L.el.style.opacity = 0; continue; }
