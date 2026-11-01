@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="An interactive 3D teardown of a Grundfos MAGNA3 circulator pump: exploded view, cutaway, live flow and a working pump curve.">
+  <meta name="description" content="An interactive 3D teardown of a Grundfos MAGNA3 circulator pump: exploded view, cutaway, live flow, a working pump curve, cavitation, glycol and a simulated Danish heating day.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cevendrell.com/pages/tech/magna3-simulator.html">
   <meta property="og:title" content="MAGNA3 Pump Simulator | Carlos Ebrahim Vendrell">
@@ -151,8 +151,8 @@
     .fallback { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 2rem; color: var(--dim); background: rgba(243,245,248,0.92); }
 
     /* Duty point, overlaid on the 3D view */
-    .duty { position: absolute; left: 12px; bottom: 12px; width: min(420px, calc(100% - 24px)); background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 8px; padding: 0.6rem 0.8rem; box-shadow: var(--shadow); }
-    .duty-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.35rem 0.8rem; }
+    .duty { position: absolute; left: 12px; bottom: 12px; width: min(540px, calc(100% - 24px)); background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 8px; padding: 0.6rem 0.8rem; box-shadow: var(--shadow); }
+    .duty-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.35rem 0.8rem; }
     .duty .ro span { font-size: 0.6rem; }
     .duty .ro b { font-size: 0.95rem; }
     .duty .ro b em { font-size: 0.62rem; }
@@ -197,19 +197,94 @@
     .footer-socials li a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); transition: all 0.2s; }
     .footer-socials li a:hover { background: #fff; color: var(--blue); border-color: #fff; }
 
+
+    /* Liquid and system card */
+    .sel { width: 100%; font: inherit; font-size: 0.82rem; padding: 0.42rem 0.5rem; border: 1px solid var(--line-strong); border-radius: 6px; background: #fff; color: var(--text); }
+    .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .hint { font-size: 0.72rem; color: var(--mute); margin-top: 0.2rem; line-height: 1.4; }
+    .bld-only { display: none; }
+    body.bld .bld-only { display: block; }
+    body.bld .man-only { display: none; }
+
+    /* Heating-day read-out on the 3D view */
+    .bhud { position: absolute; right: 12px; top: 44px; width: 250px; display: none; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line); border-left: 3px solid var(--red); border-radius: 8px; padding: 0.55rem 0.75rem; box-shadow: var(--shadow); }
+    body.bld .bhud { display: block; }
+    .bh-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.3rem; }
+    .clock { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; color: var(--navy); }
+    .state { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--sky); color: var(--blue); }
+    .state.warn { background: #fde8eb; color: var(--red); }
+    .state.night { background: #1d2c47; color: #dfe7f1; }
+    .bh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 0.7rem; }
+    .bh-grid span { display: block; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); }
+    .bh-grid b { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 0.86rem; color: var(--navy); }
+
+    /* Under the hood */
+    .eng { max-width: 1400px; margin: 0 auto; padding: 2.5rem 2.5rem 0; }
+    .eng-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .eng-head h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 700; letter-spacing: -0.02em; color: var(--navy); }
+    .eng-head p { font-size: 0.9rem; color: var(--dim); max-width: 62ch; }
+    .eng-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .eng-card { position: relative; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.25rem 1.2rem; min-width: 0; }
+    .eng-card h3 { font-size: 1.05rem; color: var(--navy); margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .eng-card .sub { font-size: 0.84rem; color: var(--dim); margin-bottom: 0.8rem; max-width: 70ch; line-height: 1.55; }
+    .eng-card canvas { width: 100%; display: block; }
+    .eng-card.wide { grid-column: 1 / -1; }
+    #sankey, #tri { height: 230px; }
+    #npsh { height: 150px; }
+    #trend { height: 250px; }
+    .kv.kv6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .kv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem 0.9rem; margin-top: 0.8rem; padding-top: 0.75rem; border-top: 1px solid var(--line); }
+    .kv span { display: block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); }
+    .kv b { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 0.92rem; color: var(--navy); }
+    .kv b em { font-style: normal; font-size: 0.7rem; color: var(--dim); margin-left: 3px; }
+    .eei-row { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 1.4rem; align-items: center; }
+    .eei-big span { display: block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); }
+    .eei-big b { font-family: 'JetBrains Mono', monospace; font-size: 1.9rem; font-weight: 500; color: var(--navy); line-height: 1.2; }
+    .eei-big.ref b { color: var(--dim); }
+    .mini { border-collapse: collapse; font-size: 0.74rem; width: 100%; }
+    .mini th { font-weight: 500; color: var(--mute); text-align: right; padding: 0 0.4rem 0.2rem; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .mini td { font-family: 'JetBrains Mono', monospace; text-align: right; padding: 0.12rem 0.4rem; color: var(--dim); border-top: 1px solid var(--line); }
+    .mini th:first-child, .mini td:first-child { text-align: left; }
+    .bars { margin-top: 1rem; display: grid; gap: 0.45rem; }
+    .bar { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) 9.5rem; gap: 0.6rem; align-items: center; font-size: 0.8rem; color: var(--dim); }
+    .bar .track { height: 12px; background: var(--surface); border-radius: 3px; overflow: hidden; border: 1px solid var(--line); }
+    .bar .track i { display: block; height: 100%; background: var(--sky); border-right: 2px solid var(--blue); transition: width 0.5s ease; }
+    .bar.on { color: var(--navy); font-weight: 600; }
+    .bar.on .track i { background: var(--blue); }
+    .bar b { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 0.76rem; text-align: right; }
+    .heat-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.4rem; align-items: start; }
+    #loop { width: 100%; height: auto; display: block; }
+    #loop text { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: var(--dim); }
+    #loop .big { font-size: 13px; fill: var(--navy); font-weight: 500; }
+    #loop .lbl { font-family: 'Inter', sans-serif; font-size: 10px; fill: var(--mute); letter-spacing: 0.06em; text-transform: uppercase; }
+    .cover { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 0.8rem; align-items: center; justify-content: center; text-align: center; background: rgba(255,255,255,0.86); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); border-radius: var(--radius); padding: 2rem; color: var(--dim); font-size: 0.9rem; }
+    body.bld .cover { display: none; }
+    .cover .btn { padding: 0.6rem 1.2rem; font-size: 0.85rem; }
+    .tlegend { display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; margin-top: 0.4rem; font-size: 0.72rem; color: var(--dim); }
+    .tlegend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+
     @media (max-width: 1100px) {
+      .heat-wrap { grid-template-columns: 1fr; }
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .method-wrap { grid-template-columns: 1fr; }
     }
     @media (max-width: 1024px) {
       .sim { grid-template-columns: 1fr; }
+      .eng-grid { grid-template-columns: 1fr; }
       .panel { display: grid; grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 768px) {
       .hero, .sim, .explain { padding-left: 16px; padding-right: 16px; }
       .hero { padding-top: 6rem; }
       .stage { height: 62vh; min-height: 380px; }
-      .curve-sec { padding-left: 16px; padding-right: 16px; }
+      .curve-sec, .eng { padding-left: 16px; padding-right: 16px; }
+      .kv, .kv.kv6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .eei-row { grid-template-columns: 1fr 1fr; }
+      .eei-row .mini { grid-column: 1 / -1; }
+      .bar { grid-template-columns: 6.5rem minmax(0, 1fr); }
+      .bar b { grid-column: 1 / -1; text-align: left; }
+      .bhud { position: static; width: auto; border-radius: 0; border-left: none; border-top: 3px solid var(--red); box-shadow: none; }
+      .duty-grid { grid-template-columns: repeat(2, 1fr) !important; }
       #chart { height: 360px; }
       .grid { grid-template-columns: 1fr; }
       .duty { position: static; width: auto; margin: 0; border-radius: 0; border-left: none; border-top: 3px solid var(--blue); box-shadow: none; }
@@ -286,7 +361,7 @@
 <div class="hero-band"><header class="hero">
   <div class="eyebrow">Tech · Interactive teardown</div>
   <h1>MAGNA3 circulator, taken apart</h1>
-  <p>A working 3D model of a Grundfos MAGNA3 32-120 F heating pump, built from Grundfos's own CAD model and driven by its official pump curves and operating manual. Change the control mode, close the valves, pull the pump apart or cut it open. Speed, flow, head and power all come from one physics model, so the impeller, the water, the chart and the pump's display always agree.</p>
+  <p>A working 3D model of a Grundfos MAGNA3 32-120 F heating pump, built from Grundfos's own CAD model and driven by its official pump curves and operating manual. Change the control mode, close the valves, switch to glycol, starve the inlet until it cavitates, or hand the valves to a building and run a Danish winter day. Speed, flow, head, power and temperature all come from one physics model, so the impeller, the water, the charts and the pump's display always agree.</p>
 </header></div>
 
 <section class="sim" aria-label="Pump simulator">
@@ -304,9 +379,21 @@
         <div class="ro"><span>Power P1</span><b id="rP">–</b></div>
         <div class="ro"><span>Efficiency</span><b id="rEta">–</b></div>
         <div class="ro"><span>Current</span><b id="rI">–</b></div>
-        <div class="ro"><span>Min. inlet p</span><b id="rPin">–</b></div>
+        <div class="ro"><span>Shaft torque</span><b id="rT">–</b></div>
+        <div class="ro"><span>NPSH avail.</span><b id="rNpsh">–</b></div>
       </div>
       <div class="flag" id="flag"></div>
+    </div>
+    <div class="bhud" id="bhud" aria-live="off">
+      <div class="bh-top"><span class="clock" id="bClock">19:00</span><span class="state" id="bState">Day</span></div>
+      <div class="bh-grid">
+        <div><span>Outdoor</span><b id="bOut">–</b></div>
+        <div><span>Supply / return</span><b id="bTemps">–</b></div>
+        <div><span>Heat to rooms</span><b id="bPhi">–</b></div>
+        <div><span>Rooms</span><b id="bRoom">–</b></div>
+        <div><span>Radiator valves</span><b id="bValve">–</b></div>
+        <div><span>Δp over valves</span><b id="bTrv">–</b></div>
+      </div>
     </div>
     <div class="fallback" id="fallback">This simulator needs WebGL, which isn't available in this browser.</div>
   </div>
@@ -325,7 +412,7 @@
         <input type="range" id="set" min="1" max="11.8" step="0.1" value="6.6" disabled>
       </div>
       <div class="row">
-        <label for="valve"><span>Radiator valves open</span><output id="valveOut">45 %</output></label>
+        <label for="valve"><span id="valveLabel">Radiator valves open</span><output id="valveOut">45 %</output></label>
         <input type="range" id="valve" min="5" max="100" step="1" value="45">
       </div>
       <div class="row">
@@ -333,7 +420,7 @@
         <input type="range" id="limit" min="25" max="95" step="1" value="95">
       </div>
       <div class="row">
-        <label for="temp"><span>Liquid temperature</span><output id="tempOut">60 °C</output></label>
+        <label for="temp"><span id="tempLabel">Liquid temperature</span><output id="tempOut">60 °C</output></label>
         <input type="range" id="temp" min="-10" max="110" step="1" value="60">
       </div>
       <div class="row">
@@ -353,6 +440,44 @@
       <div class="keys"><kbd>1</kbd>–<kbd>4</kbd> mode · <kbd>E</kbd> explode · <kbd>C</kbd> cut · <kbd>F</kbd> flow · <kbd>L</kbd> labels · <kbd>↑</kbd><kbd>↓</kbd> valves</div>
     </div>
 
+    <div class="card">
+      <h3>Liquid and system</h3>
+      <div class="row">
+        <label for="gly"><span>Liquid</span><output id="glyOut">Freezes at 0 °C</output></label>
+        <select id="gly" class="sel">
+          <option value="0">Water</option>
+          <option value="20">Water + 20 % ethylene glycol</option>
+          <option value="30">Water + 30 % ethylene glycol</option>
+          <option value="40">Water + 40 % ethylene glycol</option>
+          <option value="50">Water + 50 % ethylene glycol</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="pin"><span>Inlet pressure (gauge)</span><output id="pinOut">1.00 bar</output></label>
+        <input type="range" id="pin" min="0" max="3" step="0.05" value="1">
+        <div class="hint" id="pinHint">Manual minimum at 60 °C: 0.07 bar</div>
+      </div>
+      <div class="row">
+        <label><span>Who sets the valves</span></label>
+        <div class="seg" role="group" aria-label="Valve control">
+          <button class="btn" data-sys="manual" aria-pressed="true">You</button>
+          <button class="btn" data-sys="building" aria-pressed="false">Heating day</button>
+        </div>
+      </div>
+      <div class="bld-only">
+        <div class="row">
+          <label for="tout"><span>Outdoor, daily mean</span><output id="toutOut">2 °C</output></label>
+          <input type="range" id="tout" min="-12" max="15" step="1" value="2">
+        </div>
+        <div class="toggles">
+          <button class="btn" id="tPlay" aria-pressed="true">Pause day</button>
+          <button class="btn" id="tSetback" aria-pressed="true">Boiler setback</button>
+          <button class="btn" id="tAutoNight" aria-pressed="true">Auto night</button>
+        </div>
+        <div class="hint">One hour passes every 1.5 s. The boiler drops the supply 15 °C from 22:00 to 05:00; the pump spots the drop on its own sensor.</div>
+      </div>
+    </div>
+
   </aside>
 </section>
 
@@ -361,13 +486,15 @@
     <div class="curve-head">
       <div>
         <h2>Pump curve</h2>
-        <p>Hover to read any point. Drag across the chart to move the system curve, which opens or closes the radiator valves.</p>
+        <p>Hover to read any point. Drag across the chart to move the system curve, which opens or closes the radiator valves. The envelope is worked out for the liquid you pick, so hot water and glycol move it.</p>
       </div>
       <div class="series" role="group" aria-label="Show curves">
         <button class="chip" data-series="env" aria-pressed="true"><i style="background:var(--blue)"></i>Max envelope</button>
         <button class="chip" data-series="speed" aria-pressed="true"><i style="background:var(--cold)"></i>Current speed</button>
         <button class="chip" data-series="sys" aria-pressed="true"><i style="background:var(--ok)"></i>System</button>
         <button class="chip" data-series="ctrl" aria-pressed="true"><i style="background:var(--red)"></i>Control curve</button>
+        <button class="chip" data-series="eta" aria-pressed="true"><i style="background:#1b998b"></i>Efficiency</button>
+        <button class="chip" data-series="eei" aria-pressed="false"><i style="background:#c98a12"></i>EEI test points</button>
       </div>
     </div>
     <canvas id="chart" aria-label="Interactive pump curve showing head and power against flow, with the live duty point"></canvas>
@@ -375,20 +502,133 @@
 </section>
 
 
+<section class="eng" aria-label="Under the hood">
+  <div class="eng-head">
+    <h2>Under the hood</h2>
+    <p>The same model, broken down the way a pump engineer would look at it. Every number follows the controls above.</p>
+  </div>
+  <div class="eng-grid">
+    <div class="eng-card">
+      <h3>Where the watts go</h3>
+      <p class="sub">From the plug through the frequency converter and the permanent-magnet motor into the water. The total follows the Grundfos power curve; the split between losses is my estimate.</p>
+      <canvas id="sankey" aria-label="Power flow from electrical input to hydraulic output"></canvas>
+      <div class="kv">
+        <div><span>Shaft power P2</span><b id="eP2">–</b></div>
+        <div><span>Shaft torque</span><b id="eTq">–</b></div>
+        <div><span>Hydraulic power</span><b id="ePh">–</b></div>
+        <div><span>Motor + drive</span><b id="eEm">–</b></div>
+        <div><span>Pump (hydraulic)</span><b id="eEp">–</b></div>
+        <div><span>Wire to water</span><b id="eEt">–</b></div>
+      </div>
+    </div>
+    <div class="eng-card">
+      <h3>At the impeller tip</h3>
+      <p class="sub">Euler's pump equation, H<sub>th</sub> = u<sub>2</sub>·c<sub>u2</sub>/g. The blade tip moves at u<sub>2</sub>; the water leaves with swirl c<sub>u2</sub>, and flows outward at c<sub>m2</sub>. The Ø63 mm impeller is sized so the official curve and the power balance agree. That's an estimate, because the real impeller isn't public.</p>
+      <canvas id="tri" aria-label="Velocity triangle at the impeller outlet"></canvas>
+      <div class="kv">
+        <div><span>Tip speed u₂</span><b id="tU2">–</b></div>
+        <div><span>Swirl c<sub>u2</sub></span><b id="tCu">–</b></div>
+        <div><span>Radial c<sub>m2</sub></span><b id="tCm">–</b></div>
+        <div><span>Euler head H<sub>th</sub></span><b id="tHth">–</b></div>
+        <div><span>Head coeff. ψ</span><b id="tPsi">–</b></div>
+        <div><span>Specific speed n<sub>q</sub></span><b id="tNq">–</b></div>
+      </div>
+    </div>
+    <div class="eng-card">
+      <h3>Suction side <span class="state" id="cavState">No cavitation</span></h3>
+      <p class="sub">The water at the impeller eye must stay above its vapour pressure. Heat it up, lower the inlet pressure or open the valves, and the margin shrinks. When it runs out, bubbles form at the eye and collapse on the blades. Turn on the cutaway to see them.</p>
+      <canvas id="npsh" aria-label="NPSH available against NPSH required"></canvas>
+      <div class="kv">
+        <div><span>Inlet, absolute</span><b id="nAbs">–</b></div>
+        <div><span>Vapour pressure</span><b id="nPv">–</b></div>
+        <div><span>Margin</span><b id="nM">–</b></div>
+        <div><span>Flange velocity</span><b id="nV">–</b></div>
+        <div><span>Reynolds no.</span><b id="nRe">–</b></div>
+        <div><span>Viscosity</span><b id="nNu">–</b></div>
+      </div>
+    </div>
+    <div class="eng-card">
+      <h3>Energy</h3>
+      <p class="sub">The EEI is worked out from this model with the EN 16297 method: four points on a reference curve, weighted 6/15/35/44 % of the time. It lands just under the label value. Below that, each control mode runs a Danish heating season in the heating-day building.</p>
+      <div class="eei-row">
+        <div class="eei-big"><span>EEI, this model</span><b id="eEEI">–</b></div>
+        <div class="eei-big ref"><span>Data sheet</span><b>≤ 0.18</b></div>
+        <table class="mini" id="eeiTab"></table>
+      </div>
+      <div class="bars" id="bars"></div>
+      <p class="hint" id="barsNote" style="margin-top:0.6rem">Calculating the season…</p>
+    </div>
+    <div class="eng-card wide">
+      <h3>Heating system <span class="state" id="lpState">Day</span></h3>
+      <p class="sub">A block of about 40 flats in Copenhagen: a weather-compensated boiler, radiators sized to EN 442 for 70/50 °C at −12 °C outside, and thermostatic valves that pass only the flow the rooms need. The pump sits in the supply pipe and its own sensor reads the supply temperature.</p>
+      <div class="heat-wrap">
+        <svg id="loop" viewBox="0 0 560 300" role="img" aria-label="Heating circuit with boiler, pump and radiators">
+          <text x="20" y="22" class="lbl">Outdoor</text><text x="20" y="40" class="big" id="lpOut">–</text>
+          <text x="460" y="22" class="lbl">Clock</text><text x="460" y="40" class="big" id="lpClock">–</text>
+          <path id="lpSupply" d="M110 92 H520 V262" fill="none" stroke="#c8102e" stroke-width="7" stroke-linecap="round"/>
+          <path id="lpReturn" d="M520 262 H110" fill="none" stroke="#2a8fd6" stroke-width="7" stroke-linecap="round" transform="translate(0 0)"/>
+          <path id="lpSupplyF" d="M110 92 H520 V262" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-dasharray="3 14"/>
+          <path id="lpReturnF" d="M520 262 H110" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-dasharray="3 14"/>
+          <rect x="30" y="80" width="80" height="196" rx="10" fill="#eef2f6" stroke="#11497b" stroke-width="1.5"/>
+          <text x="70" y="118" text-anchor="middle" class="lbl">Boiler</text>
+          <text x="70" y="140" text-anchor="middle" class="big" id="lpBoil">–</text>
+          <text x="70" y="158" text-anchor="middle" id="lpBoilSub">set</text>
+          <path d="M52 230 q9 -22 18 0 q9 -22 18 0" fill="none" stroke="#c8102e" stroke-width="2"/>
+          <g transform="translate(170 92)">
+            <circle r="20" fill="#23242a" stroke="#11497b" stroke-width="2"/>
+            <circle r="8" fill="#a3102c"/>
+            <g id="lpRotor"><path d="M0 -14 L4 0 L0 14 L-4 0 Z" fill="#dfe7f1"/></g>
+          </g>
+          <text x="170" y="134" text-anchor="middle" class="lbl">MAGNA3</text>
+          <text x="170" y="150" text-anchor="middle" id="lpPump">–</text>
+          <text x="250" y="80" id="lpTs" class="big">–</text>
+          <text x="250" y="284" id="lpTr" class="big">–</text>
+          <text x="400" y="284" id="lpQ">–</text>
+          <g id="lpRads"></g>
+        </svg>
+        <div>
+          <canvas id="trend" aria-label="Duty over the last 24 simulated hours"></canvas>
+          <div class="tlegend">
+            <span><i style="background:#c8102e"></i>Supply</span>
+            <span><i style="background:#2a8fd6"></i>Return</span>
+            <span><i style="background:#7a8798"></i>Outdoor</span>
+            <span><i style="background:#11497b"></i>Power P1</span>
+            <span><i style="background:rgba(29,44,71,0.18)"></i>Pump on night curve</span>
+          </div>
+        </div>
+      </div>
+      <div class="kv kv6">
+        <div><span>Heat demand</span><b id="hLoad">–</b></div>
+        <div><span>Flow needed</span><b id="hQreq">–</b></div>
+        <div><span>Cooling ΔT</span><b id="hDt">–</b></div>
+        <div><span>Pump power</span><b id="hP">–</b></div>
+        <div><span>Heat energy</span><b id="hE">–</b></div>
+        <div><span>Pump energy</span><b id="hPe">–</b></div>
+      </div>
+      <div class="cover">
+        <p>Let a building run the radiator valves for a day and watch the pump respond.</p>
+        <button class="btn" id="coverGo" aria-pressed="false">Start a heating day</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="explain">
   <h2>What's inside</h2>
   <div class="grid">
     <div class="card"><h4>Wet-rotor PM motor</h4><p>The rotor carries permanent magnets and spins inside a thin stainless rotor can, in the heating water itself. No shaft seal, so nothing can leak. The water also cools and lubricates the bearings, and the pump can run against closed valves for days.</p></div>
-    <div class="card"><h4>Composite impeller and volute</h4><p>Water rises from the lower flange, loops behind the pump into the eye of the impeller, is flung outward by the blades and leaves through the upper flange. Pressure builds along the way: the particles turn from blue to orange.</p></div>
+    <div class="card"><h4>Composite impeller and volute</h4><p>Water rises from the lower flange, loops behind the pump into the eye of the impeller, is flung outward by seven backward-curved blades and leaves through the upper flange. Pressure builds along the way and the particles turn from blue to red. The eye is where pressure is lowest, so that's where cavitation starts.</p></div>
     <div class="card"><h4>AUTOADAPT</h4><p>The factory setting. It's proportional pressure from a fixed 1.5 m base, starting at about 55% of max head. When the pump finds itself on its max curve at a lower head, it picks a lower curve on its own. Here that learning is sped up from hours to seconds.</p></div>
-    <div class="card"><h4>Limits you can hit</h4><p>Between about 5 and 20 m³/h the pump reaches its 333 W input limit before top speed. FLOW LIMIT caps the flow between 25% and 90% of max. Hot water needs inlet pressure: 0.7 bar at 110 °C to avoid cavitation.</p></div>
+    <div class="card"><h4>Limits you can hit</h4><p>Between about 5 and 20 m³/h the pump reaches its 333 W input limit before top speed. That limit is computed, not drawn, so denser or more viscous liquids pull the max curve down. FLOW LIMIT caps the flow between 25 % and 90 % of max. Hot water needs inlet pressure: 0.7 bar at 110 °C.</p></div>
   </div>
 
   <div class="method-wrap">
   <div class="method">
     <h3>How it was built</h3>
     <p>Built with the <a href="https://thakicloud.com/tech-blog/en/tutorials/teardown-3d-skill/" target="_blank" rel="noopener">teardown method</a>: real numbers first, one physics function that drives every part and gauge, and an idle auto tour that takes over after 25 seconds.</p>
-    <p>The outer shell is Grundfos's own CAD model of product 97924259 (housing, motor head and control box), turned into a web mesh and recoloured to match the product photo. The pump curves are fitted to the official performance chart. Control behaviour, inlet pressures and limits follow the MAGNA3 installation and operating instructions. The internals (impeller, rotor, can, stator) aren't in the public CAD, so they're drawn in code to plausible proportions. This is an illustration, not an engineering tool.</p>
+    <p>The outer shell is Grundfos's own CAD model of product 97924259 (housing, motor head and control box), turned into a web mesh and recoloured to match the product photo. The head and power curves are fitted to the official performance chart, and the 333 W limit falls out of the power model rather than being drawn on. Control behaviour, automatic night setback, inlet pressures and glycol limits follow the MAGNA3 installation and operating instructions.</p>
+    <p>On top of that sit standard engineering methods: the EN 16297 energy efficiency index (it comes out at 0.168 against the label's ≤ 0.18, a useful check on the fit), the ANSI/HI 9.6.7 viscosity correction for glycol, Euler's pump equation with Wiesner slip at the impeller, NPSH from vapour pressure and inlet pressure, and EN 442 radiator output in the heating-day building. Liquid properties come from standard fits for water and ASHRAE tables for ethylene glycol.</p>
+    <p>The internals (impeller, rotor, can, stator) and the split of losses between converter, motor and hydraulics aren't public, so they're estimates sized to agree with the official curves. This is an illustration, not a selection tool: use Grundfos Product Center for real sizing.</p>
   </div>
     <table class="specs">
       <tr><td>Max head</td><td>Grundfos</td><td>12 m (11.8 m regulated)</td></tr>
@@ -401,7 +641,13 @@
       <tr><td>FLOW LIMIT · flow accuracy</td><td>Manual</td><td>25 – 90 % of Qmax · ±5 % of Qmax</td></tr>
       <tr><td>Overall length · weight · noise</td><td>Grundfos</td><td>366 mm · 15.2 kg · ≤ 45 dB(A)</td></tr>
       <tr><td>Housing · impeller</td><td>Grundfos</td><td>Cast iron EN-GJL-250 · composite</td></tr>
-      <tr><td>Curve fits (H, P1, efficiency)</td><td>My fit</td><td>Read off the official chart</td></tr>
+      <tr><td>EEI</td><td>Grundfos · model</td><td>≤ 0.18 · 0.168 (EN 16297)</td></tr>
+      <tr><td>Glycol · max viscosity</td><td>Manual</td><td>Ethylene glycol up to 50 % · 50 cSt</td></tr>
+      <tr><td>Automatic night setback</td><td>Manual</td><td>10–15 °C drop in ~2 h at ≥ 0.1 °C/min · back after ~10 °C rise</td></tr>
+      <tr><td>Impeller (estimate)</td><td>My sizing</td><td>Ø63 mm · 7 blades · β₂ 30° · n<sub>q</sub> ≈ 52</td></tr>
+      <tr><td>Losses at full load (estimate)</td><td>My sizing</td><td>Converter ~97 % · motor ~92 % · hydraulics ~76 %</td></tr>
+      <tr><td>Heating-day building</td><td>My model</td><td>230 kW at −12 °C · 70/50 °C · EN 442, n = 1.3 · DMI normals</td></tr>
+      <tr><td>Curve fits (H, P1)</td><td>My fit</td><td>Read off the official chart</td></tr>
     </table>
   </div>
 </section>
@@ -442,113 +688,241 @@
   window.addEventListener('unhandledrejection', e => simFail('The 3D view hit an error and stopped: ' + ((e.reason && e.reason.message) || 'unknown error') + '. Try reloading the page.'));
 </script>
 
-<!-- ═════════════ KIN: pump physics (pure maths, no three.js) ═════════════ -->
+<!-- ═════════════ KIN: pump, liquid and heating-system physics (pure maths, no three.js) ═════════════ -->
 <script>
-  // Units: Q in m³/h, H in m, power in W, T in °C.
-  // s = speed ratio; s = Smax is 4,800 rpm. Fitted to the official MAGNA3 32-120 F curve.
-  window.PUMP = {
-    a: 10.15, b: 0.40, c: 0.043,     // H = a·s² + b·s·Q − c·Q²
-    Smax: 1.078,                     // 4,800 rpm (shut-off head 11.8 m)
+  // Units: Q in m³/h, H in m, power in W, T in °C, pressure in bar.
+  // s = speed ratio; s = Smax is 4,800 rpm. Fitted to the official MAGNA3 32-120 F curve (water, 20 °C).
+  const PUMP = window.PUMP = {
+    a: 10.15, b: 0.40, c: 0.043,     // H = a·s² + b·s·Q − c·Q²  (water)
+    f: [170.22, 32.076, -0.3681, -0.0467], // P1 = s³·f(Q/s), refitted so the 333 W edge lands on the chart
+    Smax: 1.078, nmax: 4800,
     Hlim: 11.8,                      // regulated max head (flat top of the chart)
-    envQ: 4.5, envSlope: 0.652,      // 333 W power-limit edge of the chart
     Qmax: 21.5,                      // end of the official envelope
-    Pmax: 333, Pmin: 15,             // P1 range
-    nmax: 4800,
+    Pmax: 333, Pmin: 15,             // P1 range from the data sheet
     Qnom: 11.22, Hnom: 7.24,         // nominal duty point
-    HautoMin: 1.5,                   // AUTOADAPT fixed start (manual 7.3.2)
-    HautoStart: 0.55 * 12,           // AUTOADAPT factory setpoint, ~55 % of max head
-    ccMin: 30,                       // lowest constant curve, % of max speed
-    Kopen: 0.030,                    // system resistance with every valve open
-    volts: 230, pf: 0.935
+    HautoMin: 1.5, HautoStart: 0.55 * 12, ccMin: 30,
+    // System: pipes and boiler (fixed) + radiator valves (variable)
+    Kpipe: 0.030, Ktrv: 0.008,
+    // Electronics and motor losses (my estimate, sized to give ~97 % and ~91 % at full load)
+    Pel0: 2.0, kel: 0.025, Pfe0: 6.0, Rcu: 48,
+    // Impeller, sized from the curve with Euler's equation (not measured)
+    D2: 0.063, b2: 0.008, beta2: 30, z: 7, tBlade: 0.002, D1: 0.030,
+    Dpipe: 0.0359,                   // DN32 bore
+    // NPSH3 = N0·σ² + C·Q², calibrated so the manual's minimum inlet pressures leave a ~1.3× margin at max flow
+    N0: 0.6, Cnpsh: 0.0063,
+    volts: 230, pf: 0.935, patm: 1.01325, g: 9.81
   };
-
-  // Water density (kg/m³) between −10 and 110 °C
-  window.rhoWater = T => 1000 * (1 - (T + 288.9414) / (508929.2 * (T + 68.12963)) * Math.pow(T - 3.9863, 2));
-
-  // Minimum inlet pressure for the 32-120 F (bar), manual section 12
-  window.minInlet = T => {
-    const pts = [[25, 0], [75, 0.10], [95, 0.20], [110, 0.70]];
-    if (T <= 25) return 0;
-    for (let i = 1; i < pts.length; i++) if (T <= pts[i][0]) {
-      const [t0, p0] = pts[i - 1], [t1, p1] = pts[i];
-      return p0 + (p1 - p0) * (T - t0) / (t1 - t0);
+  const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+  const interp = (pts, x) => {
+    if (x <= pts[0][0]) return pts[0][1];
+    for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
     }
-    return 0.70;
+    return pts[pts.length - 1][1];
   };
 
-  window.pumpH = (Q, s) => PUMP.a * s * s + PUMP.b * s * Q - PUMP.c * Q * Q;
-  window.envH = Q => Q <= PUMP.envQ ? PUMP.Hlim : PUMP.Hlim - PUMP.envSlope * (Q - PUMP.envQ);
-  window.maxCurveH = Q => Math.max(0, Math.min(PUMP.Hlim, envH(Q), pumpH(Q, PUMP.Smax)));
-
-  // Flow where a head H meets the max curve (the max curve falls with Q beyond 4.5 m³/h)
-  window.qOnMax = H => {
-    let lo = PUMP.envQ, hi = PUMP.Qmax;
-    if (maxCurveH(lo) <= H) return lo;
-    for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (maxCurveH(m) > H) lo = m; else hi = m; }
-    return (lo + hi) / 2;
+  // ── Liquid properties: water (IAPWS-style fits) and ethylene glycol mixtures (ASHRAE tables, by mass) ──
+  const rhoWater = T => 1000 * (1 - (T + 288.9414) / (508929.2 * (T + 68.12963)) * Math.pow(T - 3.9863, 2));
+  const CP_W = [[0, 4217], [20, 4182], [40, 4179], [60, 4185], [80, 4197], [100, 4216], [110, 4229]];
+  const muWater = T => 0.02939e-3 * Math.exp(507.88 / (T + 273.15 - 149.3));      // Vogel, Pa·s
+  const pvWater = T => 0.00133322 * Math.pow(10, T <= 100 ? 8.07131 - 1730.63 / (233.426 + T) : 8.14019 - 1810.94 / (244.485 + T)); // Antoine, bar
+  const GLYCOL = {
+    20: { fp: -8,  dr: 27, cp: 3870, mu: [[-10, 3.6], [0, 2.6], [20, 1.6], [40, 1.05], [60, 0.75], [80, 0.56], [100, 0.44]] },
+    30: { fp: -15, dr: 41, cp: 3700, mu: [[-10, 5.0], [0, 3.5], [20, 2.1], [40, 1.35], [60, 0.95], [80, 0.70], [100, 0.54]] },
+    40: { fp: -24, dr: 54, cp: 3510, mu: [[-20, 11], [-10, 7.2], [0, 4.9], [20, 2.8], [40, 1.75], [60, 1.2], [80, 0.86], [100, 0.65]] },
+    50: { fp: -36, dr: 67, cp: 3310, mu: [[-30, 26], [-20, 16], [-10, 10.5], [0, 7.0], [20, 3.9], [40, 2.3], [60, 1.55], [80, 1.1], [100, 0.83]] }
+  };
+  window.fluid = (T, gly = 0) => {
+    let rho = rhoWater(T), cp = interp(CP_W, T), mu = muWater(T), pv = pvWater(T), fp = 0;
+    if (gly > 0) {
+      const G = GLYCOL[gly], lnmu = G.mu.map(([t, m]) => [t, Math.log(m)]);
+      rho += G.dr * (1 - 0.0005 * (T - 20));
+      cp = G.cp + gly * 0.1 * (T - 20);
+      mu = Math.exp(interp(lnmu, T)) * 1e-3;
+      const nw = (1 - gly / 100) / 18.015, ng = (gly / 100) / 62.07;
+      pv *= nw / (nw + ng);                      // Raoult: glycol barely evaporates
+      fp = G.fp;
+    }
+    return { T, gly, rho, cp, mu, nu: mu / rho * 1e6, pv, fp }; // nu in cSt (mm²/s)
   };
 
-  // P1 follows the affinity law: P1 = s³ · f(Q/s), f read off the chart (water at 20 °C)
-  window.pumpP1 = (Q, s, rho = 998.2) => {
-    if (s <= 0.001) return 0;
-    const x = Q / s, f = 170 + 29.9 * x - 1.081 * x * x;
-    return Math.min(PUMP.Pmax, Math.max(PUMP.Pmin, s * s * s * f * rho / 998.2));
+  // ── Water performance at speed s ──
+  const pumpHw = (Q, s) => PUMP.a * s * s + PUMP.b * s * Q - PUMP.c * Q * Q;
+  const fP1 = x => PUMP.f[0] + x * (PUMP.f[1] + x * (PUMP.f[2] + x * PUMP.f[3]));
+  const P1w = (Q, s) => s <= 1e-3 ? 0 : s * s * s * fP1(Q / s);
+  const omega = s => 2 * Math.PI * (s / PUMP.Smax * PUMP.nmax) / 60;
+  // Losses between the plug and the shaft: electronics (standby + switching), motor iron and copper
+  const lossFwd = (P2, s) => {
+    const w = omega(s), fe = PUMP.Pfe0 * Math.pow(s / PUMP.Smax, 1.5), cu = w > 0 ? PUMP.Rcu * Math.pow(P2 / w, 2) : 0;
+    const P1 = (P2 + fe + cu + PUMP.Pel0) / (1 - PUMP.kel);
+    return { P1, fe, cu, el: PUMP.Pel0 + PUMP.kel * P1 };
+  };
+  const shaftFromP1 = (P1, s) => {
+    const w = omega(s), X = P1 * (1 - PUMP.kel) - PUMP.Pel0 - PUMP.Pfe0 * Math.pow(s / PUMP.Smax, 1.5);
+    if (X <= 0 || w <= 0) return 0;
+    const al = PUMP.Rcu / (w * w);
+    return (-1 + Math.sqrt(1 + 4 * al * X)) / (2 * al);
   };
 
-  window.dutyAt = (s, k) => {
-    const A = k + PUMP.c, Q = s * (PUMP.b + Math.sqrt(PUMP.b * PUMP.b + 4 * A * PUMP.a)) / (2 * A);
+  // Best efficiency point at max speed (water): reference for the viscosity correction and specific speed
+  const BEP = (() => {
+    let best = 0, Qb = 0;
+    for (let Q = 0.2; Q < 30; Q += 0.05) {
+      const H = pumpHw(Q, PUMP.Smax); if (H <= 0) break;
+      const e = 998.2 * PUMP.g * Q / 3600 * H / shaftFromP1(P1w(Q, PUMP.Smax), PUMP.Smax);
+      if (e > best) { best = e; Qb = Q; }
+    }
+    return { Q: Qb, H: pumpHw(Qb, PUMP.Smax), eta: best };
+  })();
+  PUMP.BEP = BEP;
+  PUMP.nq = PUMP.nmax * Math.sqrt(BEP.Q / 3600) / Math.pow(BEP.H, 0.75);
+
+  // ── Viscosity correction, ANSI/HI 9.6.7 ──
+  window.hiFactors = (nu, s) => {
+    const sig = s / PUMP.Smax, N = sig * PUMP.nmax;
+    if (N < 200) return { B: 0, CQ: 1, Ce: 1, Qb: BEP.Q * Math.max(sig, 0.05) };
+    const Qb = BEP.Q * sig, Hb = BEP.H * sig * sig;
+    const B = Math.min(40, 16.5 * Math.sqrt(nu) * Math.pow(Hb, 0.0625) / (Math.pow(Qb, 0.375) * Math.pow(N, 0.25)));
+    if (B <= 1) return { B, CQ: 1, Ce: 1, Qb };
+    return { B, CQ: Math.exp(-0.165 * Math.pow(Math.log10(B), 3.15)), Ce: Math.pow(B, -0.0547 * Math.pow(B, 0.69)), Qb };
+  };
+  const CHof = (hf, Qw) => 1 - (1 - hf.CQ) * Math.pow(Math.max(0, Qw) / hf.Qb, 0.75);
+
+  // Head and power in the actual liquid
+  window.pumpH = (Q, s, fl) => {
+    if (s <= 1e-3) return 0;
+    if (!fl || fl.nu <= 1.2) return pumpHw(Q, s);
+    const hf = hiFactors(fl.nu, s), Qw = Q / hf.CQ;
+    return pumpHw(Qw, s) * CHof(hf, Qw);
+  };
+  // Full power picture at (Q, s): P1, shaft power, losses
+  window.powerAt = (Q, s, fl) => {
+    if (s <= 1e-3) return { P1: 0, P2: 0, fe: 0, cu: 0, el: 0 };
+    const rho = fl ? fl.rho : 998.2;
+    let Qw = Q, k = 1;
+    if (fl && fl.nu > 1.2) { const hf = hiFactors(fl.nu, s); Qw = Q / hf.CQ; k = hf.CQ * CHof(hf, Qw) / hf.Ce; }
+    const P2 = shaftFromP1(P1w(Qw, s), s) * rho / 998.2 * k;
+    const r = lossFwd(P2, s);
+    return { P1: Math.max(PUMP.Pmin, r.P1), P2, fe: r.fe, cu: r.cu, el: r.el };
+  };
+  window.pumpP1 = (Q, s, fl) => powerAt(Q, s, fl).P1;
+
+  // ── Solvers (bisection: the viscous curve is no longer a clean quadratic) ──
+  const bisect = (fn, lo, hi, n = 40) => { for (let i = 0; i < n; i++) { const m = (lo + hi) / 2; if (fn(m) > 0) lo = m; else hi = m; } return (lo + hi) / 2; };
+  window.dutyAt = (s, k, fl) => {
+    if (s <= 1e-3) return { Q: 0, H: 0 };
+    const Q = bisect(q => pumpH(q, s, fl) - k * q * q, 0, 45);
     return { Q, H: k * Q * Q };
   };
-  window.speedFor = (Q, H) => {
-    const bq = PUMP.b * Q;
-    return (-bq + Math.sqrt(bq * bq + 4 * PUMP.a * (PUMP.c * Q * Q + H))) / (2 * PUMP.a);
+  window.speedFor = (Q, H, fl) => bisect(s => H - pumpH(Q, s, fl), 0, 1.8);
+  window.systemK = valvePct => PUMP.Kpipe + PUMP.Ktrv / Math.pow(Math.max(0.02, valvePct / 100), 2);
+  window.valveForK = k => k <= PUMP.Kpipe + 1e-6 ? 100 : 100 * Math.sqrt(PUMP.Ktrv / (k - PUMP.Kpipe));
+
+  // Max curve in this liquid: limited by top speed, the 11.8 m head limit and the 333 W input limit
+  window.maxPoint = (Q, fl) => {
+    let s = PUMP.Smax;
+    if (pumpP1(Q, s, fl) > PUMP.Pmax) s = bisect(x => PUMP.Pmax - pumpP1(Q, x, fl), 0.3, PUMP.Smax, 32);
+    const H = pumpH(Q, s, fl);
+    if (H > PUMP.Hlim) return { H: PUMP.Hlim, s: speedFor(Q, PUMP.Hlim, fl) };
+    return { H: Math.max(0, H), s };
   };
-  window.systemK = valvePct => PUMP.Kopen / Math.pow(Math.max(0.05, valvePct / 100), 2);
+  // Cached envelope, rebuilt when the liquid changes
+  const envCache = new Map();
+  window.envelope = fl => {
+    const key = fl ? fl.gly + ':' + Math.round(fl.T / 2) : 'w20';
+    let tab = envCache.get(key);
+    if (!tab) {
+      tab = [];
+      for (let i = 0; i <= 120; i++) { const Q = i / 120 * PUMP.Qmax; tab.push([Q, maxPoint(Q, fl).H]); }
+      if (envCache.size > 80) envCache.clear();
+      envCache.set(key, tab);
+    }
+    return tab;
+  };
+  window.maxCurveH = (Q, fl) => Q > PUMP.Qmax ? 0 : interp(envelope(fl), Q);
+  window.qOnMax = (H, fl) => {
+    const e = envelope(fl);
+    for (let i = 1; i < e.length; i++) if (e[i][1] < H && e[i - 1][1] >= H) {
+      const [q0, h0] = e[i - 1], [q1, h1] = e[i]; return q0 + (q1 - q0) * (h0 - H) / (h0 - h1);
+    }
+    return H >= e[0][1] ? 0.5 : PUMP.Qmax;
+  };
 
   // Control curve for each mode: H as a function of Q (null for constant curve)
-  window.controlLine = (mode, set) => {
+  window.controlLine = (mode, set, fl) => {
     if (mode === 'cp') return { h0: set, slope: 0 };
-    if (mode === 'pp') return { h0: set / 2, slope: (set / 2) / qOnMax(set) };
-    if (mode === 'aa') return { h0: PUMP.HautoMin, slope: (set - PUMP.HautoMin) / qOnMax(set) };
+    if (mode === 'pp') return { h0: set / 2, slope: (set / 2) / qOnMax(set, fl) };
+    if (mode === 'aa') return { h0: PUMP.HautoMin, slope: (set - PUMP.HautoMin) / qOnMax(set, fl) };
     return null;
   };
 
-  // One input -> every readout. input = { mode, set, aaSet, valve, limitPct, temp, running }
+  // Minimum inlet pressure for the 32-120 F (bar, relative), manual section 12; +0.01 bar per 100 m above 300 m
+  window.minInlet = T => interp([[25, 0], [75, 0.10], [95, 0.20], [110, 0.70]], T);
+
+  // ── One input -> every readout ──
+  // input = { mode, set, aaSet, valve, limitPct, temp, gly, pin, running, night }
   window.kin = input => {
-    const k = systemK(input.valve), rho = rhoWater(input.temp);
+    const fl = fluid(input.temp, input.gly || 0);
+    const k = systemK(input.valve), rho = fl.rho;
     const set = input.mode === 'aa' ? input.aaSet : input.set;
+    const frozen = input.temp <= fl.fp;
     let s, limit = '';
-    if (!input.running) s = 0;
+    if (!input.running || frozen) s = 0;
+    else if (input.night && input.mode !== 'cc') s = PUMP.ccMin / 100 * PUMP.Smax;
     else if (input.mode === 'cc') s = input.set / 100 * PUMP.Smax;
     else {
-      const L = controlLine(input.mode, set);
-      // Intersect H = h0 + slope·Q with the system curve H = k·Q²
+      const L = controlLine(input.mode, set, fl);
       const Q = (L.slope + Math.sqrt(L.slope * L.slope + 4 * k * L.h0)) / (2 * k);
-      s = speedFor(Q, k * Q * Q);
+      s = speedFor(Q, k * Q * Q, fl);
     }
     if (s > PUMP.Smax) { s = PUMP.Smax; limit = 'speed'; }
-    let d = dutyAt(s, k);
-    const over = dd => dd.H - Math.min(PUMP.Hlim, envH(dd.Q));
-    if (over(d) > 0) {
-      let lo = 0, hi = s;
-      for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (over(dutyAt(mid, k)) > 0) hi = mid; else lo = mid; }
-      s = lo; d = dutyAt(s, k);
-      limit = d.Q > PUMP.envQ ? 'power' : 'head';
+    let d = dutyAt(s, k, fl);
+    // Head limit and 333 W limit both rise with speed on a fixed system curve
+    const over = x => { const dd = dutyAt(x, k, fl); return Math.max(dd.H - PUMP.Hlim, (pumpP1(dd.Q, x, fl) - PUMP.Pmax) / 30); };
+    if (s > 0 && over(s) > 0) {
+      s = bisect(x => -over(x), 0, s, 36); d = dutyAt(s, k, fl);
+      limit = pumpP1(d.Q, s, fl) > PUMP.Pmax - 1.5 ? 'power' : 'head';
     }
-    // FLOW LIMIT: Q is linear in s on a fixed system curve
+    // FLOW LIMIT
     const qLim = input.limitPct < 91 ? input.limitPct / 100 * PUMP.Qmax : Infinity;
-    if (d.Q > qLim) { s = s * qLim / d.Q; d = dutyAt(s, k); limit = 'flow'; }
-    let P1 = pumpP1(d.Q, s, rho);
-    if (limit === 'power') P1 = PUMP.Pmax;
-    const Phyd = rho * 9.81 * d.Q / 3600 * d.H;
+    if (d.Q > qLim) { s = bisect(x => qLim - dutyAt(x, k, fl).Q, 0, s, 36); d = dutyAt(s, k, fl); limit = 'flow'; }
+
+    const pw = powerAt(d.Q, s, fl), w = omega(s), Qs = d.Q / 3600;
+    const Phyd = rho * PUMP.g * Qs * d.H;
+    const P1 = s > 0 ? pw.P1 : 0;
+    // Suction side
+    const v = Qs / (Math.PI * PUMP.Dpipe * PUMP.Dpipe / 4);
+    const pin = input.pin == null ? 1 : input.pin;
+    const NPSHa = ((pin + PUMP.patm) - fl.pv) * 1e5 / (rho * PUMP.g) + v * v / (2 * PUMP.g);
+    const sig = s / PUMP.Smax, NPSH3 = PUMP.N0 * sig * sig + PUMP.Cnpsh * d.Q * d.Q;
+    const running = s > 0;
+    const cav = running ? clamp((1.3 * NPSH3 - NPSHa) / (0.6 * NPSH3), 0, 1) : 0;
+    const boiling = (pin + PUMP.patm) < fl.pv;
+    // Impeller outlet velocity triangle. The work done on the water comes from the power balance:
+    // hydraulic efficiency = pump efficiency / (volumetric 0.94 × mechanical 0.96), then Euler: Hth = u2·cu2/g
+    const etaPumpNow = pw.P2 > 0 ? Phyd / pw.P2 : 0, etaH = Math.min(0.92, etaPumpNow / (0.94 * 0.96));
+    const b2 = PUMP.beta2 * Math.PI / 180, u2 = Math.PI * PUMP.D2 * (sig * PUMP.nmax) / 60;
+    const tau = 1 - PUMP.z * PUMP.tBlade / (Math.PI * PUMP.D2 * Math.sin(b2));
+    const cm2 = Qs / 0.94 / (Math.PI * PUMP.D2 * PUMP.b2 * tau);
+    // Slip caps how much swirl the blades can give (Wiesner); below that, part-load losses take over
+    const slip = 1 - Math.sqrt(Math.sin(b2)) / Math.pow(PUMP.z, 0.7);
+    const cu2 = u2 > 0 && etaH > 0.05 ? Math.min(slip * u2, PUMP.g * d.H / etaH / u2) : 0;
+    const Hth = u2 * cu2 / PUMP.g;
     return {
-      s, k, rho, Q: d.Q, H: d.H, P1, limit, set,
-      rpm: s / PUMP.Smax * PUMP.nmax,
+      fl, s, k, rho, Q: d.Q, H: d.H, P1, limit, set, frozen, night: !!input.night && input.mode !== 'cc' && running,
+      rpm: sig * PUMP.nmax, omega: w, torque: w > 0 ? pw.P2 / w : 0,
+      P2: running ? pw.P2 : 0, Phyd,
+      loss: { el: running ? pw.el : (input.running ? PUMP.Pel0 : 0), fe: running ? pw.fe : 0, cu: running ? pw.cu : 0, hyd: running ? Math.max(0, pw.P2 - Phyd) : 0 },
       eta: P1 > 0 ? Phyd / P1 : 0,
+      etaPump: pw.P2 > 0 ? Phyd / pw.P2 : 0,
+      etaMotor: pw.P2 > 0 ? pw.P2 / (pw.P2 + pw.fe + pw.cu) : 0,
       amps: P1 > 0 ? Math.max(0.18, P1 / (PUMP.volts * PUMP.pf)) : 0,
-      dpKPa: rho * 9.81 * d.H / 1000,
-      pin: minInlet(input.temp),
-      lowFlow: input.running && d.Q < 0.1 * PUMP.Qmax
+      dpKPa: rho * PUMP.g * d.H / 1000,
+      pinMin: minInlet(input.temp),
+      v, Re: v * PUMP.Dpipe / (fl.nu * 1e-6), NPSHa, NPSH3, cav, boiling,
+      tri: { u2, cm2, cu2, c2: Math.hypot(cm2, cu2), w2: Math.hypot(cm2, u2 - cu2), Hth, etaH: Hth > 0.05 ? d.H / Hth : 0, slip, alpha2: Math.atan2(cm2, cu2) * 180 / Math.PI, beta2f: Math.atan2(cm2, u2 - cu2) * 180 / Math.PI, psi: u2 > 0 ? 2 * PUMP.g * d.H / (u2 * u2) : 0, phi: u2 > 0 ? cm2 / u2 : 0 },
+      hi: running && fl.nu > 1.2 ? hiFactors(fl.nu, s) : { B: 0, CQ: 1, Ce: 1 },
+      lowFlow: running && d.Q < 0.1 * PUMP.Qmax
     };
   };
 
@@ -557,6 +931,85 @@
     if (!(st.limit === 'power' || st.limit === 'head' || st.limit === 'speed')) return aaSet;
     const target = Math.max(PUMP.HautoMin + 1, st.H);
     return target < aaSet ? aaSet + (target - aaSet) * Math.min(1, dt * 0.6) : aaSet;
+  };
+
+  // ── Energy Efficiency Index, EN 16297-1/-2 (water at 20 °C) ──
+  window.eei = () => {
+    const fl = fluid(20, 0);
+    let best = 0, Q100 = 0;
+    for (let Q = 0.1; Q < PUMP.Qmax; Q += 0.02) { const ph = fl.rho * PUMP.g * Q / 3600 * maxCurveH(Q, fl); if (ph > best) { best = ph; Q100 = Q; } }
+    const H100 = maxCurveH(Q100, fl);
+    const pts = [[1, 0.06], [0.75, 0.15], [0.5, 0.35], [0.25, 0.44]].map(([f, t]) => {
+      const Q = Q100 * f, H = H100 * (0.5 + 0.5 * f), s = speedFor(Q, H, fl);
+      return { f, t, Q, H, P1: pumpP1(Q, s, fl) };
+    });
+    const PL = pts.reduce((a, p) => a + p.t * p.P1, 0);
+    const Pref = 1.7 * best + 17 * (1 - Math.exp(-0.3 * best));
+    return { Phyd: best, Q100, H100, pts, PL, Pref, EEI: PL / Pref * 0.49 };
+  };
+
+  // ── Heating system: a block of about 40 flats, Danish design conditions (DS 418: −12 °C) ──
+  const BLD = window.BLD = { Td: -12, Ti: 20, Tlim: 17, Phid: 230e3, Tsd: 70, Trd: 50, n: 1.3, setback: 15 };
+  const lmtd = (Ts, Tr, Ti) => (Ts - Tr) / Math.log((Ts - Ti) / (Tr - Ti));
+  BLD.Phin = BLD.Phid / Math.pow(lmtd(BLD.Tsd, BLD.Trd, BLD.Ti) / 49.83, BLD.n); // EN 442 rating at 75/65/20
+  BLD.load = (Tout, night) => BLD.Phid * clamp((BLD.Tlim - (night ? 3 : 0) - Tout) / (BLD.Tlim - BLD.Td), 0, 1.15);
+  // Weather-compensated supply temperature, with the boiler's own night setback
+  BLD.supply = (Tout, night) => {
+    const r = clamp((BLD.Tlim - Tout) / (BLD.Tlim - BLD.Td), 0, 1.15);
+    return Math.max(30, BLD.Ti + (BLD.Tsd - BLD.Ti) * Math.pow(r, 1 / BLD.n)) - (night ? BLD.setback : 0);
+  };
+  const radPhi = (Ts, Tr) => BLD.Phin * Math.pow(Math.max(0, lmtd(Ts, Tr, BLD.Ti)) / 49.83, BLD.n);
+  // Return temperature and heat output for a given flow through the radiators
+  BLD.radiators = (Ts, Q, fl) => {
+    if (Q <= 1e-4 || Ts <= BLD.Ti + 0.5) return { Tr: Ts, Phi: 0 };
+    const mcp = fl.rho * Q / 3600 * fl.cp;
+    const Tr = bisect(tr => mcp * (Ts - tr) - radPhi(Ts, tr), BLD.Ti + 0.01, Ts - 0.001, 40);
+    return { Tr, Phi: mcp * (Ts - Tr) };
+  };
+  // Flow the thermostatic valves need to meet the load
+  BLD.flowFor = (Ts, Phi, fl) => {
+    if (Phi <= 0) return 0;
+    if (radPhi(Ts, Ts - 0.01) <= Phi) return Infinity;
+    const Tr = bisect(tr => Phi - radPhi(Ts, tr), BLD.Ti + 0.01, Ts - 0.01, 40);
+    return Phi / (fl.rho * fl.cp * (Ts - Tr)) * 3600;
+  };
+  // TRVs open until the flow meets demand (ideal thermostats); returns the valve opening and the duty
+  BLD.solve = (input, Tout, boilerNight, TsNow) => {
+    const Ts = TsNow == null ? BLD.supply(Tout, boilerNight) : TsNow, Phi = BLD.load(Tout, boilerNight);
+    const inp = Object.assign({}, input, { temp: Ts });
+    const fl = fluid(Ts, inp.gly || 0);
+    const Qreq = BLD.flowFor(Ts, Phi, fl);
+    let valve = 100, st = kin(Object.assign(inp, { valve: 100 }));
+    if (Qreq === 0) { valve = 2; st = kin(Object.assign(inp, { valve })); }
+    else if (st.Q > Qreq) {
+      let lo = 2, hi = 100;
+      for (let i = 0; i < 18; i++) { const m = (lo + hi) / 2; if (kin(Object.assign(inp, { valve: m })).Q < Qreq) lo = m; else hi = m; }
+      valve = hi; st = kin(Object.assign(inp, { valve }));
+    }
+    const rad = BLD.radiators(Ts, st.Q, fl);
+    const Troom = Phi > 0 ? Tout + (BLD.Ti - (boilerNight ? 3 : 0) - Tout) * Math.min(1, rad.Phi / Phi) : BLD.Ti;
+    return { st, valve, Ts, Tr: rad.Tr, Phi: rad.Phi, load: Phi, Qreq, Troom, dpTrv: Math.max(0, st.H - PUMP.Kpipe * st.Q * st.Q) };
+  };
+  // Outdoor temperature over the day: coldest at 05:00, warmest at 15:00
+  BLD.outdoor = (Tmean, hour) => Tmean + 3 * Math.cos(2 * Math.PI * (hour - 15) / 24);
+  BLD.isBoilerNight = hour => hour >= 22 || hour < 5;
+  // Electricity over a day for one control mode (2-hour steps; boiler setback and pump night curve as set)
+  BLD.dayEnergy = (input, Tmean, opts) => {
+    let Wh = 0, heat = 0;
+    for (let h = 1; h < 24; h += 2) {
+      const bn = opts.setback && BLD.isBoilerNight(h);
+      const r = BLD.solve(Object.assign({}, input, { night: bn && opts.autoNight }), BLD.outdoor(Tmean, h), bn);
+      if (r.load <= 0) continue;
+      Wh += r.st.P1 * 2; heat += r.Phi * 2;
+    }
+    return { kWh: Wh / 1000, heatMWh: heat / 1e6 };
+  };
+  // Copenhagen monthly mean temperatures (DMI normals 1991–2020); heating runs Sep–May
+  BLD.months = [['Sep', 14.2, 30], ['Oct', 9.8, 31], ['Nov', 5.7, 30], ['Dec', 2.8, 31], ['Jan', 1.4, 31], ['Feb', 1.5, 28], ['Mar', 3.5, 31], ['Apr', 7.5, 30], ['May', 11.6, 31]];
+  BLD.season = (input, opts) => {
+    let kWh = 0, heat = 0;
+    for (const [, T, days] of BLD.months) { const d = BLD.dayEnergy(input, T, opts); kWh += d.kWh * days; heat += d.heatMWh * days; }
+    return { kWh, heatMWh: heat };
   };
 </script>
 
@@ -734,21 +1187,26 @@
   mesh(new THREE.CylinderGeometry(2.1, 2.1, 12.2, 40, 1, true).translate(0, FLOOR + 6.1, 0), M.pipe, pump, false);
 
   // ── Rotor assembly: composite impeller + ceramic shaft + PM rotor, spins as one part ──
+  // Impeller Ø63 mm (sized from the curve with Euler's equation), eye Ø30 mm, 7 backward-curved
+  // log-spiral blades turning from 18° at the eye to 30° at the tip, about 8.5 mm wide at the outlet
   const spin = new THREE.Group(); G.rotor.add(spin);
-  mesh(lathe([[1.4, 0.45], [4.0, 0.65], [4.0, 0.8], [1.4, 0.6]]), M.shroud, spin);
-  mesh(tubeZ(4.0, 0.25, 1.7), M.impeller, spin);
+  const R1 = 1.5, R2 = 3.15;
+  mesh(lathe([[R1 - 0.1, 0.45], [R2, 0.68], [R2, 0.8], [R1 - 0.1, 0.6]]), M.shroud, spin);
+  mesh(tubeZ(R2, 0.25, 1.7), M.impeller, spin);
   mesh(tubeZ(1.0, 1.2, 1.7), M.impeller, spin);
   {
-    const BLADES = 7, r1 = 1.3, r2 = 3.95, sweep = 1.0, t = 0.18, n = 14;
+    const BLADES = 7, t = 0.16, n = 18, th = [0];
+    const beta = f => (18 + 12 * f) * Math.PI / 180;
+    for (let i = 1; i <= n; i++) { const f0 = (i - 1) / n, f1 = i / n, r0 = lerp(R1, R2, f0), r1 = lerp(R1, R2, f1); th.push(th[i - 1] + (r1 - r0) / (0.5 * (r0 + r1) * Math.tan(beta((f0 + f1) / 2)))); }
     for (let b = 0; b < BLADES; b++) {
       const th0 = b * Math.PI * 2 / BLADES, outer = [], inner = [];
       for (let i = 0; i <= n; i++) {
-        const f = i / n, r = lerp(r1, r2, f), th = th0 - sweep * f;
-        const nx = Math.cos(th), ny = Math.sin(th), tx = -ny, ty = nx;
+        const r = lerp(R1, R2, i / n), a = th0 - th[i];
+        const nx = Math.cos(a), ny = Math.sin(a), tx = -ny, ty = nx;
         outer.push(new V2(r * nx + tx * t / 2, r * ny + ty * t / 2));
         inner.push(new V2(r * nx - tx * t / 2, r * ny - ty * t / 2));
       }
-      mesh(new THREE.ExtrudeGeometry(new THREE.Shape([...outer, ...inner.reverse()]), { depth: 0.95, bevelEnabled: false }).translate(0, 0, 0.75), M.impeller, spin);
+      mesh(new THREE.ExtrudeGeometry(new THREE.Shape([...outer, ...inner.reverse()]), { depth: 0.9, bevelEnabled: false }).translate(0, 0, 0.8), M.impeller, spin);
     }
   }
   mesh(tubeZ(0.4, 20.5, 0.5, false, 24), M.ceramic, spin);
@@ -859,12 +1317,19 @@
   }
   const pressureT = u => smooth((u - U_IN) / (U_SPIRAL - U_IN));
 
+  // ── Cavitation: vapour bubbles form at the impeller eye and collapse as the pressure rises along the blades ──
+  const NB = lowPower ? 50 : 90;
+  const bubbles = new THREE.InstancedMesh(new THREE.SphereGeometry(0.11, 8, 6), new THREE.MeshBasicMaterial({ color: 0xf4f8ff, transparent: true, opacity: 0.9, toneMapped: false, depthWrite: false }), NB);
+  bubbles.frustumCulled = false; bubbles.visible = false;
+  G.rotor.add(bubbles);
+  const bub = Array.from({ length: NB }, () => ({ a: rng() * Math.PI * 2, o: rng(), z: 0.85 + rng() * 0.8, sz: 0.6 + rng() * 0.8 }));
+
   // ── Labels ──
   const LABELS = [
     { g: 'housing', p: [0, -6.4, -4.8], t: 'Pump housing', d: 'Cast iron EN-GJL-250', internal: false },
     { g: 'housing', p: [0, 11.1, 3.6], t: 'DN32 flange', d: '220 mm port to port', internal: false },
     { g: 'housing', p: [3.5, -5.6, -2.4], t: 'Direct sensor', d: 'Δp + temperature', internal: true },
-    { g: 'rotor', p: [0, 4.2, 1.2], t: 'Impeller', d: 'Composite, 7 blades', internal: true },
+    { g: 'rotor', p: [0, 3.4, 1.2], t: 'Impeller', d: 'Composite, Ø63 mm (est.)', internal: true },
     { g: 'rotor', p: [0, 2.3, 18], t: 'PM rotor', d: 'Permanent magnets', internal: true },
     { g: 'can', p: [0, 2.6, 8], t: 'Rotor can', d: 'Water inside, no seal', internal: true },
     { g: 'stator', p: [0, 5.0, 16], t: 'Stator', d: 'Copper windings', internal: true },
@@ -886,57 +1351,82 @@
                     pp: { label: 'Setpoint (Hset)', min: 1, max: 11.8, step: 0.1, unit: 'm', val: 6 },
                     cp: { label: 'Setpoint (H)', min: 1, max: 11.8, step: 0.1, unit: 'm', val: 5 },
                     cc: { label: 'Speed (% of max)', min: PUMP.ccMin, max: 100, step: 1, unit: '%', val: 70 } };
-  const input = { mode: 'aa', set: PUMP.HautoStart, aaSet: PUMP.HautoStart, valve: 45, limitPct: 95, temp: 60, running: true };
+  const input = { mode: 'aa', set: PUMP.HautoStart, aaSet: PUMP.HautoStart, valve: 45, limitPct: 95, temp: 60, gly: 0, pin: 1.0, running: true, night: false };
   const view = { explode: 0, cut: false, flow: true, labels: !lowPower };
+  // Heating day: the building sets the valves and the supply temperature
+  const sys = { mode: 'manual', Tmean: 2, clock: 19, hour: 19, playing: true, setback: true, autoNight: true, Ts: null, hist: [], nightOn: false, TsMin: 99, log: [], heatMWh: 0, pumpkWh: 0, r: null };
   let st = kin(input);
   const disp = { s: 0, Q: 0, explode: 0 };
-  let spinAngle = 0, flowPhase = 0, frame = 0, eyeAngle = 0;
+  let spinAngle = 0, flowPhase = 0, frame = 0, eyeAngle = 0, bubT = 0;
 
-  // ── Console: readouts, chart, on-pump display ──
-  const fmt = (x, d = 1) => x.toFixed(d);
+  const fmt = (x, d = 1) => (Number.isFinite(x) ? x : 0).toFixed(d);
+  const clampN = (x, a, b) => Math.min(b, Math.max(a, x));
+  const hhmm = h => { const m = Math.floor((((h % 24) + 24) % 24) * 60); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+  const kv = (id, v, u = '') => { const el = $(id); if (el) el.innerHTML = u ? `${v}<em>${u}</em>` : v; };
+  const MODE_NAME = { aa: 'AUTOADAPT', pp: 'Prop. press.', cp: 'Const. press.', cc: 'Const. curve' };
+  const MODE_LONG = { aa: 'AUTOADAPT', pp: 'Proportional pressure', cp: 'Constant pressure', cc: 'Constant curve' };
+  const tcol = T => { const f = clampN((T - 15) / 60, 0, 1); return `rgb(${Math.round(42 + f * 158)},${Math.round(143 - f * 127)},${Math.round(214 - f * 168)})`; };
+
+  // ── Console: readouts on the 3D view ──
+  function flagText() {
+    const r = sys.mode === 'building' ? sys.r : null;
+    if (st.frozen) return `The liquid is frozen: ${input.gly ? `this mix freezes at ${st.fl.fp} °C` : 'water freezes at 0 °C'}. Warm it up or add glycol.`;
+    if (!input.running) return 'Pump stopped. Grundfos Eye: two steady green lights.';
+    if (st.boiling) return 'Inlet pressure is below the vapour pressure, so the water boils inside the pump. Raise the inlet pressure.';
+    if (st.cav >= 0.5) return `Cavitating: ${fmt(st.NPSHa, 1)} m of NPSH available, the impeller needs ${fmt(st.NPSH3, 1)} m. Expect noise, about 3 % less head and worn bearings.`;
+    if (st.cav > 0) return `Close to cavitation: the NPSH margin is ${fmt(st.NPSHa / st.NPSH3, 2)}×. Aim for 1.3× or more.`;
+    if (st.night) return 'Automatic night setback: the supply temperature fell, so the pump has dropped to its minimum curve.';
+    if (st.limit === 'power') return 'Power-limited: speed held back to stay at 333 W.';
+    if (st.limit === 'head') return 'Head limit: held at the 11.8 m maximum.';
+    if (st.limit === 'speed') return 'At maximum speed: the setpoint can’t be reached with these valves.';
+    if (st.limit === 'flow') return `FLOW LIMIT active: flow capped at ${fmt(input.limitPct / 100 * PUMP.Qmax, 1)} m³/h.`;
+    if (r && r.load > 0 && r.Phi < r.load * 0.97) return 'The pump can’t push enough flow: the rooms are getting colder than set.';
+    if (r && r.load > 0 && r.dpTrv * st.rho * 9.81 / 1000 > 30) return `${fmt(r.dpTrv * st.rho * 9.81 / 1000, 0)} kPa across the radiator valves. Above about 30 kPa thermostatic valves start to whistle.`;
+    if (st.lowFlow) return 'Low flow (under 10 % of Qmax): the display shows "low flow".';
+    if (st.hi.B > 1) return `Glycol at ${fmt(st.fl.nu, 1)} cSt: pump efficiency down ${fmt((1 - st.hi.Ce) * 100, 0)} % by the ANSI/HI 9.6.7 viscosity correction.`;
+    return '';
+  }
   function updateReadouts() {
-    $('rSpeed').innerHTML = `${Math.round(disp.s / PUMP.Smax * PUMP.nmax).toLocaleString('en')}<em>rpm</em>`;
-    $('rQ').innerHTML = `${fmt(st.Q, 2)}<em>m³/h</em>`;
-    $('rH').innerHTML = `${fmt(st.H, 2)}<em>m</em>`;
-    $('rDp').innerHTML = `${fmt(st.dpKPa, 0)}<em>kPa</em>`;
-    $('rP').innerHTML = `${fmt(st.P1, 0)}<em>W</em>`;
-    $('rEta').innerHTML = `${fmt(st.eta * 100, 0)}<em>%</em>`;
-    $('rI').innerHTML = `${fmt(st.amps, 2)}<em>A</em>`;
-    $('rPin').innerHTML = `${fmt(st.pin, 2)}<em>bar</em>`;
+    kv('rSpeed', Math.round(disp.s / PUMP.Smax * PUMP.nmax).toLocaleString('en'), 'rpm');
+    kv('rQ', fmt(st.Q, 2), 'm³/h');
+    kv('rH', fmt(st.H, 2), 'm');
+    kv('rDp', fmt(st.dpKPa, 0), 'kPa');
+    kv('rP', fmt(st.P1, 0), 'W');
+    kv('rEta', fmt(st.eta * 100, 0), '%');
+    kv('rI', fmt(st.amps, 2), 'A');
+    kv('rT', fmt(st.torque, 2), 'N·m');
+    kv('rNpsh', fmt(st.NPSHa, 1), 'm');
     if (input.mode === 'aa') $('setOut').textContent = `${fmt(input.aaSet, 1)} m`;
-    $('flag').textContent = !input.running ? 'Pump stopped. Grundfos Eye: two steady green lights.'
-      : st.limit === 'power' ? 'Power-limited: speed held back to stay at 333 W.'
-      : st.limit === 'head' ? 'Head limit: held at the 11.8 m maximum.'
-      : st.limit === 'speed' ? 'At maximum speed: setpoint can’t be reached with these valves.'
-      : st.limit === 'flow' ? `FLOW LIMIT active: flow capped at ${fmt(input.limitPct / 100 * PUMP.Qmax, 1)} m³/h.`
-      : st.lowFlow ? 'Low flow (under 10 % of Qmax): the display shows "low flow".' : '';
+    $('flag').textContent = flagText();
   }
 
-  // ── Interactive pump curve: Q–H on top, P1 below, like the Grundfos data sheet ──
+  // ── Interactive pump curve: Q–H on top, P1 and efficiency below, like the Grundfos data sheet ──
   const chart = $('chart'), cx = chart.getContext('2d');
-  const showSeries = { env: true, speed: true, sys: true, ctrl: true };
+  const showSeries = { env: true, speed: true, sys: true, ctrl: true, eta: true, eei: false };
+  const W20 = fluid(20, 0), EEI = eei();
   let hover = null, dragging = false;
-  const QX = 22, HY = 13, PY = 360;
+  const QX = 22, HY = 13, PY = 360, EY = 0.8;
   function chartGeom() {
-    const w = chart.clientWidth, h = chart.clientHeight, pad = { l: 44, r: 16, t: 14, b: 30 };
-    const split = Math.round(h * 0.66);
+    const w = chart.clientWidth, h = chart.clientHeight, pad = { l: 44, r: 40, t: 14, b: 30 };
+    const split = Math.round(h * 0.64);
     return {
       w, h, pad, split,
       X: q => pad.l + q / QX * (w - pad.l - pad.r),
       Q: x => (x - pad.l) / (w - pad.l - pad.r) * QX,
       Yh: H => split - 22 - H / HY * (split - 22 - pad.t),
       Hy: y => (split - 22 - y) / (split - 22 - pad.t) * HY,
-      Yp: P => h - pad.b - P / PY * (h - pad.b - split - 6)
+      Yp: P => h - pad.b - P / PY * (h - pad.b - split - 6),
+      Ye: e => h - pad.b - e / EY * (h - pad.b - split - 6)
     };
   }
   function drawChart() {
-    const dpr = Math.min(devicePixelRatio, 2), g = chartGeom(), { w, h, pad, X, Yh, Yp } = g;
+    const dpr = Math.min(devicePixelRatio, 2), g = chartGeom(), { w, h, pad, X, Yh, Yp, Ye } = g;
     if (!w) return;
     if (chart.width !== Math.round(w * dpr) || chart.height !== Math.round(h * dpr)) { chart.width = Math.round(w * dpr); chart.height = Math.round(h * dpr); }
     cx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cx.clearRect(0, 0, w, h);
     cx.font = '11px JetBrains Mono, monospace'; cx.lineWidth = 1;
-    // Grids and axes
+    const fl = st.fl;
     const grid = (y0, y1, ticks, Y, unit) => {
       cx.strokeStyle = 'rgba(17,73,123,0.09)'; cx.fillStyle = '#7a8798';
       for (let q = 0; q <= 22; q += 2) { cx.beginPath(); cx.moveTo(X(q), y0); cx.lineTo(X(q), y1); cx.stroke(); }
@@ -945,13 +1435,18 @@
     };
     grid(Yh(HY), Yh(0), [0, 2, 4, 6, 8, 10, 12], Yh, 'H [m]');
     grid(Yp(PY), Yp(0), [0, 100, 200, 300], Yp, 'P1 [W]');
+    if (showSeries.eta) {
+      cx.fillStyle = '#1b998b';
+      for (const e of [0, 0.2, 0.4, 0.6, 0.8]) cx.fillText(Math.round(e * 100), w - pad.r + 6, Ye(e) + 4);
+      cx.fillText('η %', w - pad.r + 4, Ye(EY) - 8);
+    }
     cx.fillStyle = '#7a8798';
     for (let q = 0; q <= 22; q += 2) cx.fillText(q, X(q) - (q > 9 ? 7 : 3), h - 10);
     cx.fillStyle = '#11497b'; cx.fillText('Q [m³/h]', w - pad.r - 62, h - 10);
 
-    // Shaded operating area of the pump
+    // Shaded operating area for this liquid
     cx.beginPath(); cx.moveTo(X(0), Yh(0));
-    for (let i = 0; i <= 120; i++) { const q = i / 120 * PUMP.Qmax; cx.lineTo(X(q), Yh(maxCurveH(q))); }
+    for (let i = 0; i <= 120; i++) { const q = i / 120 * PUMP.Qmax; cx.lineTo(X(q), Yh(maxCurveH(q, fl))); }
     cx.lineTo(X(PUMP.Qmax), Yh(0)); cx.closePath(); cx.fillStyle = 'rgba(17,73,123,0.06)'; cx.fill();
 
     const curve = (fn, Y, color, dash = [], width = 2, qMax = QX, yMax = HY) => {
@@ -964,18 +1459,31 @@
       }
       cx.stroke(); cx.setLineDash([]);
     };
-    const onSpeed = q => { const H = pumpH(q, st.s); return H <= maxCurveH(q) + 1e-6 ? H : null; };
+    const onSpeed = q => { const H = pumpH(q, st.s, fl); return H >= 0 && H <= maxCurveH(q, fl) + 0.02 ? H : null; };
     if (showSeries.env) {
-      curve(q => maxCurveH(q), Yh, '#11497b', [], 2.2, PUMP.Qmax);
-      curve(q => q < PUMP.Qmax ? PUMP.Pmax : null, Yp, '#11497b', [], 1.6, PUMP.Qmax, PY);
+      if (fl.gly || Math.abs(fl.rho - W20.rho) > 6) curve(q => maxCurveH(q, W20), Yh, 'rgba(17,73,123,0.35)', [4, 4], 1.2, PUMP.Qmax);
+      curve(q => maxCurveH(q, fl), Yh, '#11497b', [], 2.2, PUMP.Qmax);
+      curve(q => q < PUMP.Qmax ? pumpP1(q, maxPoint(q, fl).s, fl) : null, Yp, '#11497b', [], 1.6, PUMP.Qmax, PY);
     }
-    if (showSeries.speed && input.running) {
+    if (showSeries.speed && st.s > 0) {
       curve(onSpeed, Yh, '#2a8fd6', [6, 4], 2, PUMP.Qmax);
-      curve(q => onSpeed(q) == null ? null : pumpP1(q, st.s, st.rho), Yp, '#2a8fd6', [6, 4], 2, PUMP.Qmax, PY);
+      curve(q => onSpeed(q) == null ? null : pumpP1(q, st.s, fl), Yp, '#2a8fd6', [6, 4], 2, PUMP.Qmax, PY);
+    }
+    if (showSeries.eta && st.s > 0) {
+      curve(q => { const H = onSpeed(q); return H == null || q < 0.05 ? null : fl.rho * 9.81 * q / 3600 * H / pumpP1(q, st.s, fl); }, Ye, '#1b998b', [], 1.6, PUMP.Qmax, EY);
     }
     if (showSeries.sys) curve(q => st.k * q * q, Yh, '#6b7d93', [], 1.6);
-    const L = controlLine(input.mode, st.set);
-    if (showSeries.ctrl && L) curve(q => { const H = L.h0 + L.slope * q; return H <= maxCurveH(q) + 0.01 ? H : null; }, Yh, '#c8102e', [3, 3], 1.6, PUMP.Qmax);
+    const L = controlLine(input.mode, st.set, fl);
+    if (showSeries.ctrl && L && !st.night) curve(q => { const H = L.h0 + L.slope * q; return H <= maxCurveH(q, fl) + 0.01 ? H : null; }, Yh, '#c8102e', [3, 3], 1.6, PUMP.Qmax);
+    if (showSeries.eei) {
+      cx.setLineDash([2, 3]); cx.strokeStyle = '#c98a12'; cx.lineWidth = 1.4;
+      cx.beginPath(); cx.moveTo(X(0), Yh(EEI.H100 / 2)); cx.lineTo(X(EEI.Q100), Yh(EEI.H100)); cx.stroke(); cx.setLineDash([]);
+      cx.fillStyle = '#c98a12';
+      for (const p of EEI.pts) {
+        for (const [px, py] of [[X(p.Q), Yh(p.H)], [X(p.Q), Yp(p.P1)]]) { cx.beginPath(); cx.rect(px - 3.5, py - 3.5, 7, 7); cx.fill(); }
+        cx.fillText(`${Math.round(p.f * 100)}%`, X(p.Q) - 10, Yh(p.H) - 9);
+      }
+    }
     if (input.limitPct < 91) {
       const xq = X(input.limitPct / 100 * PUMP.Qmax);
       cx.setLineDash([2, 3]); cx.strokeStyle = 'rgba(200,16,46,0.5)'; cx.beginPath(); cx.moveTo(xq, Yh(HY)); cx.lineTo(xq, Yp(0)); cx.stroke(); cx.setLineDash([]);
@@ -990,13 +1498,16 @@
       cx.beginPath(); cx.fillStyle = '#c8102e'; cx.arc(px, py, 5, 0, Math.PI * 2); cx.fill();
       cx.beginPath(); cx.strokeStyle = 'rgba(200,16,46,0.3)'; cx.lineWidth = 1; cx.arc(px, py, 9, 0, Math.PI * 2); cx.stroke();
     }
-    // Hover crosshair and read-out
     if (hover) {
       const q = hover.q, hx = X(q);
       cx.strokeStyle = 'rgba(13,34,64,0.35)'; cx.setLineDash([2, 2]);
       cx.beginPath(); cx.moveTo(hx, Yh(HY)); cx.lineTo(hx, Yp(0)); cx.stroke(); cx.setLineDash([]);
-      const rows = [`Q ${q.toFixed(1)} m³/h`, `Max curve ${maxCurveH(q).toFixed(2)} m`];
-      const hs = onSpeed(q); if (input.running && hs != null) rows.push(`At current speed ${hs.toFixed(2)} m · ${pumpP1(q, st.s, st.rho).toFixed(0)} W`);
+      const rows = [`Q ${q.toFixed(1)} m³/h`, `Max curve ${maxCurveH(q, fl).toFixed(2)} m`];
+      const hs = onSpeed(q);
+      if (st.s > 0 && hs != null) {
+        const p1 = pumpP1(q, st.s, fl);
+        rows.push(`At current speed ${hs.toFixed(2)} m · ${p1.toFixed(0)} W · η ${(fl.rho * 9.81 * q / 3600 * hs / p1 * 100).toFixed(0)} %`);
+      }
       rows.push(`System ${(st.k * q * q).toFixed(2)} m`);
       cx.font = '12px Inter, sans-serif';
       const bw = Math.max(...rows.map(r => cx.measureText(r).width)) + 20, bh = rows.length * 18 + 12;
@@ -1013,9 +1524,8 @@
     return { q: Math.max(0, Math.min(QX, g.Q(x))), h: g.Hy(y), inTop: y < g.split };
   }
   function dragTo(p) {
-    if (!p.inTop || p.q < 0.4 || p.h <= 0.05) return;
-    const k = p.h / (p.q * p.q);
-    setValve(Math.round(100 * Math.sqrt(PUMP.Kopen / k)));
+    if (sys.mode === 'building' || !p.inTop || p.q < 0.4 || p.h <= 0.05) return;
+    setValve(Math.round(valveForK(p.h / (p.q * p.q))));
   }
   chart.addEventListener('pointerdown', e => { dragging = true; chart.setPointerCapture(e.pointerId); dragTo(chartPoint(e)); drawChart(); });
   chart.addEventListener('pointermove', e => { const p = chartPoint(e); hover = p; if (dragging) dragTo(p); drawChart(); });
@@ -1026,8 +1536,258 @@
   }));
   new ResizeObserver(() => drawChart()).observe(chart);
 
+  // ── Under the hood ──
+  function fitCanvas(c) {
+    const dpr = Math.min(devicePixelRatio, 2), w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return null;
+    if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+    return { g, w, h };
+  }
+  // Power flow: one band from the plug, losses peel off downward, what's left reaches the water
+  function drawSankey() {
+    const f = fitCanvas($('sankey')); if (!f) return;
+    const { g, w, h } = f;
+    g.font = '11px JetBrains Mono, monospace';
+    if (st.P1 <= 0) { g.fillStyle = '#7a8798'; g.fillText('Pump stopped', 12, 24); return; }
+    const k = (h * 0.4) / PUMP.Pmax, y0 = 34, x0 = 64, x1 = w - 96, legY = h - 12;
+    const losses = [['Electronics', st.loss.el, 0.24], ['Motor', st.loss.fe + st.loss.cu, 0.46], ['Hydraulic', st.loss.hyd, 0.68]];
+    let rem = st.P1;
+    // Main band
+    g.fillStyle = '#11497b';
+    g.beginPath(); g.moveTo(x0, y0);
+    g.lineTo(x1, y0);
+    const outT = Math.max(1.5, st.Phyd * k);
+    g.lineTo(x1, y0 + outT);
+    for (let i = losses.length - 1; i >= 0; i--) {
+      const [, Lw, fx] = losses[i], xi = x0 + fx * (x1 - x0);
+      const before = losses.slice(0, i).reduce((a, l) => a - l[1], st.P1);
+      g.lineTo(xi, y0 + Math.max(1.5, (before - Lw) * k)); g.lineTo(xi, y0 + Math.max(1.5, before * k));
+    }
+    g.lineTo(x0, y0 + st.P1 * k); g.closePath(); g.fill();
+    // Output arrow
+    g.fillStyle = '#2a8fd6';
+    g.beginPath(); g.moveTo(x1, y0); g.lineTo(x1 + 18, y0 + outT / 2); g.lineTo(x1, y0 + outT); g.closePath(); g.fill();
+    // Loss ribbons
+    for (const [name, Lw, fx] of losses) {
+      const xi = x0 + fx * (x1 - x0), t = Math.max(1.5, Lw * k);
+      const ybot = y0 + rem * k, ytop = ybot - t, xd = xi + 22, yd = legY - 34;
+      g.fillStyle = 'rgba(200,16,46,0.55)';
+      g.beginPath(); g.moveTo(xi, ytop);
+      g.bezierCurveTo(xi + 16 + t, ytop, xd + t, ytop + 10, xd + t, Math.min(yd, ytop + 30));
+      g.lineTo(xd + t, yd); g.lineTo(xd, yd);
+      g.lineTo(xd, Math.min(yd, ybot + 24));
+      g.bezierCurveTo(xd, ybot + 8, xi + 10, ybot, xi, ybot);
+      g.closePath(); g.fill();
+      g.fillStyle = '#44546a'; g.fillText(name, xd - 8, legY - 16);
+      g.fillStyle = '#c8102e'; g.fillText(`${fmt(Lw, 0)} W`, xd - 8, legY - 2);
+      rem -= Lw;
+    }
+    g.fillStyle = '#0d2240'; g.font = '600 12px Inter, sans-serif';
+    g.fillText('P1', 8, y0 + 12); g.fillText('Water', x1 + 24, y0 + 12);
+    g.font = '11px JetBrains Mono, monospace';
+    g.fillText(`${fmt(st.P1, 0)} W`, 8, y0 + 28); g.fillText(`${fmt(st.Phyd, 0)} W`, x1 + 24, y0 + 28);
+    g.fillStyle = '#7a8798'; g.fillText(`${fmt(st.eta * 100, 0)} % wire to water`, x1 + 24 - 30, y0 + 46 + outT * 0.2);
+  }
+  // Outlet velocity triangle: c2 = u2 + w2, drawn to scale
+  function drawTri() {
+    const f = fitCanvas($('tri')); if (!f) return;
+    const { g, w, h } = f, T = st.tri;
+    g.font = '11px JetBrains Mono, monospace';
+    if (st.s <= 0) { g.fillStyle = '#7a8798'; g.fillText('Pump stopped', 12, 24); return; }
+    const sc = (w - 90) / 17, ox = 40, oy = h - 36;
+    const P = (x, y) => [ox + x * sc, oy - y * sc];
+    // Reference: tip speed at 4,800 rpm
+    g.strokeStyle = 'rgba(17,73,123,0.12)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(...P(0, 0)); g.lineTo(...P(Math.PI * PUMP.D2 * PUMP.nmax / 60, 0)); g.stroke();
+    g.fillStyle = '#a3afbf'; g.fillText('u₂ at 4,800 rpm', ...P(Math.PI * PUMP.D2 * PUMP.nmax / 60 - 3.4, -0.9));
+    const arrow = (x0, y0, x1, y1, col, lw, label, lx, ly) => {
+      const [a, b] = P(x0, y0), [c, d] = P(x1, y1), ang = Math.atan2(d - b, c - a);
+      g.strokeStyle = col; g.fillStyle = col; g.lineWidth = lw;
+      g.beginPath(); g.moveTo(a, b); g.lineTo(c, d); g.stroke();
+      g.beginPath(); g.moveTo(c, d); g.lineTo(c - 9 * Math.cos(ang - 0.35), d - 9 * Math.sin(ang - 0.35)); g.lineTo(c - 9 * Math.cos(ang + 0.35), d - 9 * Math.sin(ang + 0.35)); g.closePath(); g.fill();
+      if (label) { g.font = '600 12px Inter, sans-serif'; g.fillText(label, lx, ly); g.font = '11px JetBrains Mono, monospace'; }
+    };
+    // Blade direction at the tip (30°) against the actual relative flow: the gap is slip
+    const bl = 5.5, br = PUMP.beta2 * Math.PI / 180;
+    g.setLineDash([4, 4]); g.strokeStyle = 'rgba(68,84,106,0.6)'; g.lineWidth = 1.2;
+    g.beginPath(); g.moveTo(...P(T.u2, 0)); g.lineTo(...P(T.u2 - bl * Math.cos(br), bl * Math.sin(br))); g.stroke(); g.setLineDash([]);
+    const bp = P(T.u2 - bl * Math.cos(br), bl * Math.sin(br));
+    g.fillStyle = '#7a8798'; g.fillText('blade 30°', bp[0] - 70, bp[1] - 4);
+    const [ux, uy] = P(T.u2, 0), [cxp, cyp] = P(T.cu2, T.cm2);
+    arrow(0, 0, T.u2, 0, '#11497b', 2.4, 'u₂', (ox + ux) / 2, oy + 18);
+    arrow(T.u2, 0, T.cu2, T.cm2, '#6b7d93', 2, 'w₂', (ux + cxp) / 2 + 8, (uy + cyp) / 2 - 6);
+    arrow(0, 0, T.cu2, T.cm2, '#c8102e', 2.4, 'c₂', (ox + cxp) / 2 - 18, (oy + cyp) / 2 - 8);
+    // cu2 and cm2 components
+    g.setLineDash([2, 3]); g.strokeStyle = 'rgba(200,16,46,0.45)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(cxp, cyp); g.lineTo(cxp, oy); g.stroke(); g.setLineDash([]);
+    g.fillStyle = '#44546a';
+    g.fillText(`cm₂ ${fmt(T.cm2, 1)}`, cxp + 6, (cyp + oy) / 2 + 4);
+    g.fillText(`β₂ flow ${fmt(T.beta2f, 0)}°  ·  slip σ ${fmt(T.slip, 2)}`, 12, 18);
+    g.fillText(`α₂ ${fmt(T.alpha2, 0)}°`, ox + 26, oy - 6);
+  }
+  // NPSH available against what the impeller needs, on one scale
+  function drawNpsh() {
+    const f = fitCanvas($('npsh')); if (!f) return;
+    const { g, w, h } = f;
+    const xmax = Math.max(14, Math.ceil(Math.max(st.NPSHa, st.NPSH3 * 1.3) / 2) * 2 + 2), x0 = 112, x1 = w - 16;
+    const X = v => x0 + clampN(v, 0, xmax) / xmax * (x1 - x0);
+    g.font = '11px JetBrains Mono, monospace';
+    g.strokeStyle = 'rgba(17,73,123,0.09)'; g.fillStyle = '#7a8798';
+    for (let v = 0; v <= xmax; v += xmax > 20 ? 5 : 2) { g.beginPath(); g.moveTo(X(v), 10); g.lineTo(X(v), h - 26); g.stroke(); g.fillText(v, X(v) - 3, h - 10); }
+    g.fillText('m', x1 - 8, h - 10);
+    const row = (y, label, v, col) => {
+      g.fillStyle = '#44546a'; g.font = '12px Inter, sans-serif'; g.fillText(label, 8, y + 12); g.font = '11px JetBrains Mono, monospace';
+      g.fillStyle = col; g.fillRect(X(0), y, Math.max(0, X(v) - X(0)), 16);
+      g.fillStyle = '#0d2240'; g.fillText(fmt(v, 1), Math.min(X(v) + 6, x1 - 30), y + 12);
+    };
+    const bad = st.cav > 0;
+    row(14, 'Available', Math.max(0, st.NPSHa), bad ? '#c8102e' : '#2a8fd6');
+    row(44, 'Required', st.NPSH3, '#9aa6b5');
+    // 1.3× margin marker
+    const xm = X(st.NPSH3 * 1.3);
+    g.strokeStyle = '#c98a12'; g.setLineDash([3, 3]); g.lineWidth = 1.4;
+    g.beginPath(); g.moveTo(xm, 8); g.lineTo(xm, 66); g.stroke(); g.setLineDash([]);
+    g.fillStyle = '#c98a12'; g.fillText('1.3× margin', Math.min(xm + 5, x1 - 80), 82);
+    g.fillStyle = '#7a8798'; g.font = '11px Inter, sans-serif';
+    g.fillText('Required = NPSH3, the point where head drops 3 % (estimate)', 8, 104);
+  }
+  function updateEng() {
+    kv('eP2', fmt(st.P2, 0), 'W'); kv('eTq', fmt(st.torque, 3), 'N·m'); kv('ePh', fmt(st.Phyd, 0), 'W');
+    kv('eEm', fmt(st.P2 > 0 ? st.P2 / st.P1 * 100 : 0, 0), '%'); kv('eEp', fmt(st.etaPump * 100, 0), '%'); kv('eEt', fmt(st.eta * 100, 0), '%');
+    kv('tU2', fmt(st.tri.u2, 1), 'm/s'); kv('tCu', fmt(st.tri.cu2, 1), 'm/s'); kv('tCm', fmt(st.tri.cm2, 2), 'm/s');
+    kv('tHth', fmt(st.tri.Hth, 1), 'm'); kv('tPsi', fmt(st.tri.psi, 2)); kv('tNq', fmt(PUMP.nq, 0));
+    kv('nAbs', fmt(input.pin + PUMP.patm, 2), 'bar'); kv('nPv', fmt(st.fl.pv, 3), 'bar');
+    kv('nM', st.NPSH3 > 0.01 ? fmt(st.NPSHa / st.NPSH3, 2) : '–', st.NPSH3 > 0.01 ? '×' : '');
+    kv('nV', fmt(st.v, 2), 'm/s'); kv('nRe', st.Re > 0 ? Math.round(st.Re).toLocaleString('en') : '–'); kv('nNu', fmt(st.fl.nu, 2), 'cSt');
+    const cs = $('cavState');
+    cs.textContent = st.boiling ? 'Boiling' : st.cav >= 0.5 ? 'Cavitating' : st.cav > 0 ? 'Close to cavitation' : 'No cavitation';
+    cs.className = 'state' + (st.cav > 0 || st.boiling ? ' warn' : '');
+    drawSankey(); drawTri(); drawNpsh();
+  }
+  // EEI test points table
+  $('eEEI').textContent = fmt(EEI.EEI, 3);
+  $('eeiTab').innerHTML = '<tr><th>Load</th><th>Q m³/h</th><th>H m</th><th>P1 W</th><th>Time</th></tr>' +
+    EEI.pts.map(p => `<tr><td>${Math.round(p.f * 100)} %</td><td>${fmt(p.Q, 2)}</td><td>${fmt(p.H, 2)}</td><td>${fmt(p.P1, 0)}</td><td>${Math.round(p.t * 100)} %</td></tr>`).join('') +
+    `<tr><td>P<sub>L,avg</sub></td><td colspan="2"></td><td>${fmt(EEI.PL, 0)}</td><td></td></tr><tr><td>P<sub>ref</sub></td><td colspan="2"></td><td>${fmt(EEI.Pref, 0)}</td><td></td></tr>`;
+
+  // Season energy for every control mode: runs in small slices so the page never stutters
+  const KR = 2.5;
+  let ejob = null, eTimer = 0, eRes = null;
+  function scheduleEnergy() { clearTimeout(eTimer); eTimer = setTimeout(() => { ejob = energyJob(); $('barsNote').textContent = 'Calculating the season…'; }, 400); }
+  function* energyJob() {
+    const opts = { setback: sys.setback, autoNight: sys.autoNight };
+    const setOf = m => m === 'aa' ? input.aaSet : (m === input.mode ? input.set : SET_DEF[m].val);
+    const res = {};
+    for (const m of ['aa', 'pp', 'cp', 'cc']) {
+      let Wh = 0, heat = 0, short = 0;
+      const base = Object.assign({}, input, { mode: m, set: setOf(m), aaSet: setOf(m), running: true });
+      for (const [, Tm, days] of BLD.months) for (let hr = 1; hr < 24; hr += 2) {
+        const bn = opts.setback && BLD.isBoilerNight(hr);
+        const r = BLD.solve(Object.assign({}, base, { night: bn && opts.autoNight }), BLD.outdoor(Tm, hr), bn);
+        if (r.load > 0) { Wh += r.st.P1 * 2 * days; heat += r.Phi * 2 * days; if (!bn && r.Phi < r.load * 0.97) short++; }
+        yield;
+      }
+      res[m] = { kWh: Wh / 1000, MWh: heat / 1e6, short };
+    }
+    return res;
+  }
+  function energyTick() {
+    if (!ejob) return;
+    const t0 = performance.now();
+    while (performance.now() - t0 < 6) { const n = ejob.next(); if (n.done) { ejob = null; eRes = n.value; drawBars(); break; } }
+  }
+  function drawBars() {
+    if (!eRes) return;
+    const max = Math.max(...Object.values(eRes).map(r => r.kWh));
+    $('bars').innerHTML = ['aa', 'pp', 'cp', 'cc'].map(m => {
+      const r = eRes[m], set = m === 'cc' ? `${Math.round(m === input.mode ? input.set : SET_DEF.cc.val)} %` : `${fmt(m === 'aa' ? input.aaSet : m === input.mode ? input.set : SET_DEF[m].val, 1)} m`;
+      return `<div class="bar${m === input.mode ? ' on' : ''}"><span>${MODE_LONG[m]} <small style="color:var(--mute);font-weight:400">${set}</small></span><div class="track"><i style="width:${r.kWh / max * 100}%"></i></div><b>${Math.round(r.kWh)} kWh · ${Math.round(r.kWh * KR).toLocaleString('en')} kr</b></div>`;
+    }).join('');
+    const save = 1 - eRes.aa.kWh / eRes.cc.kWh, starved = ['aa', 'pp', 'cp', 'cc'].filter(m => eRes[m].short > 0).map(m => MODE_LONG[m]);
+    $('barsNote').textContent = `AUTOADAPT uses ${Math.round(save * 100)} % less electricity than the constant curve for the same ${fmt(eRes.aa.MWh, 0)} MWh of heat. ` +
+      `September to May at Copenhagen's monthly mean temperatures (DMI normals 1991–2020), 2-hour steps, ${KR.toFixed(2)} kr/kWh. Boiler setback ${sys.setback ? 'on' : 'off'}, automatic night setback ${sys.autoNight ? 'on' : 'off'}. Uses each mode's setpoint and the liquid chosen above.` +
+      (starved.length ? ` ${starved.join(', ')} can't always meet the heat demand at this setpoint.` : '');
+  }
+
+  // ── Heating circuit drawing and 24-hour trend ──
+  const RADS = [240, 330, 420];
+  $('lpRads').innerHTML = RADS.map((x, i) => `
+    <path d="M${x + 30} 92 V140" stroke="#c8102e" stroke-width="3" fill="none" id="rdS${i}"/>
+    <path d="M${x + 30} 216 V262" stroke="#2a8fd6" stroke-width="3" fill="none" id="rdR${i}"/>
+    <rect x="${x}" y="140" width="60" height="76" rx="4" fill="#fff" stroke="#9aa6b5" id="rd${i}"/>
+    ${[0, 1, 2, 3, 4].map(j => `<line x1="${x + 8 + j * 11}" y1="146" x2="${x + 8 + j * 11}" y2="210" stroke="#d2d9e2" stroke-width="5"/>`).join('')}
+    <g transform="translate(${x + 30} 116)"><path d="M-8 -6 L8 6 M-8 6 L8 -6" stroke="#11497b" stroke-width="2"/><rect x="-5" y="-16" width="10" height="9" rx="2" fill="#11497b"/></g>
+    <text x="${x + 42}" y="120" id="rdV${i}">–</text>`).join('') +
+    `<text x="330" y="238" text-anchor="middle" class="lbl">Radiators with thermostatic valves</text>`;
+  let dashOff = 0;
+  function animLoop(dt) {
+    dashOff -= dt * st.Q * 6;
+    $('lpSupplyF').setAttribute('stroke-dashoffset', dashOff); $('lpReturnF').setAttribute('stroke-dashoffset', dashOff);
+    $('lpRotor').setAttribute('transform', `rotate(${(spinAngle * 57.3) % 360})`);
+  }
+  function updateLoop() {
+    const r = sys.r, on = sys.mode === 'building' && r;
+    $('lpState').textContent = !on ? 'Off' : st.night ? 'Pump on night curve' : r.bn ? 'Boiler setback' : 'Day';
+    $('lpState').className = 'state' + (on && (st.night || r.bn) ? ' night' : '');
+    if (!on) return;
+    $('lpOut').textContent = `${fmt(r.Tout, 1)} °C`;
+    $('lpClock').textContent = hhmm(sys.hour);
+    $('lpBoil').textContent = `${fmt(BLD.supply(r.Tout, r.bn), 0)} °C`;
+    $('lpBoilSub').textContent = r.bn ? 'setback' : 'weather curve';
+    $('lpPump').textContent = `${fmt(st.P1, 0)} W · ${fmt(st.H, 1)} m`;
+    $('lpTs').textContent = `Supply ${fmt(r.Ts, 1)} °C`;
+    $('lpTr').textContent = `Return ${fmt(r.Tr, 1)} °C`;
+    $('lpQ').textContent = `${fmt(st.Q, 2)} m³/h`;
+    $('lpSupply').setAttribute('stroke', tcol(r.Ts));
+    $('lpReturn').setAttribute('stroke', tcol(r.Tr));
+    RADS.forEach((x, i) => {
+      $('rdS' + i).setAttribute('stroke', tcol(r.Ts)); $('rdR' + i).setAttribute('stroke', tcol(r.Tr));
+      $('rd' + i).setAttribute('fill', tcol((r.Ts + r.Tr) / 2).replace('rgb', 'rgba').replace(')', ',0.22)'));
+      $('rdV' + i).textContent = `${Math.round(r.valve)} %`;
+    });
+    const rho = st.rho;
+    kv('hLoad', fmt(r.load / 1000, 0), 'kW'); kv('hQreq', Number.isFinite(r.Qreq) ? fmt(r.Qreq, 2) : '> max', Number.isFinite(r.Qreq) ? 'm³/h' : '');
+    kv('hDt', fmt(r.Ts - r.Tr, 1), 'K'); kv('hP', fmt(st.P1, 0), 'W');
+    kv('hE', fmt(sys.heatMWh, 2), 'MWh'); kv('hPe', fmt(sys.pumpkWh, 2), 'kWh');
+    // HUD on the 3D view
+    $('bClock').textContent = hhmm(sys.hour);
+    $('bState').textContent = st.night ? 'Night curve' : r.bn ? 'Setback' : 'Day';
+    $('bState').className = 'state' + (st.night || r.bn ? ' night' : '');
+    $('bOut').textContent = `${fmt(r.Tout, 1)} °C`;
+    $('bTemps').textContent = `${fmt(r.Ts, 0)} / ${fmt(r.Tr, 0)} °C`;
+    $('bPhi').textContent = `${fmt(r.Phi / 1000, 0)} kW`;
+    $('bRoom').textContent = `${fmt(r.Troom, 1)} °C`;
+    $('bValve').textContent = `${Math.round(r.valve)} % open`;
+    $('bTrv').textContent = `${fmt(r.dpTrv * rho * 9.81 / 1000, 0)} kPa`;
+  }
+  function drawTrend() {
+    const f = fitCanvas($('trend')); if (!f) return;
+    const { g, w, h } = f, log = sys.log;
+    const pad = { l: 34, r: 38, t: 10, b: 22 }, split = Math.round(h * 0.6);
+    const t1 = sys.clock, t0 = t1 - 24;
+    const X = t => pad.l + (t - t0) / 24 * (w - pad.l - pad.r);
+    const YT = T => split - 8 - (T + 15) / 95 * (split - 8 - pad.t);
+    const YP = P => h - pad.b - P / 360 * (h - pad.b - split - 4);
+    g.font = '10px JetBrains Mono, monospace'; g.lineWidth = 1;
+    // Night-curve bands
+    g.fillStyle = 'rgba(29,44,71,0.10)';
+    for (let i = 1; i < log.length; i++) if (log[i].night) g.fillRect(X(log[i - 1].t), pad.t, X(log[i].t) - X(log[i - 1].t) + 0.5, h - pad.b - pad.t);
+    g.strokeStyle = 'rgba(17,73,123,0.09)'; g.fillStyle = '#7a8798';
+    for (const T of [-10, 0, 20, 40, 60, 80]) { g.beginPath(); g.moveTo(pad.l, YT(T)); g.lineTo(w - pad.r, YT(T)); g.stroke(); g.fillText(T, 4, YT(T) + 3); }
+    for (const P of [0, 100, 200, 300]) { g.beginPath(); g.moveTo(pad.l, YP(P)); g.lineTo(w - pad.r, YP(P)); g.stroke(); g.fillText(P, w - pad.r + 4, YP(P) + 3); }
+    g.fillStyle = '#11497b'; g.fillText('°C', 4, pad.t + 2); g.fillText('W', w - pad.r + 4, split + 4);
+    g.fillStyle = '#7a8798';
+    for (let hh = Math.ceil(t0 / 3) * 3; hh <= t1; hh += 3) g.fillText(hhmm(hh).slice(0, 2), X(hh) - 6, h - 6);
+    const line = (key, Y, col, lw = 1.8) => {
+      g.strokeStyle = col; g.lineWidth = lw; g.beginPath();
+      log.forEach((p, i) => i ? g.lineTo(X(p.t), Y(p[key])) : g.moveTo(X(p.t), Y(p[key]))); g.stroke();
+    };
+    if (log.length > 1) { line('Tout', YT, '#7a8798', 1.4); line('Tr', YT, '#2a8fd6'); line('Ts', YT, '#c8102e'); line('P1', YP, '#11497b'); }
+    else { g.fillStyle = '#7a8798'; g.font = '12px Inter, sans-serif'; g.fillText('The trend fills in as the day runs', pad.l + 10, split / 2); }
+  }
+
   // Home screen, laid out like the real MAGNA3 display: four tiles
-  const MODE_NAME = { aa: 'AUTOADAPT', pp: 'Prop. press.', cp: 'Const. press.', cc: 'Const. curve' };
   function drawDisplay() {
     const c = dispCanvas.getContext('2d'), W = 520, H = 400;
     c.fillStyle = '#05070b'; c.fillRect(0, 0, W, H);
@@ -1041,10 +1801,11 @@
       if (unit) { const vw = c.measureText(value).width; c.fillStyle = '#a8b6c8'; c.font = '500 24px Inter, sans-serif'; c.fillText(unit, x + 20 + vw, y + h - 22); }
     };
     const lowFlow = st.lowFlow;
-    tile(14, 68, 240, 150, 'Control mode', MODE_NAME[input.mode], '');
-    tile(266, 68, 240, 150, 'Setpoint', input.mode === 'cc' ? `${Math.round(input.set)}` : fmt(st.set, 1), input.mode === 'cc' ? '%' : 'm');
+    tile(14, 68, 240, 150, 'Control mode', st.night ? 'Night' : MODE_NAME[input.mode], '');
+    if (sys.mode === 'building') tile(266, 68, 240, 150, 'Heat energy', fmt(sys.heatMWh, 2), 'MWh');
+    else tile(266, 68, 240, 150, 'Setpoint', input.mode === 'cc' ? `${Math.round(input.set)}` : fmt(st.set, 1), input.mode === 'cc' ? '%' : 'm');
     tile(14, 230, 240, 156, 'Est. flow', lowFlow ? 'Low' : fmt(st.Q, 1), lowFlow ? '' : 'm³/h');
-    tile(266, 230, 240, 156, 'Head', fmt(st.H, 1), 'm');
+    tile(266, 230, 240, 156, sys.mode === 'building' ? 'Liquid temp.' : 'Head', sys.mode === 'building' ? fmt(sys.r ? sys.r.Ts : input.temp, 0) : fmt(st.H, 1), sys.mode === 'building' ? '°C' : 'm');
     dispTex.needsUpdate = true;
   }
 
@@ -1075,7 +1836,18 @@
 
   // ── Controls wiring ──
   const setEl = $('set'), valveEl = $('valve'), explodeEl = $('explode'), limitEl = $('limit'), tempEl = $('temp');
-  function recompute() { st = kin(input); }
+  const glyEl = $('gly'), pinEl = $('pin'), toutEl = $('tout');
+  function recompute() {
+    if (sys.mode === 'building') {
+      const Tout = BLD.outdoor(sys.Tmean, sys.hour), bn = sys.setback && BLD.isBoilerNight(sys.hour);
+      if (sys.Ts == null) sys.Ts = BLD.supply(Tout, bn);
+      input.night = sys.autoNight && sys.nightOn;
+      const r = BLD.solve(input, Tout, bn, sys.Ts);
+      sys.r = Object.assign(r, { Tout, bn });
+      st = r.st;
+      input.valve = r.valve; input.temp = r.Ts;
+    } else { input.night = false; sys.r = null; st = kin(input); }
+  }
   function setMode(m) {
     if (input.mode !== 'aa') SET_DEF[input.mode].val = input.set;
     input.mode = m; const d = SET_DEF[m];
@@ -1085,29 +1857,82 @@
     setEl.disabled = m === 'aa';
     $('setLabel').textContent = d.label;
     document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === m));
-    syncOutputs(); recompute();
+    if (m === 'cc') sys.nightOn = false; // automatic night setback isn't available on constant curve
+    syncOutputs(); recompute(); drawBars();
   }
   function syncOutputs() {
-    const d = SET_DEF[input.mode];
+    const d = SET_DEF[input.mode], bld = sys.mode === 'building';
     $('setOut').textContent = input.mode === 'aa' ? `${fmt(input.aaSet, 1)} m` : `${d.step < 1 ? Number(input.set).toFixed(1) : input.set} ${d.unit}`;
-    $('valveOut').textContent = `${input.valve} %`;
+    $('valveLabel').textContent = bld ? 'Radiator valves (thermostats)' : 'Radiator valves open';
+    $('valveOut').textContent = `${Math.round(input.valve)} %`;
     $('limitOut').textContent = input.limitPct < 91 ? `${input.limitPct} % · ${fmt(input.limitPct / 100 * PUMP.Qmax, 1)} m³/h` : 'Off';
-    $('tempOut').textContent = `${input.temp} °C`;
+    $('tempLabel').textContent = bld ? 'Supply temperature (boiler)' : 'Liquid temperature';
+    $('tempOut').textContent = `${Math.round(input.temp)} °C`;
     $('explodeOut').textContent = `${Math.round(view.explode * 100)} %`;
+    $('pinOut').textContent = `${fmt(input.pin, 2)} bar`;
+    $('pinHint').textContent = `Manual minimum at ${Math.round(input.temp)} °C: ${fmt(minInlet(input.temp), 2)} bar. Vapour pressure ${fmt(st.fl.pv, 3)} bar abs.`;
+    const fp = st.fl.fp;
+    $('glyOut').textContent = input.gly ? `Freezes at ${fp} °C` : 'Freezes at 0 °C';
+    $('toutOut').textContent = `${sys.Tmean} °C`;
+    if (bld) { valveEl.value = input.valve; tempEl.value = input.temp; }
   }
-  function setValve(v) { input.valve = Math.max(5, Math.min(100, v)); valveEl.value = input.valve; syncOutputs(); recompute(); }
+  function setValve(v) { if (sys.mode === 'building') return; input.valve = Math.max(5, Math.min(100, v)); valveEl.value = input.valve; recompute(); syncOutputs(); }
   function setExplode(e) { view.explode = clamp01(e); explodeEl.value = Math.round(view.explode * 100); syncOutputs(); }
   function setCutaway(on) { view.cut = on; setCut(on); sensor.visible = on; $('tCut').setAttribute('aria-pressed', on); }
   function setFlow(on) { view.flow = on; particles.visible = on; $('tFlow').setAttribute('aria-pressed', on); }
   function setLabels(on) { view.labels = on; $('tLabels').setAttribute('aria-pressed', on); }
   function setRunning(on) { input.running = on; $('tStop').textContent = on ? 'Stop pump' : 'Start pump'; $('tStop').setAttribute('aria-pressed', !on); recompute(); }
+  function setSystem(m) {
+    sys.mode = m;
+    document.body.classList.toggle('bld', m === 'building');
+    document.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sys === m));
+    valveEl.disabled = tempEl.disabled = m === 'building';
+    if (m === 'building') {
+      sys.clock = sys.hour = 19; sys.Ts = null; sys.hist = []; sys.nightOn = false; sys.log = []; sys.heatMWh = 0; sys.pumpkWh = 0;
+      sys.playing = true; $('tPlay').textContent = 'Pause day'; $('tPlay').setAttribute('aria-pressed', true);
+    } else { input.valve = Math.round(input.valve); input.temp = Math.round(input.temp); valveEl.value = input.valve; tempEl.value = input.temp; }
+    recompute(); syncOutputs(); resize();
+  }
+  // Advance the heating day: boiler ramps, the pump watches its own temperature sensor
+  function stepBuilding(dt) {
+    const dh = dt / 1.5;
+    sys.clock += dh; sys.hour = sys.clock % 24;
+    const Tout = BLD.outdoor(sys.Tmean, sys.hour), bn = sys.setback && BLD.isBoilerNight(sys.hour);
+    const target = BLD.supply(Tout, bn);
+    if (sys.Ts == null) sys.Ts = target;
+    sys.Ts += clampN(target - sys.Ts, -15 * dh, 15 * dh); // boiler ramps at most 0.25 K/min
+    sys.hist.push([sys.clock, sys.Ts]);
+    while (sys.hist.length && sys.hist[0][0] < sys.clock - 2) sys.hist.shift();
+    // MAGNA3 automatic night setback: a drop of more than 10–15 K within about 2 h, at 0.1 K/min or faster
+    let maxTs = -99; for (const p of sys.hist) maxTs = Math.max(maxTs, p[1]);
+    const ago = sys.hist.find(p => p[0] >= sys.clock - 1 / 6);
+    const rate = ago && sys.clock - ago[0] > 0.05 ? (ago[1] - sys.Ts) / (sys.clock - ago[0]) : 0; // K/h, falling
+    if (!sys.nightOn && input.mode !== 'cc' && maxTs - sys.Ts >= 12 && rate >= 6) { sys.nightOn = true; sys.TsMin = sys.Ts; }
+    if (sys.nightOn) { sys.TsMin = Math.min(sys.TsMin, sys.Ts); if (sys.Ts >= sys.TsMin + 10) sys.nightOn = false; } // back to normal after ~10 K rise
+    recompute();
+    sys.heatMWh += sys.r.Phi * dh / 1e6;
+    sys.pumpkWh += st.P1 * dh / 1000;
+    const lastT = sys.log.length ? sys.log[sys.log.length - 1].t : -1e9;
+    if (sys.clock - lastT >= 0.2) {
+      sys.log.push({ t: sys.clock, Ts: sys.r.Ts, Tr: sys.r.Tr, Tout, P1: st.P1, night: st.night });
+      while (sys.log.length && sys.log[0].t < sys.clock - 24) sys.log.shift();
+    }
+  }
 
   document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
-  setEl.addEventListener('input', () => { input.set = Number(setEl.value); syncOutputs(); recompute(); });
+  setEl.addEventListener('input', () => { input.set = Number(setEl.value); recompute(); syncOutputs(); scheduleEnergy(); });
   valveEl.addEventListener('input', () => setValve(Number(valveEl.value)));
-  limitEl.addEventListener('input', () => { input.limitPct = Number(limitEl.value); syncOutputs(); recompute(); });
-  tempEl.addEventListener('input', () => { input.temp = Number(tempEl.value); syncOutputs(); recompute(); });
+  limitEl.addEventListener('input', () => { input.limitPct = Number(limitEl.value); recompute(); syncOutputs(); scheduleEnergy(); });
+  tempEl.addEventListener('input', () => { if (sys.mode === 'building') return; input.temp = Number(tempEl.value); recompute(); syncOutputs(); });
   explodeEl.addEventListener('input', () => setExplode(explodeEl.value / 100));
+  glyEl.addEventListener('change', () => { input.gly = Number(glyEl.value); recompute(); syncOutputs(); scheduleEnergy(); });
+  pinEl.addEventListener('input', () => { input.pin = Number(pinEl.value); recompute(); syncOutputs(); });
+  toutEl.addEventListener('input', () => { sys.Tmean = Number(toutEl.value); recompute(); syncOutputs(); });
+  document.querySelectorAll('[data-sys]').forEach(b => b.addEventListener('click', () => setSystem(b.dataset.sys)));
+  $('coverGo').addEventListener('click', () => { setSystem('building'); $('stage').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  $('tPlay').addEventListener('click', () => { sys.playing = !sys.playing; $('tPlay').textContent = sys.playing ? 'Pause day' : 'Run day'; $('tPlay').setAttribute('aria-pressed', sys.playing); });
+  $('tSetback').addEventListener('click', () => { sys.setback = !sys.setback; $('tSetback').setAttribute('aria-pressed', sys.setback); scheduleEnergy(); });
+  $('tAutoNight').addEventListener('click', () => { sys.autoNight = !sys.autoNight; $('tAutoNight').setAttribute('aria-pressed', sys.autoNight); recompute(); scheduleEnergy(); });
   $('tCut').addEventListener('click', () => setCutaway(!view.cut));
   $('tFlow').addEventListener('click', () => setFlow(!view.flow));
   $('tLabels').addEventListener('click', () => setLabels(!view.labels));
@@ -1119,7 +1944,7 @@
   for (const ev of ['pointerdown', 'wheel', 'keydown', 'input']) document.addEventListener(ev, wake, { passive: true, capture: true });
 
   document.addEventListener('keydown', e => {
-    if (e.target.closest && e.target.closest('input, textarea')) return;
+    if (e.target.closest && e.target.closest('input, textarea, select')) return;
     const rect = stage.getBoundingClientRect();
     if (rect.bottom < 0 || rect.top > innerHeight) return;
     const k = e.key.toLowerCase();
@@ -1128,8 +1953,8 @@
     else if (k === 'c') setCutaway(!view.cut);
     else if (k === 'f') setFlow(!view.flow);
     else if (k === 'l') setLabels(!view.labels);
-    else if (e.key === 'ArrowUp') { setValve(input.valve + 5); e.preventDefault(); }
-    else if (e.key === 'ArrowDown') { setValve(input.valve - 5); e.preventDefault(); }
+    else if (e.key === 'ArrowUp' && sys.mode === 'manual') { setValve(input.valve + 5); e.preventDefault(); }
+    else if (e.key === 'ArrowDown' && sys.mode === 'manual') { setValve(input.valve - 5); e.preventDefault(); }
   });
 
   // ── Resize & visibility ──
@@ -1141,8 +1966,10 @@
     renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(stage);
-  let onScreen = true, pageActive = true;
+  let onScreen = true, pageActive = true, chartVis = true, engVis = false;
   new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; }).observe(stage);
+  new IntersectionObserver(([en]) => { chartVis = en.isIntersecting; }).observe(chart);
+  new IntersectionObserver(([en]) => { engVis = en.isIntersecting; }, { rootMargin: '100px' }).observe(document.querySelector('.eng'));
   addEventListener('pagehide', () => { pageActive = false; });
   addEventListener('pageshow', () => { pageActive = true; last = performance.now(); });
 
@@ -1152,22 +1979,25 @@
   function loop(now) {
     requestAnimationFrame(loop);
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    if (!onScreen || !pageActive || document.hidden) return;
+    if (!pageActive || document.hidden) return;
     frame++;
 
-    if (!touring && !reduceMotion && now - lastInput > 25000) setTour(true);
+    if (onScreen && !touring && !reduceMotion && now - lastInput > 25000) setTour(true);
     if (touring) {
       tourT += dt;
       const T = tour(tourT);
       if (Math.abs(T.explode - view.explode) > 0.001) setExplode(T.explode);
       if (T.cut !== view.cut) setCutaway(T.cut);
-      if (T.valve !== input.valve) setValve(T.valve);
+      if (sys.mode === 'manual' && T.valve !== input.valve) setValve(T.valve);
       const d = camera.position.distanceTo(controls.target);
       camera.position.set(
         controls.target.x + d * Math.cos(T.el) * Math.sin(T.az),
         controls.target.y + d * Math.sin(T.el),
         controls.target.z + d * Math.cos(T.el) * Math.cos(T.az));
     }
+
+    // The building keeps running even when the 3D view is scrolled away
+    if (sys.mode === 'building' && sys.playing) stepBuilding(dt);
 
     // AUTOADAPT learns (sped up from hours to seconds)
     if (input.mode === 'aa' && input.running) {
@@ -1177,59 +2007,85 @@
 
     const a = 1 - Math.exp(-dt * 2.5);
     disp.s += (st.s - disp.s) * a;
-    disp.Q = dutyAt(disp.s, st.k).Q;
+    disp.Q = dutyAt(disp.s, st.k, st.fl).Q;
     disp.explode += (view.explode - disp.explode) * (1 - Math.exp(-dt * 5));
-
-    for (const n in G) G[n].position.z = EXPLODE_DZ[n] * disp.explode;
-    if (Math.abs(disp.explode - prevExplode) > 1e-4) {
-      const off = camera.position.clone().sub(controls.target);
-      off.multiplyScalar(camDist(disp.explode) / camDist(prevExplode));
-      controls.target.z = camTargetZ(disp.explode);
-      camera.position.copy(controls.target).add(off);
-      prevExplode = disp.explode;
-    }
-
     spinAngle += disp.s / PUMP.Smax * PUMP.nmax / 60 * Math.PI * 2 * VIS_SPEED * dt;
-    spin.rotation.z = spinAngle;
 
-    // Grundfos Eye: two green lights circle in the running direction; steady when stopped
-    if (input.running) eyeAngle += dt * (1.5 + 3 * disp.s);
-    eyeMat.color.set(!input.running ? 0x3ad17a : st.limit === 'power' || st.limit === 'speed' ? 0xffb020 : 0x3ad17a);
-    for (const d of eyeDots) { const ang = d.userData.a + eyeAngle; d.position.set(0.42 * Math.cos(ang), 0.42 * Math.sin(ang), 0); }
-
-    if (view.flow) {
-      flowPhase += dt * disp.Q * 0.016;
-      for (let i = 0; i < N; i++) {
-        const L = lanes[i], u = (i / N + L.o * 0.02 + flowPhase) % 1;
-        flowPos(u, L.x, L.z, tmpV);
-        tmpM.makeTranslation(tmpV.x, tmpV.y, tmpV.z);
-        particles.setMatrixAt(i, tmpM);
-        particles.setColorAt(i, cTmp.copy(cCold).lerp(cHot, pressureT(u)));
+    if (onScreen) {
+      for (const n in G) G[n].position.z = EXPLODE_DZ[n] * disp.explode;
+      if (Math.abs(disp.explode - prevExplode) > 1e-4) {
+        const off = camera.position.clone().sub(controls.target);
+        off.multiplyScalar(camDist(disp.explode) / camDist(prevExplode));
+        controls.target.z = camTargetZ(disp.explode);
+        camera.position.copy(controls.target).add(off);
+        prevExplode = disp.explode;
       }
-      particles.instanceMatrix.needsUpdate = true;
-      if (particles.instanceColor) particles.instanceColor.needsUpdate = true;
+      spin.rotation.z = spinAngle;
+
+      // Grundfos Eye: two green lights circle in the running direction; steady when stopped
+      if (input.running && st.s > 0) eyeAngle += dt * (1.5 + 3 * disp.s);
+      eyeMat.color.set(!input.running ? 0x3ad17a : st.frozen || st.boiling ? 0xe0102e : st.limit === 'power' || st.limit === 'speed' || st.cav >= 0.5 ? 0xffb020 : 0x3ad17a);
+      for (const d of eyeDots) { const ang = d.userData.a + eyeAngle; d.position.set(0.42 * Math.cos(ang), 0.42 * Math.sin(ang), 0); }
+
+      if (view.flow) {
+        flowPhase += dt * disp.Q * 0.016;
+        for (let i = 0; i < N; i++) {
+          const L = lanes[i], u = (i / N + L.o * 0.02 + flowPhase) % 1;
+          flowPos(u, L.x, L.z, tmpV);
+          tmpM.makeTranslation(tmpV.x, tmpV.y, tmpV.z);
+          particles.setMatrixAt(i, tmpM);
+          particles.setColorAt(i, cTmp.copy(cCold).lerp(cHot, pressureT(u)));
+        }
+        particles.instanceMatrix.needsUpdate = true;
+        if (particles.instanceColor) particles.instanceColor.needsUpdate = true;
+      }
+
+      // Cavitation bubbles: born at the eye, swept outward along the blades, collapse as pressure builds
+      const cavAmt = input.running && st.s > 0 ? (st.boiling ? 1 : st.cav) : 0;
+      bubbles.visible = cavAmt > 0.01;
+      if (bubbles.visible) {
+        bubT += dt * (0.6 + disp.s);
+        const nOn = Math.round(NB * Math.min(1, 0.2 + cavAmt));
+        for (let i = 0; i < NB; i++) {
+          const B = bub[i], life = (B.o + bubT * 0.9) % 1;
+          const r = 1.35 + life * (0.9 + cavAmt * 0.8), ang = B.a + spinAngle * 0.85 - life * 0.9;
+          const scl = i < nOn ? B.sz * (life < 0.75 ? 0.4 + life : (1 - life) * 4.6) : 0;
+          tmpM.makeScale(scl, scl, scl).setPosition(r * Math.cos(ang), r * Math.sin(ang), B.z);
+          bubbles.setMatrixAt(i, tmpM);
+        }
+        bubbles.instanceMatrix.needsUpdate = true;
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+
+      const showInternal = disp.explode > 0.3 || view.cut;
+      const { w, h } = viewSize();
+      for (const L of LABELS) {
+        const visible = view.labels && (!L.internal || showInternal);
+        if (!visible) { L.el.style.opacity = 0; continue; }
+        L.v.set(L.p[0], L.p[1], L.p[2] + G[L.g].position.z).project(camera);
+        if (L.v.z > 1) { L.el.style.opacity = 0; continue; }
+        L.el.style.opacity = 1;
+        L.el.style.transform = `translate(${(L.v.x * 0.5 + 0.5) * w}px, ${(-L.v.y * 0.5 + 0.5) * h}px) translate(-50%, -100%)`;
+      }
+      if (frame % 12 === 0) drawDisplay();
     }
 
-    controls.update();
-    renderer.render(scene, camera);
-
-    const showInternal = disp.explode > 0.3 || view.cut;
-    const { w, h } = viewSize();
-    for (const L of LABELS) {
-      const visible = view.labels && (!L.internal || showInternal);
-      if (!visible) { L.el.style.opacity = 0; continue; }
-      L.v.set(L.p[0], L.p[1], L.p[2] + G[L.g].position.z).project(camera);
-      if (L.v.z > 1) { L.el.style.opacity = 0; continue; }
-      L.el.style.opacity = 1;
-      L.el.style.transform = `translate(${(L.v.x * 0.5 + 0.5) * w}px, ${(-L.v.y * 0.5 + 0.5) * h}px) translate(-50%, -100%)`;
+    if (engVis && sys.mode === 'building') animLoop(dt);
+    if (frame % 6 === 0) {
+      updateReadouts();
+      if (sys.mode === 'building') updateLoop();
+      if (chartVis) drawChart();
+      if (engVis) { updateEng(); if (sys.mode === 'building') drawTrend(); }
+      if (sys.mode === 'building') syncOutputs();
     }
-
-    if (frame % 6 === 0) { updateReadouts(); drawChart(); }
-    if (frame % 12 === 0) drawDisplay();
+    energyTick();
   }
 
   setFlow(true); setLabels(view.labels); syncOutputs();
-  resize(); resetView(); drawDisplay(); updateReadouts(); drawChart();
+  resize(); resetView(); drawDisplay(); updateReadouts(); drawChart(); updateEng(); updateLoop(); drawTrend();
+  scheduleEnergy();
   requestAnimationFrame(loop);
 </script>
 </body>
