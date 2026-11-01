@@ -239,7 +239,7 @@
 <header class="hero">
   <div class="eyebrow">Tech · Interactive teardown</div>
   <h1>MAGNA3 circulator, taken apart</h1>
-  <p>A working 3D model of a Grundfos MAGNA3 32-120 F heating pump, built to the dimensions of Grundfos's drawing and CAD model and driven by its official pump curves. Change the control mode, close the valves, pull the pump apart or cut it open. Speed, flow, head and power all come from one physics model, so the impeller, the water, the chart and the pump's display always agree.</p>
+  <p>A working 3D model of a Grundfos MAGNA3 32-120 F heating pump, built from Grundfos's own CAD model and driven by its official pump curves and operating manual. Change the control mode, close the valves, pull the pump apart or cut it open. Speed, flow, head and power all come from one physics model, so the impeller, the water, the chart and the pump's display always agree.</p>
 </header>
 
 <section class="sim" aria-label="Pump simulator">
@@ -247,6 +247,7 @@
     <div class="labels" id="labels"></div>
     <div class="stage-hud" id="hud">Drag to orbit · scroll to zoom<br><b id="hudSpeed">Visual speed 1/20 of real rpm</b></div>
     <div class="tour-badge" id="tourBadge">Auto tour · touch to take over</div>
+    <div class="loading" id="loading">Loading the CAD model…</div>
     <div class="fallback" id="fallback">This simulator needs WebGL, which isn't available in this browser.</div>
   </div>
 
@@ -254,17 +255,26 @@
     <div class="card">
       <h3>Control mode</h3>
       <div class="modes" role="group" aria-label="Control mode">
-        <button class="btn" data-mode="pp" aria-pressed="true">Proportional pressure</button>
+        <button class="btn" data-mode="aa" aria-pressed="true">AUTOADAPT</button>
+        <button class="btn" data-mode="pp" aria-pressed="false">Proportional pressure</button>
         <button class="btn" data-mode="cp" aria-pressed="false">Constant pressure</button>
         <button class="btn" data-mode="cc" aria-pressed="false">Constant curve</button>
       </div>
       <div class="row">
-        <label for="set"><span id="setLabel">Setpoint (Hset)</span><output id="setOut">6.0 m</output></label>
-        <input type="range" id="set" min="1" max="11.8" step="0.1" value="6">
+        <label for="set"><span id="setLabel">Setpoint (auto)</span><output id="setOut">6.6 m</output></label>
+        <input type="range" id="set" min="1" max="11.8" step="0.1" value="6.6" disabled>
       </div>
       <div class="row">
         <label for="valve"><span>Radiator valves open</span><output id="valveOut">45 %</output></label>
         <input type="range" id="valve" min="5" max="100" step="1" value="45">
+      </div>
+      <div class="row">
+        <label for="limit"><span>FLOW LIMIT</span><output id="limitOut">Off</output></label>
+        <input type="range" id="limit" min="25" max="95" step="1" value="95">
+      </div>
+      <div class="row">
+        <label for="temp"><span>Liquid temperature</span><output id="tempOut">60 °C</output></label>
+        <input type="range" id="temp" min="-10" max="110" step="1" value="60">
       </div>
       <div class="row">
         <label for="explode"><span>Exploded view</span><output id="explodeOut">0 %</output></label>
@@ -280,7 +290,7 @@
         <button class="btn" id="tReset">Reset view</button>
         <button class="btn" id="tStop" aria-pressed="false">Stop pump</button>
       </div>
-      <div class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> mode · <kbd>E</kbd> explode · <kbd>C</kbd> cut · <kbd>F</kbd> flow · <kbd>L</kbd> labels · <kbd>↑</kbd><kbd>↓</kbd> valves</div>
+      <div class="keys"><kbd>1</kbd>–<kbd>4</kbd> mode · <kbd>E</kbd> explode · <kbd>C</kbd> cut · <kbd>F</kbd> flow · <kbd>L</kbd> labels · <kbd>↑</kbd><kbd>↓</kbd> valves</div>
     </div>
 
     <div class="card">
@@ -292,6 +302,8 @@
         <div class="ro"><span>Δp sensor</span><b id="rDp">–</b></div>
         <div class="ro"><span>Power P1</span><b id="rP">–</b></div>
         <div class="ro"><span>Efficiency</span><b id="rEta">–</b></div>
+        <div class="ro"><span>Current</span><b id="rI">–</b></div>
+        <div class="ro"><span>Min. inlet p</span><b id="rPin">–</b></div>
       </div>
       <div class="flag" id="flag"></div>
     </div>
@@ -309,27 +321,37 @@
   </aside>
 </section>
 
+<style>
+  .modes { grid-template-columns: repeat(2, 1fr); }
+  .stage { background: radial-gradient(ellipse at 50% 38%, #3a404d 0%, #1b1f28 50%, #0b0d12 100%); }
+  .loading { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--dim); pointer-events: none; transition: opacity 0.4s; }
+  .loading.done { opacity: 0; }
+  input[type=range]:disabled { opacity: 0.35; }
+</style>
+
 <section class="explain">
   <h2>What's inside</h2>
   <div class="grid">
-    <div class="card"><h4>Wet-rotor PM motor</h4><p>The rotor carries permanent magnets and spins inside a thin stainless rotor can, in the heating water itself. No shaft seal, so nothing can leak. The water also cools and lubricates the bearings.</p></div>
+    <div class="card"><h4>Wet-rotor PM motor</h4><p>The rotor carries permanent magnets and spins inside a thin stainless rotor can, in the heating water itself. No shaft seal, so nothing can leak. The water also cools and lubricates the bearings, and the pump can run against closed valves for days.</p></div>
     <div class="card"><h4>Composite impeller and volute</h4><p>Water rises from the lower flange, loops behind the pump into the eye of the impeller, is flung outward by the blades and leaves through the upper flange. Pressure builds along the way: the particles turn from blue to orange.</p></div>
-    <div class="card"><h4>Sensor-led control</h4><p>A built-in sensor reads differential pressure and temperature. The frequency converter in the control box changes speed (up to 4,800 rpm) to hold the chosen curve. Proportional pressure lowers the head as the valves close.</p></div>
-    <div class="card"><h4>Power limit</h4><p>Between about 5 and 20 m³/h the pump reaches its 333 W input limit before top speed, which gives the official curve its straight sloping edge. Pick constant curve at 100% and open the valves to watch the speed drop back.</p></div>
+    <div class="card"><h4>AUTOADAPT</h4><p>The factory setting. It's proportional pressure from a fixed 1.5 m base, starting at about 55% of max head. When the pump finds itself on its max curve at a lower head, it picks a lower curve on its own. Here that learning is sped up from hours to seconds.</p></div>
+    <div class="card"><h4>Limits you can hit</h4><p>Between about 5 and 20 m³/h the pump reaches its 333 W input limit before top speed. FLOW LIMIT caps the flow between 25% and 90% of max. Hot water needs inlet pressure: 0.7 bar at 110 °C to avoid cavitation.</p></div>
   </div>
 
   <div class="method">
-    <p>Built with the <a href="https://thakicloud.com/tech-blog/en/tutorials/teardown-3d-skill/" target="_blank" rel="noopener">teardown method</a>: real numbers first, one physics function that drives every part and gauge, all geometry generated in code, and an idle auto tour that takes over after 25 seconds.</p>
-    <p>The outside dimensions come from the Grundfos dimension drawing and CAD model of product 97924259. They give the S-shaped housing, the flanges, the finned motor head and the L-shaped control box. The pump curves are fitted to the official Grundfos performance chart. The internals (impeller, rotor, can, stator) aren't in the public CAD, so they're drawn to plausible proportions. This is an illustration, not an engineering tool.</p>
+    <p>Built with the <a href="https://thakicloud.com/tech-blog/en/tutorials/teardown-3d-skill/" target="_blank" rel="noopener">teardown method</a>: real numbers first, one physics function that drives every part and gauge, and an idle auto tour that takes over after 25 seconds.</p>
+    <p>The outer shell is Grundfos's own CAD model of product 97924259 (housing, motor head and control box), turned into a web mesh and recoloured to match the product photo. The pump curves are fitted to the official performance chart. Control behaviour, inlet pressures and limits follow the MAGNA3 installation and operating instructions. The internals (impeller, rotor, can, stator) aren't in the public CAD, so they're drawn in code to plausible proportions. This is an illustration, not an engineering tool.</p>
     <table class="specs">
       <tr><td>Max head</td><td>Grundfos</td><td>12 m (11.8 m regulated)</td></tr>
       <tr><td>Nominal duty point</td><td>Grundfos</td><td>11.22 m³/h @ 7.24 m</td></tr>
       <tr><td>Max speed</td><td>Grundfos</td><td>4,800 rpm</td></tr>
       <tr><td>Power input P1</td><td>Grundfos</td><td>15 – 333 W · 1×230 V · 0.18 – 1.55 A</td></tr>
-      <tr><td>Port to port · flanges</td><td>Grundfos</td><td>220 mm · DN32 PN6/10</td></tr>
-      <tr><td>Overall length · weight</td><td>Grundfos</td><td>366 mm · 15.2 kg</td></tr>
+      <tr><td>Port to port · flanges</td><td>Grundfos</td><td>220 mm · DN32 PN6/10 · max 10 bar</td></tr>
+      <tr><td>Min. inlet pressure</td><td>Manual</td><td>0 / 0.10 / 0.20 / 0.70 bar at 25 / 75 / 95 / 110 °C</td></tr>
+      <tr><td>AUTOADAPT</td><td>Manual</td><td>Hauto_min 1.5 m · starts at ~55 % of max head</td></tr>
+      <tr><td>FLOW LIMIT · flow accuracy</td><td>Manual</td><td>25 – 90 % of Qmax · ±5 % of Qmax</td></tr>
+      <tr><td>Overall length · weight · noise</td><td>Grundfos</td><td>366 mm · 15.2 kg · ≤ 45 dB(A)</td></tr>
       <tr><td>Housing · impeller</td><td>Grundfos</td><td>Cast iron EN-GJL-250 · composite</td></tr>
-      <tr><td>Liquid temperature · EEI</td><td>Grundfos</td><td>−10 to 110 °C · 0.18</td></tr>
       <tr><td>Curve fits (H, P1, efficiency)</td><td>My fit</td><td>Read off the official chart</td></tr>
     </table>
   </div>
@@ -358,90 +380,135 @@
   document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => document.body.classList.remove('nav-open')));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('nav-open'); });
   document.querySelectorAll('.js-year').forEach(e => { e.textContent = new Date().getFullYear(); });
+
+  // If anything in the simulator fails, say so instead of leaving a blank box
+  function simFail(msg) {
+    const fb = document.getElementById('fallback');
+    if (!fb) return;
+    fb.textContent = msg;
+    fb.style.display = 'flex';
+    const ld = document.getElementById('loading'); if (ld) ld.classList.add('done');
+  }
+  window.addEventListener('error', e => simFail('The 3D view hit an error and stopped: ' + (e.message || 'unknown error') + '. Try reloading the page.'));
+  window.addEventListener('unhandledrejection', e => simFail('The 3D view hit an error and stopped: ' + ((e.reason && e.reason.message) || 'unknown error') + '. Try reloading the page.'));
 </script>
 
 <!-- ═════════════ KIN: pump physics (pure maths, no three.js) ═════════════ -->
 <script>
-  // Units: Q in m³/h, H in m, power in W.
-  // s = speed ratio where s = 1 is the top "constant curve" (100 %) on the Grundfos chart.
-  // Fitted to the official MAGNA3 32-120 F curve (water, 20 °C).
+  // Units: Q in m³/h, H in m, power in W, T in °C.
+  // s = speed ratio; s = Smax is 4,800 rpm. Fitted to the official MAGNA3 32-120 F curve.
   window.PUMP = {
     a: 10.15, b: 0.40, c: 0.043,     // H = a·s² + b·s·Q − c·Q²
     Smax: 1.078,                     // 4,800 rpm (shut-off head 11.8 m)
     Hlim: 11.8,                      // regulated max head (flat top of the chart)
     envQ: 4.5, envSlope: 0.652,      // 333 W power-limit edge of the chart
+    Qmax: 21.5,                      // end of the official envelope
     Pmax: 333, Pmin: 15,             // P1 range
-    nmax: 4800,                      // rpm at Smax
+    nmax: 4800,
     Qnom: 11.22, Hnom: 7.24,         // nominal duty point
-    Kopen: 0.045,                    // system resistance with every valve open
-    rho: 998.2
+    HautoMin: 1.5,                   // AUTOADAPT fixed start (manual 7.3.2)
+    HautoStart: 0.55 * 12,           // AUTOADAPT factory setpoint, ~55 % of max head
+    ccMin: 30,                       // lowest constant curve, % of max speed
+    Kopen: 0.030,                    // system resistance with every valve open
+    volts: 230, pf: 0.935
+  };
+
+  // Water density (kg/m³) between −10 and 110 °C
+  window.rhoWater = T => 1000 * (1 - (T + 288.9414) / (508929.2 * (T + 68.12963)) * Math.pow(T - 3.9863, 2));
+
+  // Minimum inlet pressure for the 32-120 F (bar), manual section 12
+  window.minInlet = T => {
+    const pts = [[25, 0], [75, 0.10], [95, 0.20], [110, 0.70]];
+    if (T <= 25) return 0;
+    for (let i = 1; i < pts.length; i++) if (T <= pts[i][0]) {
+      const [t0, p0] = pts[i - 1], [t1, p1] = pts[i];
+      return p0 + (p1 - p0) * (T - t0) / (t1 - t0);
+    }
+    return 0.70;
   };
 
   window.pumpH = (Q, s) => PUMP.a * s * s + PUMP.b * s * Q - PUMP.c * Q * Q;
-
-  // Straight edge of the official envelope where P1 hits 333 W
   window.envH = Q => Q <= PUMP.envQ ? PUMP.Hlim : PUMP.Hlim - PUMP.envSlope * (Q - PUMP.envQ);
+  window.maxCurveH = Q => Math.max(0, Math.min(PUMP.Hlim, envH(Q), pumpH(Q, PUMP.Smax)));
 
-  // P1 follows the affinity law: P1 = s³ · f(Q/s), f read off the chart
-  window.pumpP1 = (Q, s) => {
-    if (s <= 0.001) return 0;
-    const x = Q / s, f = 170 + 29.9 * x - 1.081 * x * x;
-    return Math.min(PUMP.Pmax, Math.max(PUMP.Pmin, s * s * s * f));
+  // Flow where a head H meets the max curve (the max curve falls with Q beyond 4.5 m³/h)
+  window.qOnMax = H => {
+    let lo = PUMP.envQ, hi = PUMP.Qmax;
+    if (maxCurveH(lo) <= H) return lo;
+    for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (maxCurveH(m) > H) lo = m; else hi = m; }
+    return (lo + hi) / 2;
   };
 
-  // Pump curve at speed s meets system curve H = k·Q² (Q is linear in s)
+  // P1 follows the affinity law: P1 = s³ · f(Q/s), f read off the chart (water at 20 °C)
+  window.pumpP1 = (Q, s, rho = 998.2) => {
+    if (s <= 0.001) return 0;
+    const x = Q / s, f = 170 + 29.9 * x - 1.081 * x * x;
+    return Math.min(PUMP.Pmax, Math.max(PUMP.Pmin, s * s * s * f * rho / 998.2));
+  };
+
   window.dutyAt = (s, k) => {
     const A = k + PUMP.c, Q = s * (PUMP.b + Math.sqrt(PUMP.b * PUMP.b + 4 * A * PUMP.a)) / (2 * A);
     return { Q, H: k * Q * Q };
   };
-
-  // Speed needed to put the duty point at (Q, H)
   window.speedFor = (Q, H) => {
     const bq = PUMP.b * Q;
     return (-bq + Math.sqrt(bq * bq + 4 * PUMP.a * (PUMP.c * Q * Q + H))) / (2 * PUMP.a);
   };
-
   window.systemK = valvePct => PUMP.Kopen / Math.pow(Math.max(0.05, valvePct / 100), 2);
 
-  // One input -> every readout. input = { mode, set, valve, running }
+  // Control curve for each mode: H as a function of Q (null for constant curve)
+  window.controlLine = (mode, set) => {
+    if (mode === 'cp') return { h0: set, slope: 0 };
+    if (mode === 'pp') return { h0: set / 2, slope: (set / 2) / qOnMax(set) };
+    if (mode === 'aa') return { h0: PUMP.HautoMin, slope: (set - PUMP.HautoMin) / qOnMax(set) };
+    return null;
+  };
+
+  // One input -> every readout. input = { mode, set, aaSet, valve, limitPct, temp, running }
   window.kin = input => {
-    const k = systemK(input.valve);
+    const k = systemK(input.valve), rho = rhoWater(input.temp);
+    const set = input.mode === 'aa' ? input.aaSet : input.set;
     let s, limit = '';
     if (!input.running) s = 0;
-    else if (input.mode === 'cc') s = input.set / 100;
+    else if (input.mode === 'cc') s = input.set / 100 * PUMP.Smax;
     else {
-      let Q;
-      if (input.mode === 'cp') Q = Math.sqrt(input.set / k);
-      else {
-        const H0 = input.set / 2, m = (input.set / 2) / PUMP.Qnom;
-        Q = (m + Math.sqrt(m * m + 4 * k * H0)) / (2 * k);
-      }
+      const L = controlLine(input.mode, set);
+      // Intersect H = h0 + slope·Q with the system curve H = k·Q²
+      const Q = (L.slope + Math.sqrt(L.slope * L.slope + 4 * k * L.h0)) / (2 * k);
       s = speedFor(Q, k * Q * Q);
     }
-    const sCap = input.mode === 'cc' ? 1 : PUMP.Smax;
-    if (s > sCap) { s = sCap; limit = 'speed'; }
+    if (s > PUMP.Smax) { s = PUMP.Smax; limit = 'speed'; }
     let d = dutyAt(s, k);
     const over = dd => dd.H - Math.min(PUMP.Hlim, envH(dd.Q));
     if (over(d) > 0) {
-      // H rises and the allowed H falls as s rises, so bisection is safe
       let lo = 0, hi = s;
       for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (over(dutyAt(mid, k)) > 0) hi = mid; else lo = mid; }
       s = lo; d = dutyAt(s, k);
       limit = d.Q > PUMP.envQ ? 'power' : 'head';
     }
-    let P1 = pumpP1(d.Q, s);
+    // FLOW LIMIT: Q is linear in s on a fixed system curve
+    const qLim = input.limitPct < 91 ? input.limitPct / 100 * PUMP.Qmax : Infinity;
+    if (d.Q > qLim) { s = s * qLim / d.Q; d = dutyAt(s, k); limit = 'flow'; }
+    let P1 = pumpP1(d.Q, s, rho);
     if (limit === 'power') P1 = PUMP.Pmax;
-    const Phyd = PUMP.rho * 9.81 * d.Q / 3600 * d.H;
+    const Phyd = rho * 9.81 * d.Q / 3600 * d.H;
     return {
-      s, k, Q: d.Q, H: d.H, P1, limit,
+      s, k, rho, Q: d.Q, H: d.H, P1, limit, set,
       rpm: s / PUMP.Smax * PUMP.nmax,
       eta: P1 > 0 ? Phyd / P1 : 0,
-      dpKPa: PUMP.rho * 9.81 * d.H / 1000
+      amps: P1 > 0 ? Math.max(0.18, P1 / (PUMP.volts * PUMP.pf)) : 0,
+      dpKPa: rho * 9.81 * d.H / 1000,
+      pin: minInlet(input.temp),
+      lowFlow: input.running && d.Q < 0.1 * PUMP.Qmax
     };
   };
 
-  // Official envelope: regulated head, top speed and the power-limit edge
-  window.maxCurveH = Q => Math.max(0, Math.min(PUMP.Hlim, envH(Q), pumpH(Q, PUMP.Smax)));
+  // AUTOADAPT learning: on the max curve at a lower head, step down to a lower control curve
+  window.adaptStep = (aaSet, st, dt) => {
+    if (!(st.limit === 'power' || st.limit === 'head' || st.limit === 'speed')) return aaSet;
+    const target = Math.max(PUMP.HautoMin + 1, st.H);
+    return target < aaSet ? aaSet + (target - aaSet) * Math.min(1, dt * 0.6) : aaSet;
+  };
 </script>
 
 <!-- ═════════════ STAGE, GEOMETRY, CONSOLE, LIVE ═════════════ -->
@@ -449,6 +516,7 @@
   import * as THREE from 'three';
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
   const $ = id => document.getElementById(id);
   const stage = $('stage');
@@ -456,61 +524,72 @@
   const clamp01 = x => Math.min(1, Math.max(0, x));
   const smooth = x => { x = clamp01(x); return x * x * (3 - 2 * x); };
 
+  // Don't start WebGL until the simulator is about to scroll into view
+  await new Promise(res => {
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); res(); } }, { rootMargin: '300px' });
+    io.observe(stage);
+  });
+
   // Seeded RNG: no Math.random, so every load looks the same
   function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   const rng = mulberry32(3207);
 
-  // ── Renderer & studio ──
+  // ── Renderer & studio (kept light: capped pixel ratio, modest shadow map) ──
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'default' });
   } catch (e) {
     $('fallback').style.display = 'flex';
+    $('loading').classList.add('done');
     throw e;
   }
   const lowPower = matchMedia('(max-width: 768px)').matches;
-  renderer.setPixelRatio(Math.min(devicePixelRatio, lowPower ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, lowPower ? 1.25 : 1.5));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  renderer.toneMappingExposure = 1.25;
   renderer.localClippingEnabled = true;
   stage.prepend(renderer.domElement);
   renderer.domElement.tabIndex = 0;
   renderer.domElement.setAttribute('aria-label', '3D view of the MAGNA3 pump. Drag to orbit.');
+  renderer.domElement.addEventListener('webglcontextlost', e => { e.preventDefault(); simFail('The graphics driver reset the 3D view. Reload the page to restart it.'); });
 
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  pmrem.dispose();
 
   const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 900);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.enablePan = false;
   controls.minDistance = 30;
-  controls.maxDistance = 280;
+  controls.maxDistance = 320;
   controls.maxPolarAngle = Math.PI * 0.6;
 
   const FLOOR = -23.2;
-  const key = new THREE.DirectionalLight(0xffffff, 2.3);
+  const key = new THREE.DirectionalLight(0xffffff, 2.6);
   key.position.set(45, 70, 55);
   key.target.position.set(0, FLOOR, 35);
   key.castShadow = true;
-  key.shadow.mapSize.set(lowPower ? 1024 : 2048, lowPower ? 1024 : 2048);
+  key.shadow.mapSize.set(1024, 1024);
   Object.assign(key.shadow.camera, { left: -90, right: 90, top: 90, bottom: -90, near: 1, far: 260 });
   key.shadow.bias = -0.0005;
   scene.add(key, key.target);
-  const rim = new THREE.DirectionalLight(0x9fc6ff, 1.0);
-  rim.position.set(-50, 25, -40);
-  scene.add(rim, new THREE.HemisphereLight(0xdfe8ff, 0x1a1410, 0.4));
+  const rim = new THREE.DirectionalLight(0xbcd4ff, 1.6);
+  rim.position.set(-50, 30, -40);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.7);
+  fill.position.set(-30, 10, 60);
+  scene.add(rim, fill, new THREE.HemisphereLight(0xe6eeff, 0x1a1410, 0.55));
 
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.32 }));
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: 0.35 }));
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = FLOOR;
   ground.receiveShadow = true;
   scene.add(ground);
 
-  // ── Materials. Colours from the Grundfos CAD model; shells are clipped by the cutaway ──
+  // ── Materials, matched to the product photo; shells are clipped by the cutaway ──
   const cutPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0); // removes the +x half
   const clippedMats = [];
   function mat(params, clip = true) {
@@ -519,25 +598,25 @@
     return m;
   }
   const M = {
-    castIron: mat({ color: 0x45474b, metalness: 0.3, roughness: 0.78 }),
-    head:     mat({ color: 0x4f5054, metalness: 0.55, roughness: 0.5 }),
-    ring:     mat({ color: 0xbfc0bd, metalness: 0.85, roughness: 0.3 }),
-    boxShell: mat({ color: 0x4f5052, metalness: 0.1, roughness: 0.55 }),
-    boxRed:   mat({ color: 0x9d0027, metalness: 0.15, roughness: 0.45 }),
-    panel:    mat({ color: 0xc1c4c0, metalness: 0.4, roughness: 0.35 }, false),
+    castIron: mat({ color: 0x232427, metalness: 0.35, roughness: 0.72 }),
+    head:     mat({ color: 0x26272a, metalness: 0.5, roughness: 0.48 }),
+    ring:     mat({ color: 0xbfc2c4, metalness: 0.9, roughness: 0.28 }),
+    boxShell: mat({ color: 0x2c2d31, metalness: 0.15, roughness: 0.5 }),
+    boxRed:   mat({ color: 0xa3102c, metalness: 0.25, roughness: 0.38 }),
+    panel:    mat({ color: 0x18191c, metalness: 0.3, roughness: 0.3 }),
+    logo:     mat({ color: 0xf2f2f2, metalness: 0.0, roughness: 0.5 }),
+    eyeBase:  mat({ color: 0x1f3a28, metalness: 0.1, roughness: 0.4 }),
     lam:      mat({ color: 0x4a4e57, metalness: 0.7, roughness: 0.45 }),
     copper:   mat({ color: 0xc8743c, metalness: 0.9, roughness: 0.35 }),
     steel:    mat({ color: 0xd6dade, metalness: 1.0, roughness: 0.18, transparent: true, opacity: 0.9 }),
     pcb:      mat({ color: 0x1f5a3a, metalness: 0.2, roughness: 0.6 }),
     chip:     mat({ color: 0x15161a, metalness: 0.3, roughness: 0.5 }),
     ceramic:  mat({ color: 0xece8df, metalness: 0.05, roughness: 0.3 }, false),
-    impeller: mat({ color: 0x2b2d33, metalness: 0.05, roughness: 0.55 }, false),
-    shroud:   mat({ color: 0x2b2d33, metalness: 0.05, roughness: 0.55, transparent: true, opacity: 0.5, side: THREE.DoubleSide }, false),
+    impeller: mat({ color: 0x3a3d45, metalness: 0.05, roughness: 0.55 }, false),
+    shroud:   mat({ color: 0x3a3d45, metalness: 0.05, roughness: 0.55, transparent: true, opacity: 0.5, side: THREE.DoubleSide }, false),
     magN:     mat({ color: 0x9c2f36, metalness: 0.6, roughness: 0.4 }, false),
     magS:     mat({ color: 0x2c4f8f, metalness: 0.6, roughness: 0.4 }, false),
     sensor:   mat({ color: 0x9aa0a8, metalness: 0.9, roughness: 0.3 }, false),
-    button:   mat({ color: 0x3a3c40, metalness: 0.2, roughness: 0.5 }, false),
-    gland:    mat({ color: 0x2a2b2e, metalness: 0.1, roughness: 0.6 }, false),
     pipe:     new THREE.MeshStandardMaterial({ color: 0xbfd7ff, metalness: 0.1, roughness: 0.1, transparent: true, opacity: 0.13, depthWrite: false })
   };
   function setCut(on) { clippedMats.forEach(m => { m.clippingPlanes = on ? [cutPlane] : []; m.needsUpdate = true; }); }
@@ -558,7 +637,6 @@
     s.quadraticCurveTo(x0, y1, x0, y1 - r); s.lineTo(x0, y0 + r); s.quadraticCurveTo(x0, y0, x0 + r, y0);
     return s;
   }
-  // Extrude an XY outline along the shaft from z0 to z0 + depth
   function slab(shape, z0, depth, bevel = 0.15) {
     return new THREE.ExtrudeGeometry(shape, { depth: Math.max(0.01, depth - 2 * bevel), bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 3, curveSegments: 14 })
       .translate(0, 0, z0 + bevel);
@@ -570,63 +648,53 @@
   for (const n of ['housing', 'rotor', 'can', 'stator', 'shell', 'box']) { G[n] = new THREE.Group(); pump.add(G[n]); }
   const EXPLODE_DZ = { housing: 0, rotor: 5, can: 26, stator: 40, shell: 62, box: 80 };
 
-  // ── Pump housing (cast iron): S-shaped inline body, 220 mm port to port ──
-  // Flanges: Ø130 with flats, 4 slotted holes on a 90/100 mm circle, Ø76 raised face, Ø32 bore
+  // ── Stand-in outer shell, drawn in code. Replaced by Grundfos's CAD mesh once it loads. ──
+  const standIn = [];
+  const keep = m => (standIn.push(m), m);
   function flangeGeo(y0) {
     const pts = [];
-    for (let i = 0; i < 96; i++) {
-      const a = i / 96 * Math.PI * 2;
-      pts.push(new V2(Math.max(-6.1, Math.min(6.1, 6.5 * Math.cos(a))), 6.5 * Math.sin(a)));
-    }
+    for (let i = 0; i < 96; i++) { const a = i / 96 * Math.PI * 2; pts.push(new V2(Math.max(-6.1, Math.min(6.1, 6.5 * Math.cos(a))), 6.5 * Math.sin(a))); }
     const shape = new THREE.Shape(pts);
     const bore = new THREE.Path(); bore.absarc(0, 0, 1.6, 0, Math.PI * 2, true); shape.holes.push(bore);
-    for (let i = 0; i < 4; i++) {
-      const a = Math.PI / 4 + i * Math.PI / 2, h = new THREE.Path();
-      h.absarc(4.75 * Math.cos(a), 4.75 * Math.sin(a), 0.82, 0, Math.PI * 2, true); shape.holes.push(h);
-    }
-    return new THREE.ExtrudeGeometry(shape, { depth: 1.0, bevelEnabled: true, bevelSize: 0.08, bevelThickness: 0.08, bevelSegments: 2, curveSegments: 32 })
-      .rotateX(-Math.PI / 2).translate(0, y0, 0);
+    for (let i = 0; i < 4; i++) { const a = Math.PI / 4 + i * Math.PI / 2, h = new THREE.Path(); h.absarc(4.75 * Math.cos(a), 4.75 * Math.sin(a), 0.82, 0, Math.PI * 2, true); shape.holes.push(h); }
+    return new THREE.ExtrudeGeometry(shape, { depth: 1.0, bevelEnabled: true, bevelSize: 0.08, bevelThickness: 0.08, bevelSegments: 2, curveSegments: 32 }).rotateX(-Math.PI / 2).translate(0, y0, 0);
   }
-  mesh(flangeGeo(9.72), M.castIron, G.housing);
-  mesh(flangeGeo(-10.88), M.castIron, G.housing);
-  for (const y of [10.9, -11.05]) mesh(new THREE.CylinderGeometry(3.8, 3.8, 0.15, 48, 1).translate(0, y + 0.075, 0), M.castIron, G.housing);
-
-  // Volute around the shaft, and the boss the motor head clamps onto
-  mesh(lathe([[0.0, -3.5], [2.6, -3.7], [4.4, -3.4], [5.3, -2.5], [5.6, -1.3], [5.4, -0.1], [4.7, 0.7], [3.4, 1.0], [3.0, 1.0], [3.0, 3.7], [0.0, 3.7]]), M.castIron, G.housing);
-  // Inlet: up from the lower flange, loops behind the volute into the impeller eye
+  keep(mesh(flangeGeo(9.72), M.castIron, G.housing));
+  keep(mesh(flangeGeo(-10.88), M.castIron, G.housing));
+  keep(mesh(lathe([[0.0, -3.5], [2.6, -3.7], [4.4, -3.4], [5.3, -2.5], [5.6, -1.3], [5.4, -0.1], [4.7, 0.7], [3.4, 1.0], [3.0, 1.0], [3.0, 3.7], [0.0, 3.7]]), M.castIron, G.housing));
   const inletPts = [new V3(0, -9.9, 0), new V3(0, -8.2, -0.5), new V3(0, -5.8, -2.6), new V3(0, -2.9, -4.3), new V3(0, -0.6, -4.2), new V3(0, 0, -3.0)];
-  const inletCurve = new THREE.CatmullRomCurve3(inletPts);
-  mesh(new THREE.TubeGeometry(inletCurve, 48, 2.2, 28, false), M.castIron, G.housing);
-  // Outlet: from the top of the volute straight up to the upper flange
+  keep(mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(inletPts), 48, 2.2, 28, false), M.castIron, G.housing));
   const outletPts = [new V3(0, 3.6, -1.6), new V3(0, 6.2, -1.1), new V3(0, 8.4, -0.3), new V3(0, 9.9, 0)];
-  const outletCurve = new THREE.CatmullRomCurve3(outletPts);
-  mesh(new THREE.TubeGeometry(outletCurve, 32, 2.3, 28, false), M.castIron, G.housing);
-  // Cast flow-direction arrow on the side of the housing
-  {
-    const s = new THREE.Shape([new V2(-0.35, -1.0), new V2(0.35, -1.0), new V2(0.35, 0.1), new V2(0.8, 0.1), new V2(0, 1.0), new V2(-0.8, 0.1), new V2(-0.35, 0.1)]);
-    const arrow = new THREE.ExtrudeGeometry(s, { depth: 0.12, bevelEnabled: false }).rotateY(Math.PI / 2).translate(2.3, 4.6, -1.9);
-    mesh(arrow, M.castIron, G.housing);
-  }
+  keep(mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(outletPts), 32, 2.3, 28, false), M.castIron, G.housing));
+  keep(mesh(lathe([[3.0, 3.6], [6.5, 3.6], [6.9, 4.0], [6.9, 5.6], [6.5, 6.0], [3.0, 6.0]]), M.ring, G.shell));
+  keep(mesh(lathe([[3.0, 6.0], [5.2, 6.0], [5.5, 7.5], [5.5, 11.4], [3.0, 11.4]]), M.head, G.shell));
+  keep(mesh(tubeZ(5.5, 10.8, 11.4, true), M.head, G.shell));
+  for (let i = 0; i < 8; i++) keep(mesh(slab(rrect(-6.7, -8.4, 10.0, 8.4, 2.4), 11.6 + i * 1.3, 0.42, 0.08), M.head, G.shell));
+  keep(mesh(slab(rrect(-4.6, -10.1, 16.2, 10.1, 2.6), 22.2, 6.5, 0.25), M.boxRed, G.box));
+  keep(mesh(slab(rrect(-6.0, -10.2, 16.0, 10.2, 3.0), 28.7, 1.4, 0.4), M.boxShell, G.box));
+  keep(mesh(slab(rrect(10.0, -10.0, 16.5, 10.0, 1.6), 11.4, 10.9, 0.35), M.boxShell, G.box));
+  keep(mesh(new THREE.CylinderGeometry(6.0, 6.0, 0.2, 64).rotateX(Math.PI / 2).translate(0, -0.45, 30.18), M.panel, G.box));
+
   // Built-in Δp + temperature sensor (Grundfos Direct Sensor) on the inlet bend
   const sensor = new THREE.Group(); G.housing.add(sensor);
   mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.0, 24).rotateZ(Math.PI / 2).translate(0.5, 0, 0), M.sensor, sensor);
-  mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.8, 16).rotateZ(Math.PI / 2).translate(1.4, 0, 0), M.sensor, sensor);
   sensor.position.set(1.9, -5.6, -2.4);
+  sensor.visible = false; // revealed by the cutaway
   // Neighbouring pipework, see-through so the flow shows
   mesh(new THREE.CylinderGeometry(2.1, 2.1, 12.2, 40, 1, true).translate(0, 17.1, 0), M.pipe, pump, false);
   mesh(new THREE.CylinderGeometry(2.1, 2.1, 12.2, 40, 1, true).translate(0, FLOOR + 6.1, 0), M.pipe, pump, false);
 
   // ── Rotor assembly: composite impeller + ceramic shaft + PM rotor, spins as one part ──
   const spin = new THREE.Group(); G.rotor.add(spin);
-  mesh(lathe([[1.4, -2.95], [4.0, -2.75], [4.0, -2.6], [1.4, -2.8]]), M.shroud, spin);  // front shroud with eye (faces the inlet)
-  mesh(tubeZ(4.0, 0.25, -1.7), M.impeller, spin);                                      // back shroud
-  mesh(tubeZ(1.0, 1.2, -1.7), M.impeller, spin);                                       // hub
+  mesh(lathe([[1.4, -2.95], [4.0, -2.75], [4.0, -2.6], [1.4, -2.8]]), M.shroud, spin);
+  mesh(tubeZ(4.0, 0.25, -1.7), M.impeller, spin);
+  mesh(tubeZ(1.0, 1.2, -1.7), M.impeller, spin);
   {
     const BLADES = 7, r1 = 1.3, r2 = 3.95, sweep = 1.0, t = 0.18, n = 14;
     for (let b = 0; b < BLADES; b++) {
       const th0 = b * Math.PI * 2 / BLADES, outer = [], inner = [];
       for (let i = 0; i <= n; i++) {
-        const f = i / n, r = lerp(r1, r2, f), th = th0 - sweep * f; // backward-curved for CCW spin
+        const f = i / n, r = lerp(r1, r2, f), th = th0 - sweep * f;
         const nx = Math.cos(th), ny = Math.sin(th), tx = -ny, ty = nx;
         outer.push(new V2(r * nx + tx * t / 2, r * ny + ty * t / 2));
         inner.push(new V2(r * nx - tx * t / 2, r * ny - ty * t / 2));
@@ -634,82 +702,89 @@
       mesh(new THREE.ExtrudeGeometry(new THREE.Shape([...outer, ...inner.reverse()]), { depth: 0.95, bevelEnabled: false }).translate(0, 0, -2.65), M.impeller, spin);
     }
   }
-  mesh(tubeZ(0.4, 23, -2.0, false, 24), M.ceramic, spin);  // shaft
-  mesh(tubeZ(1.9, 8.4, 12.0, false, 48), M.lam, spin);      // rotor core
-  for (let i = 0; i < 8; i++) {                             // magnet segments
-    const seg = new THREE.CylinderGeometry(2.15, 2.15, 8.2, 12, 1, false, i * Math.PI / 4 + 0.03, Math.PI / 4 - 0.06)
-      .rotateX(Math.PI / 2).translate(0, 0, 12.1 + 4.1);
+  mesh(tubeZ(0.4, 23, -2.0, false, 24), M.ceramic, spin);
+  mesh(tubeZ(1.9, 8.4, 12.0, false, 48), M.lam, spin);
+  for (let i = 0; i < 8; i++) {
+    const seg = new THREE.CylinderGeometry(2.15, 2.15, 8.2, 12, 1, false, i * Math.PI / 4 + 0.03, Math.PI / 4 - 0.06).rotateX(Math.PI / 2).translate(0, 0, 16.2);
     mesh(seg, i % 2 ? M.magS : M.magN, spin);
   }
 
-  // ── Rotor can + bearings (stationary) ──
+  // ── Rotor can + bearings ──
   mesh(tubeZ(2.5, 19, 2.2, true), M.steel, G.can);
   mesh(lathe([[0, 21.2], [2.5, 21.2], [2.5, 21.4], [0, 21.6]]), M.steel, G.can);
   mesh(lathe([[2.5, 2.2], [4.0, 2.2], [4.0, 2.4], [2.5, 2.4]]), M.steel, G.can);
   for (const z of [2.7, 20.3]) mesh(tubeZ(0.75, 0.7, z, false, 32), M.ceramic, G.can);
 
-  // ── Stator: laminated core + copper windings, inside the finned head ──
+  // ── Stator ──
   mesh(lathe([[2.7, 12.2], [4.9, 12.2], [4.9, 20.2], [2.7, 20.2], [2.7, 12.2]]), M.lam, G.stator);
   for (const z of [11.7, 20.7]) mesh(new THREE.TorusGeometry(3.8, 0.55, 14, 56).translate(0, 0, z), M.copper, G.stator);
-  for (let i = 0; i < 12; i++) {
-    const a = i * Math.PI / 6;
-    mesh(new THREE.BoxGeometry(0.45, 0.8, 8.0).translate(3.05 * Math.cos(a), 3.05 * Math.sin(a), 16.2), M.copper, G.stator);
-  }
+  for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; mesh(new THREE.BoxGeometry(0.45, 0.8, 8.0).translate(3.05 * Math.cos(a), 3.05 * Math.sin(a), 16.2), M.copper, G.stator); }
 
-  // ── Motor head: silver clamp ring, neck and 8 square cooling fins ──
-  mesh(lathe([[3.0, 3.6], [6.5, 3.6], [6.9, 4.0], [6.9, 5.6], [6.5, 6.0], [3.0, 6.0]]), M.ring, G.shell);
-  for (let i = 0; i < 4; i++) {
-    const a = Math.PI / 4 + i * Math.PI / 2;
-    mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.5, 16).rotateX(Math.PI / 2).translate(6.3 * Math.cos(a), 6.3 * Math.sin(a), 6.2), M.ring, G.shell);
-  }
-  mesh(lathe([[3.0, 6.0], [5.2, 6.0], [5.5, 7.5], [5.5, 11.4], [3.0, 11.4]]), M.head, G.shell);
-  mesh(tubeZ(5.5, 10.8, 11.4, true), M.head, G.shell);
-  const fin = rrect(-6.7, -8.4, 10.0, 8.4, 2.4);
-  for (let i = 0; i < 8; i++) mesh(slab(fin, 11.6 + i * 1.3, 0.42, 0.08), M.head, G.shell);
-  mesh(slab(rrect(-6.7, -8.4, 10.0, 8.4, 2.4), 21.2, 1.0, 0.1), M.head, G.shell);  // back plate under the box
-  for (const [x, y] of [[-2.2, 6.6], [2.2, 6.6], [-2.2, -6.6], [2.2, -6.6]])          // fixing lugs
-    mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.6, 20).rotateX(Math.PI / 2).translate(x, y, 10.6), M.head, G.shell);
-
-  // ── Control box: red band, dark front cover, side compartment over the fins ──
-  mesh(slab(rrect(-4.6, -10.1, 16.2, 10.1, 2.6), 22.2, 6.5, 0.25), M.boxRed, G.box);
-  mesh(slab(rrect(-6.0, -10.2, 16.0, 10.2, 3.0), 28.7, 1.4, 0.4), M.boxShell, G.box);
-  mesh(slab(rrect(10.0, -10.0, 16.5, 10.0, 1.6), 11.4, 10.9, 0.35), M.boxShell, G.box);
-  for (let i = 0; i < 7; i++) mesh(new THREE.BoxGeometry(0.25, 15.5, 0.5).translate(16.6, 0, 12.4 + i * 1.45), M.boxShell, G.box);
-  // Electronics inside: PCB, chips, capacitors
+  // ── Electronics inside the control box ──
   mesh(slab(rrect(-4.0, -9.0, 15.0, 9.0, 1.5), 26.0, 0.16, 0), M.pcb, G.box);
   for (const [x, y, w, h] of [[2, 3, 3, 3], [8, -4, 2.5, 2], [11, 4, 2, 4], [-2, -5, 2, 1.5]]) mesh(new THREE.BoxGeometry(w, h, 0.4).translate(x, y, 25.75), M.chip, G.box);
-  for (const [x, y] of [[6, 5], [6.8, 6.5], [13, -3]]) mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.6, 16).rotateX(Math.PI / 2).translate(x, y, 24.9), M.chip, G.box);
-  // Operating panel: silver disc, TFT display, OK cluster, home + wireless keys, status LED
-  mesh(new THREE.CylinderGeometry(6.0, 6.0, 0.2, 64).rotateX(Math.PI / 2).translate(0, -0.45, 30.18), M.panel, G.box);
+
+  // ── Live TFT display and Grundfos Eye on the operating panel ──
   const dispCanvas = document.createElement('canvas'); dispCanvas.width = 520; dispCanvas.height = 400;
   const dispTex = new THREE.CanvasTexture(dispCanvas); dispTex.colorSpace = THREE.SRGBColorSpace;
-  mesh(new THREE.PlaneGeometry(5.2, 4.0).translate(0, 0.7, 30.3), new THREE.MeshBasicMaterial({ map: dispTex, toneMapped: false }), G.box, false);
-  mesh(new THREE.TorusGeometry(1.5, 0.12, 10, 40).translate(0, -3.45, 30.32), M.button, G.box);
-  mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.2, 24).rotateX(Math.PI / 2).translate(0, -3.45, 30.32), M.button, G.box);
-  for (const x of [-2.7, 2.7]) mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.18, 24).rotateX(Math.PI / 2).translate(x, -2.3, 30.32), M.button, G.box);
-  const led = mesh(new THREE.CircleGeometry(0.25, 20).translate(0, 4.1, 30.3), new THREE.MeshBasicMaterial({ color: 0x3ad17a, toneMapped: false }), G.box, false);
-  // Cable gland and blanking plugs under the box
-  mesh(new THREE.CylinderGeometry(1.1, 1.1, 1.6, 6).translate(3.05, -10.9, 24.0), M.gland, G.box);
-  mesh(new THREE.CylinderGeometry(0.85, 1.0, 1.0, 24).translate(3.05, -12.1, 24.0), M.gland, G.box);
-  for (const [x, z] of [[6.6, 24.0], [6.6, 26.8], [3.0, 26.8]]) mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.45, 20).translate(x, -10.3, z), M.gland, G.box);
+  mesh(new THREE.PlaneGeometry(5.2, 4.0).translate(0, 0.7, 30.14), new THREE.MeshBasicMaterial({ map: dispTex, toneMapped: false }), G.box, false);
+  const eye = new THREE.Group(); eye.position.set(0, 4.1, 30.14); G.box.add(eye);
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x3ad17a, toneMapped: false });
+  const eyeDots = [0, Math.PI].map(a => { const d = mesh(new THREE.CircleGeometry(0.13, 12), eyeMat, eye, false); d.userData.a = a; return d; });
+
+  // ── Load Grundfos's CAD shell (STEP → GLB) and swap it in for the stand-in ──
+  const MODEL_URL = '../../media/models/magna3-32-120.glb';
+  function cadMaterial(part, src) {
+    const c = src.color || new THREE.Color(0.1, 0.1, 0.1), r = c.r, g = c.g, b = c.b;
+    if (g > 0.5 && r < 0.2) return M.eyeBase;                  // status LED ring
+    if (r > 0.2 && g < 0.05) return M.boxRed;                 // red band
+    if (r > 0.9 && g > 0.9 && b > 0.9) return M.logo;          // white lettering
+    if (r > 0.4) return part === 'head' ? M.ring : M.panel;    // silver clamp ring / operating panel
+    return part === 'housing' ? M.castIron : part === 'head' ? M.head : M.boxShell;
+  }
+  new GLTFLoader().load(MODEL_URL, gltf => {
+    const wrap = new THREE.Group();
+    wrap.scale.setScalar(100);          // metres -> scene units (10 mm)
+    wrap.rotation.y = -Math.PI / 2;     // CAD shaft axis (x) -> scene z
+    wrap.add(gltf.scene);
+    scene.add(wrap);
+    const saved = {};
+    for (const n in G) { saved[n] = G[n].position.z; G[n].position.z = 0; }
+    pump.updateMatrixWorld(true); wrap.updateMatrixWorld(true);
+    const parts = { housing: G.housing, head: G.shell, box: G.box };
+    let found = 0;
+    for (const [name, grp] of Object.entries(parts)) {
+      const node = gltf.scene.getObjectByName(name);
+      if (!node) continue;
+      found++;
+      grp.attach(node);
+      node.traverse(o => { if (o.isMesh) { o.material = cadMaterial(name, o.material); o.castShadow = true; o.receiveShadow = true; } });
+    }
+    for (const n in G) G[n].position.z = saved[n];
+    scene.remove(wrap);
+    if (found === 3) standIn.forEach(m => { m.parent.remove(m); m.geometry.dispose(); });
+    setCut(view.cut);
+    $('loading').classList.add('done');
+  }, undefined, () => {
+    $('loading').textContent = 'CAD model unavailable · showing the simplified model';
+    setTimeout(() => $('loading').classList.add('done'), 2500);
+  });
 
   // ── Flow particles ──
-  const N = lowPower ? 240 : 380;
+  const N = lowPower ? 200 : 320;
   const particles = new THREE.InstancedMesh(new THREE.SphereGeometry(0.22, 8, 6), new THREE.MeshBasicMaterial({ toneMapped: false }), N);
   particles.frustumCulled = false;
   scene.add(particles);
   const lanes = Array.from({ length: N }, () => ({ x: (rng() - 0.5) * 2.2, z: (rng() - 0.5) * 2.2, o: rng() }));
   const cCold = new THREE.Color(0x4aa3ff), cHot = new THREE.Color(0xff8a3d), cTmp = new THREE.Color();
   const tmpM = new THREE.Matrix4(), tmpV = new V3();
-
-  // Path: lower pipe -> inlet loop -> impeller eye -> spiral out through the volute -> outlet -> upper pipe
   const inPath = new THREE.CatmullRomCurve3([new V3(0, FLOOR, 0), new V3(0, -14, 0), ...inletPts.slice(0, -1), new V3(0, -0.2, -2.4)]);
   const outPath = new THREE.CatmullRomCurve3([new V3(0, 4.3, -2.2), new V3(0, 6.2, -1.2), new V3(0, 8.4, -0.3), new V3(0, 11, 0), new V3(0, 23.2, 0)]);
   const U_IN = 0.36, U_SPIRAL = 0.70;
   function flowPos(u, lx, lz, out) {
     if (u < U_IN) {
       inPath.getPointAt(u / U_IN, out);
-      const fade = 1 - smooth((u / U_IN - 0.8) / 0.2); // lanes merge into the eye
+      const fade = 1 - smooth((u / U_IN - 0.8) / 0.2);
       return out.set(out.x + lx * fade, out.y, out.z + lz * fade);
     }
     if (u < U_SPIRAL) {
@@ -728,7 +803,7 @@
   const LABELS = [
     { g: 'housing', p: [0, -6.4, -4.8], t: 'Pump housing', d: 'Cast iron EN-GJL-250', internal: false },
     { g: 'housing', p: [0, 11.1, 3.6], t: 'DN32 flange', d: '220 mm port to port', internal: false },
-    { g: 'housing', p: [3.5, -5.6, -2.4], t: 'Direct sensor', d: 'Δp + temperature', internal: false },
+    { g: 'housing', p: [3.5, -5.6, -2.4], t: 'Direct sensor', d: 'Δp + temperature', internal: true },
     { g: 'rotor', p: [0, 4.2, -2.2], t: 'Impeller', d: 'Composite, 7 blades', internal: true },
     { g: 'rotor', p: [0, 2.3, 18], t: 'PM rotor', d: 'Permanent magnets', internal: true },
     { g: 'can', p: [0, 2.6, 8], t: 'Rotor can', d: 'Water inside, no seal', internal: true },
@@ -736,7 +811,7 @@
     { g: 'shell', p: [-2, 8.5, 15], t: 'Motor head', d: 'Cooling fins', internal: false },
     { g: 'shell', p: [-4.9, 4.9, 4.8], t: 'Clamp ring', d: 'Joins head to housing', internal: false },
     { g: 'box', p: [7, 10.3, 25.5], t: 'Control box', d: 'Frequency converter', internal: false },
-    { g: 'box', p: [0, 2.9, 30.4], t: 'TFT display', d: 'Operating panel', internal: false }
+    { g: 'box', p: [0, 3.0, 30.4], t: 'TFT display', d: 'With Grundfos Eye', internal: false }
   ];
   const labelLayer = $('labels');
   for (const L of LABELS) {
@@ -747,14 +822,15 @@
   }
 
   // ── Live state ──
-  const SET_DEF = { pp: { label: 'Setpoint (Hset)', min: 1, max: 11.8, step: 0.1, unit: 'm', val: 6 },
+  const SET_DEF = { aa: { label: 'Setpoint (auto)', min: 1, max: 11.8, step: 0.1, unit: 'm', val: PUMP.HautoStart },
+                    pp: { label: 'Setpoint (Hset)', min: 1, max: 11.8, step: 0.1, unit: 'm', val: 6 },
                     cp: { label: 'Setpoint (H)', min: 1, max: 11.8, step: 0.1, unit: 'm', val: 5 },
-                    cc: { label: 'Constant curve', min: 25, max: 100, step: 1, unit: '%', val: 70 } };
-  const input = { mode: 'pp', set: 6, valve: 45, running: true };
+                    cc: { label: 'Speed (% of max)', min: PUMP.ccMin, max: 100, step: 1, unit: '%', val: 70 } };
+  const input = { mode: 'aa', set: PUMP.HautoStart, aaSet: PUMP.HautoStart, valve: 45, limitPct: 95, temp: 60, running: true };
   const view = { explode: 0, cut: false, flow: true, labels: !lowPower };
   let st = kin(input);
   const disp = { s: 0, Q: 0, explode: 0 };
-  let spinAngle = 0, flowPhase = 0, frame = 0;
+  let spinAngle = 0, flowPhase = 0, frame = 0, eyeAngle = 0;
 
   // ── Console: readouts, chart, on-pump display ──
   const fmt = (x, d = 1) => x.toFixed(d);
@@ -765,10 +841,15 @@
     $('rDp').innerHTML = `${fmt(st.dpKPa, 0)}<em>kPa</em>`;
     $('rP').innerHTML = `${fmt(st.P1, 0)}<em>W</em>`;
     $('rEta').innerHTML = `${fmt(st.eta * 100, 0)}<em>%</em>`;
-    $('flag').textContent = !input.running ? 'Pump stopped.'
+    $('rI').innerHTML = `${fmt(st.amps, 2)}<em>A</em>`;
+    $('rPin').innerHTML = `${fmt(st.pin, 2)}<em>bar</em>`;
+    if (input.mode === 'aa') $('setOut').textContent = `${fmt(input.aaSet, 1)} m`;
+    $('flag').textContent = !input.running ? 'Pump stopped. Grundfos Eye: two steady green lights.'
       : st.limit === 'power' ? 'Power-limited: speed held back to stay at 333 W.'
       : st.limit === 'head' ? 'Head limit: held at the 11.8 m maximum.'
-      : st.limit === 'speed' ? 'At maximum speed: setpoint can’t be reached with these valves.' : '';
+      : st.limit === 'speed' ? 'At maximum speed: setpoint can’t be reached with these valves.'
+      : st.limit === 'flow' ? `FLOW LIMIT active: flow capped at ${fmt(input.limitPct / 100 * PUMP.Qmax, 1)} m³/h.`
+      : st.lowFlow ? 'Low flow (under 10 % of Qmax): the display shows "low flow".' : '';
   }
 
   const chart = $('chart'), cx = chart.getContext('2d');
@@ -780,10 +861,9 @@
     cx.clearRect(0, 0, w, h);
     const pad = { l: 30, r: 8, t: 8, b: 26 }, QX = 22, HY = 13;
     const X = q => pad.l + q / QX * (w - pad.l - pad.r), Y = H => h - pad.b - H / HY * (h - pad.t - pad.b);
-    // Operating area of the pump (shaded, like the Grundfos chart)
     cx.beginPath(); cx.moveTo(X(0), Y(0));
-    for (let i = 0; i <= 120; i++) { const q = i / 120 * 21.5; cx.lineTo(X(q), Y(maxCurveH(q))); }
-    cx.lineTo(X(21.5), Y(0)); cx.closePath(); cx.fillStyle = 'rgba(232,220,196,0.06)'; cx.fill();
+    for (let i = 0; i <= 120; i++) { const q = i / 120 * PUMP.Qmax; cx.lineTo(X(q), Y(maxCurveH(q))); }
+    cx.lineTo(X(PUMP.Qmax), Y(0)); cx.closePath(); cx.fillStyle = 'rgba(232,220,196,0.06)'; cx.fill();
     cx.font = '11px JetBrains Mono, monospace'; cx.fillStyle = '#6b6d75'; cx.strokeStyle = 'rgba(255,255,255,0.07)'; cx.lineWidth = 1;
     for (let q = 0; q <= 20; q += 4) { cx.beginPath(); cx.moveTo(X(q), Y(0)); cx.lineTo(X(q), Y(HY)); cx.stroke(); cx.fillText(q, X(q) - 4, h - 9); }
     for (let H = 0; H <= 12; H += 3) { cx.beginPath(); cx.moveTo(X(0), Y(H)); cx.lineTo(X(QX), Y(H)); cx.stroke(); cx.fillText(H, 6, Y(H) + 4); }
@@ -798,38 +878,46 @@
       }
       cx.stroke(); cx.setLineDash([]);
     };
-    curve(q => maxCurveH(q), '#e8dcc4', [], 2, 21.5);
-    if (input.running) curve(q => Math.min(pumpH(q, st.s), maxCurveH(q)), '#4aa3ff', [6, 4], 2, 21.5);
+    curve(q => maxCurveH(q), '#e8dcc4', [], 2, PUMP.Qmax);
+    if (input.running) curve(q => Math.min(pumpH(q, st.s), maxCurveH(q)), '#4aa3ff', [6, 4], 2, PUMP.Qmax);
     curve(q => st.k * q * q, '#6fcf97', [], 1.5);
-    if (input.mode === 'pp') curve(q => input.set / 2 + (input.set / 2) * q / PUMP.Qnom, '#ff8a3d', [3, 3], 1.5);
-    if (input.mode === 'cp') curve(() => input.set, '#ff8a3d', [3, 3], 1.5);
-    // Nominal duty point from the data sheet
+    const L = controlLine(input.mode, st.set);
+    if (L) curve(q => { const H = L.h0 + L.slope * q; return H <= maxCurveH(q) + 0.01 ? H : null; }, '#ff8a3d', [3, 3], 1.5, PUMP.Qmax);
+    if (input.limitPct < 91) {
+      const xq = X(input.limitPct / 100 * PUMP.Qmax);
+      cx.setLineDash([2, 3]); cx.strokeStyle = 'rgba(255,138,61,0.6)'; cx.beginPath(); cx.moveTo(xq, Y(0)); cx.lineTo(xq, Y(HY)); cx.stroke(); cx.setLineDash([]);
+    }
     cx.strokeStyle = 'rgba(232,220,196,0.7)'; cx.lineWidth = 1.2;
     cx.beginPath(); const nx = X(PUMP.Qnom), ny = Y(PUMP.Hnom); cx.moveTo(nx, ny - 5); cx.lineTo(nx + 5, ny); cx.lineTo(nx, ny + 5); cx.lineTo(nx - 5, ny); cx.closePath(); cx.stroke();
     cx.beginPath(); cx.fillStyle = '#fff'; cx.arc(X(st.Q), Y(st.H), 4.5, 0, Math.PI * 2); cx.fill();
     cx.beginPath(); cx.strokeStyle = 'rgba(255,255,255,0.35)'; cx.arc(X(st.Q), Y(st.H), 8, 0, Math.PI * 2); cx.stroke();
   }
 
-  const MODE_NAME = { pp: 'PROPORTIONAL PRESSURE', cp: 'CONSTANT PRESSURE', cc: 'CONSTANT CURVE' };
+  // Home screen, laid out like the real MAGNA3 display: four tiles
+  const MODE_NAME = { aa: 'AUTOADAPT', pp: 'Prop. press.', cp: 'Const. press.', cc: 'Const. curve' };
   function drawDisplay() {
     const c = dispCanvas.getContext('2d'), W = 520, H = 400;
-    c.fillStyle = '#0b1220'; c.fillRect(0, 0, W, H);
-    c.fillStyle = '#7fa6d6'; c.font = '600 28px Inter, sans-serif'; c.fillText(MODE_NAME[input.mode], 28, 52);
-    c.fillStyle = '#ffffff'; c.font = '700 110px Inter, sans-serif'; c.fillText(fmt(st.H, 1), 28, 180);
-    const hw = c.measureText(fmt(st.H, 1)).width;
-    c.font = '500 40px Inter, sans-serif'; c.fillStyle = '#a8b6c8'; c.fillText('m', 28 + hw + 12, 180);
-    c.font = '500 38px Inter, sans-serif'; c.fillStyle = '#e6edf6';
-    c.fillText(`${fmt(st.Q, 1)} m³/h`, 28, 252); c.fillText(`${fmt(st.P1, 0)} W`, 320, 252);
-    c.fillStyle = '#93a1b5'; c.font = '500 30px Inter, sans-serif';
-    c.fillText(`${Math.round(disp.s / PUMP.Smax * PUMP.nmax)} rpm`, 28, 306);
-    c.fillStyle = '#1c2a40'; c.fillRect(28, 336, W - 56, 22);
-    c.fillStyle = st.limit === 'power' ? '#ff8a3d' : '#4aa3ff'; c.fillRect(28, 336, (W - 56) * clamp01(disp.s / PUMP.Smax), 22);
+    c.fillStyle = '#05070b'; c.fillRect(0, 0, W, H);
+    c.fillStyle = '#1d2632'; c.fillRect(0, 0, W, 54);
+    c.fillStyle = '#dfe7f1'; c.font = '600 28px Inter, sans-serif'; c.fillText('Home', 24, 37);
+    const tile = (x, y, w, h, title, value, unit) => {
+      c.fillStyle = '#121a24'; c.fillRect(x, y, w, h);
+      c.strokeStyle = '#2b3a4c'; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, w - 2, h - 2);
+      c.fillStyle = '#93a7bd'; c.font = '500 22px Inter, sans-serif'; c.fillText(title, x + 14, y + 32);
+      c.fillStyle = '#ffffff'; c.font = '700 44px Inter, sans-serif'; c.fillText(value, x + 14, y + h - 22);
+      if (unit) { const vw = c.measureText(value).width; c.fillStyle = '#a8b6c8'; c.font = '500 24px Inter, sans-serif'; c.fillText(unit, x + 20 + vw, y + h - 22); }
+    };
+    const lowFlow = st.lowFlow;
+    tile(14, 68, 240, 150, 'Control mode', MODE_NAME[input.mode], '');
+    tile(266, 68, 240, 150, 'Setpoint', input.mode === 'cc' ? `${Math.round(input.set)}` : fmt(st.set, 1), input.mode === 'cc' ? '%' : 'm');
+    tile(14, 230, 240, 156, 'Est. flow', lowFlow ? 'Low' : fmt(st.Q, 1), lowFlow ? '' : 'm³/h');
+    tile(266, 230, 240, 156, 'Head', fmt(st.H, 1), 'm');
     dispTex.needsUpdate = true;
-    led.material.color.set(input.running ? (st.limit ? 0xffa53d : 0x3ad17a) : 0x444444);
   }
 
-  // ── Camera framing follows the explode amount ──
-  const camDist = e => lerp(78, 190, e), camTargetZ = e => lerp(12, 55, e), camTargetY = -1.5;
+  // ── Camera framing follows the explode amount and the screen shape ──
+  const fitK = () => { const a = camera.aspect || 1.5; return a < 1.1 ? Math.pow(1.1 / a, 0.85) : 1; };
+  const camDist = e => lerp(78, 190, e) * fitK(), camTargetZ = e => lerp(12, 55, e), camTargetY = -1.5;
   function resetView() {
     const e = disp.explode;
     controls.target.set(2, camTargetY, camTargetZ(e));
@@ -842,42 +930,41 @@
   function tour(t) {
     const c = t % 36;
     const explode = c < 6 ? 0 : c < 10 ? smooth((c - 6) / 4) : c < 16 ? 1 : c < 19 ? 1 - smooth((c - 16) / 3) : 0;
-    return {
-      az: 0.75 + t * 0.12,
-      el: 0.36 + 0.12 * Math.sin(t * 0.21),
-      explode,
-      cut: c >= 20 && c < 33,
-      valve: Math.round(55 + 40 * Math.sin(t * 0.35))
-    };
+    return { az: 0.75 + t * 0.12, el: 0.36 + 0.12 * Math.sin(t * 0.21), explode, cut: c >= 20 && c < 33, valve: Math.round(55 + 40 * Math.sin(t * 0.35)) };
   }
   let touring = false, tourT = 0, lastInput = performance.now();
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function setTour(on) {
     touring = on; tourT = 0;
     $('tTour').setAttribute('aria-pressed', on); $('tourBadge').classList.toggle('on', on);
-    if (on) setLabels(true);
+    if (on && !lowPower) setLabels(true);
   }
 
   // ── Controls wiring ──
-  const setEl = $('set'), valveEl = $('valve'), explodeEl = $('explode');
+  const setEl = $('set'), valveEl = $('valve'), explodeEl = $('explode'), limitEl = $('limit'), tempEl = $('temp');
   function recompute() { st = kin(input); }
   function setMode(m) {
-    SET_DEF[input.mode].val = input.set;
+    if (input.mode !== 'aa') SET_DEF[input.mode].val = input.set;
     input.mode = m; const d = SET_DEF[m];
-    Object.assign(setEl, { min: d.min, max: d.max, step: d.step }); setEl.value = d.val; input.set = d.val;
+    if (m === 'aa') input.aaSet = PUMP.HautoStart; // re-learning starts from the factory setpoint
+    Object.assign(setEl, { min: d.min, max: d.max, step: d.step });
+    input.set = m === 'aa' ? input.aaSet : d.val; setEl.value = input.set;
+    setEl.disabled = m === 'aa';
     $('setLabel').textContent = d.label;
     document.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === m));
     syncOutputs(); recompute();
   }
   function syncOutputs() {
     const d = SET_DEF[input.mode];
-    $('setOut').textContent = `${d.step < 1 ? Number(input.set).toFixed(1) : input.set} ${d.unit}`;
+    $('setOut').textContent = input.mode === 'aa' ? `${fmt(input.aaSet, 1)} m` : `${d.step < 1 ? Number(input.set).toFixed(1) : input.set} ${d.unit}`;
     $('valveOut').textContent = `${input.valve} %`;
+    $('limitOut').textContent = input.limitPct < 91 ? `${input.limitPct} % · ${fmt(input.limitPct / 100 * PUMP.Qmax, 1)} m³/h` : 'Off';
+    $('tempOut').textContent = `${input.temp} °C`;
     $('explodeOut').textContent = `${Math.round(view.explode * 100)} %`;
   }
   function setValve(v) { input.valve = Math.max(5, Math.min(100, v)); valveEl.value = input.valve; syncOutputs(); recompute(); }
   function setExplode(e) { view.explode = clamp01(e); explodeEl.value = Math.round(view.explode * 100); syncOutputs(); }
-  function setCutaway(on) { view.cut = on; setCut(on); $('tCut').setAttribute('aria-pressed', on); }
+  function setCutaway(on) { view.cut = on; setCut(on); sensor.visible = on; $('tCut').setAttribute('aria-pressed', on); }
   function setFlow(on) { view.flow = on; particles.visible = on; $('tFlow').setAttribute('aria-pressed', on); }
   function setLabels(on) { view.labels = on; $('tLabels').setAttribute('aria-pressed', on); }
   function setRunning(on) { input.running = on; $('tStop').textContent = on ? 'Stop pump' : 'Start pump'; $('tStop').setAttribute('aria-pressed', !on); recompute(); }
@@ -885,6 +972,8 @@
   document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
   setEl.addEventListener('input', () => { input.set = Number(setEl.value); syncOutputs(); recompute(); });
   valveEl.addEventListener('input', () => setValve(Number(valveEl.value)));
+  limitEl.addEventListener('input', () => { input.limitPct = Number(limitEl.value); syncOutputs(); recompute(); });
+  tempEl.addEventListener('input', () => { input.temp = Number(tempEl.value); syncOutputs(); recompute(); });
   explodeEl.addEventListener('input', () => setExplode(explodeEl.value / 100));
   $('tCut').addEventListener('click', () => setCutaway(!view.cut));
   $('tFlow').addEventListener('click', () => setFlow(!view.flow));
@@ -893,17 +982,15 @@
   $('tStop').addEventListener('click', () => setRunning(!input.running));
   $('tTour').addEventListener('click', e => { e.stopPropagation(); setTour(!touring); lastInput = performance.now(); });
 
-  // Any real input ends the tour and resets the idle timer
   const wake = e => { if (e && e.target && e.target.id === 'tTour') return; lastInput = performance.now(); if (touring) setTour(false); };
   for (const ev of ['pointerdown', 'wheel', 'keydown', 'input']) document.addEventListener(ev, wake, { passive: true, capture: true });
 
   document.addEventListener('keydown', e => {
-    const inField = e.target.closest && e.target.closest('input, textarea');
-    if (inField) return;
+    if (e.target.closest && e.target.closest('input, textarea')) return;
     const rect = stage.getBoundingClientRect();
-    if (rect.bottom < 0 || rect.top > innerHeight) return; // only when the sim is on screen
+    if (rect.bottom < 0 || rect.top > innerHeight) return;
     const k = e.key.toLowerCase();
-    if (k === '1') setMode('pp'); else if (k === '2') setMode('cp'); else if (k === '3') setMode('cc');
+    if (k === '1') setMode('aa'); else if (k === '2') setMode('pp'); else if (k === '3') setMode('cp'); else if (k === '4') setMode('cc');
     else if (k === 'e') setExplode(view.explode > 0.5 ? 0 : 1);
     else if (k === 'c') setCutaway(!view.cut);
     else if (k === 'f') setFlow(!view.flow);
@@ -915,6 +1002,7 @@
   // ── Resize & visibility ──
   function resize() {
     const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
     renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(stage);
@@ -922,7 +1010,7 @@
   new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; }).observe(stage);
 
   // ── Frame ──
-  const VIS_SPEED = 1 / 20; // real rpm would just blur
+  const VIS_SPEED = 1 / 20;
   let last = performance.now(), prevExplode = 0;
   function loop(now) {
     requestAnimationFrame(loop);
@@ -944,13 +1032,17 @@
         controls.target.z + d * Math.cos(T.el) * Math.cos(T.az));
     }
 
-    // Ease displayed values toward the physics (the motor ramps, it doesn't jump)
+    // AUTOADAPT learns (sped up from hours to seconds)
+    if (input.mode === 'aa' && input.running) {
+      const next = adaptStep(input.aaSet, st, dt);
+      if (next !== input.aaSet) { input.aaSet = next; input.set = next; setEl.value = next; recompute(); }
+    }
+
     const a = 1 - Math.exp(-dt * 2.5);
     disp.s += (st.s - disp.s) * a;
     disp.Q = dutyAt(disp.s, st.k).Q;
     disp.explode += (view.explode - disp.explode) * (1 - Math.exp(-dt * 5));
 
-    // Explode along the shaft; camera keeps the whole pump framed
     for (const n in G) G[n].position.z = EXPLODE_DZ[n] * disp.explode;
     if (Math.abs(disp.explode - prevExplode) > 1e-4) {
       const off = camera.position.clone().sub(controls.target);
@@ -963,9 +1055,14 @@
     spinAngle += disp.s / PUMP.Smax * PUMP.nmax / 60 * Math.PI * 2 * VIS_SPEED * dt;
     spin.rotation.z = spinAngle;
 
+    // Grundfos Eye: two green lights circle in the running direction; steady when stopped
+    if (input.running) eyeAngle += dt * (1.5 + 3 * disp.s);
+    eyeMat.color.set(!input.running ? 0x3ad17a : st.limit === 'power' || st.limit === 'speed' ? 0xffb020 : 0x3ad17a);
+    for (const d of eyeDots) { const ang = d.userData.a + eyeAngle; d.position.set(0.42 * Math.cos(ang), 0.42 * Math.sin(ang), 0); }
+
     if (view.flow) {
       flowPhase += dt * disp.Q * 0.016;
-      const hide = disp.explode > 0.08; // the flow path only makes sense when assembled
+      const hide = disp.explode > 0.08;
       for (let i = 0; i < N; i++) {
         const L = lanes[i], u = (i / N + L.o * 0.02 + flowPhase) % 1;
         flowPos(u, L.x, L.z, tmpV);
@@ -981,7 +1078,6 @@
     controls.update();
     renderer.render(scene, camera);
 
-    // Labels
     const showInternal = disp.explode > 0.3 || view.cut;
     const w = stage.clientWidth, h = stage.clientHeight;
     for (const L of LABELS) {
