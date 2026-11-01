@@ -200,6 +200,13 @@
     .exp-lede kbd { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text); background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 4px; padding: 0 5px; }
     @media (max-width: 560px) { .exp-head { flex-direction: column; align-items: flex-start; gap: 0.6rem; } .exp-body { padding: 1.1rem; } }
 
+    /* ── GAME TABS ── */
+    .game-tabs { display: inline-flex; padding: 3px; gap: 3px; background: #fff; border: 1px solid var(--line-2); border-radius: 8px; }
+    .game-tabs button { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: var(--dim); background: transparent; border: none; border-radius: 5px; padding: 0.4rem 0.9rem; cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .game-tabs button[aria-selected="true"] { background: var(--accent); color: #fff; }
+    .game-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .game-pane[hidden] { display: none; }
+
     /* ── GRID RACE ── */
     .evo-wrap { display: flex; gap: 1.25rem; align-items: flex-start; flex-wrap: wrap; }
     .evo-stage { position: relative; flex: 1 1 540px; min-width: 0; border-radius: 10px; overflow: hidden; background: #0b0f14; border: 1px solid var(--line-2); }
@@ -420,12 +427,82 @@
         <p class="section-lede">Things I built to understand an idea by making it move. Each one runs entirely in your browser, so you can play with it right here.</p>
       </div>
 
-      <!-- EXP-01 · Bike Fit Studio (flagship) -->
+      <!-- EXP-01 · MAGNA3 Pump Simulator -->
+      <section class="exp wow" aria-label="MAGNA3 pump simulator">
+        <div class="exp-head">
+          <div class="exp-id"><em>EXP-01</em> <b>MAGNA3 Pump Simulator</b></div>
+          <div class="exp-tags">
+            <span class="exp-tag flag">New</span>
+            <span class="exp-tag">3D</span>
+            <span class="exp-tag">Real pump curves</span>
+          </div>
+        </div>
+        <div class="exp-body" style="padding:0;">
+          <a class="bikefit-block" href="magna3-simulator.html" target="_blank" rel="noopener">
+            <div class="bikefit-visual" aria-hidden="true">
+              <div class="bikefit-grid"></div>
+              <svg class="bikefit-fallback" viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="display:block">
+                <defs>
+                  <radialGradient id="pumpglow" cx="45%" cy="50%" r="60%">
+                    <stop offset="0%" stop-color="#4d92ff" stop-opacity="0.14"/>
+                    <stop offset="100%" stop-color="#4d92ff" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <rect width="480" height="320" fill="url(#pumpglow)"/>
+                <!-- pipes + flanges -->
+                <g stroke="#6f90c8" stroke-width="1" fill="none" opacity="0.5" stroke-dasharray="3 4">
+                  <path d="M118 0 V52 M142 0 V52 M118 268 V320 M142 268 V320"/>
+                </g>
+                <g fill="#1a2438" stroke="#a9c8ff" stroke-width="2">
+                  <rect x="82" y="52" width="96" height="14" rx="2"/>
+                  <rect x="82" y="254" width="96" height="14" rx="2"/>
+                </g>
+                <!-- S-shaped housing -->
+                <path d="M112 66 C110 100 104 118 96 136 C84 160 84 176 96 196 C104 214 110 232 112 254 L148 254 C146 230 138 208 132 192 C124 174 126 158 136 144 C146 128 150 96 148 66 Z" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
+                <rect x="150" y="124" width="28" height="72" rx="6" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
+                <!-- clamp ring, neck, fins -->
+                <rect x="178" y="112" width="14" height="96" rx="3" fill="#2a3550" stroke="#eef1f6" stroke-width="1.5"/>
+                <rect x="192" y="128" width="40" height="64" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
+                <g fill="#1a2438" stroke="#a9c8ff" stroke-width="1.6">
+                  <rect x="232" y="98" width="6" height="124" rx="3"/><rect x="246" y="98" width="6" height="124" rx="3"/>
+                  <rect x="260" y="98" width="6" height="124" rx="3"/><rect x="274" y="98" width="6" height="124" rx="3"/>
+                  <rect x="288" y="98" width="6" height="124" rx="3"/><rect x="302" y="98" width="6" height="124" rx="3"/>
+                  <rect x="316" y="98" width="6" height="124" rx="3"/><rect x="330" y="98" width="6" height="124" rx="3"/>
+                </g>
+                <!-- control box: red band + front cover -->
+                <rect x="338" y="86" width="46" height="148" rx="8" fill="#9d0027" stroke="#ff6a7a" stroke-width="1.5" opacity="0.9"/>
+                <rect x="384" y="84" width="14" height="152" rx="5" fill="#2a3550" stroke="#eef1f6" stroke-width="1.5"/>
+                <!-- flow arrows -->
+                <g stroke="#ffa040" stroke-width="2" fill="none" stroke-linecap="round">
+                  <path d="M130 300 V280 M124 286 L130 280 L136 286"/>
+                  <path d="M130 40 V20 M124 26 L130 20 L136 26"/>
+                </g>
+                <!-- blueprint callout -->
+                <g stroke="rgba(169,200,255,0.5)" stroke-width="0.8" stroke-dasharray="3 3" fill="none">
+                  <path d="M60 59 H40 M60 261 H40 M44 59 V261"/>
+                </g>
+                <g font-family="JetBrains Mono, monospace" font-size="9" fill="#a9c8ff" letter-spacing="0.12em">
+                  <text x="12" y="164" transform="rotate(-90 22 160)">220 MM</text>
+                </g>
+                <text x="232" y="300" font-family="JetBrains Mono, monospace" font-size="9" fill="#ffa040" letter-spacing="0.14em">REAL CURVES / LIVE DUTY POINT</text>
+              </svg>
+            </div>
+            <div class="bikefit-copy">
+              <span class="bikefit-eyebrow">3D simulator</span>
+              <h3 class="bikefit-title">MAGNA3 Pump Simulator</h3>
+              <p class="bikefit-lede">An interactive 3D teardown of a Grundfos MAGNA3 32-120 F circulator, built from the manufacturer's own CAD model. Switch control modes, close the radiator valves, explode it or cut it open, and watch flow, head and power follow the official pump curves.</p>
+              <p class="bikefit-meta">Opens in a new tab</p>
+              <span class="bikefit-cta">Open the simulator <span aria-hidden="true">↗</span></span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- EXP-02 · Bike Fit Studio -->
       <section class="exp wow" aria-label="Bike Fit Studio">
         <div class="exp-head">
-          <div class="exp-id"><em>EXP-01</em> <b>Bike Fit Studio</b></div>
+          <div class="exp-id"><em>EXP-02</em> <b>Bike Fit Studio</b></div>
           <div class="exp-tags">
-            <span class="exp-tag flag">Flagship</span>
             <span class="exp-tag">Kinematics</span>
             <span class="exp-tag">~70 frames</span>
           </div>
@@ -492,7 +569,7 @@
               </svg>
             </div>
             <div class="bikefit-copy">
-              <span class="bikefit-eyebrow">Flagship studio</span>
+              <span class="bikefit-eyebrow">Fit studio</span>
               <h3 class="bikefit-title">Bike Fit Studio</h3>
               <p class="bikefit-lede">Enter your height, inseam and flexibility, pick a real frame from ~70 models across every major brand, and watch an animated rider pedal on that geometry with knee, hip and torso angles measured live.</p>
               <p class="bikefit-meta">Frames from Specialized, Trek, Cervélo, Canyon and more</p>
@@ -502,15 +579,16 @@
         </div>
       </section>
 
-      <!-- EXP-02 · Grid Race -->
-      <section class="exp wow" aria-label="Neural network learning to drive">
+      <!-- EXP-03 · Games: Grid Race and Tetris share one panel -->
+      <section class="exp wow" aria-label="Browser games">
         <div class="exp-head">
-          <div class="exp-id"><em>EXP-02</em> <b>Grid Race</b></div>
-          <div class="exp-tags">
-            <span class="exp-tag">Neuroevolution</span>
-            <span class="exp-tag">Vanilla JS</span>
+          <div class="exp-id"><em>EXP-03</em> <b>Two games</b></div>
+          <div class="game-tabs" role="tablist" aria-label="Choose a game">
+            <button role="tab" id="tabRace" aria-controls="paneRace" aria-selected="true" data-game="race">Grid Race</button>
+            <button role="tab" id="tabTetris" aria-controls="paneTetris" aria-selected="false" data-game="tetris">Tetris</button>
           </div>
         </div>
+        <div class="game-pane" id="paneRace" role="tabpanel" aria-labelledby="tabRace">
         <div class="exp-body">
           <p class="exp-lede">There is no pre-trained model here. Each F1 car is steered by a tiny neural network that starts out as random numbers, so at first they crash almost straight away. After every generation the cars that got furthest are bred together with a little mutation, and the field slowly learns the circuit.</p>
           <div class="evo-wrap">
@@ -546,17 +624,8 @@
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- EXP-03 · Tetris -->
-      <section class="exp wow" aria-label="Tetris game">
-        <div class="exp-head">
-          <div class="exp-id"><em>EXP-03</em> <b>Tetris</b></div>
-          <div class="exp-tags">
-            <span class="exp-tag">Palate cleanser</span>
-            <span class="exp-tag">Vanilla JS</span>
-          </div>
         </div>
+        <div class="game-pane" id="paneTetris" role="tabpanel" aria-labelledby="tabTetris" hidden>
         <div class="exp-body">
           <p class="exp-lede">Every sandbox needs one, so here it is, written without libraries. Move with <kbd>←</kbd> <kbd>→</kbd>, rotate with <kbd>↑</kbd>, drop with <kbd>↓</kbd> or <kbd>space</kbd>, and pause with <kbd>P</kbd>.</p>
           <div class="tetris-wrap">
@@ -586,75 +655,6 @@
             <button data-act="drop" aria-label="Hard drop">⤓</button>
           </div>
         </div>
-      </section>
-
-      <!-- EXP-04 · MAGNA3 pump teardown -->
-      <section class="exp wow" aria-label="MAGNA3 pump simulator">
-        <div class="exp-head">
-          <div class="exp-id"><em>EXP-04</em> <b>Pump Teardown</b></div>
-          <div class="exp-tags">
-            <span class="exp-tag">3D</span>
-            <span class="exp-tag">Real pump curves</span>
-          </div>
-        </div>
-        <div class="exp-body" style="padding:0;">
-          <a class="bikefit-block" href="magna3-simulator.html" target="_blank" rel="noopener">
-            <div class="bikefit-visual" aria-hidden="true">
-              <div class="bikefit-grid"></div>
-              <svg class="bikefit-fallback" viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="display:block">
-                <defs>
-                  <radialGradient id="pumpglow" cx="45%" cy="50%" r="60%">
-                    <stop offset="0%" stop-color="#4d92ff" stop-opacity="0.14"/>
-                    <stop offset="100%" stop-color="#4d92ff" stop-opacity="0"/>
-                  </radialGradient>
-                </defs>
-                <rect width="480" height="320" fill="url(#pumpglow)"/>
-                <!-- pipes + flanges -->
-                <g stroke="#6f90c8" stroke-width="1" fill="none" opacity="0.5" stroke-dasharray="3 4">
-                  <path d="M118 0 V52 M142 0 V52 M118 268 V320 M142 268 V320"/>
-                </g>
-                <g fill="#1a2438" stroke="#a9c8ff" stroke-width="2">
-                  <rect x="82" y="52" width="96" height="14" rx="2"/>
-                  <rect x="82" y="254" width="96" height="14" rx="2"/>
-                </g>
-                <!-- S-shaped housing -->
-                <path d="M112 66 C110 100 104 118 96 136 C84 160 84 176 96 196 C104 214 110 232 112 254 L148 254 C146 230 138 208 132 192 C124 174 126 158 136 144 C146 128 150 96 148 66 Z" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
-                <rect x="150" y="124" width="28" height="72" rx="6" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
-                <!-- clamp ring, neck, fins -->
-                <rect x="178" y="112" width="14" height="96" rx="3" fill="#2a3550" stroke="#eef1f6" stroke-width="1.5"/>
-                <rect x="192" y="128" width="40" height="64" fill="#1a2438" stroke="#a9c8ff" stroke-width="2"/>
-                <g fill="#1a2438" stroke="#a9c8ff" stroke-width="1.6">
-                  <rect x="232" y="98" width="6" height="124" rx="3"/><rect x="246" y="98" width="6" height="124" rx="3"/>
-                  <rect x="260" y="98" width="6" height="124" rx="3"/><rect x="274" y="98" width="6" height="124" rx="3"/>
-                  <rect x="288" y="98" width="6" height="124" rx="3"/><rect x="302" y="98" width="6" height="124" rx="3"/>
-                  <rect x="316" y="98" width="6" height="124" rx="3"/><rect x="330" y="98" width="6" height="124" rx="3"/>
-                </g>
-                <!-- control box: red band + front cover -->
-                <rect x="338" y="86" width="46" height="148" rx="8" fill="#9d0027" stroke="#ff6a7a" stroke-width="1.5" opacity="0.9"/>
-                <rect x="384" y="84" width="14" height="152" rx="5" fill="#2a3550" stroke="#eef1f6" stroke-width="1.5"/>
-                <!-- flow arrows -->
-                <g stroke="#ffa040" stroke-width="2" fill="none" stroke-linecap="round">
-                  <path d="M130 300 V280 M124 286 L130 280 L136 286"/>
-                  <path d="M130 40 V20 M124 26 L130 20 L136 26"/>
-                </g>
-                <!-- blueprint callout -->
-                <g stroke="rgba(169,200,255,0.5)" stroke-width="0.8" stroke-dasharray="3 3" fill="none">
-                  <path d="M60 59 H40 M60 261 H40 M44 59 V261"/>
-                </g>
-                <g font-family="JetBrains Mono, monospace" font-size="9" fill="#a9c8ff" letter-spacing="0.12em">
-                  <text x="12" y="164" transform="rotate(-90 22 160)">220 MM</text>
-                </g>
-                <text x="232" y="300" font-family="JetBrains Mono, monospace" font-size="9" fill="#ffa040" letter-spacing="0.14em">REAL CURVES / LIVE DUTY POINT</text>
-              </svg>
-            </div>
-            <div class="bikefit-copy">
-              <span class="bikefit-eyebrow">3D simulator</span>
-              <h3 class="bikefit-title">MAGNA3 Pump Teardown</h3>
-              <p class="bikefit-lede">An interactive 3D teardown of a Grundfos MAGNA3 32-120 F circulator, built from the manufacturer's own CAD model. Switch control modes, close the radiator valves, explode it or cut it open, and watch flow, head and power follow the official pump curves.</p>
-              <p class="bikefit-meta">Opens in a new tab</p>
-              <span class="bikefit-cta">Open the simulator <span aria-hidden="true">↗</span></span>
-            </div>
-          </a>
         </div>
       </section>
     </section>
@@ -722,6 +722,20 @@
   if (progress) window.addEventListener('scroll', () => { const t = document.documentElement.scrollHeight - window.innerHeight; if (t > 0) progress.style.width = (window.scrollY / t * 100) + '%'; }, { passive: true });
   const ro = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.wow').forEach(el => ro.observe(el));
+
+  // Game tabs: one panel, two games. Leaving Tetris pauses it.
+  (function initGameTabs(){
+    const tabs = Array.from(document.querySelectorAll('.game-tabs [role=tab]'));
+    function show(name){
+      tabs.forEach(t => { const on = t.dataset.game === name; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; document.getElementById(t.getAttribute('aria-controls')).hidden = !on; });
+      const ov = document.getElementById('tetrisOverlay');
+      if (name !== 'tetris' && ov && ov.classList.contains('hidden')) document.getElementById('tetrisPause').click();
+    }
+    tabs.forEach(t => {
+      t.addEventListener('click', () => show(t.dataset.game));
+      t.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const i = (tabs.indexOf(t) + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length; tabs[i].focus(); show(tabs[i].dataset.game); } });
+    });
+  })();
 
   // Sticky lab-index: highlight the section currently in view
   (function initLabIndex(){
