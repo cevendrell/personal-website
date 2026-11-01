@@ -181,6 +181,23 @@
     .product-card--layovr { --card-accent: #3b82f6; }
     .product-card--ovrhead { --card-accent: #c98a4f; }
     @media (max-width: 780px) { .product-grid { grid-template-columns: 1fr; } }
+    /* ── Product tiles: a slice of each app's own look ── */
+    .product-card { padding: 0; gap: 0; }
+    .product-card::before { z-index: 2; }
+    .pc-visual { position: relative; height: 190px; overflow: hidden; }
+    .pc-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .pc-body { display: flex; flex-direction: column; gap: 0.7rem; padding: 1.4rem 1.6rem 1.4rem; flex: 1; }
+    .product-tagline { font-size: 0.95rem; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+    .product-card--layovr .pc-visual { background: radial-gradient(ellipse at 80% 0%, rgba(59,130,246,0.35), transparent 60%), linear-gradient(160deg, #0d1425, #06080f); }
+    .product-card--ovrhead .pc-visual { background: radial-gradient(circle at 30% 55%, #0a2470 0%, #05164d 45%, #020a26 100%); }
+    .radar-sweep { transform-origin: 120px 104px; animation: radarSweep 5s linear infinite; }
+    @keyframes radarSweep { to { transform: rotate(360deg); } }
+    .blip { animation: blipFade 5s linear infinite; }
+    @keyframes blipFade { 0%, 100% { opacity: 0.35; } 8% { opacity: 1; } 40% { opacity: 0.55; } }
+    .lo-pulse { animation: loPulse 2.4s ease-in-out infinite; }
+    @keyframes loPulse { 50% { opacity: 0.35; } }
+    @media (prefers-reduced-motion: reduce) { .radar-sweep, .blip, .lo-pulse { animation: none; } }
+
 
     /* ── EXPERIMENT FRAME ── */
     .exp { margin-top: 2rem; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--panel); box-shadow: var(--shadow); }
@@ -413,21 +430,90 @@
 
       <div class="product-grid">
         <a class="product-card product-card--layovr" href="https://cevenlabs.com/layovr/" target="_blank" rel="noopener">
-          <div class="product-top">
-            <span class="product-logo">LayOvr</span>
-            <span class="product-status beta">Beta</span>
+          <div class="pc-visual" aria-hidden="true">
+            <svg viewBox="0 0 420 190" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+              <g font-family="JetBrains Mono, monospace" letter-spacing="0.08em">
+                <text x="24" y="34" font-size="10" fill="#6b6d78">CPH</text><text x="24" y="52" font-size="16" fill="#ededea">07:10</text>
+                <path d="M86 44 H128" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3 3"/>
+                <path d="M124 40 l6 4 -6 4" fill="none" stroke="#3b82f6" stroke-width="1.2"/>
+                <text x="140" y="34" font-size="10" fill="#6b6d78">JFK</text><text x="140" y="52" font-size="16" fill="#ededea">01:10</text>
+              </g>
+              <!-- Live guidance card -->
+              <rect x="236" y="20" width="160" height="66" rx="12" fill="rgba(59,130,246,0.12)" stroke="rgba(147,197,253,0.35)"/>
+              <circle cx="254" cy="40" r="4" fill="#d2955c" class="lo-pulse"/>
+              <text x="264" y="44" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#93c5fd">NEXT</text>
+              <text x="252" y="66" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff">Seek light</text>
+              <text x="252" y="80" font-family="JetBrains Mono, monospace" font-size="10" fill="#a8a9b0">in 1h 20m</text>
+              <!-- The day's plan across 24 hours -->
+              <g transform="translate(24 116)">
+                <rect width="372" height="14" rx="7" fill="rgba(255,255,255,0.06)"/>
+                <rect x="0" width="96" height="14" rx="7" fill="#1d4ed8"/>
+                <rect x="96" width="62" height="14" fill="#d2955c"/>
+                <rect x="158" width="70" height="14" fill="rgba(255,255,255,0.10)"/>
+                <rect x="228" width="54" height="14" fill="#3b82f6" opacity="0.55"/>
+                <rect x="282" width="90" height="14" rx="7" fill="#1d4ed8"/>
+                <path d="M190 -10 v34" stroke="#ffffff" stroke-width="1.2"/>
+                <circle cx="190" cy="-12" r="3" fill="#ffffff"/>
+                <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6b6d78" letter-spacing="0.06em">
+                  <text x="0" y="34">SLEEP</text><text x="100" y="34" fill="#e5b183">LIGHT</text><text x="232" y="34">NAP</text><text x="314" y="34">SLEEP</text>
+                </g>
+                <g fill="#e5b183"><circle cx="122" cy="-8" r="2.5"/><circle cx="150" cy="-8" r="2.5"/></g>
+                <text x="108" y="-16" font-family="JetBrains Mono, monospace" font-size="8" fill="#e5b183" letter-spacing="0.06em">COFFEE</text>
+              </g>
+            </svg>
           </div>
-          <p class="product-desc">Plans your sleep, light and caffeine around your flights, so you land ready.</p>
-          <span class="product-foot">View project <span class="arrow">→</span></span>
+          <div class="pc-body">
+            <div class="product-top">
+              <span class="product-logo">LayOvr</span>
+              <span class="product-status beta">Beta</span>
+            </div>
+            <p class="product-tagline">Arrive sharp, anywhere.</p>
+            <p class="product-desc">A jet lag plan built around your flights and the meeting that matters: when to sleep, seek light and drink coffee.</p>
+            <span class="product-foot">View project <span class="arrow">→</span></span>
+          </div>
         </a>
 
         <a class="product-card product-card--ovrhead" href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">
-          <div class="product-top">
-            <span class="product-logo">OvrHead</span>
-            <span class="product-status live">Live</span>
+          <div class="pc-visual" aria-hidden="true">
+            <svg viewBox="0 0 420 190" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="ohSweep" cx="0" cy="0" r="1"><stop offset="0" stop-color="#d2955c" stop-opacity="0.45"/><stop offset="1" stop-color="#d2955c" stop-opacity="0"/></radialGradient>
+              </defs>
+              <!-- Radar scope centred on the antenna in Aarhus -->
+              <g fill="none" stroke="rgba(238,241,248,0.16)" stroke-width="1">
+                <circle cx="120" cy="104" r="28"/><circle cx="120" cy="104" r="56"/><circle cx="120" cy="104" r="84"/><circle cx="120" cy="104" r="112"/>
+                <path d="M120 -10 V218 M0 104 H240"/>
+              </g>
+              <g class="radar-sweep"><path d="M120 104 L120 -8 A112 112 0 0 1 199 25 Z" fill="url(#ohSweep)"/><path d="M120 104 L120 -8" stroke="#d2955c" stroke-width="1.4"/></g>
+              <circle cx="120" cy="104" r="3.5" fill="#eef1f8"/>
+              <g fill="#d2955c">
+                <g class="blip" style="animation-delay:-4.1s"><circle cx="158" cy="62" r="3"/></g>
+                <g class="blip" style="animation-delay:-2.2s"><circle cx="84" cy="146" r="3"/></g>
+                <g class="blip" style="animation-delay:-0.9s"><circle cx="196" cy="128" r="3"/></g>
+                <g class="blip" style="animation-delay:-3.3s"><circle cx="62" cy="70" r="2.5"/></g>
+              </g>
+              <g font-family="JetBrains Mono, monospace" font-size="8.5" fill="#eef1f8" letter-spacing="0.06em" opacity="0.85">
+                <text x="164" y="58">SAS1427 · FL320</text><text x="90" y="160">KLM1272 · FL180</text><text x="190" y="142" text-anchor="end">DLH8VE · FL370</text>
+              </g>
+              <!-- Read-outs -->
+              <g font-family="JetBrains Mono, monospace" letter-spacing="0.1em">
+                <text x="270" y="44" font-size="9" fill="#737b96">AARHUS · 56.16°N</text>
+                <text x="270" y="74" font-size="22" fill="#eef1f8" font-family="Inter, sans-serif" font-weight="800" letter-spacing="-0.02em">1 antenna</text>
+                <text x="270" y="94" font-size="9" fill="#737b96">EVERY PLANE IN RANGE</text>
+                <path d="M270 120 h22 M270 136 h40 M270 152 h30 M270 168 h52" stroke="#5cc191" stroke-width="5" stroke-linecap="round"/>
+                <path d="M328 120 h14 M328 136 h22" stroke="#d97b73" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+              </g>
+            </svg>
           </div>
-          <p class="product-desc">Reads every plane over Aarhus and turns the record into a live picture of European airspace.</p>
-          <span class="product-foot">Open it <span class="arrow">→</span></span>
+          <div class="pc-body">
+            <div class="product-top">
+              <span class="product-logo">OvrHead</span>
+              <span class="product-status live">Live</span>
+            </div>
+            <p class="product-tagline">An observatory over Aarhus.</p>
+            <p class="product-desc">One antenna reads every plane over the city, and the record becomes a live picture of European airspace.</p>
+            <span class="product-foot">Open it <span class="arrow">→</span></span>
+          </div>
         </a>
       </div>
     </section>
