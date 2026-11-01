@@ -2440,7 +2440,8 @@
       };
       const root = E.root;
       const G = {}; for (const n of ['base', 'stack', 'sleeve', 'head', 'stool', 'motor']) { G[n] = new THREE.Group(); root.add(G[n]); }
-      const OFF = { base: new V3(), stack: new V3(0, 6, 0), sleeve: new V3(46, 0, 0), head: new V3(0, 30, 0), stool: new V3(0, 52, 0), motor: new V3(0, 80, 0) };
+      // Everything comes apart along the shaft: the sleeve lifts clear of the stack, then the head, the coupling stool and the motor
+      const OFF = { base: new V3(), stack: new V3(0, 4, 0), sleeve: new V3(0, 62, 0), head: new V3(0, 74, 0), stool: new V3(0, 98, 0), motor: new V3(0, 128, 0) };
       // Stand-in shell
       const standIn = [mesh(new THREE.CylinderGeometry(12.7, 12.7, 56, 48, 1, true).translate(0, 36, 0), M.sleeve, G.sleeve), mesh(new THREE.CylinderGeometry(19, 19, 80, 40).translate(0, 126, 0), M.motor, G.motor), mesh(new THREE.BoxGeometry(38, 14, 27).translate(0, -7, 0), M.black, G.base)];
       // Chamber stack: five impellers with guide vanes, on one shaft
@@ -2603,7 +2604,7 @@
         }
       }
       return {
-        stage: { floor: -14, size: 120, center: new V3(0, 70, 0), target: e => new V3(0, lerp(70, 100, e), 0), dist: e => lerp(420, 620, e), dir: new V3(0.5, 0.18, 0.85), minD: 80, maxD: 1100, cut: { normal: new V3(0, 0, -1), constant: 0 } },
+        stage: { floor: -14, size: 120, center: new V3(0, 70, 0), target: e => new V3(0, lerp(70, 135, e), 0), dist: e => lerp(420, 720, e), dir: new V3(0.5, 0.18, 0.85), minD: 80, maxD: 1100, cut: { normal: new V3(0, 0, -1), constant: 0 } },
         explode(e) { for (const n in G) G[n].position.copy(OFF[n]).multiplyScalar(e); },
         frame(dt, onScreen) {
           sVis += (st.s - sVis) * (1 - Math.exp(-dt * 1.5));
@@ -2660,13 +2661,13 @@
         white: mat({ color: 0xf2f2f2, roughness: 0.5 }), silver: mat({ color: 0xc8ccd0, metalness: 0.9, roughness: 0.3 }),
         grey: mat({ color: 0x6f747c, metalness: 0.3, roughness: 0.45 }), black: mat({ color: 0x111214, roughness: 0.35 }), dark: mat({ color: 0x25272b, metalness: 0.15, roughness: 0.5 }),
         lam: mat({ color: 0x4a4e57, metalness: 0.7, roughness: 0.45 }), copper: mat({ color: 0xc8743c, metalness: 0.9, roughness: 0.35 }),
-        imp: mat({ color: 0x3a3d45, roughness: 0.55 }, false), steel: mat({ color: 0xd6dade, metalness: 1, roughness: 0.2 }, false),
+        imp: mat({ color: 0x3a3d45, roughness: 0.55 }, false), steel: mat({ color: 0xd6dade, metalness: 1, roughness: 0.2 }, false), sleeve: mat({ color: 0xc9ced4, metalness: 0.95, roughness: 0.25 }),
         tank: mat({ color: 0x2f5f9a, metalness: 0.3, roughness: 0.4 }), membrane: mat({ color: 0x18191c, roughness: 0.7 }, false),
         pcb: mat({ color: 0x1f5a3a, roughness: 0.6 }), rotor: mat({ color: 0x6d737c, metalness: 0.8, roughness: 0.4 }, false)
       };
       const root = E.root, YA = 8, YIN = 11.1, YO = 23.6;
       M.water = new THREE.MeshStandardMaterial({ color: 0x5aa7e0, transparent: true, opacity: 0.28, depthWrite: false, roughness: 0.1 });
-      M.chan = mat({ color: 0x9aa6b2, metalness: 0.2, roughness: 0.5, transparent: true, opacity: 0.55 }, false);
+      M.chan = mat({ color: 0x9aa6b2, metalness: 0.2, roughness: 0.5, transparent: true, opacity: 0.55 });
       M.flap = mat({ color: 0x1b1c1f, roughness: 0.6 }, false);
       const G = {}; for (const n of ['shell', 'motor', 'stack', 'res', 'tank', 'elec']) { G[n] = new THREE.Group(); root.add(G[n]); }
       const OFF = { shell: new V3(0, 36, 0), motor: new V3(0, 0, -14), stack: new V3(0, -2, 4), res: new V3(0, 16, 10), tank: new V3(0, 20, -8), elec: new V3(0, 30, -14) };
@@ -2684,9 +2685,9 @@
       for (let i = 0; i < 4; i++) {
         const z = 3.0 - i * 2.6;
         mesh(tubeZ(3.3, 0.18, z), M.imp, spin); blades(6, 0.9, 3.2, 0.9, 0.12, 0.8, z + 0.18, M.imp, spin);
-        mesh(tubeZ(4.3, 2.6, z - 0.6, true, 40), M.steel, stat);
+        mesh(tubeZ(4.3, 2.6, z - 0.6, true, 40), M.sleeve, stat);
       }
-      mesh(tubeZ(4.3, 0.25, -8.1), M.steel, stat);
+      mesh(tubeZ(4.3, 0.25, -8.1), M.sleeve, stat);
       // Priming reservoir above the stack: about 1.7 litres of water that stays in the pump
       const resv = new THREE.Group(); G.res.add(resv);
       const water = mesh(new THREE.BoxGeometry(11.2, 1, 13.5).translate(0, 0.5, 0), M.water, resv, false); water.position.set(0, 15.6, 2.4);
@@ -2900,8 +2901,7 @@
       </div>`,
       curve: `<div><h2>Stroke by stroke</h2><p>The diaphragm position and the pressure in the dosing chamber over the last few strokes. Suction is a quick pull; discharge is a long, steady push that fills the time until the next stroke. That is what makes the dosing smooth even at a few millilitres an hour.</p></div>`,
       engHead: `<h2>Under the hood</h2><p>A displacement pump doesn’t have a pump curve in the usual sense: the flow barely changes with pressure. What matters is the stroke, what’s in the dosing head and how the chemical mixes into the water.</p>`,
-      eng: engCard('Inside the dosing head', 'A cross-section through the head, live. The diaphragm pulls back and the suction ball lifts; the chamber fills. Then the diaphragm pushes, the chamber pressure climbs until it beats the line pressure, and the discharge ball lifts. Colour shows the pressure in the chamber.', '<canvas id="ddsec" class="cv300"></canvas>', true) +
-        engCard('Indicator diagram', 'Chamber pressure against the volume the diaphragm has displaced, over one stroke. Compression, delivery, decompression, suction. Trapped gas has to be squeezed before anything leaves, so the stroke delivers less.', '<canvas id="ddpv" class="cv230"></canvas>' + kvHTML([['ddLost', 'Lost to gas and stretch'], ['ddEff', 'Volumetric efficiency'], ['ddDev', 'Flow error']])) +
+      eng: engCard('Indicator diagram', 'Chamber pressure against the volume the diaphragm has displaced, over one stroke. Compression, delivery, decompression, suction. Trapped gas has to be squeezed before anything leaves, so the stroke delivers less.', '<canvas id="ddpv" class="cv230"></canvas>' + kvHTML([['ddLost', 'Lost to gas and stretch'], ['ddEff', 'Volumetric efficiency'], ['ddDev', 'Flow error']])) +
         engCard('Turndown 1:3000', 'From 7.5 l/h down to 2.5 ml/h with the same full stroke. Only the time between strokes changes.', '<canvas id="ddturn" class="cv150"></canvas>' + kvHTML([['ddPer', 'One stroke every'], ['ddRatio', 'Suction : discharge'], ['ddCap', 'Max flow in this mode']])) +
         engCard('In the water', 'What this dose means downstream: chemical flow times strength and density, divided by the water flow.', '<canvas id="dddose" class="cv150"></canvas>' + kvHTML([['ddMgL', 'Concentration'], ['ddKgD', 'Chemical per day'], ['ddTank', '20 l can lasts']])) +
         engCard('Limits from the manual', 'What stops the pump or spoils the dose.', `<table class="specs"><tr><td>Max back pressure</td><td>16 bar</td></tr><tr><td>Min. difference suction to discharge</td><td>1 bar</td></tr><tr><td>Max suction lift, running</td><td>6 m</td></tr><tr><td>Max viscosity, no SlowMode</td><td>600 mPa·s (spring-loaded valves)</td></tr><tr><td>SlowMode 50 % / 25 %</td><td>1,800 / 2,500 mPa·s</td></tr><tr><td>Repeatability</td><td>± 1 %</td></tr></table>`),
@@ -2920,10 +2920,7 @@
         led: mat({ color: 0x3ad17a, emissive: 0x2bdc6a, emissiveIntensity: 0.9 }), red: mat({ color: 0xb3122f, metalness: 0.2, roughness: 0.4 }),
         white: mat({ color: 0xf2f2f2, roughness: 0.5 }), silver: mat({ color: 0xc8ccd0, metalness: 0.9, roughness: 0.3 }),
         grey: mat({ color: 0x5d6168, metalness: 0.3, roughness: 0.45 }), black: mat({ color: 0x111214, roughness: 0.35 }), dark: mat({ color: 0x232428, metalness: 0.15, roughness: 0.5 }),
-        body: mat({ color: 0xb3122f, metalness: 0.2, roughness: 0.42 }), head: mat({ color: 0xc9d2da, metalness: 0.3, roughness: 0.15, transparent: true, opacity: 0.32, depthWrite: false }),
-        seat: mat({ color: 0x7c858e, metalness: 0.9, roughness: 0.3 }, false), valveBody: mat({ color: 0xdfe6ee, roughness: 0.1, transparent: true, opacity: 0.25, depthWrite: false }, false),
-        chamberLiq: new THREE.MeshStandardMaterial({ color: 0xd8b73a, transparent: true, opacity: 0.75, roughness: 0.2, depthWrite: false }),
-        gasM: new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.8, roughness: 0.05 }),
+        body: mat({ color: 0xb3122f, metalness: 0.2, roughness: 0.42 }), head: mat({ color: 0xb9bec4, metalness: 0.9, roughness: 0.3 }),
         diaphragm: mat({ color: 0xe6e2d8, roughness: 0.5 }, false), ball: mat({ color: 0xd6dade, metalness: 1, roughness: 0.15 }, false),
         motor: mat({ color: 0x3b3e45, metalness: 0.6, roughness: 0.4 }, false), cam: mat({ color: 0xa9aeb5, metalness: 0.9, roughness: 0.3 }, false),
         can: new THREE.MeshPhysicalMaterial({ color: 0xf2e7a6, roughness: 0.2, transmission: 0.5, transparent: true, opacity: 0.55, depthWrite: false }),
@@ -2935,28 +2932,15 @@
       const OFF = { body: new V3(), head: new V3(0, 0, -10), cube: new V3(0, 13, 0), drive: new V3(13, 0, 4) };
       const standIn = [mesh(new THREE.BoxGeometry(11, 15, 18).translate(HX, 7.5, 8.4), M.body, G.body), mesh(new THREE.CylinderGeometry(4, 4, 5.4, 40).rotateX(Math.PI / 2).translate(HX, HY, -3.3), M.head, G.head)];
       // Diaphragm, pushrod, cam and stepper motor
-      // Diaphragm: a disc whose centre bulges with the stroke (vertices displaced every frame)
-      const dGeo = new THREE.CircleGeometry(2.2, 48, 0, Math.PI * 2); const dPos = dGeo.attributes.position, dR = new Float32Array(dPos.count);
-      for (let i = 0; i < dPos.count; i++) dR[i] = Math.hypot(dPos.getX(i), dPos.getY(i)) / 2.2;
-      M.diaphragm.side = THREE.DoubleSide;
-      const diaphragm = mesh(dGeo, M.diaphragm, G.head); diaphragm.position.set(HX, HY, -0.9);
-      const bulge = b => { for (let i = 0; i < dPos.count; i++) dPos.setZ(i, b * (1 - dR[i] * dR[i])); dPos.needsUpdate = true; dGeo.computeVertexNormals(); };
-      // Liquid in the chamber, between the diaphragm and the front wall; colour shows pressure
-      const liq = mesh(new THREE.CylinderGeometry(2.15, 2.15, 1, 40).rotateX(Math.PI / 2), M.chamberLiq, G.head, false); liq.position.set(HX, HY, -1.4);
-      const gas = mesh(new THREE.SphereGeometry(0.5, 18, 12), M.gasM, G.head, false); gas.position.set(HX, HY + 1.4, -1.3); gas.visible = false;
-      // Channels from the chamber to the two valves
-      const chS = E.rod(new V3(HX, HY - 1.8, -1.5), new V3(HX, 5.0, VZ), 0.32, 0.32, M.chamberLiq, G.head);
-      const chD = E.rod(new V3(HX, HY + 1.8, -1.5), new V3(HX, 15.6, VZ), 0.32, 0.32, M.chamberLiq, G.head);
-      for (const y of [3.9, 16.5]) { mesh(new THREE.TorusGeometry(0.42, 0.12, 8, 24).rotateX(Math.PI / 2).translate(HX, y - 0.45, VZ), M.seat, G.head); mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.9, 24, 1, true).translate(HX, y + 0.35, VZ), M.valveBody, G.head, false); }
+      const diaphragm = mesh(new THREE.SphereGeometry(2.2, 40, 16), M.diaphragm, G.head); diaphragm.scale.set(1, 1, 0.12); diaphragm.position.set(HX, HY, -0.9);
       const rodM = mesh(new THREE.CylinderGeometry(0.35, 0.35, 6, 16).rotateX(Math.PI / 2), M.cam, G.drive); rodM.position.set(HX, HY, 2.4);
       const cam = new THREE.Group(); cam.position.set(HX, HY, 6.2); G.drive.add(cam);
       mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.8, 32).rotateZ(Math.PI / 2).translate(0, 0, 0.35), M.cam, cam);
       mesh(new THREE.CylinderGeometry(2.6, 2.6, 6, 40).rotateZ(Math.PI / 2).translate(HX + 4.2, HY, 6.2), M.motor, G.drive);
       mesh(new THREE.BoxGeometry(5.6, 5.6, 5.6).translate(HX + 4.2, HY, 6.2), M.motor, G.drive).scale.set(1, 1, 1);
       // Ball valves: suction at the bottom, discharge at the top
-      const ballS = mesh(new THREE.SphereGeometry(0.42, 20, 14), M.ball, G.head); ballS.position.set(HX, 3.9, VZ);
-      const ballD = mesh(new THREE.SphereGeometry(0.42, 20, 14), M.ball, G.head); ballD.position.set(HX, 16.5, VZ);
-      const cLo = new THREE.Color(0x2a8fd6), cHi = new THREE.Color(0xc8102e), cMid = new THREE.Color(0xd8b73a);
+      const ballS = mesh(new THREE.SphereGeometry(0.45, 20, 14), M.ball, G.head); ballS.position.set(HX, 4.0, VZ);
+      const ballD = mesh(new THREE.SphereGeometry(0.45, 20, 14), M.ball, G.head); ballD.position.set(HX, 16.6, VZ);
       // Chemical can, hoses and the water main it doses into
       mesh(new THREE.CylinderGeometry(6, 6, 18, 40, 1, true).translate(-15, 7.3, -16), M.can, root, false);
       const liquid = mesh(new THREE.CylinderGeometry(5.8, 5.8, 1, 40).translate(0, 0.5, 0), M.liquid, root, false); liquid.position.set(-15, -1.7, -16);
@@ -3016,49 +3000,6 @@
         cx.setLineDash([3, 3]); cx.strokeStyle = 'rgba(200,16,46,0.5)'; cx.beginPath(); cx.moveTo(X(0), Y2(16)); cx.lineTo(X(W), Y2(16)); cx.stroke(); cx.setLineDash([]);
         cx.fillStyle = '#c8102e'; cx.fillText('16 bar max', X(W) - 80, Y2(16) - 4);
         cx.fillStyle = '#2a8fd6'; cx.fillText('suction', X(0) + 4, Y1(104)); cx.fillStyle = '#c8102e'; cx.fillText('discharge', X(0) + 70, Y1(104));
-      }
-      // Live cross-section of the dosing head
-      function drawSection(ph) {
-        const f = fitCanvas($('ddsec')); if (!f) return; const { g, w, h } = f;
-        const cx0 = w * 0.42, cy = h / 2, R = Math.min(h * 0.32, 90), wall = cx0 - R * 0.55;
-        const pf = Math.max(0, Math.min(1, (ph.p - k.psuc) / Math.max(0.5, k.pdis - k.psuc)));
-        const liqCol = ph.p < 0 ? `rgba(42,143,214,${0.45 + Math.min(0.4, -ph.p)})` : `rgba(${Math.round(216 - 16 * pf)},${Math.round(183 - 167 * pf)},${Math.round(58 - 12 * pf)},0.85)`;
-        // Head body
-        g.fillStyle = '#c9d2da'; g.strokeStyle = '#7c858e'; g.lineWidth = 1.5;
-        g.beginPath(); g.rect(wall - 34, cy - R - 40, (cx0 - wall) + 34, 2 * R + 80); g.fill(); g.stroke();
-        // Valve bores
-        const vx = wall - 12;
-        g.fillStyle = '#eef2f6'; g.fillRect(vx - 14, 6, 28, cy - R - 2); g.fillRect(vx - 14, cy + R + 2, 28, h - (cy + R) - 8);
-        // Chamber outline and liquid: the diaphragm bulges into it
-        const bul = (-0.25 + ph.x * 0.75) * R * 0.5;
-        g.fillStyle = liqCol; g.beginPath(); g.moveTo(wall, cy - R); g.lineTo(cx0, cy - R); g.quadraticCurveTo(cx0 + bul * 2, cy, cx0, cy + R); g.lineTo(wall, cy + R); g.closePath(); g.fill();
-        // Channels to the valves
-        g.fillStyle = liqCol; g.fillRect(vx - 5, cy - R - 2, 10, 14); g.fillRect(wall - 2, cy - R - 2, vx - wall + 6, 10); g.fillRect(vx - 5, cy + R - 12, 10, 14); g.fillRect(wall - 2, cy + R - 8, vx - wall + 6, 10);
-        // Diaphragm
-        g.strokeStyle = '#3b3e45'; g.lineWidth = 4; g.beginPath(); g.moveTo(cx0, cy - R); g.quadraticCurveTo(cx0 + bul * 2, cy, cx0, cy + R); g.stroke();
-        // Drive side, pushrod and cam
-        g.fillStyle = '#b3122f'; g.fillRect(cx0 + 8, cy - R - 40, w - cx0 - 20, 2 * R + 80);
-        const rodX = cx0 + bul + 4; g.fillStyle = '#a9aeb5'; g.fillRect(rodX, cy - 5, 70, 10);
-        g.beginPath(); g.fillStyle = '#5d6168'; g.arc(rodX + 92, cy, 24, 0, Math.PI * 2); g.fill();
-        g.beginPath(); g.fillStyle = '#a9aeb5'; g.arc(rodX + 92 + 9 * Math.cos(camA), cy + 9 * Math.sin(camA), 7, 0, Math.PI * 2); g.fill();
-        // Valve seats and balls
-        const ball = (y, open, up) => { g.fillStyle = '#7c858e'; g.fillRect(vx - 14, y + (up ? 10 : -14), 8, 4); g.fillRect(vx + 6, y + (up ? 10 : -14), 8, 4); g.beginPath(); g.fillStyle = open ? '#d6dade' : '#aab2ba'; g.arc(vx, y - (open ? 12 : 0), 9, 0, Math.PI * 2); g.fill(); g.strokeStyle = '#5d6168'; g.lineWidth = 1; g.stroke(); };
-        ball(cy + R + 36, ph.suction, true); ball(cy - R - 22, ph.discharge, true);
-        // Flow arrows
-        g.fillStyle = ph.suction ? '#2a8fd6' : 'rgba(42,143,214,0.2)';
-        g.beginPath(); g.moveTo(vx, h - 6); g.lineTo(vx - 7, h - 18); g.lineTo(vx + 7, h - 18); g.closePath(); g.fill();
-        g.fillStyle = ph.discharge ? '#c8102e' : 'rgba(200,16,46,0.2)';
-        g.beginPath(); g.moveTo(vx, 2); g.lineTo(vx - 7, 14); g.lineTo(vx + 7, 14); g.closePath(); g.fill();
-        // Gas bubble
-        if (inp.gas && k.run) { const r = 9 * Math.cbrt((k.psuc + 1.013) / (Math.max(k.psuc, ph.p) + 1.013)); g.beginPath(); g.fillStyle = 'rgba(255,255,255,0.9)'; g.arc(wall + 14, cy - R * 0.55, r, 0, Math.PI * 2); g.fill(); g.strokeStyle = '#7c858e'; g.stroke(); }
-        // Read-outs
-        const phase = !k.run ? 'Waiting' : ph.suction ? 'Suction stroke' : ph.discharge ? 'Discharge stroke' : 'Compression';
-        g.font = '600 13px Inter, sans-serif'; g.fillStyle = '#0d2240'; g.fillText(phase, 12, 22);
-        g.font = '11px JetBrains Mono, monospace'; g.fillStyle = '#44546a';
-        g.fillText(`chamber ${fmt(ph.p, 2)} bar`, 12, 40); g.fillText(`line ${fmt(inp.pback, 1)} bar`, 12, 56);
-        g.fillText(k.run ? `suction ${fmt(k.ts, 2)} s · discharge ${fmt(k.td, k.td < 10 ? 2 : 0)} s` : '', 12, h - 12);
-        g.fillStyle = '#7a8798'; g.fillText('to the line', vx + 16, 14); g.fillText('from the can', vx + 16, h - 8);
-        g.fillText('diaphragm movement exaggerated', w - 220, h - 12);
       }
       function drawPV() {
         const f = fitCanvas($('ddpv')); if (!f) return; const { g, w, h } = f;
@@ -3128,16 +3069,11 @@
           const ph = DD.phase(k, tau);
           hist.push([simT, ph.x, k.run ? ph.p : 0, ph.suction, ph.discharge]); while (hist.length && hist[0][0] < simT - 32) hist.shift();
           // Exaggerated diaphragm travel so it can be seen
-          // Diaphragm bulge (exaggerated), chamber depth, pressure colour and the gas bubble
-          bulge(-0.25 + ph.x * 0.75);
-          liq.scale.z = 0.7 + ph.x * 0.75; liq.position.z = -1.55 + ph.x * 0.38;
-          const pf = Math.max(0, Math.min(1, (ph.p - k.psuc) / Math.max(0.5, k.pdis - k.psuc)));
-          M.chamberLiq.color.copy(cMid).lerp(ph.p < 0 ? cLo : cHi, ph.p < 0 ? Math.min(1, -ph.p * 2) : pf * 0.85);
-          gas.visible = inp.gas && k.run; if (gas.visible) gas.scale.setScalar(Math.cbrt((k.psuc + 1.013) / (Math.max(k.psuc, ph.p) + 1.013)) * 1.2);
+          diaphragm.position.z = G.head.position.z * 0 - 0.9 + ph.x * 0.35;
+          diaphragm.scale.z = 0.12 + ph.x * 0.1;
           rodM.position.z = 2.4 + ph.x * 0.35;
           camA = Math.acos(1 - 2 * Math.min(1, Math.max(0, ph.x))) * (ph.suction ? 1 : -1); cam.rotation.x = camA;
-          ballS.position.y = 3.9 + (ph.suction ? 0.5 : 0); ballD.position.y = 16.5 + (ph.discharge ? 0.5 : 0);
-          if (E.engVis && onScreen !== null) drawSection(ph);
+          ballS.position.y = 4.0 + (ph.suction ? 0.35 : 0); ballD.position.y = 16.6 + (ph.discharge ? 0.35 : 0);
           liquid.scale.y = Math.max(0.05, 15 - total / 1000 * 0.75);
           if (onScreen && E.view.flow) {
             const dx = ph.x - xPrev;
@@ -3153,6 +3089,7 @@
       };
     }
   };
+
 
   /* ════════════════════════════════════════════════════════════════
      PRODUCT SWITCHING, VIEW CONTROLS, TOUR AND THE FRAME LOOP
