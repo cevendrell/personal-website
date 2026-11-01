@@ -288,6 +288,9 @@
     .ptab[aria-selected="true"] { background: #fff; color: var(--blue); border-color: #fff; }
     .ptab[aria-selected="true"] span { color: var(--red); }
     .ptab:focus-visible { outline: 2px solid #9cc6ec; outline-offset: 2px; }
+    .hero p#heroLede { min-height: calc(1.7em * 4); }
+    .hero h1#heroTitle { min-height: 1.08em; }
+    .cv300 { height: 300px; } canvas.cv300 { width: 100%; display: block; }
     .site-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 1.2rem; }
     .modes.a2modes, .modes.taps { grid-template-columns: repeat(5, 1fr); }
     .modes.three { grid-template-columns: repeat(3, 1fr); }
@@ -364,7 +367,6 @@
   <div class="eyebrow" id="heroEyebrow">Tech · Interactive teardown</div>
   <h1 id="heroTitle">Grundfos pumps, taken apart</h1>
   <p id="heroLede"></p>
-  <div class="site-tag">Five Grundfos pumps · pick one</div>
   <div class="ptabs" id="ptabs" role="tablist" aria-label="Pump">
     <button class="ptab" role="tab" data-prod="magna3" aria-selected="true"><b>MAGNA3</b><span>Building circulator</span></button>
     <button class="ptab" role="tab" data-prod="alpha2" aria-selected="false"><b>ALPHA2</b><span>House circulator</span></button>
@@ -927,53 +929,78 @@
   // Speed family 25–100 % read off the Product Center sheet, fitted with the affinity laws (±0.24 m, ±3 W).
   window.SC = (() => {
     const C = { a: 44.638, b: -0.2726, c: 1.441, f: [316.23, 161.55, -10.93, -1.76], Pmax: 550, Pstandby: 2,
-      tankL: 0.65, tapK: 0.42, leak: 0.03, smin: 0.25, Qrated: 3, Hrated: 27, Hmax: 45, Qmax: 4.6 };
+      tankL: 0.5, tapK: 0.42, leak: 0.03, smin: 0.25, Qrated: 3, Hrated: 27, Hmax: 45, Qmax: 4.6, primeL: 1.7, hoseK: 0.6 / 9 };
     const H = (Q, s) => C.a * s * s + C.b * s * Q - C.c * Q * Q;
     const P1 = (Q, s) => { if (s <= 0.01) return C.Pstandby; const x = Q / s; return C.Pstandby + s * s * s * (C.f[0] + x * (C.f[1] + x * (C.f[2] + x * C.f[3]))); };
     // Flow the pump delivers at speed s against a given head (positive root)
     const Qat = (Hd, s) => { const A = C.c, B = -C.b * s, D = Hd - C.a * s * s; const disc = B * B - 4 * A * D; if (disc < 0) return 0; return Math.max(0, (B + Math.sqrt(disc)) / (2 * A)); };
     const sMaxAt = Q => { let s = 1; if (P1(Q, 1) > C.Pmax) s = bis(x => C.Pmax - P1(Q, x), 0.3, 1, 30); return s; };
+    // Suction side. Mains: the inlet pressure is simply there. Well: lift plus hose friction pull it below atmospheric.
+    const pinAt = (inp, Q) => inp.src === 'mains' ? inp.pMains - 0.02 * Q * Q : -(inp.lift + C.hoseK * Q * Q) / 10.2;
+    const npshA = (inp, Q) => (pinAt(inp, Q) + 1.013 - 0.023) * 10.2;                 // water at about 20 °C
+    const npshR = (Q, s) => 0.6 * s * s + 0.32 * Q * Q;                               // my estimate for a small multistage pump
+    // Highest flow before the first impeller starts to cavitate
+    const Qcav = (inp, s) => npshA(inp, 0) <= npshR(0, s) ? 0 : bis(q => npshA(inp, q) - npshR(q, s), 0, 6, 30);
     function create() {
       return { p: 3.0, s: 0, running: false, Q: 0, Qd: 0, I: 0, lowT: 0, boost: false, starts: 0, startTimes: [], alarm: '', alarmT: 0,
-        pEff: null, learnT: 0, dryT: 0, t: 0, trace: [], hist: { lastStop: 0 } };
+        pEff: null, learnT: 0, dryT: 0, t: 0, trace: [], hist: { lastStop: 0 }, primed: true, primeT: 0, level: 1, cav: false, Qtank: 0, src: 'mains' };
     }
     // One time step (seconds). inp = { set, taps, leak, src: 'mains'|'well', pMains, lift, dry, precharge, antiCycle, running }
     function step(S, inp, dt) {
       S.t += dt;
-      const pin = inp.src === 'mains' ? inp.pMains : -(inp.lift + 0.6) / 10.2;        // well: lift plus hose loss
+      // Switching to a well empties the suction hose: the pump has to prime itself again
+      if (inp.src !== S.src) { S.src = inp.src; if (inp.src === 'well') { S.primed = false; S.primeT = 0; } }
       if (S.pEff == null) S.pEff = inp.set;
       const target = S.boost ? S.pEff + 0.5 : S.pEff;
       const sub = 12, h = dt / sub;
+      const needPrime = 1.2 * inp.lift + 2;              // seconds, sped up from the real "8 m in under 5 minutes"
       for (let k = 0; k < sub; k++) {
         const pAbs = S.p + 1.013, p0 = inp.precharge + 1.013;
         const Vt = C.tankL / 1000;
-        const comp = (S.p > inp.precharge ? Vt * p0 / (pAbs * pAbs) : 0) + 0.02e-3;   // m³ per bar: tank gas plus a little pipe stretch
+        const comp = (S.p > inp.precharge ? Vt * p0 / (pAbs * pAbs) : 0) + 0.02e-3;   // m³ per bar: tank air cushion plus a little pipe stretch
         S.Qd = inp.taps * C.tapK * Math.sqrt(Math.max(0, S.p)) + (inp.leak ? C.leak : 0);
         let Qp = 0;
+        S.cav = false; S.atMax = false;
         if (S.running && !S.alarm) {
           const e = target - S.p;
           S.I = cl(S.I + e * h * 0.6, -0.5, 1.2);
           S.s = cl(0.45 + 0.35 * e + S.I, C.smin, 1);
-          const Hreq = (S.p - pin) * 10.2 + 0.4 * S.Q * S.Q;
-          Qp = inp.dry ? 0 : Qat(Hreq, S.s);
-          const smax = sMaxAt(Qp); if (S.s > smax) { S.s = smax; Qp = inp.dry ? 0 : Qat(Hreq, S.s); }
+          if (!S.primed || inp.dry) Qp = 0;               // air in the impellers: the pump only churns the priming water
+          else {
+            const pin = pinAt(inp, S.Q);
+            const Hreq = (S.p - pin) * 10.2;
+            Qp = Qat(Hreq, S.s);
+            const smax = sMaxAt(Qp); if (S.s >= smax) { S.s = smax; Qp = Qat(Hreq, S.s); S.atMax = true; }
+            const qc = Qcav(inp, S.s); if (Qp > qc) { Qp = qc; S.cav = true; S.atMax = true; }
+            if (S.s >= 0.999) S.atMax = true;
+          }
         } else S.s = 0;
         S.Q = Qp;
-        S.p = Math.max(-0.2, S.p + (Qp - S.Qd) / 3600 / comp * h);
+        const dp = (Qp - S.Qd) / 3600 / comp * h;
+        S.Qtank = S.p > inp.precharge ? (Qp - S.Qd) : 0;
+        S.p = S.p + dp;
+        // Mains water flows straight through a stopped pump: the outlet never drops below the mains pressure
+        const floorP = inp.src === 'mains' ? Math.max(0, inp.pMains - 0.3 * S.Qd * S.Qd) : 0;
+        if (S.p < floorP) S.p = floorP;
       }
+      // Self-priming: the impellers throw the priming water round the casing; air separates at the top and is pushed out
+      if (S.running && !S.primed && !inp.dry) { S.primeT += dt; if (S.primeT > needPrime) { S.primed = true; } }
+      // Reservoir level: drains when the source runs dry, refills as the pump primes
+      const fill = inp.dry ? -0.12 : S.primed ? 0.5 : 0.08;
+      S.level = cl(S.level + fill * dt * (S.running || !inp.dry ? 1 : 0), 0.15, 1);
       // Start: pressure has fallen half a bar below the setpoint
       if (!S.running && !S.alarm && inp.running && S.p < S.pEff - 0.5) {
         S.running = true; S.starts++; S.I = 0; S.boost = false; S.startTimes.push(S.t); if (S.startTimes.length > 12) S.startTimes.shift();
       }
       // Stop: flow below about 1 l/min for 3 s, then top the tank up by half a bar and switch off
-      if (S.running && !S.alarm) {
+      if (S.running && !S.alarm && S.primed) {
         if (S.Qd < 0.06) { S.lowT += dt; if (S.lowT > 3) S.boost = true; } else { S.lowT = 0; S.boost = false; }
         if (S.boost && S.p >= S.pEff + 0.4) { S.running = false; S.boost = false; S.lowT = 0; S.hist.lastStop = S.t; }
         // Self-learning: if the setpoint can't be reached at full speed, lower it half a bar
-        if (S.s >= 0.99 && S.p < S.pEff - 0.3 && S.Qd > 0.1) { S.learnT += dt; if (S.learnT > 6 && S.pEff > 1.5) { S.pEff -= 0.5; S.learnT = 0; } } else S.learnT = 0;
-        // Dry running: the pump spins but moves no water
-        if (inp.dry && S.s > 0.6) { S.dryT += dt; if (S.dryT > 4) { S.alarm = 'dry'; S.alarmT = 0; S.running = false; } } else S.dryT = 0;
+        if (S.atMax && S.p < S.pEff - 0.3 && S.Qd > 0.1) { S.learnT += dt; if (S.learnT > 6 && S.pEff > 1.5) { S.pEff -= 0.5; S.learnT = 0; } } else S.learnT = 0;
       }
+      // Dry running: the pump spins but moves no water
+      if (S.running && !S.alarm && inp.dry && S.s > 0.5) { S.dryT += dt; if (S.dryT > 4) { S.alarm = 'dry'; S.alarmT = 0; S.running = false; S.primed = false; S.primeT = 0; } } else if (!inp.dry) S.dryT = 0;
       if (!inp.running) S.running = false;
       // Auto reset for water shortage: try again (time-lapsed from the real 5 minutes to 8 s)
       if (S.alarm) { S.alarmT += dt; if (S.alarm === 'dry' && !inp.dry && S.alarmT > 8) { S.alarm = ''; } }
@@ -983,13 +1010,15 @@
         const gaps = st.slice(1).map((t, i) => t - st[i]), m = gaps.reduce((a, b) => a + b, 0) / gaps.length;
         if (gaps.every(g => Math.abs(g - m) < 0.25 * m)) S.alarm = 'leak';
       }
-      S.P1 = S.running ? (inp.dry ? 0.25 * P1(0, S.s) : P1(S.Q, S.s)) : C.Pstandby;
-      S.H = S.running ? (S.p - pin) * 10.2 : 0;
-      S.pin = pin;
+      const pin = pinAt(inp, S.Q);
+      S.P1 = S.running ? ((!S.primed || inp.dry) ? 0.3 * P1(0, S.s) : P1(S.Q, S.s)) : C.Pstandby;
+      S.H = S.running ? Math.max(0, (S.p - pin) * 10.2) : 0;
+      S.pin = pin; S.NPSHa = npshA(inp, S.Q); S.NPSHr = npshR(S.Q, Math.max(S.s, 0.3));
+      S.priming = S.running && !S.primed && !inp.dry;
       S.trace.push([S.t, S.p, S.running ? 1 : 0, S.Qd]); while (S.trace.length && S.trace[0][0] < S.t - 60) S.trace.shift();
       return S;
     }
-    return { C, H, P1, Qat, sMaxAt, create, step };
+    return { C, H, P1, Qat, sMaxAt, pinAt, npshA, npshR, Qcav, create, step };
   })();
 
   // ───────── SMART Digital DDA 7.5-16 ─────────
@@ -1410,7 +1439,7 @@
   /* ════════════════ MAGNA3 32-120 F: a commercial circulator ════════════════ */
   const MAGNA3 = {
     id: 'magna3', name: 'MAGNA3 32-120 F',
-    hero: { eyebrow: 'Commercial circulator · heating and cooling', title: 'MAGNA3, the building circulator', lede: "A working 3D model of a Grundfos MAGNA3 32-120 F heating pump, built from Grundfos's own CAD model and driven by its official pump curves and operating manual. Change the control mode, close the valves, switch to glycol, starve the inlet until it cavitates or pull it apart. Speed, flow, head, power and temperature all come from one physics model, so the impeller, the water, the charts and the pump's display always agree." },
+    hero: { eyebrow: 'Commercial circulator · heating and cooling', title: 'MAGNA3, the building circulator', lede: "The heating pump of an apartment block, built from Grundfos's own CAD model of the MAGNA3 32-120 F and driven by its official curves and manual. Change the control mode, close the valves, switch to glycol, starve the inlet until it cavitates or pull it apart. One physics model drives the impeller, the water, the charts and the display, so they always agree." },
     html: {
       figs: "\n      <div class=\"fig\"><div class=\"fig-num\"><span id=\"rSpeed\">\u2013</span><span class=\"fig-unit\">rpm</span></div><div class=\"fig-lbl\">Impeller speed</div></div>\n      <div class=\"fig\"><div class=\"fig-num\"><span id=\"rQ\">\u2013</span><span class=\"fig-unit\">m\u00b3/h</span></div><div class=\"fig-lbl\">Flow, estimated</div></div>\n      <div class=\"fig\"><div class=\"fig-num\"><span id=\"rH\">\u2013</span><span class=\"fig-unit\">m</span></div><div class=\"fig-lbl\">Head</div></div>\n      <div class=\"fig\"><div class=\"fig-num\"><span id=\"rDp\">\u2013</span><span class=\"fig-unit\">kPa</span></div><div class=\"fig-lbl\">\u0394p at the sensor</div></div>\n      <div class=\"fig hot\"><div class=\"fig-num\"><span id=\"rP\">\u2013</span><span class=\"fig-unit\">W</span></div><div class=\"fig-lbl\">Power in, P1</div></div>\n      <div class=\"fig\"><div class=\"fig-num\"><span id=\"rEta\">\u2013</span><span class=\"fig-unit\">%</span></div><div class=\"fig-lbl\">Wire to water</div></div>\n      <div class=\"fig\"><div class=\"fig-num\"><span id=\"rI\">\u2013</span><span class=\"fig-unit\">A</span></div><div class=\"fig-lbl\">Current</div></div>\n      <div class=\"fig\"><div class=\"fig-num\"><span id=\"rT\">\u2013</span><span class=\"fig-unit\">N\u00b7m</span></div><div class=\"fig-lbl\">Shaft torque</div></div>\n      <div class=\"fig\"><div class=\"fig-num\"><span id=\"rNpsh\">\u2013</span><span class=\"fig-unit\">m</span></div><div class=\"fig-lbl\">NPSH available</div></div>",
       panel: "    <div class=\"card\">\n      <h3>Control mode</h3>\n      <div class=\"modes\" role=\"group\" aria-label=\"Control mode\">\n        <button class=\"btn\" data-mode=\"aa\" aria-pressed=\"true\">AUTOADAPT</button>\n        <button class=\"btn\" data-mode=\"pp\" aria-pressed=\"false\">Proportional pressure</button>\n        <button class=\"btn\" data-mode=\"cp\" aria-pressed=\"false\">Constant pressure</button>\n        <button class=\"btn\" data-mode=\"cc\" aria-pressed=\"false\">Constant curve</button>\n      </div>\n      <div class=\"row\">\n        <label for=\"set\"><span id=\"setLabel\">Setpoint (auto)</span><output id=\"setOut\">6.6 m</output></label>\n        <input type=\"range\" id=\"set\" min=\"1\" max=\"11.8\" step=\"0.1\" value=\"6.6\" disabled>\n      </div>\n      <div class=\"row\">\n        <label for=\"valve\"><span id=\"valveLabel\">Radiator valves open</span><output id=\"valveOut\">45 %</output></label>\n        <input type=\"range\" id=\"valve\" min=\"5\" max=\"100\" step=\"1\" value=\"45\">\n      </div>\n      <div class=\"row\">\n        <label for=\"limit\"><span>FLOW LIMIT</span><output id=\"limitOut\">Off</output></label>\n        <input type=\"range\" id=\"limit\" min=\"25\" max=\"95\" step=\"1\" value=\"95\">\n      </div>\n      <div class=\"row\">\n        <label for=\"temp\"><span id=\"tempLabel\">Liquid temperature</span><output id=\"tempOut\">60 \u00b0C</output></label>\n        <input type=\"range\" id=\"temp\" min=\"-10\" max=\"110\" step=\"1\" value=\"60\">\n      </div>\n    </div>\n\n    <div class=\"card\">\n      <h3>Liquid and system</h3>\n      <div class=\"row\">\n        <label for=\"gly\"><span>Liquid</span><output id=\"glyOut\">Freezes at 0 \u00b0C</output></label>\n        <select id=\"gly\" class=\"sel\">\n          <option value=\"0\">Water</option>\n          <option value=\"20\">Water + 20 % ethylene glycol</option>\n          <option value=\"30\">Water + 30 % ethylene glycol</option>\n          <option value=\"40\">Water + 40 % ethylene glycol</option>\n          <option value=\"50\">Water + 50 % ethylene glycol</option>\n        </select>\n      </div>\n      <div class=\"row\">\n        <label for=\"pin\"><span>Inlet pressure (gauge)</span><output id=\"pinOut\">1.00 bar</output></label>\n        <input type=\"range\" id=\"pin\" min=\"0\" max=\"3\" step=\"0.05\" value=\"1\">\n        <div class=\"hint\" id=\"pinHint\">Manual minimum at 60 \u00b0C: 0.07 bar</div>\n      </div>\n    </div>\n\n  ",
@@ -2404,9 +2433,10 @@
         white: mat({ color: 0xf2f2f2, roughness: 0.5 }), silver: mat({ color: 0xc9cdd2, metalness: 0.95, roughness: 0.25 }),
         grey: mat({ color: 0xa9adb3, metalness: 0.9, roughness: 0.3 }), black: mat({ color: 0x141518, metalness: 0.3, roughness: 0.5 }), dark: mat({ color: 0x1f2024, metalness: 0.35, roughness: 0.55 }),
         sleeve: mat({ color: 0xc4c9ce, metalness: 0.95, roughness: 0.22 }), motor: mat({ color: 0x2b2d31, metalness: 0.4, roughness: 0.5 }),
-        stainless: mat({ color: 0xb8bec4, metalness: 0.95, roughness: 0.3 }, false), chamber: mat({ color: 0x9aa1a8, metalness: 0.9, roughness: 0.35 }, false),
+        stainless: mat({ color: 0xe2e6ea, metalness: 0.85, roughness: 0.22, emissive: 0x1a2430, emissiveIntensity: 0.25 }, false),
+        chamber: mat({ color: 0x8a939c, metalness: 0.85, roughness: 0.4 }), vane: mat({ color: 0x6f7880, metalness: 0.8, roughness: 0.45 }),
         lam: mat({ color: 0x4a4e57, metalness: 0.7, roughness: 0.45 }), copper: mat({ color: 0xc8743c, metalness: 0.9, roughness: 0.35 }),
-        rotor: mat({ color: 0x6d737c, metalness: 0.8, roughness: 0.4 }, false), seal: mat({ color: 0x2c2f35, metalness: 0.5, roughness: 0.4 }, false)
+        rotor: mat({ color: 0x6d737c, metalness: 0.8, roughness: 0.4 }), seal: mat({ color: 0x2c2f35, metalness: 0.5, roughness: 0.4 })
       };
       const root = E.root;
       const G = {}; for (const n of ['base', 'stack', 'sleeve', 'head', 'stool', 'motor']) { G[n] = new THREE.Group(); root.add(G[n]); }
@@ -2426,7 +2456,7 @@
         const ch = new THREE.Group(); ch.position.y = y + 5.2; ch.rotation.x = -Math.PI / 2; G.stack.add(ch);
         mesh(tubeZ(10.4, 7.6, -5.0, true, 56), M.chamber, ch);
         mesh(tubeZ(10.4, 0.35, 1.8), M.chamber, ch);
-        blades(8, 3.0, 9.6, -0.9, 0.25, 1.4, 0.2, M.chamber, ch);
+        blades(8, 3.0, 9.6, -0.9, 0.25, 1.4, 0.2, M.vane, ch);
       }
       mesh(new THREE.CylinderGeometry(1.4, 1.4, 66, 24).translate(0, 38, 0), M.stainless, spin);
       // Cartridge shaft seal and the coupling
@@ -2593,7 +2623,7 @@
     id: 'scala2', name: 'SCALA2 3-45',
     hero: { eyebrow: 'Domestic water · pressure booster',
       title: 'SCALA2, steady pressure at every tap',
-      lede: 'An all-in-one waterworks for a house: a four-stage pump, a water-cooled permanent-magnet motor, a speed controller, a pressure tank and the sensors, in one box. Open taps and it speeds up to hold the pressure. Close them and it tops up the tank and switches off. The curves come from the Grundfos data sheet; the start-stop logic follows the manual.' },
+      lede: 'Not a circulator: a booster sits between a water source and the taps and holds the pressure the taps feel. SCALA2 packs a self-priming four-stage pump, a water-cooled motor, a speed controller, non-return valves and a pressure tank into one box. Open taps and it speeds up; close them and it tops up the tank and stops. Curves from the Grundfos data sheet, behaviour from the manual.' },
     html: {
       figs: figsHTML([['sP', 'bar', 'Outlet pressure'], ['sQ', 'l/min', 'Flow to taps'], ['sS', '%', 'Speed, of max'], ['sW', 'W', 'Power in, P1', 1], ['sH', 'm', 'Pump head'], ['sTank', 'ml', 'Water in tank'], ['sStarts', '', 'Starts'], ['sState', '', 'State']]),
       panel: `<div class="card"><h3>In the house</h3>
@@ -2607,21 +2637,21 @@
         <div id="scWellRow" style="display:none">${rowHTML('sclift', 'Suction lift', '3 m', 0, 9, 0.5, 3, 'Self-priming up to 8 m.')}</div>
         <div class="toggles two"><button class="btn" id="scDry" aria-pressed="false">Source runs dry</button><button class="btn" id="scReset">Reset alarm</button></div>
       </div>`,
-      curve: `<div><h2>Pump curves</h2><p>The speed family from 25 to 100 %, read from the Grundfos data sheet and fitted with the affinity laws. The red line is the head the controller is holding; the power limit flattens the top curve above 1.8 m³/h.</p></div>
-        <div class="series" role="group" aria-label="Show curves"><button class="chip" data-scc="fam" aria-pressed="true"><i style="background:var(--blue)"></i>Speeds 25–100 %</button><button class="chip" data-scc="set" aria-pressed="true"><i style="background:var(--red)"></i>Pressure held</button></div>`,
+      curve: `<div><h2>Pressure at the taps</h2><p>A booster is judged by the pressure it gives you as you open more taps. The red line is the setpoint the speed controller holds; the blue curves are what each speed could give, worked out from the Grundfos speed family plus your inlet pressure. Where full speed drops below the setpoint, the pressure at the taps sags. From a well, the dashed line marks where the first impeller starts to cavitate.</p></div>
+        <div class="series" role="group" aria-label="Show curves"><button class="chip" data-scc="fam" aria-pressed="true"><i style="background:var(--blue)"></i>Speeds 25–100 %</button><button class="chip" data-scc="set" aria-pressed="true"><i style="background:var(--red)"></i>Setpoint held</button><button class="chip" data-scc="taps" aria-pressed="true"><i style="background:var(--ok)"></i>Taps</button></div>`,
       engHead: `<h2>Under the hood</h2><p>A booster lives on starts and stops. These cards show the pressure the taps feel, the tank that smooths it out, and what happens when something goes wrong.</p>`,
       eng: engCard('The last minute at the tap', 'Outlet pressure over time. Shaded bands are when the pump runs. Open a tap and the speed ramps; close it and the pump tops up the tank by half a bar before stopping. A dripping tap makes it cycle.', '<canvas id="sctrace" class="cv230"></canvas>', true) +
         engCard('The pressure tank', 'A diaphragm tank with an air cushion. Above the precharge pressure it stores water, so a drip doesn’t start the pump every second. Grundfos recommends a precharge of 70 % of the setpoint.', '<canvas id="sctank" class="cv150"></canvas>' + kvHTML([['scPre', 'Precharge'], ['scStore', 'Usable volume'], ['scCycle', 'Time between starts']])) +
-        engCard('Where the watts go', 'Power from the plug to the water. The total follows the data sheet; the split is my estimate.', '<canvas id="scsankey" class="cv230"></canvas>' + kvHTML([['scPh', 'Hydraulic power'], ['scEt', 'Wire to water'], ['scSl', 'Setpoint now']])) +
+        engCard('Suction side and self-priming', 'From a well the pump has to pull the water up. Lift and hose friction eat into the NPSH available; above a certain flow the first impeller cavitates and the flow can’t rise any more. Switching to a well empties the hose, so the pump first primes itself.', '<canvas id="scnpsh" class="cv150"></canvas>' + kvHTML([['scPin', 'Inlet pressure'], ['scQcav', 'Flow before cavitation'], ['scPrime', 'Priming']])) +
         engCard('Rules from the manual', 'What the controller and the installer have to respect.', `<table class="specs"><tr><td>Inlet to outlet difference</td><td id="scRuleDp">–</td></tr><tr><td>Max setpoint from a well</td><td>3.0 bar</td></tr><tr><td>Max setpoint, tank below ground</td><td>3.5 bar</td></tr><tr><td>Setpoints 4.5 to 5.5 bar</td><td>only with positive inlet pressure</td></tr><tr><td>Self-learning setpoint</td><td id="scRuleLearn">–</td></tr><tr><td>Water shortage</td><td>retries every 5 min, 8 times, then daily</td></tr></table>`),
       explain: explainHTML([
-        ['Four stages, one compact box', 'Four small impellers in series on the motor shaft give 45 m of head from 550 W. The permanent-magnet motor is cooled by the water it pumps, which is why it’s quiet enough to sit indoors.'],
-        ['Constant pressure, not on-off', 'Older pumps switch between two pressures. SCALA2 changes speed to hold the setpoint at the taps, so the shower doesn’t change when someone opens the kitchen tap.'],
-        ['When to stop', 'When the flow falls below about a litre a minute, the pump raises the pressure half a bar to fill the tank, then switches off. It starts again when the pressure drops half a bar below the setpoint.'],
+        ['Self-priming, by design', 'The housing holds about 1.7 l of priming water above the impellers. On start-up the impellers throw that water round the casing together with air from the suction hose; the air rises and leaves, the water falls back, until the hose is full. That is how it lifts water from 8 m below.'],
+        ['Two non-return valves', 'One on the inlet keeps the priming water and the suction hose full when the pump stops. One on the outlet keeps the house and the tank pressurised. Both should be cleaned once a year.'],
+        ['Constant pressure, then stop', 'It changes speed to hold the setpoint as taps open. When the flow falls below about a litre a minute, it raises the pressure half a bar to fill the tank and stops. It starts again when the pressure falls half a bar below the setpoint.'],
         ['Protecting itself', 'Dry running, water shortage, a blocked rotor, overheating and leaks each have their own alarm. A leak shows up as starts and stops in a fixed rhythm with no tap open.']
       ], `<p>The shell is Grundfos's CAD model of SCALA2 3-45. The pump curves are the 25 to 100 % speed family read off the vector curves in the Grundfos Product Center data sheet, fitted with the affinity laws (within 0.24 m and 3 W). Setpoints, tank precharge, the self-learning setpoint, auto reset and anti-cycling follow the installation and operating instructions.</p>
-        <p>The start and stop thresholds, the tank volume (about 0.65 l) and the internal layout are my estimates, and the restart timers are sped up so you can watch them. The internals are drawn in code.</p>`,
-        [['Rated flow · head', 'Data sheet', '3 m³/h · 27 m'], ['Max head · max flow', 'Data sheet', '45 m · 4.6 m³/h'], ['Power input P1', 'Data sheet', 'max 550 W, standby 2 W'], ['Setpoint range', 'Manual', '1.5 – 5.5 bar, 0.5 bar steps'], ['Tank precharge', 'Manual', '1.25 bar factory, 70 % of setpoint ideal'], ['Self-priming', 'Data sheet', 'up to 8 m in under 5 min'], ['Max inlet · system pressure', 'Manual', '6 bar · 10 bar'], ['Liquid temperature', 'Manual', '0 – 45 °C'], ['Stages', 'Data sheet', '4'], ['Noise', 'Manual', '47 dB(A) typical']]),
+        <p>The start and stop thresholds, the tank volume (about 0.5 l), the NPSH the impellers need and the internal layout are my estimates, and the priming and restart timers are sped up so you can watch them. The internals are drawn in code to fit inside the real housing.</p>`,
+        [['Rated flow · head', 'Data sheet', '3 m³/h · 27 m'], ['Max head · max flow', 'Data sheet', '45 m · 4.6 m³/h'], ['Power input P1', 'Data sheet', 'max 550 W, standby 2 W'], ['Setpoint range', 'Manual', '1.5 – 5.5 bar, 0.5 bar steps'], ['Tank precharge', 'Manual', '1.25 bar factory, 70 % of setpoint ideal'], ['Self-priming', 'Data sheet', 'up to 8 m in under 5 min'], ['Max inlet · system pressure', 'Manual', '6 bar · 10 bar'], ['Liquid temperature', 'Manual', '0 – 45 °C'], ['Stages · priming water', 'Data sheet · manual', '4 · 1.7 l'], ['Noise', 'Manual', '47 dB(A) typical']]),
       keys: '<kbd>0</kbd>–<kbd>4</kbd> taps'
     },
     init(E) {
@@ -2634,55 +2664,91 @@
         tank: mat({ color: 0x2f5f9a, metalness: 0.3, roughness: 0.4 }), membrane: mat({ color: 0x18191c, roughness: 0.7 }, false),
         pcb: mat({ color: 0x1f5a3a, roughness: 0.6 }), rotor: mat({ color: 0x6d737c, metalness: 0.8, roughness: 0.4 }, false)
       };
-      const root = E.root, YA = 11.1, YO = 23.6;
-      const G = {}; for (const n of ['shell', 'motor', 'stack', 'tank', 'elec']) { G[n] = new THREE.Group(); root.add(G[n]); }
-      const OFF = { shell: new V3(0, 34, 0), motor: new V3(0, 0, -12), stack: new V3(0, 0, 9), tank: new V3(0, 16, -4), elec: new V3(0, 26, 6) };
+      const root = E.root, YA = 8, YIN = 11.1, YO = 23.6;
+      M.water = new THREE.MeshStandardMaterial({ color: 0x5aa7e0, transparent: true, opacity: 0.28, depthWrite: false, roughness: 0.1 });
+      M.chan = mat({ color: 0x9aa6b2, metalness: 0.2, roughness: 0.5, transparent: true, opacity: 0.55 }, false);
+      M.flap = mat({ color: 0x1b1c1f, roughness: 0.6 }, false);
+      const G = {}; for (const n of ['shell', 'motor', 'stack', 'res', 'tank', 'elec']) { G[n] = new THREE.Group(); root.add(G[n]); }
+      const OFF = { shell: new V3(0, 36, 0), motor: new V3(0, 0, -14), stack: new V3(0, -2, 4), res: new V3(0, 16, 10), tank: new V3(0, 20, -8), elec: new V3(0, 30, -14) };
       const standIn = [mesh(new THREE.BoxGeometry(17, 26, 38).translate(0, 13, -4), M.dark, G.shell)];
-      // Motor: water-cooled PM motor on a horizontal shaft
-      const spin = new THREE.Group(); spin.position.y = YA; G.stack.add(spin);
+      // Motor in the rear half: water-cooled permanent-magnet motor on a horizontal shaft
       const mspin = new THREE.Group(); mspin.position.y = YA; G.motor.add(mspin);
-      mesh(tubeZ(3.0, 13, -18), M.rotor, mspin);
-      mesh(tubeZ(0.5, 34, -20), M.steel, mspin);
+      mesh(tubeZ(3.0, 11, -21), M.rotor, mspin);
+      mesh(tubeZ(0.45, 28, -22), M.steel, mspin);
       const mot = new THREE.Group(); mot.position.y = YA; G.motor.add(mot);
-      mesh(lathe([[3.4, -19], [6.2, -19], [6.2, -4], [3.4, -4], [3.4, -19]]), M.lam, mot);
-      for (const z of [-19.6, -3.4]) mesh(new THREE.TorusGeometry(4.8, 0.7, 10, 40).translate(0, 0, z), M.copper, mot);
-      // Four-stage stack toward the ports
+      mesh(lathe([[3.4, -22], [5.6, -22], [5.6, -9], [3.4, -9], [3.4, -22]]), M.lam, mot);
+      for (const z of [-22.6, -8.4]) mesh(new THREE.TorusGeometry(4.5, 0.6, 10, 40).translate(0, 0, z), M.copper, mot);
+      // Four-stage stack in the front half, eye facing the reservoir end
+      const spin = new THREE.Group(); spin.position.y = YA; G.stack.add(spin);
       const stat = new THREE.Group(); stat.position.y = YA; G.stack.add(stat);
       for (let i = 0; i < 4; i++) {
-        const z = 0.5 + i * 2.9;
-        mesh(tubeZ(3.6, 0.2, z), M.imp, spin); blades(6, 1.0, 3.5, 0.9, 0.12, 0.9, z + 0.2, M.imp, spin);
-        mesh(tubeZ(4.6, 2.9, z - 0.4, true, 40), M.steel, stat);
+        const z = 3.0 - i * 2.6;
+        mesh(tubeZ(3.3, 0.18, z), M.imp, spin); blades(6, 0.9, 3.2, 0.9, 0.12, 0.8, z + 0.18, M.imp, spin);
+        mesh(tubeZ(4.3, 2.6, z - 0.6, true, 40), M.steel, stat);
       }
-      // Pressure tank and its membrane, electronics on top
-      mesh(new THREE.CylinderGeometry(3.4, 3.4, 15, 40).rotateX(Math.PI / 2).translate(0, 22, -12), M.tank, G.tank);
-      const membrane = mesh(new THREE.CylinderGeometry(3.3, 3.3, 0.15, 32).rotateX(Math.PI / 2), M.membrane, G.tank); membrane.position.set(0, 22, -12);
-      mesh(new THREE.BoxGeometry(12, 0.2, 10).translate(0, 26.5, 6), M.pcb, G.elec);
-      for (const [x, z] of [[-3, 4], [2, 8], [3, 3]]) mesh(new THREE.BoxGeometry(2, 1, 2).translate(x, 27, z), M.dark, G.elec);
+      mesh(tubeZ(4.3, 0.25, -8.1), M.steel, stat);
+      // Priming reservoir above the stack: about 1.7 litres of water that stays in the pump
+      const resv = new THREE.Group(); G.res.add(resv);
+      const water = mesh(new THREE.BoxGeometry(11.2, 1, 13.5).translate(0, 0.5, 0), M.water, resv, false); water.position.set(0, 15.6, 2.4);
+      mesh(new THREE.BoxGeometry(11.8, 12.4, 14.1).translate(0, 21.7, 2.4), new THREE.MeshStandardMaterial({ color: 0x9aa6b2, transparent: true, opacity: 0.12, depthWrite: false }), resv, false);
+      // Inlet: up a riser to the inlet non-return valve, which drops the water into the reservoir
+      E.rod(new V3(0, YIN, 16), new V3(0, YIN, 11), 1.1, 1.1, M.chan, G.res);
+      E.rod(new V3(0, YIN, 11), new V3(0, 25.6, 11), 1.1, 1.1, M.chan, G.res);
+      const flapIn = mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.18, 24), M.flap, G.res); flapIn.position.set(0, 26.2, 10.4);
+      // Reservoir to the eye of the first impeller
+      E.rod(new V3(0, 15.6, 6.6), new V3(0, YA, 6.6), 1.4, 1.2, M.chan, G.res);
+      // Discharge: from behind the last stage up the side, past the outlet non-return valve to the outlet
+      E.rod(new V3(4.3, YA, -7.8), new V3(6.6, 21.5, -7.8), 0.9, 0.9, M.chan, G.stack);
+      E.rod(new V3(6.6, 21.5, -7.8), new V3(6.6, 23.6, 9.5), 0.9, 0.9, M.chan, G.stack);
+      E.rod(new V3(6.6, 23.6, 9.5), new V3(0, YO, 13.5), 0.9, 0.9, M.chan, G.stack);
+      const flapOut = mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.18, 24).rotateX(Math.PI / 2), M.flap, G.stack); flapOut.position.set(0, YO, 14.2);
+      mesh(new THREE.CylinderGeometry(0.55, 0.55, 2.2, 16).translate(3.2, 25.4, 12.0), M.steel, G.stack);   // pressure sensor
+      // Pressure tank on the discharge side, under the control panel
+      mesh(new THREE.CylinderGeometry(3.2, 3.2, 15, 40).rotateX(Math.PI / 2).translate(0, 17.3, -16.5), M.tank, G.tank);
+      mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.2, 12).rotateX(Math.PI / 2).translate(0, 17.3, -23.4), M.steel, G.tank);   // air valve
+      const membrane = mesh(new THREE.CylinderGeometry(3.05, 3.05, 0.15, 32).rotateX(Math.PI / 2), M.membrane, G.tank); membrane.position.set(0, 17.3, -12);
+      E.rod(new V3(6.6, 17.3, -7.8), new V3(0, 17.3, -9), 0.5, 0.5, M.chan, G.tank);
+      // Electronics under the operating panel
+      mesh(new THREE.BoxGeometry(11, 0.2, 9.5).translate(0, 21.1, -16.2), M.pcb, G.elec);
+      for (const [x, z] of [[-3, -19], [2.5, -14.5], [3, -19.5], [-2.5, -13.5]]) mesh(new THREE.BoxGeometry(1.8, 0.7, 1.8).translate(x, 20.6, z), M.dark, G.elec);
       // Pipes on the port end
-      pipe(new V3(0, YA, 16), new V3(0, YA, 40), 1.6, root); pipe(new V3(0, YO, 16), new V3(0, YO, 40), 1.6, root);
+      pipe(new V3(0, YIN, 16), new V3(0, YIN, 40), 1.6, root); pipe(new V3(0, YO, 16), new V3(0, YO, 40), 1.6, root);
       loadCAD('../../media/models/scala2-3-45.glb', { NAUO1: G.shell }, cadPalette(M), n => { if (n) standIn.forEach(m => { m.parent.remove(m); m.geometry.dispose(); }); E.refreshCut(); });
-      // Flow: in at the lower port, through four stages toward the motor, then up and out of the top port
-      const inP = pathOf([new V3(0, YA, 40), new V3(0, YA, 16), new V3(0, YA, 13)]);
-      const upP = pathOf([new V3(0, YA + 4.6, 0), new V3(0, 17, 3), new V3(0, YO, 11), new V3(0, YO, 16), new V3(0, YO, 40)]);
-      const fl = flowParticles(root, E.lowPower ? 120 : 200, (u, L, out) => {
-        if (u < 0.22) { inP.getPointAt(u / 0.22, out); return out.set(out.x + L.a * 2, out.y + L.b * 2, out.z); }
-        if (u < 0.62) { const f = (u - 0.22) / 0.4 * 4, i = Math.min(3, Math.floor(f)), g2 = f - i, z = 12.1 - i * 2.9 - g2 * 2.9, r = 0.8 + Math.sin(g2 * Math.PI) * 3.2, th = L.o * 6.28 + f * 2.2; return out.set(r * Math.cos(th), YA + r * Math.sin(th), z); }
-        upP.getPointAt((u - 0.62) / 0.38, out); return out.set(out.x + L.a * 1.5, out.y, out.z + (u > 0.8 ? 0 : L.b));
-      }, u => u < 0.22 ? 0 : Math.min(1, (u - 0.22) / 0.4), 0.2, 31);
+      // Through-flow: inlet, riser, inlet valve, reservoir, four stages, discharge channel, outlet valve, outlet
+      const inP = pathOf([new V3(0, YIN, 40), new V3(0, YIN, 16), new V3(0, YIN, 11.2), new V3(0, 18, 11), new V3(0, 25.4, 10.8), new V3(0, 26.6, 9)]);
+      const resP = pathOf([new V3(0, 26.6, 9), new V3(0, 22, 6), new V3(0, 17, 6.6), new V3(0, 12, 6.6), new V3(0, YA, 5.6)]);
+      const disP = pathOf([new V3(3.4, YA, -8.2), new V3(6.6, 12, -7.8), new V3(6.6, 21.5, -7.8), new V3(6.6, 23.6, 4), new V3(6.6, 23.6, 9.5), new V3(0, YO, 13.5), new V3(0, YO, 16), new V3(0, YO, 40)]);
+      const fl = flowParticles(root, E.lowPower ? 140 : 220, (u, L, out) => {
+        if (u < 0.2) { inP.getPointAt(u / 0.2, out); return out.set(out.x + L.a * 1.2, out.y, out.z + L.b * 1.2); }
+        if (u < 0.38) { resP.getPointAt((u - 0.2) / 0.18, out); const k = Math.sin(Math.PI * (u - 0.2) / 0.18); return out.set(out.x + L.a * 8 * k, out.y, out.z + L.b * 6 * k); }
+        if (u < 0.66) { const f = (u - 0.38) / 0.28 * 4, i = Math.min(3, Math.floor(f)), g2 = f - i, z = 3.6 - i * 2.6 - g2 * 2.6, r = 0.8 + Math.sin(g2 * Math.PI) * 2.6, th = L.o * 6.28 + f * 2.2; return out.set(r * Math.cos(th), YA + r * Math.sin(th), z); }
+        disP.getPointAt((u - 0.66) / 0.34, out); return out.set(out.x + L.a * 0.8, out.y + L.b * 0.8, out.z);
+      }, u => u < 0.38 ? 0 : Math.min(1, (u - 0.38) / 0.28), 0.2, 31);
+      // Priming: water and air churn from the stack back into the reservoir; air rises and escapes
+      const recP = pathOf([new V3(0, YA, 5), new V3(0, YA, -7.6), new V3(5.6, 13, -6), new V3(4, 21, -2), new V3(0, 19, 4), new V3(0, 12, 6.4), new V3(0, YA, 5.2)]);
+      const rec = flowParticles(root, 90, (u, L, out) => recP.getPointAt(u, out).add(new V3(L.a * 2, L.b * 2, L.b)), u => Math.sin(Math.PI * u) * 0.6, 0.2, 37);
+      rec.mesh.visible = false;
+      const NBb = 46, bubM = new THREE.InstancedMesh(new THREE.SphereGeometry(0.32, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85, toneMapped: false, depthWrite: false }), NBb);
+      bubM.frustumCulled = false; G.res.add(bubM);
+      const bubs = Array.from({ length: NBb }, (_, i) => ({ x: (Math.sin(i * 12.9898) * 43758.5453 % 1) * 9, z: (Math.sin(i * 78.233) * 12345.678 % 1) * 11 + 2.4, o: (i * 0.137) % 1 }));
+      let bubT = 0;
       addLabels([
-        { g: 'shell', p: [0, 31, 6], t: 'Control panel', d: 'Setpoint and alarms' },
+        { g: 'shell', p: [0, 24.5, -16], t: 'Control panel', d: 'Setpoint and alarms' },
         { g: 'shell', p: [0, 9, 17.5], t: 'Inlet', d: 'R 1, self-priming' },
         { g: 'shell', p: [0, 26, 17.5], t: 'Outlet', d: 'R 1, to the taps' },
-        { g: 'stack', p: [0, 16, 6], t: 'Four-stage stack', d: 'Composite impellers', internal: true },
-        { g: 'motor', p: [0, 18, -12], t: 'PM motor', d: 'Water-cooled, speed controlled', internal: true },
-        { g: 'tank', p: [0, 26.5, -14], t: 'Pressure tank', d: 'Diaphragm, ≈ 0.65 l (est.)', internal: true }
+        { g: 'res', p: [0, 28.6, 2], t: 'Priming reservoir', d: '≈ 1.7 l of water stays in the pump', internal: true },
+        { g: 'res', p: [0, 28.2, 11], t: 'Inlet non-return valve', d: 'Keeps the hose full', internal: true },
+        { g: 'stack', p: [0, 13.5, -1], t: 'Four-stage stack', d: 'Composite impellers', internal: true },
+        { g: 'stack', p: [0, 26.4, 14.2], t: 'Outlet non-return valve', d: 'Holds the house pressure', internal: true },
+        { g: 'motor', p: [0, 15, -15], t: 'PM motor', d: 'Water-cooled, speed controlled', internal: true },
+        { g: 'tank', p: [0, 21.6, -21], t: 'Pressure tank', d: 'Diaphragm, ≈ 0.5 l (est.)', internal: true }
       ], (L, v) => v.set(L.p[0], L.p[1], L.p[2]).add(G[L.g].position));
 
       // ── State and controls ──
       const inp = { set: 3, taps: 1, leak: false, src: 'mains', pMains: 1, lift: 3, dry: false, precharge: 2.1, antiCycle: true, running: true };
       const S = SC.create(); S.p = 3.0;
-      let spinA = 0, sVis = 0;
-      const show = { fam: true, set: true };
+      let spinA = 0, sVis = 0; const waterMesh = water, tmpMb = new THREE.Matrix4();
+      const show = { fam: true, set: true, taps: true };
       const setTaps = n => { inp.taps = +n; pressButtons('[data-sct]', 'sct', inp.taps); };
       wireButtons('[data-sct]', 'sct', setTaps);
       $('scset').addEventListener('input', e => { inp.set = +e.target.value; inp.precharge = Math.round(inp.set * 0.7 * 10) / 10; S.pEff = inp.set; $('scsetOut').textContent = `${inp.set.toFixed(1)} bar`; });
@@ -2694,22 +2760,27 @@
       $('sclift').addEventListener('input', e => { inp.lift = +e.target.value; $('scliftOut').textContent = `${inp.lift} m`; });
       document.querySelectorAll('[data-scc]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.scc; show[k] = !show[k]; b.setAttribute('aria-pressed', show[k]); drawChart(); }));
 
-      // ── Chart ──
+      // ── Chart: pressure at the taps against flow ──
       let hover = null;
-      const OPT = { xMax: 5, xTicks: [0, 1, 2, 3, 4, 5], xLabel: 'Q [m³/h]', y1Max: 50, y1Ticks: [0, 10, 20, 30, 40, 50], y1Label: 'H [m]', y2Max: 600, y2Ticks: [0, 200, 400, 600], y2Label: 'P1 [W]' };
+      const OPT = { xMax: 80, xTicks: [0, 10, 20, 30, 40, 50, 60, 70, 80], xLabel: 'Q [l/min]', y1Max: 7, y1Ticks: [0, 1, 2, 3, 4, 5, 6, 7], y1Label: 'p out [bar]', y2Max: 600, y2Ticks: [0, 200, 400, 600], y2Label: 'P1 [W]' };
+      const lpm = q => q * 1000 / 60, m3h = l => l * 60 / 1000;
+      const pOut = (l, s) => { const q = m3h(l), ss = Math.min(s, SC.sMaxAt(q)); const h = SC.H(q, ss); return h < 0 ? null : SC.pinAt(inp, q) + h / 10.2; };
       function drawChart() {
         const C = chartBegin(OPT); if (!C) return;
         const { cx, curve, X, Y1, Y2, dot } = C;
+        const qc = inp.src === 'well' ? lpm(SC.Qcav(inp, 1)) : 80;
         if (show.fam) for (const p of [25, 40, 50, 60, 70, 80, 90, 100]) {
-          const s = p / 100;
-          const Hc = q => { const sm = SC.sMaxAt(q); const ss = Math.min(s, sm); const h = SC.H(q, ss); return h >= 0 ? h : null; };
-          curve(Hc, Y1, p === 100 ? '#11497b' : 'rgba(17,73,123,0.45)', [], p === 100 ? 2.2 : 1.2, 0, 4.8);
-          curve(q => { const ss = Math.min(s, SC.sMaxAt(q)); return SC.H(q, ss) >= 0 ? SC.P1(q, ss) : null; }, Y2, p === 100 ? '#11497b' : 'rgba(17,73,123,0.45)', [], 1.2, 0, 4.8, 0, 600);
-          cx.fillStyle = '#7a8798'; cx.fillText(p + '%', X(0.05), Y1(SC.H(0, s)) - 3);
+          const s = p / 100, col = p === 100 ? '#11497b' : 'rgba(17,73,123,0.4)';
+          curve(l => { const v = pOut(l, s); return v != null && v >= 0 ? v : null; }, Y1, col, [], p === 100 ? 2.2 : 1.1, 0, Math.min(80, qc), 0, 7);
+          curve(l => { const q = m3h(l), ss = Math.min(s, SC.sMaxAt(q)); return SC.H(q, ss) >= 0 ? SC.P1(q, ss) : null; }, Y2, col, [], 1.1, 0, Math.min(80, qc), 0, 600);
+          const v0 = pOut(0, s); if (v0 != null && v0 < 7) { cx.fillStyle = '#7a8798'; cx.fillText(p + '%', X(0.6), Y1(v0) - 3); }
         }
-        if (show.set) { const Hs = (S.pEff - S.pin) * 10.2; cx.setLineDash([3, 3]); cx.strokeStyle = '#c8102e'; cx.beginPath(); cx.moveTo(X(0), Y1(Hs)); cx.lineTo(X(4.8), Y1(Hs)); cx.stroke(); cx.setLineDash([]); cx.fillStyle = '#c8102e'; cx.fillText(`${fmt(S.pEff, 1)} bar held`, X(3.6), Y1(Hs) - 5); }
-        if (S.running) { dot(X(S.Q), Y1(Math.max(0, S.H))); dot(X(S.Q), Y2(S.P1)); }
-        if (hover) C.tip(X(hover.q), [`Q ${hover.q.toFixed(2)} m³/h · ${fmt(hover.q * 1000 / 60, 0)} l/min`, `Full speed ${fmt(SC.H(hover.q, SC.sMaxAt(hover.q)), 1)} m · ${fmt(SC.P1(hover.q, SC.sMaxAt(hover.q)), 0)} W`]);
+        if (inp.src === 'well' && qc < 80) { cx.setLineDash([4, 3]); cx.strokeStyle = '#c98a12'; cx.beginPath(); cx.moveTo(X(qc), Y1(7)); cx.lineTo(X(qc), Y2(0)); cx.stroke(); cx.setLineDash([]); cx.fillStyle = '#c98a12'; cx.fillText('cavitation limit', X(qc) + 4, Y1(6.6)); }
+        if (show.set) { cx.setLineDash([3, 3]); cx.strokeStyle = '#c8102e'; cx.lineWidth = 1.6; cx.beginPath(); cx.moveTo(X(0), Y1(S.pEff)); cx.lineTo(X(80), Y1(S.pEff)); cx.stroke(); cx.setLineDash([]); cx.fillStyle = '#c8102e'; cx.fillText(`setpoint ${fmt(S.pEff, 1)} bar`, X(56), Y1(S.pEff) - 5);
+          cx.fillStyle = 'rgba(200,16,46,0.08)'; cx.fillRect(X(0), Y1(S.pEff + 0.5), X(80) - X(0), Y1(S.pEff - 0.5) - Y1(S.pEff + 0.5)); }
+        if (show.taps) for (const n of [1, 2, 3, 4]) curve(l => { const q = m3h(l) - (inp.leak ? SC.C.leak : 0); const p = Math.pow(q / (n * SC.C.tapK), 2); return q > 0 ? p : null; }, Y1, n === inp.taps ? '#6b7d93' : 'rgba(107,125,147,0.35)', [], n === inp.taps ? 1.8 : 1, 0, 80, 0, 7);
+        dot(X(lpm(S.Qd)), Y1(Math.max(0, S.p))); if (S.running) dot(X(lpm(S.Q)), Y2(S.P1));
+        if (hover) { const l = hover.q; C.tip(X(l), [`${l.toFixed(0)} l/min · ${m3h(l).toFixed(2)} m³/h`, `Full speed gives ${fmt(pOut(l, 1) ?? 0, 2)} bar at the outlet`, `Power ${fmt(SC.P1(m3h(l), SC.sMaxAt(m3h(l))), 0)} W at full speed`]); }
       }
       E.on(chart, 'pointermove', e => { const r = chart.getBoundingClientRect(), G2 = chartFrame(OPT); hover = { q: Math.max(0, Math.min(OPT.xMax, G2.Q(e.clientX - r.left))) }; drawChart(); });
       E.on(chart, 'pointerleave', () => { hover = null; drawChart(); });
@@ -2743,9 +2814,11 @@
         const leak = (inp.leak ? SC.C.leak : 0) * 1000 / 3600;
         kv('scCycle', leak > 0 ? fmt(store / 1000 / leak / 1, 0) : '–', leak > 0 ? 's' : '');
       }
-      const state = () => S.alarm === 'dry' ? 'Dry run' : S.alarm === 'leak' ? 'Leak alarm' : S.running ? (S.boost ? 'Topping up' : 'Running') : 'Standby';
+      const state = () => S.alarm === 'dry' ? 'Dry run' : S.alarm === 'leak' ? 'Leak alarm' : S.priming ? 'Priming' : S.running ? (S.boost ? 'Topping up' : 'Running') : 'Standby';
       const flag = () => S.alarm === 'dry' ? 'Dry running: the pump spins but moves no water, so it has stopped. It retries automatically once the source refills (sped up here).'
         : S.alarm === 'leak' ? 'Leak alarm: the pump started and stopped in a fixed rhythm with no tap open. That pattern means water is escaping somewhere.'
+        : S.priming ? 'Self-priming: the impellers churn the priming water with air from the hose. The air rises out of the reservoir and the hose slowly fills (sped up here).'
+        : S.cav ? 'Cavitating at the first impeller: the lift and the hose leave too little pressure at the inlet, so the flow can’t rise any further.'
         : S.pEff < inp.set - 0.01 ? `Self-learning: the setpoint can’t be reached, so the pump has lowered it to ${fmt(S.pEff, 1)} bar. It tries the full setpoint again after 24 hours.`
         : inp.set - S.pin > 3.5 ? 'More than 3.5 bar between inlet and outlet: the manual says to lower the setpoint.'
         : inp.src === 'well' && inp.lift > 8 ? 'Suction lift above 8 m: beyond what the pump can prime.'
@@ -2758,26 +2831,38 @@
         if (first || E.chartVis) drawChart();
         if (first || E.engVis) {
           drawTrace(); drawTank();
-          const Phyd = S.running ? 998 * 9.81 * S.Q / 3600 * Math.max(0, S.H) : 0, el = S.running ? 8 + 0.05 * S.P1 : S.P1, motor = S.running ? 0.12 * (S.P1 - el) : 0;
-          drawSankey($('scsankey'), S.running ? S.P1 : 0, [['Electronics', el, 0.25], ['Motor', motor, 0.5], ['Hydraulic', Math.max(0, S.P1 - el - motor - Phyd), 0.72]], Phyd, 'Water', 'W', 0);
-          kv('scPh', fmt(Phyd, 0), 'W'); kv('scEt', S.P1 > 0 && S.running ? fmt(Phyd / S.P1 * 100, 0) : '–', '%'); kv('scSl', fmt(S.pEff, 1), 'bar');
+          drawNpsh($('scnpsh'), S.NPSHa, Math.max(0.2, S.NPSHr), inp.src === 'mains' ? 'Boosting from the mains: plenty of margin' : 'Required = my estimate for the first impeller');
+          kv('scPin', fmt(S.pin, 2), 'bar'); kv('scQcav', inp.src === 'well' ? fmt(SC.Qcav(inp, 1) * 1000 / 60, 0) : '–', inp.src === 'well' ? 'l/min' : ''); kv('scPrime', S.priming ? 'in progress' : S.primed ? 'primed' : 'empty');
           $('scRuleDp').textContent = `${fmt(inp.set - S.pin, 2)} bar now (max 3.5)`;
           $('scRuleLearn').textContent = S.pEff < inp.set - 0.01 ? `active: ${fmt(S.pEff, 1)} bar` : 'not needed';
         }
       }
       return {
-        stage: { floor: 0, size: 30, center: new V3(0, 12, -4), target: e => new V3(0, lerp(13, 22, e), lerp(-3, -2, e)), dist: e => lerp(105, 170, e), dir: new V3(0.82, 0.36, 0.48), minD: 30, maxD: 380, cut: { normal: new V3(-1, 0, 0), constant: 0 } },
+        stage: { floor: 0, size: 30, center: new V3(0, 12, -4), target: e => new V3(0, lerp(13, 22, e), lerp(-3, -2, e)), dist: e => lerp(105, 170, e), dir: new V3(0.85, 0.34, 0.42), minD: 30, maxD: 380, cut: { normal: new V3(-1, 0, 0), constant: 0 } },
         explode(e) { for (const n in G) G[n].position.copy(OFF[n]).multiplyScalar(e); },
         frame(dt, onScreen) {
           SC.step(S, inp, dt);
           sVis += (S.s - sVis) * (1 - Math.exp(-dt * 3));
           spinA += sVis * 8000 / 60 * Math.PI * 2 / 40 * dt; spin.rotation.z = spinA; mspin.rotation.z = spinA;
           const Vt = SC.C.tankL * 1000, p0 = inp.precharge + 1.013, water = Math.max(0, Vt * (1 - p0 / (Math.max(S.p, inp.precharge) + 1.013)));
-          membrane.position.z = -12 + 7 - water / Vt * 14;
-          if (onScreen && E.view.flow) fl.advance(dt * (S.running ? S.Q : 0) * 0.08);
+          membrane.position.z = -9.6 - water / Vt * 13.4;
+          const lvl = Math.max(0.15, S.level); waterMesh.scale.y = 11.8 * lvl;
+          flapIn.rotation.x = S.Q > 0.02 ? -0.7 : 0; flapOut.rotation.x = S.Q > 0.02 ? 0.7 : 0;
+          if (onScreen && E.view.flow) {
+            fl.advance(dt * S.Q * 0.08);
+            rec.mesh.visible = E.view.flow && S.priming; if (S.priming) rec.advance(dt * 0.25 * sVis);
+          }
+          // Air bubbles: while priming, when running dry, and when the first impeller cavitates
+          const air = S.priming ? 1 : (S.running && inp.dry) ? 0.7 : S.cav ? 0.35 : 0;
+          bubM.visible = air > 0;
+          if (air > 0) {
+            bubT += dt; const top = 15.6 + 11.8 * lvl, nOn = Math.round(NBb * air);
+            for (let i = 0; i < NBb; i++) { const b = bubs[i], f = (b.o + bubT * 0.35) % 1, sc = i < nOn ? 0.6 + f * 0.6 : 0; tmpMb.makeScale(sc, sc, sc).setPosition(b.x - 4.5, 15.8 + f * (top - 15.8), b.z); bubM.setMatrixAt(i, tmpMb); }
+            bubM.instanceMatrix.needsUpdate = true;
+          }
         },
         ui10, drawChart,
-        setFlow(on) { fl.mesh.visible = on; }, setRunning(on) { inp.running = on; }, running: () => inp.running,
+        setFlow(on) { fl.mesh.visible = on; if (!on) rec.mesh.visible = false; }, setRunning(on) { inp.running = on; }, running: () => inp.running,
         tour(T) { const n = T.wave > 0.6 ? 3 : T.wave > 0 ? 1 : T.wave > -0.6 ? 2 : 0; if (n !== inp.taps) setTaps(n); },
         key(k) { if ('01234'.includes(k) && k.length === 1) setTaps(+k); }
       };
@@ -2815,7 +2900,8 @@
       </div>`,
       curve: `<div><h2>Stroke by stroke</h2><p>The diaphragm position and the pressure in the dosing chamber over the last few strokes. Suction is a quick pull; discharge is a long, steady push that fills the time until the next stroke. That is what makes the dosing smooth even at a few millilitres an hour.</p></div>`,
       engHead: `<h2>Under the hood</h2><p>A displacement pump doesn’t have a pump curve in the usual sense: the flow barely changes with pressure. What matters is the stroke, what’s in the dosing head and how the chemical mixes into the water.</p>`,
-      eng: engCard('Indicator diagram', 'Chamber pressure against the volume the diaphragm has displaced, over one stroke. Compression, delivery, decompression, suction. Trapped gas has to be squeezed before anything leaves, so the stroke delivers less.', '<canvas id="ddpv" class="cv230"></canvas>' + kvHTML([['ddLost', 'Lost to gas and stretch'], ['ddEff', 'Volumetric efficiency'], ['ddDev', 'Flow error']])) +
+      eng: engCard('Inside the dosing head', 'A cross-section through the head, live. The diaphragm pulls back and the suction ball lifts; the chamber fills. Then the diaphragm pushes, the chamber pressure climbs until it beats the line pressure, and the discharge ball lifts. Colour shows the pressure in the chamber.', '<canvas id="ddsec" class="cv300"></canvas>', true) +
+        engCard('Indicator diagram', 'Chamber pressure against the volume the diaphragm has displaced, over one stroke. Compression, delivery, decompression, suction. Trapped gas has to be squeezed before anything leaves, so the stroke delivers less.', '<canvas id="ddpv" class="cv230"></canvas>' + kvHTML([['ddLost', 'Lost to gas and stretch'], ['ddEff', 'Volumetric efficiency'], ['ddDev', 'Flow error']])) +
         engCard('Turndown 1:3000', 'From 7.5 l/h down to 2.5 ml/h with the same full stroke. Only the time between strokes changes.', '<canvas id="ddturn" class="cv150"></canvas>' + kvHTML([['ddPer', 'One stroke every'], ['ddRatio', 'Suction : discharge'], ['ddCap', 'Max flow in this mode']])) +
         engCard('In the water', 'What this dose means downstream: chemical flow times strength and density, divided by the water flow.', '<canvas id="dddose" class="cv150"></canvas>' + kvHTML([['ddMgL', 'Concentration'], ['ddKgD', 'Chemical per day'], ['ddTank', '20 l can lasts']])) +
         engCard('Limits from the manual', 'What stops the pump or spoils the dose.', `<table class="specs"><tr><td>Max back pressure</td><td>16 bar</td></tr><tr><td>Min. difference suction to discharge</td><td>1 bar</td></tr><tr><td>Max suction lift, running</td><td>6 m</td></tr><tr><td>Max viscosity, no SlowMode</td><td>600 mPa·s (spring-loaded valves)</td></tr><tr><td>SlowMode 50 % / 25 %</td><td>1,800 / 2,500 mPa·s</td></tr><tr><td>Repeatability</td><td>± 1 %</td></tr></table>`),
@@ -2834,7 +2920,10 @@
         led: mat({ color: 0x3ad17a, emissive: 0x2bdc6a, emissiveIntensity: 0.9 }), red: mat({ color: 0xb3122f, metalness: 0.2, roughness: 0.4 }),
         white: mat({ color: 0xf2f2f2, roughness: 0.5 }), silver: mat({ color: 0xc8ccd0, metalness: 0.9, roughness: 0.3 }),
         grey: mat({ color: 0x5d6168, metalness: 0.3, roughness: 0.45 }), black: mat({ color: 0x111214, roughness: 0.35 }), dark: mat({ color: 0x232428, metalness: 0.15, roughness: 0.5 }),
-        body: mat({ color: 0xb3122f, metalness: 0.2, roughness: 0.42 }), head: mat({ color: 0xb9bec4, metalness: 0.9, roughness: 0.3 }),
+        body: mat({ color: 0xb3122f, metalness: 0.2, roughness: 0.42 }), head: mat({ color: 0xc9d2da, metalness: 0.3, roughness: 0.15, transparent: true, opacity: 0.32, depthWrite: false }),
+        seat: mat({ color: 0x7c858e, metalness: 0.9, roughness: 0.3 }, false), valveBody: mat({ color: 0xdfe6ee, roughness: 0.1, transparent: true, opacity: 0.25, depthWrite: false }, false),
+        chamberLiq: new THREE.MeshStandardMaterial({ color: 0xd8b73a, transparent: true, opacity: 0.75, roughness: 0.2, depthWrite: false }),
+        gasM: new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.8, roughness: 0.05 }),
         diaphragm: mat({ color: 0xe6e2d8, roughness: 0.5 }, false), ball: mat({ color: 0xd6dade, metalness: 1, roughness: 0.15 }, false),
         motor: mat({ color: 0x3b3e45, metalness: 0.6, roughness: 0.4 }, false), cam: mat({ color: 0xa9aeb5, metalness: 0.9, roughness: 0.3 }, false),
         can: new THREE.MeshPhysicalMaterial({ color: 0xf2e7a6, roughness: 0.2, transmission: 0.5, transparent: true, opacity: 0.55, depthWrite: false }),
@@ -2846,15 +2935,28 @@
       const OFF = { body: new V3(), head: new V3(0, 0, -10), cube: new V3(0, 13, 0), drive: new V3(13, 0, 4) };
       const standIn = [mesh(new THREE.BoxGeometry(11, 15, 18).translate(HX, 7.5, 8.4), M.body, G.body), mesh(new THREE.CylinderGeometry(4, 4, 5.4, 40).rotateX(Math.PI / 2).translate(HX, HY, -3.3), M.head, G.head)];
       // Diaphragm, pushrod, cam and stepper motor
-      const diaphragm = mesh(new THREE.SphereGeometry(2.2, 40, 16), M.diaphragm, G.head); diaphragm.scale.set(1, 1, 0.12); diaphragm.position.set(HX, HY, -0.9);
+      // Diaphragm: a disc whose centre bulges with the stroke (vertices displaced every frame)
+      const dGeo = new THREE.CircleGeometry(2.2, 48, 0, Math.PI * 2); const dPos = dGeo.attributes.position, dR = new Float32Array(dPos.count);
+      for (let i = 0; i < dPos.count; i++) dR[i] = Math.hypot(dPos.getX(i), dPos.getY(i)) / 2.2;
+      M.diaphragm.side = THREE.DoubleSide;
+      const diaphragm = mesh(dGeo, M.diaphragm, G.head); diaphragm.position.set(HX, HY, -0.9);
+      const bulge = b => { for (let i = 0; i < dPos.count; i++) dPos.setZ(i, b * (1 - dR[i] * dR[i])); dPos.needsUpdate = true; dGeo.computeVertexNormals(); };
+      // Liquid in the chamber, between the diaphragm and the front wall; colour shows pressure
+      const liq = mesh(new THREE.CylinderGeometry(2.15, 2.15, 1, 40).rotateX(Math.PI / 2), M.chamberLiq, G.head, false); liq.position.set(HX, HY, -1.4);
+      const gas = mesh(new THREE.SphereGeometry(0.5, 18, 12), M.gasM, G.head, false); gas.position.set(HX, HY + 1.4, -1.3); gas.visible = false;
+      // Channels from the chamber to the two valves
+      const chS = E.rod(new V3(HX, HY - 1.8, -1.5), new V3(HX, 5.0, VZ), 0.32, 0.32, M.chamberLiq, G.head);
+      const chD = E.rod(new V3(HX, HY + 1.8, -1.5), new V3(HX, 15.6, VZ), 0.32, 0.32, M.chamberLiq, G.head);
+      for (const y of [3.9, 16.5]) { mesh(new THREE.TorusGeometry(0.42, 0.12, 8, 24).rotateX(Math.PI / 2).translate(HX, y - 0.45, VZ), M.seat, G.head); mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.9, 24, 1, true).translate(HX, y + 0.35, VZ), M.valveBody, G.head, false); }
       const rodM = mesh(new THREE.CylinderGeometry(0.35, 0.35, 6, 16).rotateX(Math.PI / 2), M.cam, G.drive); rodM.position.set(HX, HY, 2.4);
       const cam = new THREE.Group(); cam.position.set(HX, HY, 6.2); G.drive.add(cam);
       mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.8, 32).rotateZ(Math.PI / 2).translate(0, 0, 0.35), M.cam, cam);
       mesh(new THREE.CylinderGeometry(2.6, 2.6, 6, 40).rotateZ(Math.PI / 2).translate(HX + 4.2, HY, 6.2), M.motor, G.drive);
       mesh(new THREE.BoxGeometry(5.6, 5.6, 5.6).translate(HX + 4.2, HY, 6.2), M.motor, G.drive).scale.set(1, 1, 1);
       // Ball valves: suction at the bottom, discharge at the top
-      const ballS = mesh(new THREE.SphereGeometry(0.45, 20, 14), M.ball, G.head); ballS.position.set(HX, 4.0, VZ);
-      const ballD = mesh(new THREE.SphereGeometry(0.45, 20, 14), M.ball, G.head); ballD.position.set(HX, 16.6, VZ);
+      const ballS = mesh(new THREE.SphereGeometry(0.42, 20, 14), M.ball, G.head); ballS.position.set(HX, 3.9, VZ);
+      const ballD = mesh(new THREE.SphereGeometry(0.42, 20, 14), M.ball, G.head); ballD.position.set(HX, 16.5, VZ);
+      const cLo = new THREE.Color(0x2a8fd6), cHi = new THREE.Color(0xc8102e), cMid = new THREE.Color(0xd8b73a);
       // Chemical can, hoses and the water main it doses into
       mesh(new THREE.CylinderGeometry(6, 6, 18, 40, 1, true).translate(-15, 7.3, -16), M.can, root, false);
       const liquid = mesh(new THREE.CylinderGeometry(5.8, 5.8, 1, 40).translate(0, 0.5, 0), M.liquid, root, false); liquid.position.set(-15, -1.7, -16);
@@ -2914,6 +3016,49 @@
         cx.setLineDash([3, 3]); cx.strokeStyle = 'rgba(200,16,46,0.5)'; cx.beginPath(); cx.moveTo(X(0), Y2(16)); cx.lineTo(X(W), Y2(16)); cx.stroke(); cx.setLineDash([]);
         cx.fillStyle = '#c8102e'; cx.fillText('16 bar max', X(W) - 80, Y2(16) - 4);
         cx.fillStyle = '#2a8fd6'; cx.fillText('suction', X(0) + 4, Y1(104)); cx.fillStyle = '#c8102e'; cx.fillText('discharge', X(0) + 70, Y1(104));
+      }
+      // Live cross-section of the dosing head
+      function drawSection(ph) {
+        const f = fitCanvas($('ddsec')); if (!f) return; const { g, w, h } = f;
+        const cx0 = w * 0.42, cy = h / 2, R = Math.min(h * 0.32, 90), wall = cx0 - R * 0.55;
+        const pf = Math.max(0, Math.min(1, (ph.p - k.psuc) / Math.max(0.5, k.pdis - k.psuc)));
+        const liqCol = ph.p < 0 ? `rgba(42,143,214,${0.45 + Math.min(0.4, -ph.p)})` : `rgba(${Math.round(216 - 16 * pf)},${Math.round(183 - 167 * pf)},${Math.round(58 - 12 * pf)},0.85)`;
+        // Head body
+        g.fillStyle = '#c9d2da'; g.strokeStyle = '#7c858e'; g.lineWidth = 1.5;
+        g.beginPath(); g.rect(wall - 34, cy - R - 40, (cx0 - wall) + 34, 2 * R + 80); g.fill(); g.stroke();
+        // Valve bores
+        const vx = wall - 12;
+        g.fillStyle = '#eef2f6'; g.fillRect(vx - 14, 6, 28, cy - R - 2); g.fillRect(vx - 14, cy + R + 2, 28, h - (cy + R) - 8);
+        // Chamber outline and liquid: the diaphragm bulges into it
+        const bul = (-0.25 + ph.x * 0.75) * R * 0.5;
+        g.fillStyle = liqCol; g.beginPath(); g.moveTo(wall, cy - R); g.lineTo(cx0, cy - R); g.quadraticCurveTo(cx0 + bul * 2, cy, cx0, cy + R); g.lineTo(wall, cy + R); g.closePath(); g.fill();
+        // Channels to the valves
+        g.fillStyle = liqCol; g.fillRect(vx - 5, cy - R - 2, 10, 14); g.fillRect(wall - 2, cy - R - 2, vx - wall + 6, 10); g.fillRect(vx - 5, cy + R - 12, 10, 14); g.fillRect(wall - 2, cy + R - 8, vx - wall + 6, 10);
+        // Diaphragm
+        g.strokeStyle = '#3b3e45'; g.lineWidth = 4; g.beginPath(); g.moveTo(cx0, cy - R); g.quadraticCurveTo(cx0 + bul * 2, cy, cx0, cy + R); g.stroke();
+        // Drive side, pushrod and cam
+        g.fillStyle = '#b3122f'; g.fillRect(cx0 + 8, cy - R - 40, w - cx0 - 20, 2 * R + 80);
+        const rodX = cx0 + bul + 4; g.fillStyle = '#a9aeb5'; g.fillRect(rodX, cy - 5, 70, 10);
+        g.beginPath(); g.fillStyle = '#5d6168'; g.arc(rodX + 92, cy, 24, 0, Math.PI * 2); g.fill();
+        g.beginPath(); g.fillStyle = '#a9aeb5'; g.arc(rodX + 92 + 9 * Math.cos(camA), cy + 9 * Math.sin(camA), 7, 0, Math.PI * 2); g.fill();
+        // Valve seats and balls
+        const ball = (y, open, up) => { g.fillStyle = '#7c858e'; g.fillRect(vx - 14, y + (up ? 10 : -14), 8, 4); g.fillRect(vx + 6, y + (up ? 10 : -14), 8, 4); g.beginPath(); g.fillStyle = open ? '#d6dade' : '#aab2ba'; g.arc(vx, y - (open ? 12 : 0), 9, 0, Math.PI * 2); g.fill(); g.strokeStyle = '#5d6168'; g.lineWidth = 1; g.stroke(); };
+        ball(cy + R + 36, ph.suction, true); ball(cy - R - 22, ph.discharge, true);
+        // Flow arrows
+        g.fillStyle = ph.suction ? '#2a8fd6' : 'rgba(42,143,214,0.2)';
+        g.beginPath(); g.moveTo(vx, h - 6); g.lineTo(vx - 7, h - 18); g.lineTo(vx + 7, h - 18); g.closePath(); g.fill();
+        g.fillStyle = ph.discharge ? '#c8102e' : 'rgba(200,16,46,0.2)';
+        g.beginPath(); g.moveTo(vx, 2); g.lineTo(vx - 7, 14); g.lineTo(vx + 7, 14); g.closePath(); g.fill();
+        // Gas bubble
+        if (inp.gas && k.run) { const r = 9 * Math.cbrt((k.psuc + 1.013) / (Math.max(k.psuc, ph.p) + 1.013)); g.beginPath(); g.fillStyle = 'rgba(255,255,255,0.9)'; g.arc(wall + 14, cy - R * 0.55, r, 0, Math.PI * 2); g.fill(); g.strokeStyle = '#7c858e'; g.stroke(); }
+        // Read-outs
+        const phase = !k.run ? 'Waiting' : ph.suction ? 'Suction stroke' : ph.discharge ? 'Discharge stroke' : 'Compression';
+        g.font = '600 13px Inter, sans-serif'; g.fillStyle = '#0d2240'; g.fillText(phase, 12, 22);
+        g.font = '11px JetBrains Mono, monospace'; g.fillStyle = '#44546a';
+        g.fillText(`chamber ${fmt(ph.p, 2)} bar`, 12, 40); g.fillText(`line ${fmt(inp.pback, 1)} bar`, 12, 56);
+        g.fillText(k.run ? `suction ${fmt(k.ts, 2)} s · discharge ${fmt(k.td, k.td < 10 ? 2 : 0)} s` : '', 12, h - 12);
+        g.fillStyle = '#7a8798'; g.fillText('to the line', vx + 16, 14); g.fillText('from the can', vx + 16, h - 8);
+        g.fillText('diaphragm movement exaggerated', w - 220, h - 12);
       }
       function drawPV() {
         const f = fitCanvas($('ddpv')); if (!f) return; const { g, w, h } = f;
@@ -2983,11 +3128,16 @@
           const ph = DD.phase(k, tau);
           hist.push([simT, ph.x, k.run ? ph.p : 0, ph.suction, ph.discharge]); while (hist.length && hist[0][0] < simT - 32) hist.shift();
           // Exaggerated diaphragm travel so it can be seen
-          diaphragm.position.z = G.head.position.z * 0 - 0.9 + ph.x * 0.35;
-          diaphragm.scale.z = 0.12 + ph.x * 0.1;
+          // Diaphragm bulge (exaggerated), chamber depth, pressure colour and the gas bubble
+          bulge(-0.25 + ph.x * 0.75);
+          liq.scale.z = 0.7 + ph.x * 0.75; liq.position.z = -1.55 + ph.x * 0.38;
+          const pf = Math.max(0, Math.min(1, (ph.p - k.psuc) / Math.max(0.5, k.pdis - k.psuc)));
+          M.chamberLiq.color.copy(cMid).lerp(ph.p < 0 ? cLo : cHi, ph.p < 0 ? Math.min(1, -ph.p * 2) : pf * 0.85);
+          gas.visible = inp.gas && k.run; if (gas.visible) gas.scale.setScalar(Math.cbrt((k.psuc + 1.013) / (Math.max(k.psuc, ph.p) + 1.013)) * 1.2);
           rodM.position.z = 2.4 + ph.x * 0.35;
           camA = Math.acos(1 - 2 * Math.min(1, Math.max(0, ph.x))) * (ph.suction ? 1 : -1); cam.rotation.x = camA;
-          ballS.position.y = 4.0 + (ph.suction ? 0.35 : 0); ballD.position.y = 16.6 + (ph.discharge ? 0.35 : 0);
+          ballS.position.y = 3.9 + (ph.suction ? 0.5 : 0); ballD.position.y = 16.5 + (ph.discharge ? 0.5 : 0);
+          if (E.engVis && onScreen !== null) drawSection(ph);
           liquid.scale.y = Math.max(0.05, 15 - total / 1000 * 0.75);
           if (onScreen && E.view.flow) {
             const dx = ph.x - xPrev;
