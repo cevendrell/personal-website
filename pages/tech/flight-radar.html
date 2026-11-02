@@ -319,7 +319,7 @@
   <div class="hero-inner" id="rxFigures">
     <p class="hero-eyebrow">Tech</p>
     <h1>Flight <span>Radar</span></h1>
-    <p class="hero-lead">Every aircraft my rooftop antenna in Aarhus hears, out to 500 km on a good night. Any day of the last week, any hour, in 3D.</p>
+    <p class="hero-lead">Every aircraft my rooftop antenna in Aarhus hears,<br>out to 300km on a good day</p>
     <div class="hero-stats rx-stats">
       <div class="hero-stat"><span class="hero-stat-num" data-k="pos">—</span><span class="hero-stat-lbl">On the radar now</span></div>
       <div class="hero-stat"><span class="hero-stat-num" data-k="dayac">—</span><span class="hero-stat-lbl" id="stDayLbl">Aircraft that day</span></div>
@@ -328,7 +328,7 @@
       <div class="hero-stat"><span class="hero-stat-num" data-k="dayalt">—</span><span class="hero-stat-lbl">Highest that day</span></div>
     </div>
     <div class="rx-tracks"><p class="rx-tracks-lbl">Flight tracks</p><div id="rxTracks"></div></div>
-    <p class="rx-foot" id="rxFoot">Receiver T-EKAC94<span class="sep">·</span><span id="rxMsg">Connecting…</span><span class="sep">·</span><a href="https://my.flightradar24.com/carlosebrahim" target="_blank" rel="noopener">FR24 profile ↗</a></p>
+    <p class="rx-foot" id="rxFoot">Receiver T-EKAC94<span class="sep">·</span><span id="rxMsg">connecting…</span></p>
   </div>
   <div id="rxTime"></div>
 </section>
@@ -366,9 +366,9 @@
   import { mountRadar } from './flight-radar.js?v=5';
   const qs = new URLSearchParams(location.search), $ = id => document.getElementById(id);
   const MSG = {
-    live: 'Live from the receiver',
-    replay: 'Live only on my home network; this is the recording, via <a href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">OvrHead</a>',
-    loading: 'Loading the recording…', offline: 'Synthetic traffic'
+    live: 'live',
+    replay: 'recorded via <a href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">OvrHead</a>',
+    loading: 'loading the recording…', offline: 'synthetic traffic'
   };
   mountRadar($('rxStage'), {
     parts: { stage: $('rxStage'), time: $('rxTime') },
