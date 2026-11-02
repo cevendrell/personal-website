@@ -173,49 +173,41 @@
     .hero-stat-lbl { font-size: 0.78rem; color: var(--mute); margin-top: 0.3rem; line-height: 1.35; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── HERO: the radar is the background, like the globe on the flight log ── */
-    #hero.rx-hero { min-height: max(680px, 100vh); background: radial-gradient(ellipse at 68% 58%, #0e1c36 0%, #070b17 58%, #05070f 100%); }
+    /* ── One screen: the radar is the page, like the globe on the flight log ── */
+    #hero.rx-hero { height: 100vh; height: 100svh; min-height: 640px; overflow: hidden;
+      background: radial-gradient(ellipse at 66% 56%, #0e1c36 0%, #070b17 58%, #05070f 100%);
+      --rdr-accent: #4f7fd0; --rdr-hl: #e8dcc4; }
     #hero.rx-hero::before { display: none; }
     #rxStage { position: absolute; inset: 0; height: auto; z-index: 1;
-      --rdr-top: 6.4rem; --rdr-side: 2rem; --rdr-bottom: 1.6rem; --rdr-card-top: 12.5rem; }
-    #rxStage .rdr-tl { top: auto; bottom: 5.6rem; }
+      --rdr-top: 6.4rem; --rdr-side: 2rem; --rdr-bottom: 1.1rem; --rdr-card-top: 12.5rem; }
     #rxStage::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-      background: linear-gradient(90deg, rgba(5,7,15,0.92) 0%, rgba(5,7,15,0.55) 30%, rgba(5,7,15,0) 52%),
-                  linear-gradient(0deg, rgba(5,7,15,0.7) 0%, rgba(5,7,15,0) 22%); }
-    .rx-hero .hero-inner { position: relative; z-index: 3; pointer-events: none; max-width: 1480px; padding-top: 9rem; }
-    .rx-hero .hero-inner > * { max-width: 560px; }
-    .rx-hero .hero-stats { gap: 2.25rem; }
+      background: linear-gradient(90deg, rgba(5,7,15,0.9) 0%, rgba(5,7,15,0.5) 28%, rgba(5,7,15,0) 48%),
+                  linear-gradient(0deg, rgba(5,7,15,0.85) 0%, rgba(5,7,15,0) 16%); }
+    #rxStage .rdr-tl { top: auto; bottom: 1.25rem; flex-wrap: nowrap; }
+    #rxTime { position: absolute; z-index: 5; left: 25rem; right: 5.5rem; bottom: .55rem; background: none; padding: 0; }
+    .rx-hero .hero-inner { position: relative; z-index: 3; pointer-events: none; max-width: 1480px; padding-top: 8.5rem; }
+    .rx-hero .hero-inner > * { max-width: 540px; }
+    .rx-hero .hero-inner a { pointer-events: auto; }
+    .rx-hero .hero-lead { margin-bottom: 2rem; }
+    .rx-hero .hero-stats { gap: 1.9rem; margin-bottom: 1.4rem; flex-wrap: nowrap; }
+    .rx-hero .hero-inner > .hero-stats { max-width: 680px; }
+    .rx-hero .hero-stat-num { font-size: 1.8rem; }
+    .rx-hero .hero-stat-num small { font-size: .5em; margin-left: .15rem; -webkit-text-fill-color: var(--mute); }
+    .rx-foot { font-family: 'JetBrains Mono', monospace; font-size: .64rem; letter-spacing: .06em; color: var(--mute); line-height: 1.7;
+      opacity: 0; animation: fadeUp 0.8s 1s forwards; }
+    .rx-foot a { color: var(--page-accent); }
+    .rx-foot .sep { opacity: .4; margin: 0 .4rem; }
+    @media (max-width: 1100px) { #rxTime { left: 23rem; } }
     @media (max-width: 760px) {
-      #hero.rx-hero { min-height: 0; display: flex; flex-direction: column; }
-      #rxStage::after { display: none; }
-      .rx-hero .hero-inner { order: 1; padding-top: 7rem; padding-bottom: 1rem; }
-      #rxStage { position: relative; order: 2; height: 520px; --rdr-top: .75rem; --rdr-side: .75rem; --rdr-bottom: .75rem; }
-      #rxStage .rdr-tl { bottom: 4.6rem; }
+      #hero.rx-hero { height: auto; min-height: 0; display: flex; flex-direction: column; overflow: visible; }
+      .rx-hero .hero-inner { order: 1; padding-top: 7rem; padding-bottom: .5rem; }
+      .rx-hero .hero-stats { gap: 1.1rem 1.6rem; display: grid; grid-template-columns: repeat(2, auto); justify-content: start; }
+      #rxStage { position: relative; order: 2; height: 74vh; min-height: 480px; --rdr-top: .75rem; --rdr-side: .75rem; --rdr-bottom: .75rem; }
+      #rxStage::after { background: linear-gradient(0deg, rgba(5,7,15,0.8) 0%, rgba(5,7,15,0) 18%); }
+      #rxStage .rdr-tl { bottom: .75rem; left: .75rem; right: auto; }
+      #rxStage .rdr-compass { bottom: 3.6rem; }
+      #rxTime { position: relative; order: 3; left: auto; right: auto; bottom: auto; padding: .4rem .75rem 1rem; }
     }
-
-    /* ── BODY: light, with the dashboard styled like the flight log's ── */
-    main.rx-body { position: relative; z-index: 2; background: #f4f2ee; color: #14161c;
-      --rdr-bg: #ffffff; --rdr-panel: #fbfaf7; --rdr-ink: #14161c; --rdr-ink2: #454a57; --rdr-mute: #8a8f9c;
-      --rdr-line: #e7e4dd; --rdr-accent: #2f6fd0; --rdr-accent-ink: #fff; --rdr-hl: #14161c;
-      --rdr-seg-bg: #f3f1ec; --rdr-seg-line: #e2ded5; --rdr-kpi1: #22a35a; --rdr-kpi2: #2f6fd0; --rdr-kpi3: #c8784a;
-      --rdr-live: #15803d; --rdr-replay: #b7791f; }
-    .container { max-width: 1480px; margin: 0 auto; padding: 3.5rem 2rem 5rem; }
-    .rx-bar { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; margin: 0 0 1.1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: #8a8f9c; }
-    .rx-dot { width: 8px; height: 8px; border-radius: 50%; background: #b9bcc4; }
-    .rx-bar[data-state="live"] .rx-dot { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.18); }
-    .rx-bar[data-state="replay"] .rx-dot, .rx-bar[data-state="loading"] .rx-dot { background: #e0a32e; box-shadow: 0 0 0 3px rgba(224,163,46,0.18); }
-    .rx-state { color: #14161c; font-weight: 600; }
-    .rx-bar[data-state="live"] .rx-state { color: #15803d; } .rx-bar[data-state="replay"] .rx-state { color: #b7791f; }
-    .rx-msg { text-transform: none; letter-spacing: 0.02em; color: #5b606d; }
-    .rx-fr24 { margin-left: auto; color: #2f6fd0; border: 1px solid rgba(47,111,208,0.3); border-radius: 999px; padding: 0.4rem 0.9rem; text-transform: none; letter-spacing: 0.04em; transition: background 0.2s, color 0.2s; }
-    .rx-fr24:hover { background: #2f6fd0; color: #fff; }
-    .rx-dash { background: #fff; border: 1px solid #e7e4dd; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 70px rgba(20,22,28,0.08); }
-    .rx-dash .rdr-time { border-bottom: 1px solid #e7e4dd; padding: 0.9rem 1.4rem 0.7rem; }
-    .rx-dash .rdr-kpis { border-bottom: 1px solid #e7e4dd; }
-    .rx-dash .rdr-list { padding: 1.4rem; }
-    .rx-note { margin-top: 1.25rem; max-width: 78ch; color: #6b7080; font-size: 0.85rem; line-height: 1.7; }
-    .rx-note a { color: #2f6fd0; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
-    .rx-note code { font-family: 'JetBrains Mono', monospace; font-size: 0.8em; background: #ebe8e1; padding: 0.1em 0.35em; border-radius: 4px; }
     @media (max-width: 768px) {
       .hero-inner { padding: 7rem 1.5rem 3rem; }
       .container { padding: 3rem 1.5rem 3rem; }
@@ -288,32 +280,20 @@
 
 <section id="hero" class="rx-hero">
   <div id="rxStage" aria-label="3D view of the airspace over Aarhus"></div>
-  <div class="hero-inner">
+  <div class="hero-inner" id="rxFigures">
     <p class="hero-eyebrow">Tech</p>
     <h1>Flight <span>Radar</span></h1>
-    <p class="hero-lead">An ADS-B antenna on my roof in Aarhus hears every aircraft within 300 km. Live when you are on my network, and the recorded sky for everyone else: any day of the last week, any hour, in 3D.</p>
+    <p class="hero-lead">An ADS-B antenna on my roof in Aarhus hears every aircraft within reach, out to 500 km on a good night. Pick any day of the last week and any hour, in 3D.</p>
     <div class="hero-stats">
-      <div class="hero-stat"><span class="hero-stat-num">300 km</span><span class="hero-stat-lbl">Range</span></div>
+      <div class="hero-stat"><span class="hero-stat-num" data-k="pos">—</span><span class="hero-stat-lbl">On the radar now</span></div>
+      <div class="hero-stat"><span class="hero-stat-num" data-k="ac">—</span><span class="hero-stat-lbl">Heard, with or without position</span></div>
+      <div class="hero-stat"><span class="hero-stat-num" data-k="max">—</span><span class="hero-stat-lbl">Farthest now</span></div>
       <div class="hero-stat"><span class="hero-stat-num" id="stAircraft">—</span><span class="hero-stat-lbl" id="stAircraftLbl">Aircraft in a day</span></div>
-      <div class="hero-stat"><span class="hero-stat-num" id="stDays">7</span><span class="hero-stat-lbl">Days to replay</span></div>
     </div>
+    <p class="rx-foot" id="rxFoot">Receiver T-EKAC94<span class="sep">·</span><span id="rxMsg">Connecting…</span><span class="sep">·</span><a href="https://my.flightradar24.com/carlosebrahim" target="_blank" rel="noopener">FR24 profile ↗</a></p>
   </div>
+  <div id="rxTime"></div>
 </section>
-
-<main class="rx-body">
-  <div class="container">
-    <div class="rx-bar" id="rxBar" data-state="loading">
-      <span class="rx-dot"></span><span class="rx-state" id="rxState">Connecting…</span><span class="rx-msg" id="rxMsg"></span>
-      <a class="rx-fr24" href="https://my.flightradar24.com/carlosebrahim" target="_blank" rel="noopener">FR24 profile ↗</a>
-    </div>
-    <section class="rx-dash" aria-label="Replay controls and aircraft in range">
-      <div id="rxTime"></div>
-      <div id="rxKpis"></div>
-      <div id="rxList"></div>
-    </section>
-    <p class="rx-note">The live feed comes straight from the receiver, T-EKAC94, which only answers on my home network. Everywhere else you see the antenna’s own recording, a snapshot of every aircraft each 30 seconds, published daily by <a href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">OvrHead</a>. Add <code>?demo=1</code> for synthetic traffic.</p>
-  </div>
-</main>
 
 <footer>
   <div class="footer-slim">
@@ -345,23 +325,26 @@
   document.querySelectorAll('.wow').forEach(el => ro.observe(el));
 </script>
 <script type="module">
-  import { mountRadar } from './flight-radar.js?v=3';
-  const qs = new URLSearchParams(location.search);
-  const bar = document.getElementById('rxBar'), st = document.getElementById('rxState'), msg = document.getElementById('rxMsg');
-  const LIVE_MSG = { replay: d => `Recording from ${d}. The live feed only reaches this page from my home network.` };
-  const $ = id => document.getElementById(id);
+  import { mountRadar } from './flight-radar.js?v=4';
+  const qs = new URLSearchParams(location.search), $ = id => document.getElementById(id);
+  const MSG = {
+    live: 'Live from the receiver',
+    replay: 'Live only on my home network; this is the recording, via <a href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">OvrHead</a>',
+    loading: 'Loading the recording…', offline: 'Synthetic traffic'
+  };
   mountRadar($('rxStage'), {
-    parts: { stage: $('rxStage'), time: $('rxTime'), kpis: $('rxKpis'), list: $('rxList') },
+    parts: { stage: $('rxStage'), time: $('rxTime') },
+    figures: $('rxFigures'),
+    show: { kpis: false, list: false, hint: false },
     transparent: true,
     shift: w => w > 900 ? 0.17 : 0,
-    colors: { clear: '#070b17', floorIn: 'rgba(40,80,150,0.32)', floorMid: 'rgba(16,30,70,0.18)', floorOut: 'rgba(7,11,23,0)',
-              land: '#1f3254', landOpacity: 0.95, coast: '#8fb0d8', ring: '#5b7fae' },
-    show: { mode: true, clock: true, hint: true },
+    colors: { clear: '#070b17', floorIn: 'rgba(40,80,150,0.3)', floorMid: 'rgba(16,30,70,0.16)', floorOut: 'rgba(7,11,23,0)',
+              land: '#1a2a47', landOpacity: 0.95, coast: '#8fb0d8', ring: '#5b7fae' },
     demo: qs.has('demo'),
     // tar1090 on the receiver; `secure` can point at an https tunnel later
     live: { base: 'http://192.168.1.98/tar1090/data/', secure: '', force: qs.get('source') },
-    onStatus: (state, label, m) => { bar.dataset.state = state; st.textContent = label; msg.textContent = state === 'replay' ? LIVE_MSG.replay(m) : (m || ''); },
-    onDay: d => { $('stAircraft').textContent = d.unique.toLocaleString('en-GB'); $('stAircraftLbl').textContent = 'Aircraft on ' + d.label; $('stDays').textContent = d.days; }
+    onStatus: state => { $('rxMsg').innerHTML = MSG[state] || ''; },
+    onDay: d => { $('stAircraft').textContent = d.unique.toLocaleString('en-GB'); $('stAircraftLbl').textContent = 'Aircraft on ' + d.label; }
   });
 </script>
 <script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
