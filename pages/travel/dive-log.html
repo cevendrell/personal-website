@@ -1168,6 +1168,7 @@
         <li><a href="../tech/xr-videos.html">XR Videos</a></li>
         <li><a href="../tech/reality-capture.html">Reality Capture</a></li>
         <li><a href="../tech/ai-projects.html">AI Playground</a></li>
+        <li><a href="../tech/flight-radar.html">Flight Radar</a></li>
         <li><a href="../tech/3d-printing.html">3D Printing</a></li>
         <li><a href="../tech/food-for-thought.html">Food for Thought</a></li>
       </ul>
@@ -3031,9 +3032,9 @@ function start() {
     const target = typeof window.__diveDepthF === 'number' ? window.__diveDepthF : 0;
     camDepth += (target - camDepth) * (1 - Math.exp(-dt * 3));
     const y = -0.9 - camDepth + Math.sin(t * 0.5) * 0.12;          // breathing makes a diver rise and sink slightly
-    camera.position.set(Math.sin(t * 0.07) * 0.6 + ptr.nx * 0.5, y, 0);
-    const pitch = 0.26 - smooth(0, 20, camDepth) * 0.42 + ptr.ny * 0.05;
-    camera.rotation.set(pitch, Math.sin(t * 0.05) * 0.08 - ptr.nx * 0.06, Math.sin(t * 0.33) * 0.008, 'YXZ');
+    camera.position.set(Math.sin(t * 0.07) * 0.6, y, 0);
+    const pitch = 0.26 - smooth(0, 20, camDepth) * 0.42;
+    camera.rotation.set(pitch, Math.sin(t * 0.05) * 0.08, Math.sin(t * 0.33) * 0.008, 'YXZ');
     camera.updateMatrixWorld();
     ray.origin.copy(camera.position); ray.direction.set(ptr.nx, ptr.ny, 0.5).unproject(camera).sub(camera.position).normalize();
 
