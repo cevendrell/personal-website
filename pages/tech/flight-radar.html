@@ -363,7 +363,7 @@
   document.querySelectorAll('.wow').forEach(el => ro.observe(el));
 </script>
 <script type="module">
-  import { mountRadar } from './flight-radar.js?v=5';
+  import { mountRadar } from './flight-radar.js?v=6';
   const qs = new URLSearchParams(location.search), $ = id => document.getElementById(id);
   const MSG = {
     live: 'live',
@@ -381,8 +381,8 @@
     colors: { clear: '#070b17', floorIn: 'rgba(40,80,150,0.3)', floorMid: 'rgba(16,30,70,0.16)', floorOut: 'rgba(7,11,23,0)',
               land: '#1a2a47', landOpacity: 0.95, coast: '#8fb0d8', ring: '#5b7fae' },
     demo: qs.has('demo'),
-    // tar1090 on the receiver; `secure` can point at an https tunnel later
-    live: { base: 'http://192.168.1.98/tar1090/data/', secure: '', force: qs.get('source') },
+    // tar1090 on the receiver; `secure` is the Cloudflare Tunnel (tools/radar-tunnel)
+    live: { base: 'http://192.168.1.98/tar1090/data/', secure: 'https://radar.cevenlabs.com/', force: qs.get('source') },
     onStatus: state => { $('rxMsg').innerHTML = MSG[state] || ''; },
     onDay: d => { $('stDayLbl').textContent = 'Aircraft on ' + d.label; }
   });
