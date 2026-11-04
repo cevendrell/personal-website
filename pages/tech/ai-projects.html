@@ -181,22 +181,24 @@
     .product-card--layovr { --card-accent: #3b82f6; }
     .product-card--ovrhead { --card-accent: #c98a4f; }
     @media (max-width: 780px) { .product-grid { grid-template-columns: 1fr; } }
-    /* ── Product tiles: a slice of each app's own look ── */
+    /* ── Product tiles: same language as the lab-bench blocks — one line drawing on a gridded panel ── */
     .product-card { padding: 0; gap: 0; }
-    .product-card::before { z-index: 2; }
-    .pc-visual { position: relative; height: 190px; overflow: hidden; }
+    .product-card::before { display: none; }
+    .pc-visual { position: relative; height: 210px; overflow: hidden; }
+    .pc-grid { position: absolute; inset: 0; pointer-events: none; background-size: 32px 32px; }
     .pc-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-    .pc-body { display: flex; flex-direction: column; gap: 0.7rem; padding: 1.4rem 1.6rem 1.4rem; flex: 1; }
-    .product-tagline { font-size: 0.95rem; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
-    .product-card--layovr .pc-visual { background: radial-gradient(ellipse at 80% 0%, rgba(59,130,246,0.35), transparent 60%), linear-gradient(160deg, #0d1425, #06080f); }
-    .product-card--ovrhead .pc-visual { background: radial-gradient(circle at 30% 55%, #0a2470 0%, #05164d 45%, #020a26 100%); }
-    .radar-sweep { transform-origin: 120px 104px; animation: radarSweep 5s linear infinite; }
-    @keyframes radarSweep { to { transform: rotate(360deg); } }
-    .blip { animation: blipFade 5s linear infinite; }
-    @keyframes blipFade { 0%, 100% { opacity: 0.35; } 8% { opacity: 1; } 40% { opacity: 0.55; } }
-    .lo-pulse { animation: loPulse 2.4s ease-in-out infinite; }
-    @keyframes loPulse { 50% { opacity: 0.35; } }
-    @media (prefers-reduced-motion: reduce) { .radar-sweep, .blip, .lo-pulse { animation: none; } }
+    .product-card--layovr .pc-visual { background: linear-gradient(140deg, #0a1730 0%, #12306a 70%, #1a4594 100%); }
+    .product-card--layovr .pc-grid { background-image: linear-gradient(rgba(147,197,253,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(147,197,253,0.10) 1px, transparent 1px); }
+    .product-card--ovrhead .pc-visual { background: linear-gradient(140deg, #050f2e 0%, #0a1f5c 70%, #0f2c7a 100%); }
+    .product-card--ovrhead .pc-grid { background-image: linear-gradient(rgba(207,217,240,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(207,217,240,0.08) 1px, transparent 1px); }
+    .pc-body { display: flex; flex-direction: column; gap: 0.85rem; padding: 1.75rem 2rem 2rem; flex: 1; border-top: 1px solid var(--line); }
+    .pc-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--card-accent); }
+    .pc-title { font-size: clamp(1.5rem, 2.4vw, 1.9rem); font-weight: 800; letter-spacing: -0.025em; color: var(--text); line-height: 1.15; }
+    .pc-lede { font-size: 0.95rem; color: var(--dim); line-height: 1.65; flex: 1; }
+    .pc-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.06em; color: var(--mute); padding-top: 0.8rem; border-top: 1px dashed var(--line-2); }
+    .pc-cta { align-self: flex-start; margin-top: 0.4rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.3rem; border-radius: 6px; background: var(--card-accent); color: #fff; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em; transition: filter 0.25s, transform 0.25s; }
+    .product-card:hover .pc-cta { filter: brightness(0.9); transform: translateX(2px); }
+    @media (max-width: 560px) { .pc-body { padding: 1.4rem 1.4rem 1.6rem; } }
 
 
     /* ── EXPERIMENT FRAME ── */
@@ -432,88 +434,65 @@
       <div class="product-grid">
         <a class="product-card product-card--layovr" href="https://cevenlabs.com/layovr/" target="_blank" rel="noopener">
           <div class="pc-visual" aria-hidden="true">
-            <svg viewBox="0 0 420 190" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-              <g font-family="JetBrains Mono, monospace" letter-spacing="0.08em">
-                <text x="24" y="34" font-size="10" fill="#6b6d78">CPH</text><text x="24" y="52" font-size="16" fill="#ededea">07:10</text>
-                <path d="M86 44 H128" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="3 3"/>
-                <path d="M124 40 l6 4 -6 4" fill="none" stroke="#3b82f6" stroke-width="1.2"/>
-                <text x="140" y="34" font-size="10" fill="#6b6d78">JFK</text><text x="140" y="52" font-size="16" fill="#ededea">01:10</text>
+            <div class="pc-grid"></div>
+            <svg viewBox="0 0 480 210" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+              <!-- One long-haul flight: CPH to JFK, six time zones -->
+              <g transform="translate(0 -14)">
+              <path d="M40 184.5 H440" stroke="#93c5fd" stroke-width="1" opacity="0.5"/>
+              <path d="M130 172 Q240 -28 350 172" fill="none" stroke="#cfe0fb" stroke-width="1.4" stroke-dasharray="3 5" opacity="0.6"/>
+              <path d="M130 172 Q196 52 262 76" fill="none" stroke="#e6efff" stroke-width="1.8"/>
+              <g fill="#e6efff"><circle cx="130" cy="172" r="4"/><circle cx="350" cy="172" r="4" fill="none" stroke="#e6efff" stroke-width="1.6"/></g>
+              <path transform="translate(262 76) rotate(20)" d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z" fill="#ffffff"/>
+              <!-- sunrise at the destination -->
+              <path d="M370 184 A20 20 0 0 0 330 184" fill="none" stroke="#e5b183" stroke-width="1.8"/>
+              <path d="M350 156 V150 M368 163 l5 -4 M332 163 l-5 -4" stroke="#e5b183" stroke-width="1.6" stroke-linecap="round"/>
+              <g font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="0.12em" fill="#cfe0fb" text-anchor="middle">
+                <text x="130" y="202">CPH</text><text x="240" y="50">−6 H</text>
               </g>
-              <!-- Live guidance card -->
-              <rect x="236" y="20" width="160" height="66" rx="12" fill="rgba(59,130,246,0.12)" stroke="rgba(147,197,253,0.35)"/>
-              <circle cx="254" cy="40" r="4" fill="#d2955c" class="lo-pulse"/>
-              <text x="264" y="44" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#93c5fd">NEXT</text>
-              <text x="252" y="66" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#ffffff">Seek light</text>
-              <text x="252" y="80" font-family="JetBrains Mono, monospace" font-size="10" fill="#a8a9b0">in 1h 20m</text>
-              <!-- The day's plan across 24 hours -->
-              <g transform="translate(24 116)">
-                <rect width="372" height="14" rx="7" fill="rgba(255,255,255,0.06)"/>
-                <rect x="0" width="96" height="14" rx="7" fill="#1d4ed8"/>
-                <rect x="96" width="62" height="14" fill="#d2955c"/>
-                <rect x="158" width="70" height="14" fill="rgba(255,255,255,0.10)"/>
-                <rect x="228" width="54" height="14" fill="#3b82f6" opacity="0.55"/>
-                <rect x="282" width="90" height="14" rx="7" fill="#1d4ed8"/>
-                <path d="M190 -10 v34" stroke="#ffffff" stroke-width="1.2"/>
-                <circle cx="190" cy="-12" r="3" fill="#ffffff"/>
-                <g font-family="JetBrains Mono, monospace" font-size="9" fill="#6b6d78" letter-spacing="0.06em">
-                  <text x="0" y="34">SLEEP</text><text x="100" y="34" fill="#e5b183">LIGHT</text><text x="232" y="34">NAP</text><text x="314" y="34">SLEEP</text>
-                </g>
-                <g fill="#e5b183"><circle cx="122" cy="-8" r="2.5"/><circle cx="150" cy="-8" r="2.5"/></g>
-                <text x="108" y="-16" font-family="JetBrains Mono, monospace" font-size="8" fill="#e5b183" letter-spacing="0.06em">COFFEE</text>
               </g>
             </svg>
           </div>
           <div class="pc-body">
-            <div class="product-top">
-              <span class="product-logo">LayOvr</span>
-              <span class="product-status beta">Beta</span>
-            </div>
-            <p class="product-tagline">Arrive sharp, anywhere.</p>
-            <p class="product-desc">A jet lag plan built around your flights and the meeting that matters: when to sleep, seek light and drink coffee.</p>
-            <span class="product-foot">View project <span class="arrow">→</span></span>
+            <span class="pc-eyebrow">Jet lag</span>
+            <h3 class="pc-title">LayOvr</h3>
+            <p class="pc-lede">A jet lag plan built around your flights and the meeting that matters: when to sleep, seek light and drink coffee.</p>
+            <p class="pc-meta">Beta · Sleep · Light · Coffee · Naps</p>
+            <span class="pc-cta">Open <span aria-hidden="true">↗</span></span>
           </div>
         </a>
 
         <a class="product-card product-card--ovrhead" href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">
           <div class="pc-visual" aria-hidden="true">
-            <svg viewBox="0 0 420 190" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <radialGradient id="ohSweep" cx="0" cy="0" r="1"><stop offset="0" stop-color="#d2955c" stop-opacity="0.45"/><stop offset="1" stop-color="#d2955c" stop-opacity="0"/></radialGradient>
-              </defs>
-              <!-- Radar scope centred on the antenna in Aarhus -->
-              <g fill="none" stroke="rgba(238,241,248,0.16)" stroke-width="1">
-                <circle cx="120" cy="104" r="28"/><circle cx="120" cy="104" r="56"/><circle cx="120" cy="104" r="84"/><circle cx="120" cy="104" r="112"/>
-                <path d="M120 -10 V218 M0 104 H240"/>
+            <div class="pc-grid"></div>
+            <svg viewBox="0 0 480 210" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+              <!-- One antenna in Aarhus and the planes it hears -->
+              <g transform="translate(0 -14)">
+              <path d="M40 184.5 H440" stroke="#cfd9f0" stroke-width="1" opacity="0.5"/>
+              <g fill="none" stroke="#cfd9f0" stroke-width="1" opacity="0.35">
+                <path d="M195 140 A45 45 0 0 1 285 140"/>
+                <path d="M150 140 A90 90 0 0 1 330 140"/>
+                <path d="M105 140 A135 135 0 0 1 375 140" stroke-dasharray="3 5"/>
               </g>
-              <g class="radar-sweep"><path d="M120 104 L120 -8 A112 112 0 0 1 199 25 Z" fill="url(#ohSweep)"/><path d="M120 104 L120 -8" stroke="#d2955c" stroke-width="1.4"/></g>
-              <circle cx="120" cy="104" r="3.5" fill="#eef1f8"/>
+              <g fill="none" stroke="#e6ebf7" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M232 184 L240 140 L248 184 M234.5 172 H245.5 M236.6 161 H243.4 M238.6 150 H241.4 M240 140 V128"/>
+              </g>
+              <circle cx="240" cy="126" r="2.6" fill="#d2955c"/>
               <g fill="#d2955c">
-                <g class="blip" style="animation-delay:-4.1s"><circle cx="158" cy="62" r="3"/></g>
-                <g class="blip" style="animation-delay:-2.2s"><circle cx="84" cy="146" r="3"/></g>
-                <g class="blip" style="animation-delay:-0.9s"><circle cx="196" cy="128" r="3"/></g>
-                <g class="blip" style="animation-delay:-3.3s"><circle cx="62" cy="70" r="2.5"/></g>
+                <g transform="translate(171 82) rotate(-12)"><path d="M-18 0 H-70" stroke="#d2955c" stroke-width="1" stroke-dasharray="2 4" opacity="0.6"/><path d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z"/></g>
+                <g transform="translate(362 83) rotate(196)"><path d="M-18 0 H-60" stroke="#d2955c" stroke-width="1" stroke-dasharray="2 4" opacity="0.6"/><path d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z"/></g>
               </g>
-              <g font-family="JetBrains Mono, monospace" font-size="8.5" fill="#eef1f8" letter-spacing="0.06em" opacity="0.85">
-                <text x="164" y="58">SAS1427 · FL320</text><text x="90" y="160">KLM1272 · FL180</text><text x="190" y="142" text-anchor="end">DLH8VE · FL370</text>
+              <g font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="0.12em" fill="#cfd9f0">
+                <text x="160" y="64">FL320</text><text x="240" y="202" text-anchor="middle">AARHUS</text>
               </g>
-              <!-- Read-outs -->
-              <g font-family="JetBrains Mono, monospace" letter-spacing="0.1em">
-                <text x="270" y="44" font-size="9" fill="#737b96">AARHUS · 56.16°N</text>
-                <text x="270" y="74" font-size="22" fill="#eef1f8" font-family="Inter, sans-serif" font-weight="800" letter-spacing="-0.02em">1 antenna</text>
-                <text x="270" y="94" font-size="9" fill="#737b96">EVERY PLANE IN RANGE</text>
-                <path d="M270 120 h22 M270 136 h40 M270 152 h30 M270 168 h52" stroke="#5cc191" stroke-width="5" stroke-linecap="round"/>
-                <path d="M328 120 h14 M328 136 h22" stroke="#d97b73" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
               </g>
             </svg>
           </div>
           <div class="pc-body">
-            <div class="product-top">
-              <span class="product-logo">OvrHead</span>
-              <span class="product-status live">Live</span>
-            </div>
-            <p class="product-tagline">An observatory over Aarhus.</p>
-            <p class="product-desc">One antenna reads every plane over the city, and the record becomes a live picture of European airspace.</p>
-            <span class="product-foot">Open it <span class="arrow">→</span></span>
+            <span class="pc-eyebrow">Air traffic</span>
+            <h3 class="pc-title">OvrHead</h3>
+            <p class="pc-lede">One antenna reads every plane over the city, and the record becomes a live picture of European airspace.</p>
+            <p class="pc-meta">Live · ADS-B · Aarhus · 300 km range</p>
+            <span class="pc-cta">Open <span aria-hidden="true">↗</span></span>
           </div>
         </a>
       </div>
