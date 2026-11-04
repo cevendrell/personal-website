@@ -20,8 +20,8 @@
   <style>
     :root {
       --bg:          #08090e;
-      --bg-alt:      #09090f;
-      --bg-elevated: #10101e;
+      --bg-alt:      #060e12;
+      --bg-elevated: #0d1c22;
       --surface:     rgba(255,255,255,0.03);
       --navy:        #05060f;
       --text:        #ececea;
@@ -31,10 +31,10 @@
       --line:        rgba(255,255,255,0.08);
       --line-strong: rgba(255,255,255,0.14);
       --radius:      16px;
-      /* Page accent — indigo */
-      --page-accent:  #6366f1;
-      --page-accent2: #a78bfa;
-      --page-glow:    rgba(99,102,241,0.45);
+      /* Page accent — cyan, from the old Reality Capture page */
+      --page-accent:  #00c9d4;
+      --page-accent2: #0ea5e9;
+      --page-glow:    rgba(0,201,212,0.4);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -71,7 +71,7 @@
     .progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--page-accent); z-index: 2000; transition: width 0.1s linear; }
     .preloader { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s; }
     .preloader.done { opacity: 0; visibility: hidden; }
-    .spinner { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(99,102,241,0.12); border-top-color: var(--page-accent); animation: spin 0.9s linear infinite; }
+    .spinner { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(0,201,212,0.12); border-top-color: var(--page-accent); animation: spin 0.9s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── NAV ── */
@@ -133,7 +133,7 @@
     }
     #hero::before {
       content: ''; position: absolute; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse at 75% 55%, rgba(99,102,241,0.12) 0%, transparent 60%);
+      background: radial-gradient(ellipse at 75% 55%, rgba(0,201,212,0.12) 0%, transparent 60%);
     }
     .hero-inner {
       position: relative; z-index: 2;
@@ -199,9 +199,9 @@
       top: 0; bottom: 0; width: 1px;
       background: linear-gradient(to bottom,
         transparent 0%,
-        rgba(99,102,241,0.3) 5%,
-        rgba(167,139,250,0.25) 50%,
-        rgba(99,102,241,0.3) 95%,
+        rgba(0,201,212,0.3) 5%,
+        rgba(14,165,233,0.25) 50%,
+        rgba(0,201,212,0.3) 95%,
         transparent 100%);
     }
 
@@ -217,7 +217,7 @@
       width: 10px; height: 10px; border-radius: 50%;
       background: var(--page-accent);
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px rgba(99,102,241,0.3), 0 0 18px rgba(99,102,241,0.5);
+      box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px rgba(0,201,212,0.3), 0 0 18px rgba(0,201,212,0.5);
       z-index: 1;
     }
 
@@ -244,14 +244,14 @@
     .video-wrap {
       width: 100%; aspect-ratio: 16/9;
       border-radius: var(--radius); overflow: hidden;
-      border: 1px solid rgba(99,102,241,0.2);
+      border: 1px solid rgba(0,201,212,0.2);
       background: var(--bg-elevated);
-      box-shadow: 0 0 0 1px rgba(99,102,241,0.08), 0 20px 60px -20px var(--page-glow);
+      box-shadow: 0 0 0 1px rgba(0,201,212,0.08), 0 20px 60px -20px var(--page-glow);
       transition: box-shadow 0.4s, border-color 0.4s;
     }
     .timeline-item:hover .video-wrap {
-      border-color: rgba(99,102,241,0.35);
-      box-shadow: 0 0 0 1px rgba(99,102,241,0.14), 0 28px 72px -20px var(--page-glow);
+      border-color: rgba(0,201,212,0.35);
+      box-shadow: 0 0 0 1px rgba(0,201,212,0.14), 0 28px 72px -20px var(--page-glow);
     }
     .video-wrap iframe { width: 100%; height: 100%; display: block; border: none; }
 
@@ -267,14 +267,14 @@
     .capture-embed {
       width: 100%; height: 600px;
       border-radius: var(--radius); overflow: hidden;
-      border: 1px solid rgba(99,102,241,0.2);
+      border: 1px solid rgba(0,201,212,0.2);
       background: var(--bg-elevated);
-      box-shadow: 0 0 0 1px rgba(99,102,241,0.08), 0 24px 64px -24px var(--page-glow);
+      box-shadow: 0 0 0 1px rgba(0,201,212,0.08), 0 24px 64px -24px var(--page-glow);
       transition: box-shadow 0.4s, border-color 0.4s;
     }
     .capture-item:hover .capture-embed {
-      border-color: rgba(99,102,241,0.35);
-      box-shadow: 0 0 0 1px rgba(99,102,241,0.14), 0 32px 80px -24px var(--page-glow);
+      border-color: rgba(0,201,212,0.35);
+      box-shadow: 0 0 0 1px rgba(0,201,212,0.14), 0 32px 80px -24px var(--page-glow);
     }
     .capture-embed iframe { display: block; width: 100%; height: 100%; border: none; }
 

@@ -208,7 +208,7 @@
     .nl-eyebrow {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--c-photo); margin-bottom: 1.25rem;
+      color: rgba(255,255,255,0.6); margin-bottom: 1.25rem;
       text-shadow: 0 2px 12px rgba(0,0,0,0.7);
     }
     .nl-hero h1 {
@@ -240,8 +240,8 @@
       background-size: 420px 420px; animation: twinkle 7s ease-in-out infinite alternate; }
     @keyframes twinkle { to { opacity: 0.3; } }
 
-    .nl-intro { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: 4.5rem 2rem 1rem;
-      display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+    .nl-intro { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: 3.5rem 2rem 0;
+      display: flex; align-items: flex-end; justify-content: flex-start; gap: 2rem; flex-wrap: wrap; }
     .nl-intro p { max-width: 44ch; color: var(--dim); font-size: 1.02rem; line-height: 1.75; }
     .nl-index { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .nl-index a { font-size: 0.82rem; font-weight: 600; color: var(--dim); padding: 0.5rem 0.95rem; border-radius: 999px;
@@ -276,14 +276,14 @@
     .aur:hover figcaption, .aur:focus-visible figcaption { opacity: 1; transform: none; }
     .aur:focus-visible { outline: 2px solid #6fef8a; outline-offset: 3px; }
 
-    /* Films: open up from a framed card to full-bleed as they reach the middle of the screen */
+    /* Films: full-bleed panels */
     .film { position: relative; z-index: 2; margin: 5rem 0 0; }
-    .film-frame { --inset: 8vw; --r: 28px; position: relative; width: 100%; height: min(78vh, 56.25vw); overflow: hidden; background: #000;
-      clip-path: inset(0 var(--inset) round var(--r)); will-change: clip-path; }
+    .film-frame { --inset: 0px; --r: 0px; position: relative; width: 100%; height: min(78vh, 56.25vw); overflow: hidden; background: #000;
+      }
     .film-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .film-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none;
       background: linear-gradient(to top, rgba(0,0,0,0.6), transparent 40%), linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 25%); }
-    .film-cap { position: absolute; z-index: 2; left: calc(var(--inset, 8vw) + 2rem); right: calc(var(--inset, 8vw) + 2rem); bottom: 1.8rem;
+    .film-cap { position: absolute; z-index: 2; left: max(2rem, calc((100vw - 1100px) / 2 + 2rem)); right: max(2rem, calc((100vw - 1100px) / 2 + 2rem)); bottom: 1.8rem;
       display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; color: #fff; pointer-events: none; }
     .film-tag { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #6fef8a; margin-bottom: 0.4rem; }
     .film-title { font-size: clamp(1.4rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; text-shadow: 0 4px 24px rgba(0,0,0,0.6); }
@@ -535,7 +535,6 @@
 
 <!-- Intro + index of winters -->
 <div class="nl-intro">
-  <p>Three winters of chasing the aurora, in Finland and Denmark. Click any photo to see it full size.</p>
   <nav class="nl-index" aria-label="Winters">
     <a href="#y2018">2018</a><a href="#y2023">2023</a><a href="#y2024">2024</a><a href="#videos">Videos</a>
   </nav>
@@ -549,7 +548,6 @@
   <div class="night-grid g-solo">
         <figure class="aur big" style="grid-area:a" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/DSC_0622-4.jpg" data-full="../../media/Northern Lights/DSC_0622-4.jpg" alt="Green aurora arc over harbour platform, Finland 2018" width="640" height="381" loading="lazy">
-          <figcaption>Green aurora arc over harbour platform, Finland 2018</figcaption>
         </figure>
   </div>
 </section>
@@ -562,23 +560,18 @@
   <div class="night-grid g-2023">
         <figure class="aur pink big" style="grid-area:a" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/DSC_9804.jpg" data-full="../../media/Northern Lights/DSC_9804.jpg" alt="Pink and green aurora over Lystrup Strand, Denmark 2023" width="640" height="437" loading="lazy">
-          <figcaption>Pink and green aurora over Lystrup Strand, Denmark 2023</figcaption>
         </figure>
         <figure class="aur" style="grid-area:b" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/DSC_9764.jpg" data-full="../../media/Northern Lights/DSC_9764.jpg" alt="Vivid green and purple aurora reflecting over water, Denmark 2023" width="640" height="437" loading="lazy">
-          <figcaption>Vivid green and purple aurora reflecting over water, Denmark 2023</figcaption>
         </figure>
         <figure class="aur" style="grid-area:c" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/DSC_9675.jpg" data-full="../../media/Northern Lights/DSC_9675.jpg" alt="Green aurora reflecting on calm water, Denmark 2023" width="640" height="505" loading="lazy">
-          <figcaption>Green aurora reflecting on calm water, Denmark 2023</figcaption>
         </figure>
         <figure class="aur" style="grid-area:d" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/DSC_9860.jpg" data-full="../../media/Northern Lights/DSC_9860.jpg" alt="Subtle green aurora under a starry sky, Denmark 2023" width="640" height="437" loading="lazy">
-          <figcaption>Subtle green aurora under a starry sky, Denmark 2023</figcaption>
         </figure>
         <figure class="aur" style="grid-area:e" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/DSC_5026.jpg" data-full="../../media/Northern Lights/DSC_5026.jpg" alt="Bench in snow with aurora, Denmark 2023" width="640" height="435" loading="lazy">
-          <figcaption>Bench in snow with aurora, Denmark 2023</figcaption>
         </figure>
   </div>
 </section>
@@ -591,31 +584,24 @@
   <div class="night-grid g-2024">
         <figure class="aur pink tall" style="grid-area:p" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/_CEV0835-2.jpg" data-full="../../media/Northern Lights/_CEV0835-2.jpg" alt="Aurora over historic tower, Denmark 2024" width="426" height="640" loading="lazy">
-          <figcaption>Aurora over historic tower, Denmark 2024</figcaption>
         </figure>
         <figure class="aur pink big" style="grid-area:b" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/_CEV0371.JPG" data-full="../../media/Northern Lights/_CEV0371.JPG" alt="Red aurora over a castle, Denmark 2024" width="640" height="372" loading="lazy">
-          <figcaption>Red aurora over a castle, Denmark 2024</figcaption>
         </figure>
         <figure class="aur" style="grid-area:c" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/_CEV0398.JPG" data-full="../../media/Northern Lights/_CEV0398.JPG" alt="Dramatic vertical aurora over a building, Denmark 2024" width="640" height="371" loading="lazy">
-          <figcaption>Dramatic vertical aurora over a building, Denmark 2024</figcaption>
         </figure>
         <figure class="aur pink" style="grid-area:d" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/_CEV0388.JPG" data-full="../../media/Northern Lights/_CEV0388.JPG" alt="Aurora over castle rear facade, Denmark 2024" width="640" height="399" loading="lazy">
-          <figcaption>Aurora over castle rear facade, Denmark 2024</figcaption>
         </figure>
         <figure class="aur" style="grid-area:e" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/_CEV0399.JPG" data-full="../../media/Northern Lights/_CEV0399.JPG" alt="Green and purple aurora over a building, Denmark 2024" width="640" height="456" loading="lazy">
-          <figcaption>Green and purple aurora over a building, Denmark 2024</figcaption>
         </figure>
         <figure class="aur" style="grid-area:f" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/_CEV0405.JPG" data-full="../../media/Northern Lights/_CEV0405.JPG" alt="Faint aurora over an illuminated building, Denmark 2024" width="640" height="426" loading="lazy">
-          <figcaption>Faint aurora over an illuminated building, Denmark 2024</figcaption>
         </figure>
         <figure class="aur pink" style="grid-area:g" tabindex="0">
           <img src="../../media/Northern Lights/thumbs/DSC_6966.jpg" data-full="../../media/Northern Lights/DSC_6966.jpg" alt="Purple and green aurora pillars, Denmark 2024" width="640" height="426" loading="lazy">
-          <figcaption>Purple and green aurora pillars, Denmark 2024</figcaption>
         </figure>
   </div>
 </section>
@@ -761,26 +747,6 @@
   const nightObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('lit'); nightObs.unobserve(e.target); } }), { threshold: 0.25 });
   document.querySelectorAll('.night').forEach(n => nightObs.observe(n));
 
-  /* ── Films: frame opens to full width as it nears the middle of the screen ── */
-  const frames = [...document.querySelectorAll('.film-frame')];
-  const wide = matchMedia('(min-width: 701px)');
-  let ticking = false;
-  function openFrames(){
-    ticking = false;
-    if (!wide.matches) return;
-    const vh = innerHeight;
-    frames.forEach(f => {
-      const r = f.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.75)));   // 0 entering → 1 at about the middle
-      const e = p * p * (3 - 2 * p);
-      f.style.setProperty('--inset', ((1 - e) * 8).toFixed(2) + 'vw');
-      f.style.setProperty('--r', ((1 - e) * 28).toFixed(1) + 'px');
-      f.querySelector('.film-cap').style.setProperty('--inset', ((1 - e) * 8).toFixed(2) + 'vw');
-    });
-  }
-  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(openFrames); } }, { passive: true });
-  addEventListener('resize', openFrames); openFrames();
-
   /* ── Film play / pause ── */
   const PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
   const PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>';
@@ -805,7 +771,7 @@
     const list = photos(); lbIndex = (i + list.length) % list.length;
     const im = list[lbIndex];
     lbImg.src = im.dataset.full || im.src; lbImg.alt = im.alt;
-    lbCap.innerHTML = '<b>' + (lbIndex + 1) + ' / ' + list.length + '</b>' + im.alt;
+    lbCap.innerHTML = '<b>' + (lbIndex + 1) + ' / ' + list.length + '</b>';
   }
   function openLb(i){ lastFocus = document.activeElement; showPhoto(i); nlLightbox.classList.add('open'); document.body.style.overflow = 'hidden'; nlLightbox.querySelector('.nl-close').focus(); }
   function closeLb(){ nlLightbox.classList.remove('open'); lbImg.src = ''; document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }
