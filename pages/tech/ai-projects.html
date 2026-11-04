@@ -186,6 +186,9 @@
     .pc-grid { position: absolute; inset: 0; pointer-events: none; background-size: 32px 32px; }
     .pc-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
     .product-card--layovr .pc-visual { background: #011545; }
+    .pc-visual .ly-mark { position: absolute; inset: auto; right: -95px; bottom: -110px; width: 400px; height: 400px; pointer-events: none; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+    .product-card--layovr:hover .ly-mark { transform: rotate(-4deg) scale(1.03); }
+    @media (max-width: 560px) { .pc-visual .ly-mark { right: -60px; bottom: -70px; width: 260px; height: 260px; } }
     .product-card--ovrhead .pc-visual { background: radial-gradient(ellipse at 50% 100%, #191919 0%, #0c0c0e 70%); }
     .product-card--ovrhead .pc-grid { background-image: linear-gradient(rgba(210,210,220,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(210,210,220,0.06) 1px, transparent 1px); }
     .product-card--ovrhead .pc-cta { color: #1a0f05; }
@@ -475,7 +478,7 @@
       <div class="product-grid">
         <a class="product-card product-card--layovr" href="https://cevenlabs.com/layovr/" target="_blank" rel="noopener">
           <div class="pc-visual" aria-hidden="true">
-            <svg viewBox="0 0 480 210" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 480 210" preserveAspectRatio="xMinYMid meet" xmlns="http://www.w3.org/2000/svg">
               <!-- The app's trip card on its navy ground, with the logo beside it -->
               <g transform="translate(22 44)">
                 <rect width="264" height="124" rx="14" fill="#ffffff"/>
@@ -491,9 +494,13 @@
                 <text x="18" y="88" font-family="Inter, sans-serif" font-size="7.5" letter-spacing="0.08em" fill="#6a6c72">−6h west</text>
                 <rect x="18" y="104" width="19" height="3.5" rx="1.75" fill="#4a7bb0"/><rect x="41" y="104" width="19" height="3.5" rx="1.75" fill="#4a7bb0"/><rect x="64" y="104" width="19" height="3.5" rx="1.75" fill="#05164d"/><rect x="87" y="104" width="19" height="3.5" rx="1.75" fill="#42916d"/><rect x="110" y="104" width="19" height="3.5" rx="1.75" fill="#42916d"/><rect x="133" y="104" width="19" height="3.5" rx="1.75" fill="#42916d"/><rect x="156" y="104" width="19" height="3.5" rx="1.75" fill="#d5e6dc"/><rect x="179" y="104" width="19" height="3.5" rx="1.75" fill="#d5e6dc"/><rect x="202" y="104" width="19" height="3.5" rx="1.75" fill="#d5e6dc"/><rect x="225" y="104" width="19" height="3.5" rx="1.75" fill="#e3dcdc"/>
               </g>
-              <filter id="lyCut" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="linear" slope="2" intercept="-1"/><feFuncG type="linear" slope="2" intercept="-1"/><feFuncB type="linear" slope="2" intercept="-1"/></feComponentTransfer></filter>
-              <mask id="lyLogo" maskUnits="userSpaceOnUse" x="222" y="-50" width="310" height="310"><image filter="url(#lyCut)" href="../../media/shared/layovr-icon.png" x="222" y="-50" width="310" height="310"/></mask>
-              <rect x="222" y="-50" width="310" height="310" fill="#ffffff" mask="url(#lyLogo)"/>
+            </svg>
+            <svg class="ly-mark" viewBox="0 0 512 512" aria-hidden="true">
+              <defs>
+                <filter id="lyCut" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="linear" slope="2" intercept="-1"/><feFuncG type="linear" slope="2" intercept="-1"/><feFuncB type="linear" slope="2" intercept="-1"/></feComponentTransfer></filter>
+                <mask id="lyLogo" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512"><image filter="url(#lyCut)" href="../../media/shared/layovr-icon.png" x="0" y="0" width="512" height="512"/></mask>
+              </defs>
+              <rect width="512" height="512" fill="#ffffff" mask="url(#lyLogo)"/>
             </svg>
           </div>
           <div class="pc-body">
@@ -611,7 +618,6 @@
               <span class="bikefit-eyebrow">Grundfos</span>
               <h3 class="bikefit-title">Grundfos Pump Simulator</h3>
               <p class="bikefit-lede">Five Grundfos pumps, from a 3 W home circulator to a 37 kW multistage pump, built from Grundfos CAD models and run on their published curves. Change the settings, open the taps, take them apart.</p>
-              <p class="bikefit-meta">ALPHA2 · MAGNA3 · SCALA2 · CR · DDA</p>
               <span class="bikefit-cta">Open <span aria-hidden="true">↗</span></span>
             </div>
           </a>
@@ -670,7 +676,6 @@
               <span class="bikefit-eyebrow">Cycling</span>
               <h3 class="bikefit-title">Bike Fit Studio</h3>
               <p class="bikefit-lede">Enter your measurements, pick one of 87 frames and watch a rider pedal it, with knee, hip and torso angles measured as they move.</p>
-              <p class="bikefit-meta">Specialized · Trek · Cervélo · Canyon · and more</p>
               <span class="bikefit-cta">Open <span aria-hidden="true">→</span></span>
             </div>
           </a>
