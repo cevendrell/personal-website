@@ -586,8 +586,7 @@
     .hob-kicker { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
     .hob-head .melan-h2 { margin: 0.6rem 0 0.6rem; }
     .hob-sub { color: var(--dim); font-size: 1rem; line-height: 1.7; }
-    .hob-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 200px; gap: 14px;
-      grid-template-areas: "av av dv dv" "av av sk pr" "ai ai rn rn"; }
+    .hob-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 190px; gap: 14px; }
     .hob { --t: var(--accent); --mx: 50%; --my: 50%; position: relative; overflow: hidden; isolation: isolate;
       display: flex; flex-direction: column; justify-content: space-between; padding: 1.4rem 1.5rem;
       border-radius: 18px; color: var(--text); text-decoration: none;
@@ -611,26 +610,21 @@
     .hob-mark { position: absolute; right: -18px; bottom: -22px; width: 150px; height: 150px; z-index: -1;
       color: var(--t); opacity: 0.07; transition: opacity .4s, transform .6s cubic-bezier(.2,.7,.2,1); }
     .hob:hover .hob-mark { opacity: 0.14; transform: rotate(-6deg) scale(1.04); }
-    .hob--av { grid-area: av; padding: 1.8rem 1.9rem; }
-    .hob--av h3 { font-size: clamp(1.6rem, 2.6vw, 2.2rem); }
-    .hob--av .hob-mark { width: 260px; height: 260px; right: -30px; bottom: -40px; }
-    .hob-arc { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-    .hob-arc path { stroke: var(--t); stroke-width: 1.2; stroke-dasharray: 3 7; fill: none; opacity: .35; animation: hobDash 14s linear infinite; }
-    @keyframes hobDash { to { stroke-dashoffset: -200; } }
-    .hob--dv { grid-area: dv; } .hob--sk { grid-area: sk; } .hob--pr { grid-area: pr; } .hob--ai { grid-area: ai; } .hob--rn { grid-area: rn; }
+    div.hob { cursor: default; }
+    div.hob:hover { transform: none; }
     .hob-also { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 1.6rem; }
     .hob-also > span:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); margin-right: .4rem; }
     .hob-chip { font-size: 0.84rem; color: var(--dim); padding: .45rem .9rem; border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.025); }
-    @media (max-width: 900px) {
-      .hob-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 180px; grid-template-areas: "av av" "av av" "dv dv" "sk pr" "ai rn"; }
+    @media (max-width: 900px) { .hob-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 170px; } }
+    @media (max-width: 520px) {
+      .hob-grid { gap: 10px; grid-auto-rows: 168px; }
+      .hob { padding: 1rem; border-radius: 14px; }
+      .hob-ico { width: 36px; height: 36px; border-radius: 10px; } .hob-ico svg { width: 18px; height: 18px; }
+      .hob-go { display: none; }
+      .hob h3 { font-size: 1.02rem; } .hob p { font-size: 0.78rem; line-height: 1.5; }
+      .hob-mark { width: 110px; height: 110px; }
     }
-    @media (max-width: 560px) {
-      .hob-grid { grid-template-columns: 1fr; grid-auto-rows: auto; grid-template-areas: "av" "dv" "sk" "pr" "ai" "rn"; }
-      .hob { min-height: 150px; gap: 1.4rem; }
-      .hob--av { min-height: 260px; }
-    }
-    @media (prefers-reduced-motion: reduce) { .hob-arc path { animation: none; } }
 
         /* ── FOOTER — slim, copyright + socials only ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
@@ -658,7 +652,7 @@
     .d3 { transition-delay: 0.3s; }
     .d4 { transition-delay: 0.4s; }
     .hob.wow { transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1), border-color .35s; }
-    .hob.wow.visible:hover { transform: translateY(-3px); transition-delay: 0s; }
+    a.hob.wow.visible:hover { transform: translateY(-3px); transition-delay: 0s; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 960px) {
@@ -1093,45 +1087,53 @@
     </div>
 
     <div class="hob-grid">
-      <a class="hob hob--av wow d0" style="--t:var(--c-travel)" href="pages/tech/flight-radar.html">
-        <svg class="hob-arc" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true"><path d="M-20 330 Q 200 40 430 210"/></svg>
+      <a class="hob wow d0" style="--t:var(--c-travel)" href="pages/tech/flight-radar.html">
+        
         <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span><span class="hob-go">Flight radar →</span></div>
-        <div><h3>Aviation</h3><p>A rooftop antenna in Aarhus and a live radar of the sky above it.</p></div>
+        <div><h3>Aviation</h3><p>A rooftop antenna and a live radar of the sky.</p></div>
         <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
       </a>
-      <a class="hob hob--dv wow d1" style="--t:#3fb6c8" href="pages/travel/dive-log.html">
+      <a class="hob wow d1" style="--t:#3fb6c8" href="pages/travel/dive-log.html">
         <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></span><span class="hob-go">Dive log →</span></div>
-        <div><h3>Scuba diving</h3><p>Every dive logged, with depth, time and place.</p></div>
+        <div><h3>Scuba diving</h3><p>Every dive logged, depth by depth.</p></div>
         <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>
       </a>
-      <a class="hob hob--sk wow d2" style="--t:#a78bfa" href="pages/photography/northern-lights.html">
+      <a class="hob wow d2" style="--t:#a78bfa" href="pages/photography/northern-lights.html">
         <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M19 3v4M17 5h4"/></svg></span><span class="hob-go">Aurora →</span></div>
         <div><h3>Astronomy</h3><p>Dark skies and northern lights.</p></div>
         <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M19 3v4M17 5h4"/></svg>
       </a>
-      <a class="hob hob--pr wow d3" style="--t:var(--c-photo)" href="pages/tech/3d-printing.html">
+      <a class="hob wow d3" style="--t:var(--c-photo)" href="pages/tech/3d-printing.html">
         <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg></span><span class="hob-go">Prints →</span></div>
         <div><h3>3D printing</h3><p>Things I have designed and printed.</p></div>
         <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg>
       </a>
-      <a class="hob hob--ai wow d3" style="--t:var(--accent)" href="pages/tech/ai-projects.html">
+      <a class="hob wow d0" style="--t:var(--accent)" href="pages/tech/ai-projects.html">
         <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg></span><span class="hob-go">Playground →</span></div>
-        <div><h3>AI &amp; ML</h3><p>Experiments, simulators and games, all running in the browser.</p></div>
+        <div><h3>AI</h3><p>Experiments, simulators and games in the browser.</p></div>
         <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>
       </a>
-      <a class="hob hob--rn wow d3" style="--t:#fc5200" href="https://www.strava.com/athletes/22414565" target="_blank" rel="noopener">
+      <a class="hob wow d1" style="--t:#fc5200" href="https://www.strava.com/athletes/22414565" target="_blank" rel="noopener">
         <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg></span><span class="hob-go">Strava ↗</span></div>
         <div><h3>Running &amp; cycling</h3><p>Training lives on Strava.</p></div>
         <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
       </a>
+      <div class="hob wow d2" style="--t:#5cc191">
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg></span></div>
+        <div><h3>Personal finance</h3><p>Investing, budgets and the long game.</p></div>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg>
+      </div>
+      <div class="hob wow d3" style="--t:#e8473b">
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span></div>
+        <div><h3>Motorsports</h3><p>Formula 1 weekends and anything with a grid.</p></div>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>
+      </div>
     </div>
 
     <div class="hob-also wow">
       <span>Also</span>
-      <span class="hob-chip">Formula 1</span>
       <span class="hob-chip">Space</span>
       <span class="hob-chip">Open water</span>
-      <span class="hob-chip">Investing</span>
       <span class="hob-chip">Reading</span>
       <span class="hob-chip">Coffee</span>
     </div>
