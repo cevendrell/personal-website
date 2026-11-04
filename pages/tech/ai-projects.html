@@ -178,8 +178,8 @@
     .product-foot { display: flex; align-items: center; gap: 0.4rem; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em; color: var(--card-accent); }
     .product-foot .arrow { transition: transform 0.25s; }
     .product-card:hover .product-foot .arrow { transform: translateX(4px); }
-    .product-card--layovr { --card-accent: #3b82f6; }
-    .product-card--ovrhead { --card-accent: #c98a4f; }
+    .product-card--layovr { --card-accent: #05164d; }
+    .product-card--ovrhead { --card-accent: #d2955c; }
     @media (max-width: 780px) { .product-grid { grid-template-columns: 1fr; } }
     /* ── Product tiles: same language as the lab-bench blocks — one line drawing on a gridded panel ── */
     .product-card { padding: 0; gap: 0; }
@@ -187,10 +187,10 @@
     .pc-visual { position: relative; height: 210px; overflow: hidden; }
     .pc-grid { position: absolute; inset: 0; pointer-events: none; background-size: 32px 32px; }
     .pc-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-    .product-card--layovr .pc-visual { background: linear-gradient(140deg, #0a1730 0%, #12306a 70%, #1a4594 100%); }
-    .product-card--layovr .pc-grid { background-image: linear-gradient(rgba(147,197,253,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(147,197,253,0.10) 1px, transparent 1px); }
-    .product-card--ovrhead .pc-visual { background: linear-gradient(140deg, #050f2e 0%, #0a1f5c 70%, #0f2c7a 100%); }
-    .product-card--ovrhead .pc-grid { background-image: linear-gradient(rgba(207,217,240,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(207,217,240,0.08) 1px, transparent 1px); }
+    .product-card--layovr .pc-visual { background: #011545; }
+    .product-card--ovrhead .pc-visual { background: radial-gradient(ellipse at 50% 100%, #191919 0%, #0c0c0e 70%); }
+    .product-card--ovrhead .pc-grid { background-image: linear-gradient(rgba(210,210,220,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(210,210,220,0.06) 1px, transparent 1px); }
+    .product-card--ovrhead .pc-cta { color: #1a0f05; }
     .pc-body { display: flex; flex-direction: column; gap: 0.85rem; padding: 1.75rem 2rem 2rem; flex: 1; border-top: 1px solid var(--line); }
     .pc-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--card-accent); }
     .pc-title { font-size: clamp(1.5rem, 2.4vw, 1.9rem); font-weight: 800; letter-spacing: -0.025em; color: var(--text); line-height: 1.15; }
@@ -375,9 +375,8 @@
     <li class="nav-item">
       <a href="ai-projects.html">Tech</a>
       <ul class="dropdown">
-        <li><a href="xr-videos.html">XR Videos</a></li>
-        <li><a href="reality-capture.html">Reality Capture</a></li>
         <li><a href="ai-projects.html">AI Playground</a></li>
+        <li><a href="xr-reality-capture.html">XR &amp; Reality Capture</a></li>
         <li><a href="flight-radar.html">Flight Radar</a></li>
         <li><a href="3d-printing.html">3D Printing</a></li>
         <li><a href="food-for-thought.html">Food for Thought</a></li>
@@ -434,22 +433,25 @@
       <div class="product-grid">
         <a class="product-card product-card--layovr" href="https://cevenlabs.com/layovr/" target="_blank" rel="noopener">
           <div class="pc-visual" aria-hidden="true">
-            <div class="pc-grid"></div>
-            <svg viewBox="0 0 480 210" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-              <!-- One long-haul flight: CPH to JFK, six time zones -->
-              <g transform="translate(0 -14)">
-              <path d="M40 184.5 H440" stroke="#93c5fd" stroke-width="1" opacity="0.5"/>
-              <path d="M130 172 Q240 -28 350 172" fill="none" stroke="#cfe0fb" stroke-width="1.4" stroke-dasharray="3 5" opacity="0.6"/>
-              <path d="M130 172 Q196 52 262 76" fill="none" stroke="#e6efff" stroke-width="1.8"/>
-              <g fill="#e6efff"><circle cx="130" cy="172" r="4"/><circle cx="350" cy="172" r="4" fill="none" stroke="#e6efff" stroke-width="1.6"/></g>
-              <path transform="translate(262 76) rotate(20)" d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z" fill="#ffffff"/>
-              <!-- sunrise at the destination -->
-              <path d="M370 184 A20 20 0 0 0 330 184" fill="none" stroke="#e5b183" stroke-width="1.8"/>
-              <path d="M350 156 V150 M368 163 l5 -4 M332 163 l-5 -4" stroke="#e5b183" stroke-width="1.6" stroke-linecap="round"/>
-              <g font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="0.12em" fill="#cfe0fb" text-anchor="middle">
-                <text x="130" y="202">CPH</text><text x="240" y="50">−6 H</text>
+            <svg viewBox="0 0 480 210" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <!-- The app's trip card on its navy ground, with the logo beside it -->
+              <g transform="translate(66 44)">
+                <rect width="264" height="124" rx="14" fill="#ffffff"/>
+                <text x="18" y="26" font-family="JetBrains Mono, monospace" font-size="7.5" letter-spacing="0.2em" fill="#6a6c72">TRIP IN PROGRESS</text>
+                <rect x="210" y="16" width="38" height="14" rx="7" fill="#42916d"/>
+                <text x="229" y="25.8" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" font-weight="700" letter-spacing="0.14em" fill="#ffffff">LIVE</text>
+                <rect x="18" y="42" width="46" height="24" rx="3" fill="#111216"/>
+                <rect x="200" y="42" width="46" height="24" rx="3" fill="#111216"/>
+                <g font-family="Inter, sans-serif" font-size="13" font-weight="800" fill="#ffffff" text-anchor="middle"><text x="41" y="58.5">CPH</text><text x="223" y="58.5">JFK</text></g>
+                <path d="M78 54 H120 M144 54 H186" stroke="#c9cbd3" stroke-width="1"/>
+                <circle cx="78" cy="54" r="1.8" fill="#8d8f99"/><circle cx="186" cy="54" r="1.8" fill="#8d8f99"/>
+                <path transform="translate(136 54) scale(0.8)" d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z" fill="#05164d"/>
+                <text x="18" y="88" font-family="JetBrains Mono, monospace" font-size="7.5" letter-spacing="0.08em" fill="#6a6c72">−6h west</text>
+                <rect x="18" y="104" width="19" height="3.5" rx="1.75" fill="#4a7bb0"/><rect x="41" y="104" width="19" height="3.5" rx="1.75" fill="#4a7bb0"/><rect x="64" y="104" width="19" height="3.5" rx="1.75" fill="#05164d"/><rect x="87" y="104" width="19" height="3.5" rx="1.75" fill="#42916d"/><rect x="110" y="104" width="19" height="3.5" rx="1.75" fill="#42916d"/><rect x="133" y="104" width="19" height="3.5" rx="1.75" fill="#42916d"/><rect x="156" y="104" width="19" height="3.5" rx="1.75" fill="#d5e6dc"/><rect x="179" y="104" width="19" height="3.5" rx="1.75" fill="#d5e6dc"/><rect x="202" y="104" width="19" height="3.5" rx="1.75" fill="#d5e6dc"/><rect x="225" y="104" width="19" height="3.5" rx="1.75" fill="#e3dcdc"/>
               </g>
-              </g>
+              <filter id="lyCut" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="linear" slope="2" intercept="-1"/><feFuncG type="linear" slope="2" intercept="-1"/><feFuncB type="linear" slope="2" intercept="-1"/></feComponentTransfer></filter>
+              <mask id="lyLogo" maskUnits="userSpaceOnUse" x="316" y="46" width="120" height="120"><image filter="url(#lyCut)" href="../../media/shared/layovr-icon.png" x="316" y="46" width="120" height="120"/></mask>
+              <rect x="316" y="46" width="120" height="120" fill="#ffffff" mask="url(#lyLogo)"/>
             </svg>
           </div>
           <div class="pc-body">
@@ -467,13 +469,13 @@
             <svg viewBox="0 0 480 210" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
               <!-- One antenna in Aarhus and the planes it hears -->
               <g transform="translate(0 -14)">
-              <path d="M40 184.5 H440" stroke="#cfd9f0" stroke-width="1" opacity="0.5"/>
-              <g fill="none" stroke="#cfd9f0" stroke-width="1" opacity="0.35">
+              <path d="M40 184.5 H440" stroke="#aab2c8" stroke-width="1" opacity="0.5"/>
+              <g fill="none" stroke="#aab2c8" stroke-width="1" opacity="0.35">
                 <path d="M195 140 A45 45 0 0 1 285 140"/>
                 <path d="M150 140 A90 90 0 0 1 330 140"/>
                 <path d="M105 140 A135 135 0 0 1 375 140" stroke-dasharray="3 5"/>
               </g>
-              <g fill="none" stroke="#e6ebf7" stroke-width="1.6" stroke-linejoin="round">
+              <g fill="none" stroke="#eef1f8" stroke-width="1.6" stroke-linejoin="round">
                 <path d="M232 184 L240 140 L248 184 M234.5 172 H245.5 M236.6 161 H243.4 M238.6 150 H241.4 M240 140 V128"/>
               </g>
               <circle cx="240" cy="126" r="2.6" fill="#d2955c"/>
@@ -481,7 +483,7 @@
                 <g transform="translate(171 82) rotate(-12)"><path d="M-18 0 H-70" stroke="#d2955c" stroke-width="1" stroke-dasharray="2 4" opacity="0.6"/><path d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z"/></g>
                 <g transform="translate(362 83) rotate(196)"><path d="M-18 0 H-60" stroke="#d2955c" stroke-width="1" stroke-dasharray="2 4" opacity="0.6"/><path d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z"/></g>
               </g>
-              <g font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="0.12em" fill="#cfd9f0">
+              <g font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="0.12em" fill="#aab2c8">
                 <text x="160" y="64">FL320</text><text x="240" y="202" text-anchor="middle">AARHUS</text>
               </g>
               </g>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Conference talks on extended reality and reality capture in manufacturing, plus interactive 3D captures you can explore in the browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cevendrell.com/pages/tech/xr-reality-capture.html">
+  <meta property="og:title" content="XR &amp; Reality Capture | Carlos Ebrahim Vendrell">
+  <meta property="og:description" content="Conference talks on extended reality and reality capture in manufacturing, plus interactive 3D captures you can explore in the browser.">
+  <meta property="og:site_name" content="Carlos Ebrahim Vendrell">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="XR &amp; Reality Capture | Carlos Ebrahim Vendrell">
+  <meta name="twitter:description" content="Conference talks on extended reality and reality capture in manufacturing, plus interactive 3D captures you can explore in the browser.">
+  <title>XR &amp; Reality Capture - Carlos Ebrahim Vendrell</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #08090e;
+      --bg-alt:      #09090f;
+      --bg-elevated: #10101e;
+      --surface:     rgba(255,255,255,0.03);
+      --navy:        #05060f;
+      --text:        #ececea;
+      --dim:         #a8a9af;
+      --mute:        #6b6d75;
+      --accent:      #e8dcc4;
+      --line:        rgba(255,255,255,0.08);
+      --line-strong: rgba(255,255,255,0.14);
+      --radius:      16px;
+      /* Page accent — indigo */
+      --page-accent:  #6366f1;
+      --page-accent2: #a78bfa;
+      --page-glow:    rgba(99,102,241,0.45);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.75; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    ::selection { background: var(--page-accent); color: #fff; }
+
+    .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.065; animation: drift 20s ease-in-out infinite; }
+    .orb-1 { width: 600px; height: 600px; background: var(--page-accent); top: -15%; right: -10%; animation-duration: 26s; }
+    .orb-2 { width: 450px; height: 450px; background: var(--page-accent2); bottom: 5%; left: -10%; animation-duration: 31s; animation-delay: -7s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--page-accent); top: 40%; left: 40%; animation-duration: 35s; animation-delay: -14s; opacity: 0.035; }
+    @keyframes drift {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33%  { transform: translate(40px,-30px) scale(1.05); }
+      66%  { transform: translate(-30px,20px) scale(0.95); }
+    }
+
+    .grain {
+      position: fixed; inset: -50%; width: 200%; height: 200%;
+      z-index: 1; pointer-events: none; opacity: 0.022;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grainMove 0.5s steps(1) infinite;
+    }
+    @keyframes grainMove {
+      0%,100% { transform: translate(0,0); }
+      25%  { transform: translate(-2%,-3%); }
+      50%  { transform: translate(2%,1%); }
+      75%  { transform: translate(-1%,2%); }
+    }
+
+    .progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: var(--page-accent); z-index: 2000; transition: width 0.1s linear; }
+    .preloader { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s; }
+    .preloader.done { opacity: 0; visibility: hidden; }
+    .spinner { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(99,102,241,0.12); border-top-color: var(--page-accent); animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── NAV ── */
+    nav#navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 1.25rem 2.5rem; display: flex; align-items: center;
+      justify-content: space-between; background: rgba(8,9,14,0.6);
+      backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border-bottom: 1px solid transparent; transition: all 0.3s ease;
+    }
+    nav#navbar.scrolled { padding: 0.85rem 2.5rem; background: rgba(8,9,14,0.92); border-bottom-color: var(--line); }
+    .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text); }
+    .nav-links { display: flex; gap: 2.25rem; list-style: none; align-items: center; }
+    .nav-item { position: relative; }
+    .nav-links > li > a { font-size: 0.85rem; font-weight: 500; color: var(--dim); position: relative; padding: 0.5rem 0; transition: color 0.2s; }
+    .nav-links > li > a:hover { color: var(--text); }
+    .nav-links > li > a::after { content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: var(--accent); transition: width 0.25s ease; }
+    .nav-links > li > a:hover::after { width: 100%; }
+    .dropdown { position: absolute; top: calc(100% + 0.5rem); left: -1rem; min-width: 200px; background: rgba(6,8,20,0.92); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.08); border-radius: 0; padding: 0.4rem 0; list-style: none; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.2s; box-shadow: 0 16px 48px rgba(0,0,0,0.6); }
+    .dropdown li { list-style: none; }
+    .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown a { display: block; padding: 0.65rem 1rem; font-size: 0.87rem; color: rgba(255,255,255,0.65); transition: background 0.15s, color 0.15s; }
+    .dropdown a::after { display: none !important; }
+    .dropdown a:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-right { display: flex; align-items: center; gap: 0.9rem; }
+    .nav-socials { display: flex; align-items: center; gap: 0.75rem; }
+    .nav-social-link { color: var(--mute); display: flex; align-items: center; transition: color 0.2s; }
+    .nav-social-link:hover { color: var(--text); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 6px; background: none; border: none; cursor: pointer; }
+    .hamburger span { width: 22px; height: 1.5px; background: var(--text); display: block; transition: all 0.3s; }
+    @media (max-width: 768px) {
+      nav#navbar { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .nav-socials { display: none; }
+      .hamburger { display: flex; }
+    }
+    body.nav-open { overflow: hidden; }
+    body.nav-open nav#navbar {
+      background: #08090e; border-bottom-color: var(--line);
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      transition: none;
+    }
+    body.nav-open .hamburger { position: relative; z-index: 1001; }
+    body.nav-open .nav-links > li { width: 100%; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    body.nav-open .nav-links > li:last-child { border-bottom: none; }
+    body.nav-open .nav-links > li > a { display: block; width: 100%; }
+    body.nav-open .nav-links { display: flex !important; flex-direction: column; position: fixed; inset: 0; z-index: 999; background: var(--bg); padding: 5.5rem 2rem 2rem; gap: 0; align-items: flex-start; overflow-y: auto; }
+    body.nav-open .nav-links > li > a { font-size: 1.5rem; font-weight: 600; color: var(--text); padding: 0.75rem 0; }
+    body.nav-open .dropdown { position: static; opacity: 1 !important; visibility: visible !important; transform: none !important; background: transparent; border: none; box-shadow: none; padding: 0.25rem 0 0.75rem 1rem; min-width: auto; }
+    body.nav-open .dropdown a { font-size: 1rem; padding: 0.4rem 0.5rem; }
+    body.nav-open .hamburger span:nth-child(1) { transform: rotate(45deg) translate(4.5px,4.5px); }
+    body.nav-open .hamburger span:nth-child(2) { opacity: 0; }
+    body.nav-open .hamburger span:nth-child(3) { transform: rotate(-45deg) translate(4.5px,-4.5px); }
+
+    /* ── HERO ── */
+    #hero {
+      background-color: var(--bg-alt);
+      position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: ''; position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 75% 55%, rgba(99,102,241,0.12) 0%, transparent 60%);
+    }
+    .hero-inner {
+      position: relative; z-index: 2;
+      max-width: 1200px; margin: 0 auto; padding: 8rem 2rem 3.5rem; width: 100%;
+    }
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--page-accent); margin-bottom: 1.25rem;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-inner h1 {
+      font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 800;
+      letter-spacing: -0.04em; line-height: 1.05;
+      color: var(--text); margin-bottom: 1.25rem;
+      opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+    }
+    .hero-inner h1 span {
+      background: linear-gradient(135deg, var(--page-accent), var(--page-accent2));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-lead {
+      color: var(--dim); font-size: 1.05rem; line-height: 1.7;
+      margin-bottom: 2.5rem; max-width: 56ch;
+      opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+    }
+    .hero-stats {
+      display: flex; gap: 3rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+    }
+    .hero-stat { display: flex; flex-direction: column; }
+    .hero-stat-num {
+      font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1;
+      background: linear-gradient(135deg, var(--page-accent), var(--page-accent2));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-stat-lbl { font-size: 0.78rem; color: var(--mute); margin-top: 0.3rem; line-height: 1.35; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── CONTENT ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 5rem 2rem 5rem; position: relative; z-index: 2; }
+    /* Light content section — dark hero → white body */
+    main {
+      position: relative; z-index: 2;
+      background: #ffffff;
+      --text: #16161a;
+      --dim: #4f5158;
+      --mute: #8a8b91;
+      --surface: #f5f5f2;
+      --line: rgba(0,0,0,0.12);
+      --bg: #ffffff;
+      --bg-elevated: #ececea;
+    }
+
+    /* ── VIDEO TIMELINE ── */
+    .timeline {
+      position: relative;
+      display: flex; flex-direction: column; gap: 6rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 50%; transform: translateX(-50%);
+      top: 0; bottom: 0; width: 1px;
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(99,102,241,0.3) 5%,
+        rgba(167,139,250,0.25) 50%,
+        rgba(99,102,241,0.3) 95%,
+        transparent 100%);
+    }
+
+    .timeline-item {
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; position: relative;
+    }
+
+    /* Center dot */
+    .timeline-item::after {
+      content: '';
+      position: absolute; left: 50%; top: 50%;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--page-accent);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px rgba(99,102,241,0.3), 0 0 18px rgba(99,102,241,0.5);
+      z-index: 1;
+    }
+
+    /* Text side */
+    .timeline-text { padding: 0 3.5rem 0 0; }
+    .timeline-item:nth-child(even) .timeline-text { padding: 0 0 0 3.5rem; order: 2; }
+
+    /* Video side */
+    .timeline-video { padding: 0 0 0 3.5rem; }
+    .timeline-item:nth-child(even) .timeline-video { padding: 0 3.5rem 0 0; order: 1; }
+
+    .video-location {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--page-accent); margin-bottom: 0.65rem; display: block;
+    }
+    .timeline-text h2 {
+      font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 800;
+      letter-spacing: -0.02em; line-height: 1.2;
+      color: var(--text); margin-bottom: 0.85rem;
+    }
+    .timeline-text p { font-size: 0.9rem; color: var(--dim); line-height: 1.8; }
+
+    .video-wrap {
+      width: 100%; aspect-ratio: 16/9;
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid rgba(99,102,241,0.2);
+      background: var(--bg-elevated);
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.08), 0 20px 60px -20px var(--page-glow);
+      transition: box-shadow 0.4s, border-color 0.4s;
+    }
+    .timeline-item:hover .video-wrap {
+      border-color: rgba(99,102,241,0.35);
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.14), 0 28px 72px -20px var(--page-glow);
+    }
+    .video-wrap iframe { width: 100%; height: 100%; display: block; border: none; }
+
+    /* ── SECTION HEADS ── */
+    .xr-section + .xr-section { margin-top: 7rem; }
+    .xr-head { margin-bottom: 3.5rem; max-width: 62ch; }
+    .xr-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--page-accent); display: block; margin-bottom: 0.7rem; }
+    .xr-head h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--text); line-height: 1.15; margin-bottom: 0.8rem; }
+    .xr-head p { font-size: 0.95rem; color: var(--dim); line-height: 1.8; }
+
+    /* ── CAPTURES ── */
+    .capture-list { display: flex; flex-direction: column; gap: 4rem; }
+    .capture-embed {
+      width: 100%; height: 600px;
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid rgba(99,102,241,0.2);
+      background: var(--bg-elevated);
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.08), 0 24px 64px -24px var(--page-glow);
+      transition: box-shadow 0.4s, border-color 0.4s;
+    }
+    .capture-item:hover .capture-embed {
+      border-color: rgba(99,102,241,0.35);
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.14), 0 32px 80px -24px var(--page-glow);
+    }
+    .capture-embed iframe { display: block; width: 100%; height: 100%; border: none; }
+
+    /* ── REVEAL ── */
+    .wow { opacity: 0; transform: translateY(20px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+    .wow.visible { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: 0.1s; }
+    .d2 { transition-delay: 0.2s; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--navy); position: relative; z-index: 2; }
+    .footer-slim {
+      max-width: 1140px; margin: 0 auto; padding: 24px 30px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-copy { font-size: 0.82rem; color: rgba(255,255,255,0.3); }
+    .footer-socials { display: flex; gap: 8px; list-style: none; padding: 0; align-items: center; }
+    .footer-socials li a {
+      width: 36px; height: 36px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: var(--mute); transition: all 0.3s;
+    }
+    .footer-socials li a:hover { background: var(--page-accent); color: #fff; border-color: var(--page-accent); }
+
+    @media (max-width: 700px) {
+      .timeline::before { display: none; }
+      .timeline-item { grid-template-columns: 1fr; gap: 1.5rem; }
+      .timeline-item::after { display: none; }
+      .timeline-text,
+      .timeline-item:nth-child(even) .timeline-text { padding: 0; order: 1; }
+      .timeline-video,
+      .timeline-item:nth-child(even) .timeline-video { padding: 0; order: 2; }
+    }
+    @media (max-width: 768px) {
+      .hero-inner { padding: 7rem 1.5rem 3rem; }
+      .container { padding: 3rem 1.5rem 3rem; }
+    }
+    @media (max-width: 700px) {
+      .capture-embed { height: 380px; }
+      .xr-section + .xr-section { margin-top: 5rem; }
+      .xr-head { margin-bottom: 2.25rem; }
+    }
+    @media (max-width: 480px) {
+      .capture-embed { height: 320px; }
+      .container, .hero-inner { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .footer-slim { flex-direction: column; text-align: center; gap: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preloader" id="preloader"><div class="spinner"></div></div>
+<div class="ambient" aria-hidden="true">
+  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+<div class="progress-bar" id="progress"></div>
+
+<nav id="navbar">
+  <a href="../../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
+  <ul class="nav-links">
+    <li class="nav-item">
+      <a href="../../index.html">Home</a>
+      <ul class="dropdown">
+        <li><a href="../../index.html#service">About me</a></li>
+        <li><a href="../about/contact.html">Contact</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../travel/travel-map.html">Travel</a>
+      <ul class="dropdown">
+        <li><a href="../travel/travel-map.html">Travel Map</a></li>
+        <li><a href="../travel/volunteering.html">Volunteering</a></li>
+        <li><a href="../travel/flight-log.html">Flight Log</a></li>
+        <li><a href="../travel/dive-log.html">Dive Log</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="../photography/gallery.html">Photography</a>
+      <ul class="dropdown">
+        <li><a href="../photography/gallery.html">Gallery</a></li>
+        <li><a href="../photography/northern-lights.html">Northern Lights</a></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="ai-projects.html">Tech</a>
+      <ul class="dropdown">
+        <li><a href="ai-projects.html">AI Playground</a></li>
+        <li><a href="xr-reality-capture.html">XR &amp; Reality Capture</a></li>
+        <li><a href="flight-radar.html">Flight Radar</a></li>
+        <li><a href="3d-printing.html">3D Printing</a></li>
+        <li><a href="food-for-thought.html">Food for Thought</a></li>
+      </ul>
+    </li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-socials">
+      <a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener" aria-label="LinkedIn" class="nav-social-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener" aria-label="Instagram" class="nav-social-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+    </div>
+  </div>
+  <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<section id="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Tech</p>
+    <h1>XR &amp; Reality <span>Capture</span></h1>
+    <p class="hero-lead">Conference talks on bringing extended reality and 3D scanning into the manufacturing world, followed by a few of my own captures you can explore in 3D.</p>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+    <section class="xr-section" id="videos" aria-labelledby="videosTitle">
+      <div class="xr-head wow">
+        <span class="xr-label">01 · Talks</span>
+        <h2 id="videosTitle">XR in manufacturing</h2>
+        <p>Conference talks, demos and industry discussions with SynergyXR on reality capture and immersive technology at Grundfos.</p>
+      </div>
+    <div class="timeline">
+
+      <div class="timeline-item wow">
+        <div class="timeline-text">
+          <span class="video-location">Aarhus, Denmark &nbsp;·&nbsp; June 2023</span>
+          <h2>Discussing 3D Scanning with SynergyXR</h2>
+          <p>Jump in with myself, Jakob and Mads where we go over some of the best tools out there to leverage reality capture for the manufacturing industry.</p>
+        </div>
+        <div class="timeline-video">
+          <div class="video-wrap">
+            <iframe src="https://www.youtube.com/embed/7PIofyUpub0" title="Discussing 3D Scanning with SynergyXR" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item wow d1">
+        <div class="timeline-text">
+          <span class="video-location">Vienna, Austria &nbsp;·&nbsp; October 2023</span>
+          <h2>AWE Europe</h2>
+          <p>Our presentation from AWE Europe's Enterprise stage; Mads and I discuss real-world use cases of Reality Capture and SynergyXR in industrial applications.</p>
+        </div>
+        <div class="timeline-video">
+          <div class="video-wrap">
+            <iframe src="https://www.youtube.com/embed/HCgsgtzPAnQ" title="AWE Europe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item wow d2">
+        <div class="timeline-text">
+          <span class="video-location">Houston, US &nbsp;·&nbsp; August 2023</span>
+          <h2>Industrial Immersive</h2>
+          <p>Jakob and I go over how our collaboration with SynergyXR has led to bringing tangible value to a manufacturing giant like Grundfos.</p>
+        </div>
+        <div class="timeline-video">
+          <div class="video-wrap">
+            <iframe src="https://player.vimeo.com/video/864666368" title="Industrial Immersive" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </section>
+
+    <section class="xr-section" id="captures" aria-labelledby="capturesTitle">
+      <div class="xr-head wow">
+        <span class="xr-label">02 · Reality capture</span>
+        <h2 id="capturesTitle">Scans you can explore</h2>
+        <p>Photogrammetry and NeRF-based 3D scanning with Luma AI, turning real spaces and objects into interactive 3D scenes. Drag to look around.</p>
+      </div>
+      <div class="capture-list">
+  
+        <div class="capture-item wow">
+          <div class="capture-embed">
+            <iframe
+              src="https://lumalabs.ai/embed/bfda8f27-2d1f-4cef-8aff-be0c44dd4474?mode=sparkles&background=%23000000&color=%23ffffff&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false"
+              title="Luma capture 1" allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+  
+        <div class="capture-item wow d1">
+          <div class="capture-embed">
+            <iframe
+              src="https://lumalabs.ai/embed/fcf43500-9f5d-42b5-9e43-511529f202ec?mode=sparkles&background=%23000000&color=%23ffffff&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false"
+              title="Luma capture 2" allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+  
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-slim">
+    <span class="footer-copy">© <span class="js-year">2026</span> Carlos Ebrahim Vendrell. All rights reserved.</span>
+    <ul class="footer-socials">
+      <li><a href="https://linkedin.com/in/carlosevendrell" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a></li>
+      <li><a href="https://instagram.com/carlosevendrell" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('load', () => { const pl = document.getElementById('preloader'); if (pl) pl.classList.add('done'); });
+  const navbar = document.getElementById('navbar');
+  if (navbar) window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 40); }, { passive: true });
+  const hamburger = document.querySelector('.hamburger');
+  if (hamburger) {
+    hamburger.addEventListener('click', () => document.body.classList.toggle('nav-open'));
+    document.querySelectorAll('.nav-links a').forEach(l => l.addEventListener('click', () => document.body.classList.remove('nav-open')));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('nav-open'); });
+  }
+  const progress = document.getElementById('progress');
+  if (progress) window.addEventListener('scroll', () => { const t = document.documentElement.scrollHeight - window.innerHeight; if (t > 0) progress.style.width = (window.scrollY / t * 100) + '%'; }, { passive: true });
+  const ro = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } }), { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.wow').forEach(el => ro.observe(el));
+</script>
+<script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
+</body>
+</html>

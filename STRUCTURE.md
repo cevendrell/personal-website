@@ -27,8 +27,7 @@ Clean, organized folder structure for easy editing.
 
 #### **`/pages/tech/`** — Technology & professional work
 - `ai-projects.html` — AI projects & experiments
-- `xr-videos.html` — XR & video content
-- `reality-capture.html` — Reality capture work
+- `xr-reality-capture.html` — XR talks and reality capture scans (old `xr-videos.html` and `reality-capture.html` redirect here)
 
 ### `/css/` — Stylesheets
 - **style.css** — Main stylesheet (shared styles)

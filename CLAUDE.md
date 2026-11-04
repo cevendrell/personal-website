@@ -10,7 +10,7 @@ Static HTML site. No build step — edits to `.html` files are the final output.
 - `pages/about/` — about, contact
 - `pages/travel/` — travel-map, volunteering, flight-log, dive-log
 - `pages/photography/` — gallery, northern-lights
-- `pages/tech/` — ai-projects, xr-videos, reality-capture, 3d-printing
+- `pages/tech/` — ai-projects, xr-reality-capture, flight-radar, 3d-printing, food-for-thought
 
 ## Navigation
 All pages share the same `<nav id="navbar">` structure defined in `index.html`.
