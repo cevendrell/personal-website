@@ -583,8 +583,7 @@
 
     /* ── HOBBIES — bento of things I love; most link to a page on this site ── */
     .hob-head { text-align: center; margin-bottom: 3rem; }
-    .hob-kicker { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
-    .hob-head .melan-h2 { margin: 0.6rem 0 0.6rem; }
+    .hob-head .melan-h2 { margin: 0 0 0.6rem; }
     .hob-sub { color: var(--dim); font-size: 1rem; line-height: 1.7; }
     .hob-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 190px; gap: 14px; }
     .hob { --t: var(--accent); --mx: 50%; --my: 50%; position: relative; overflow: hidden; isolation: isolate;
@@ -612,10 +611,6 @@
     .hob:hover .hob-mark { opacity: 0.14; transform: rotate(-6deg) scale(1.04); }
     div.hob { cursor: default; }
     div.hob:hover { transform: none; }
-    .hob-also { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 1.6rem; }
-    .hob-also > span:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); margin-right: .4rem; }
-    .hob-chip { font-size: 0.84rem; color: var(--dim); padding: .45rem .9rem; border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.025); }
     @media (max-width: 900px) { .hob-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 170px; } }
     @media (max-width: 520px) {
       .hob-grid { gap: 10px; grid-auto-rows: 168px; }
@@ -1081,7 +1076,6 @@
 <section id="hobbies">
   <div class="hobbies-inner">
     <div class="hob-head wow">
-      <span class="hob-kicker">Off the clock</span>
       <h2 class="melan-h2">Other stuff I love</h2>
       <p class="hob-sub">Most of them ended up as a page on this site.</p>
     </div>
@@ -1123,19 +1117,11 @@
         <div><h3>Personal finance</h3><p>Investing, budgets and the long game.</p></div>
         <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg>
       </div>
-      <div class="hob wow d3" style="--t:#e8473b">
-        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span></div>
+      <div class="hob wow d3" style="--t:#9ca3af">
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4h16v10H4"/><g fill="currentColor" stroke="none"><rect x="4" y="4" width="4" height="5"/><rect x="12" y="4" width="4" height="5"/><rect x="8" y="9" width="4" height="5"/><rect x="16" y="9" width="4" height="5"/></g></svg></span></div>
         <div><h3>Motorsports</h3><p>Formula 1 weekends and anything with a grid.</p></div>
-        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4h16v10H4"/><g fill="currentColor" stroke="none"><rect x="4" y="4" width="4" height="5"/><rect x="12" y="4" width="4" height="5"/><rect x="8" y="9" width="4" height="5"/><rect x="16" y="9" width="4" height="5"/></g></svg>
       </div>
-    </div>
-
-    <div class="hob-also wow">
-      <span>Also</span>
-      <span class="hob-chip">Space</span>
-      <span class="hob-chip">Open water</span>
-      <span class="hob-chip">Reading</span>
-      <span class="hob-chip">Coffee</span>
     </div>
   </div>
 </section>
