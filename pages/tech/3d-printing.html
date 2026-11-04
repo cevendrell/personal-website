@@ -232,21 +232,36 @@
     .container { max-width: 1200px; margin: 0 auto; padding: 5rem 2rem 5rem; position: relative; z-index: 2; }
     .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; }
 
-    /* Light content section — dark hero → white body */
-    main {
-      position: relative; z-index: 2;
-      background: #ffffff;
-      --text: #16161a;
-      --dim: #4f5158;
-      --mute: #8a8b91;
-      --surface: #f5f5f2;
-      --line: rgba(0,0,0,0.12);
-      --bg: #ffffff;
-      --bg-elevated: #ececea;
-    }
+    /* Dark content area, so the toy box's print bed can melt into the page */
+    main { position: relative; z-index: 2; background: var(--bg); }
     /* Cream meta-link is invisible on white — recolor for the light section */
     main .design-meta-link { color: var(--fil-orange); }
-    main .design-meta-link:hover { color: #16161a; }
+    main .design-meta-link:hover { color: #fff; }
+
+    /* ── TOY BOX: designs as prints on a bed ── */
+    .toybox { position: relative; width: 100vw; margin-left: calc(50% - 50vw); height: clamp(420px, 72vh, 760px); margin-top: -1rem;
+      user-select: none; -webkit-user-select: none; }
+    .toybox canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: default;
+      -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); }
+    .toybox.hovering canvas { cursor: grab; }
+    .toybox.grabbing canvas { cursor: grabbing; }
+    .tb-loading[hidden], .tb-card[hidden] { display: none; }
+    .tb-loading { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255,255,255,0.55); font-size: 0.85rem; letter-spacing: 0.04em; pointer-events: none; }
+    .tb-card { position: absolute; right: max(1rem, calc(50vw - 600px + 2rem)); bottom: 1.5rem; width: min(330px, calc(100% - 2rem)); background: rgba(14,15,19,0.92); color: #ececea;
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; overflow: hidden; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      opacity: 0; transform: translateY(10px); transition: opacity .25s, transform .25s; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    .tb-card.open { opacity: 1; transform: none; }
+    .tb-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: #1a1b20; }
+    .tb-card-body { padding: 0.95rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .tb-card h3 { font-size: 1.02rem; font-weight: 700; color: #fff; }
+    .tb-card p { font-size: 0.82rem; line-height: 1.55; color: rgba(255,255,255,0.72); }
+    .tb-card a { align-self: flex-start; margin-top: 0.25rem; font-size: 0.8rem; font-weight: 700; color: #fff; background: var(--fil-orange); padding: 0.55rem 0.9rem; border-radius: 999px; }
+    .tb-close { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 2; width: 30px; height: 30px; border-radius: 50%; border: none; cursor: pointer;
+      background: rgba(0,0,0,0.55); color: #fff; font-size: 1.1rem; line-height: 1; }
+    .tb-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.4rem; margin-top: 0.4rem; }
+    .tb-list button { background: none; border: none; padding: 0.2rem 0; cursor: pointer; font: inherit; font-size: 0.85rem; color: var(--dim); border-bottom: 1px solid var(--line); }
+    .tb-list button:hover { color: var(--fil-orange); border-color: var(--fil-orange); }
+    @media (max-width: 560px) { .toybox { height: 72vh; } .tb-card { right: 0.6rem; bottom: 0.6rem; } .tb-card img { aspect-ratio: 2/1; } }
 
     /* ── TWO PAGES: designed / printed ── */
     .tp-tabs { display: flex; gap: 0.4rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
@@ -427,6 +442,12 @@
       .hero-cta-wrap { flex-direction: column; }
     }
   </style>
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  } }
+  </script>
 </head>
 <body>
 
@@ -443,6 +464,7 @@
   <a href="../../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
   <ul class="nav-links">
     <li class="nav-item"><a href="../../index.html">Home</a></li>
+    <li class="nav-item"><a href="../about/contact.html">Contact</a></li>
     <li class="nav-item">
       <a href="../travel/travel-map.html">Travel</a>
       <ul class="dropdown">
@@ -469,7 +491,6 @@
         <li><a href="../tech/food-for-thought.html">Food for Thought</a></li>
       </ul>
     </li>
-    <li class="nav-item"><a href="../about/contact.html">Contact</a></li>
   </ul>
   <div class="nav-right">
     <div class="nav-socials">
@@ -537,76 +558,18 @@
         <span class="tv-section-count">3 things</span>
       </div>
 
-      <div class="designs-grid">
-
-        <a class="design-card" href="https://www.thingiverse.com/thing:4713612" target="_blank" rel="noopener">
-          <div class="design-thumb">
-            <span class="design-badge">Design</span>
-            <img src="https://cdn.thingiverse.com/assets/0c/52/89/3d/7b/IMG_0170.jpg" alt="Suspension Bridge Phone Stand" loading="lazy"
-                 onerror="this.style.display='none'">
-            <div class="design-overlay">
-              <span class="design-overlay-btn">
-                View on Thingiverse
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </span>
-            </div>
-          </div>
-          <div class="design-body">
-            <h3 class="design-title">Suspension Bridge Phone Stand</h3>
-            <p class="design-desc">A phone stand modeled after the Golden Gate Bridge, with a little design freedom for the missing details. Multi-part print: the roads click onto the main frame and can be printed in a contrasting colour for a realistic feel.</p>
-            <div class="design-meta">
-              <span class="design-meta-id">thing:4713612</span>
-              <span class="design-meta-link">Open ↗</span>
-            </div>
-          </div>
-        </a>
-
-        <a class="design-card" href="https://www.thingiverse.com/thing:4706897" target="_blank" rel="noopener">
-          <div class="design-thumb">
-            <span class="design-badge">Design</span>
-            <img src="https://cdn.thingiverse.com/assets/d7/fe/3b/87/a2/Nikon_55mm.jpeg" alt="Nikon Lens Cap Holder" loading="lazy"
-                 onerror="this.style.display='none'">
-            <div class="design-overlay">
-              <span class="design-overlay-btn">
-                View on Thingiverse
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </span>
-            </div>
-          </div>
-          <div class="design-body">
-            <h3 class="design-title">Nikon Lens Cap Holder</h3>
-            <p class="design-desc">A scaled remix of the popular 52 mm lens cap holder, relabeled for 55 mm and 58 mm caps so it matches the lens diameters I actually shoot with.</p>
-            <div class="design-meta">
-              <span class="design-meta-id">thing:4706897</span>
-              <span class="design-meta-link">Open ↗</span>
-            </div>
-          </div>
-        </a>
-
-        <a class="design-card" href="https://www.thingiverse.com/thing:4706807" target="_blank" rel="noopener">
-          <div class="design-thumb">
-            <span class="design-badge">Design</span>
-            <img src="https://cdn.thingiverse.com/assets/c4/e6/fb/a3/b4/KobeKeyringPicture.jpg" alt="Kobe Bryant Keyring" loading="lazy"
-                 onerror="this.style.display='none'">
-            <div class="design-overlay">
-              <span class="design-overlay-btn">
-                View on Thingiverse
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </span>
-            </div>
-          </div>
-          <div class="design-body">
-            <h3 class="design-title">Kobe Bryant Keyring</h3>
-            <p class="design-desc">Two-part keyring with a tight, glue-friendly fit so the silhouette can be printed in contrasting colours. The inner part scales to ~98 % to slot cleanly into the outer.</p>
-            <div class="design-meta">
-              <span class="design-meta-id">thing:4706807</span>
-              <span class="design-meta-link">Open ↗</span>
-            </div>
-          </div>
-        </a>
-
+      <!-- Toy box: the designs as 3D prints on a print bed. Drag to throw, click for details. -->
+      <div class="toybox" id="toybox">
+        <canvas aria-label="My 3D printed designs on a print bed. They can be picked up and thrown; clicking one shows its details."></canvas>
+        <div class="tb-loading">Heating the bed…</div>
+        <div class="tb-card" hidden role="dialog" aria-label="Design details">
+          <button class="tb-close" type="button" aria-label="Close">×</button>
+          <img alt="">
+          <div class="tb-card-body"><h3></h3><p></p><a target="_blank" rel="noopener">View on Thingiverse ↗</a></div>
+        </div>
       </div>
-    </section>
+      <div class="tb-list"><button type="button" data-thing="bridge">Suspension Bridge Phone Stand</button><button type="button" data-thing="nikon">Nikon Lens Cap Holder</button><button type="button" data-thing="kobe">Kobe Bryant Keyring</button></div>
+</section>
 
     <!-- ══ PRINTED (makes of other people's designs) ══ -->
     <section class="tv-section tp-panel" id="printed" role="tabpanel" aria-labelledby="tabPrinted" hidden>
@@ -899,6 +862,32 @@
     addEventListener('hashchange', () => show(location.hash.slice(1)));
     show(location.hash.slice(1));
   })();
+</script>
+<script type="module">
+  import { mountToybox } from './toybox.js';
+  const THINGS = {
+  "bridge": {
+    "url": "https://www.thingiverse.com/thing:4713612",
+    "img": "https://cdn.thingiverse.com/assets/0c/52/89/3d/7b/IMG_0170.jpg",
+    "title": "Suspension Bridge Phone Stand",
+    "desc": "A phone stand modeled after the Golden Gate Bridge, with a little design freedom for the missing details. Multi-part print: the roads click onto the main frame and can be printed in a contrasting colour for a realistic feel."
+  },
+  "nikon": {
+    "url": "https://www.thingiverse.com/thing:4706897",
+    "img": "https://cdn.thingiverse.com/assets/d7/fe/3b/87/a2/Nikon_55mm.jpeg",
+    "title": "Nikon Lens Cap Holder",
+    "desc": "A scaled remix of the popular 52 mm lens cap holder, relabeled for 55 mm and 58 mm caps so it matches the lens diameters I actually shoot with."
+  },
+  "kobe": {
+    "url": "https://www.thingiverse.com/thing:4706807",
+    "img": "https://cdn.thingiverse.com/assets/c4/e6/fb/a3/b4/KobeKeyringPicture.jpg",
+    "title": "Kobe Bryant Keyring",
+    "desc": "Two-part keyring with a tight, glue-friendly fit so the silhouette can be printed in contrasting colours. The inner part scales to ~98 % to slot cleanly into the outer."
+  }
+};
+  // Parts with a thing open its card when clicked; the last two are unpublished props, just for throwing around.
+  const PARTS = [{"file": "Bridge_Phone_Stand.stl", "thing": "bridge", "color": "#f05a18"}, {"file": "Bridge_Phone_Stand_Road.stl", "thing": "bridge", "color": "#1a8fd4"}, {"file": "Nikon_55mm.stl", "thing": "nikon", "color": "#cc18b8"}, {"file": "KobeKeyringPart1.stl", "thing": "kobe", "color": "#e8c800"}, {"file": "KobeKeyringPart2.stl", "thing": "kobe", "color": "#2a2b31"}, {"file": "Lugia_Garmin_Mount.stl", "thing": null, "color": "#2fa36b"}, {"file": "Curtain_Holder.stl", "thing": null, "color": "#e8dcc4"}];
+  mountToybox(document.getElementById('toybox'), THINGS, PARTS);
 </script>
 <script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body>
