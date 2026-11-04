@@ -12,6 +12,10 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Grundfos Pump Simulator | Carlos Ebrahim Vendrell">
   <meta name="twitter:description" content="Interactive 3D teardowns of five Grundfos pumps, from a 3 W circulator to a 37 kW multistage pump.">
+  <meta property="og:image" content="https://www.cevendrell.com/media/og/pump-simulator.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:image" content="https://www.cevendrell.com/media/og/pump-simulator.jpg">
   <title>Grundfos Pump Simulator - Carlos Ebrahim Vendrell</title>
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -200,6 +204,12 @@
 
     /* ── FOOTER: Grundfos-style dark blue ── */
     footer { background: var(--navy); }
+    .hero-note { margin-top: .9rem; font-size: .8rem; color: rgba(255,255,255,.72); max-width: 70ch; }
+    .hero-note a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
+    .disclaimer-band { background: var(--navy, #05060f); border-top: 1px solid rgba(255,255,255,0.06); }
+    .disclaimer-band .footer-slim { display: block; }
+    .disclaimer-band p { font-size: .8rem; line-height: 1.7; color: rgba(255,255,255,.72); max-width: 110ch; margin: 0; }
+    .disclaimer-band b { color: #fff; }
     .footer-slim { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2.5rem; display: flex; justify-content: space-between; align-items: center; }
     .footer-copy { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
     .footer-socials { display: flex; gap: 8px; list-style: none; padding: 0; align-items: center; }
@@ -314,13 +324,7 @@
 <nav id="navbar">
   <a href="../../index.html" class="nav-logo">Carlos Ebrahim Vendrell</a>
   <ul class="nav-links">
-    <li class="nav-item">
-      <a href="../../index.html">Home</a>
-      <ul class="dropdown">
-        <li><a href="../../index.html#service">About me</a></li>
-        <li><a href="../about/contact.html">Contact</a></li>
-      </ul>
-    </li>
+    <li class="nav-item"><a href="../../index.html">Home</a></li>
     <li class="nav-item">
       <a href="../travel/travel-map.html">Travel</a>
       <ul class="dropdown">
@@ -340,13 +344,14 @@
     <li class="nav-item">
       <a href="../tech/ai-projects.html">Tech</a>
       <ul class="dropdown">
-        <li><a href="../tech/ai-projects.html">AI Playground</a></li>
+        <li><a href="../tech/ai-projects.html">AI Projects</a></li>
         <li><a href="../tech/xr-reality-capture.html">XR &amp; Reality Capture</a></li>
         <li><a href="../tech/flight-radar.html">Flight Radar</a></li>
         <li><a href="../tech/3d-printing.html">3D Printing</a></li>
         <li><a href="../tech/food-for-thought.html">Food for Thought</a></li>
       </ul>
     </li>
+    <li class="nav-item"><a href="../about/contact.html">Contact</a></li>
   </ul>
   <div class="nav-right">
     <div class="nav-socials">
@@ -367,6 +372,7 @@
   <div class="eyebrow" id="heroEyebrow">Tech · Interactive teardown</div>
   <h1 id="heroTitle">Grundfos pumps, taken apart</h1>
   <p id="heroLede"></p>
+  <p class="hero-note">Informative only. Simplified models and figures, not trusted engineering data. <a href="#disclaimer">Disclaimer</a></p>
   <div class="ptabs" id="ptabs" role="tablist" aria-label="Pump">
     <button class="ptab" role="tab" data-prod="magna3" aria-selected="true"><b>MAGNA3</b><span>Building circulator</span></button>
     <button class="ptab" role="tab" data-prod="alpha2" aria-selected="false"><b>ALPHA2</b><span>House circulator</span></button>
@@ -422,6 +428,12 @@
 </section>
 
 <section class="explain" id="explainBody"></section>
+
+<section class="disclaimer-band" id="disclaimer">
+  <div class="footer-slim">
+    <p><b>Disclaimer.</b> This simulator is an independent, personal project made for information and learning. It is not an official Grundfos tool, has not been reviewed or approved by Grundfos, and does not represent Grundfos’ views. The 3D models, curves, physics and figures are simplified approximations and may be incomplete or wrong. Do not use it for pump selection, sizing, design, commissioning, troubleshooting or any other engineering or commercial decision. For that, use official Grundfos documentation, Grundfos Product Center and qualified engineers. Provided as is, without any warranty.</p>
+  </div>
+</section>
 
 <footer>
   <div class="footer-slim">
