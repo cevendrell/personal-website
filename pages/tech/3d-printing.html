@@ -244,6 +244,16 @@
     main .design-meta-link { color: var(--fil-orange); }
     main .design-meta-link:hover { color: #16161a; }
 
+    /* ── TWO PAGES: designed / printed ── */
+    .tp-tabs { display: flex; gap: 0.4rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+    .tp-tab { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.85rem 0.2rem; margin-right: 1.4rem; margin-bottom: -1px;
+      font-size: 0.98rem; font-weight: 600; color: var(--mute); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
+    .tp-tab span { font-size: 0.72rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--mute); }
+    .tp-tab:hover { color: var(--text); }
+    .tp-tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--fil-orange); }
+    .tp-tab[aria-selected="true"] span { color: #fff; background: var(--fil-orange); border-color: var(--fil-orange); }
+    .tp-panel[hidden] { display: none; }
+
     /* ── SECTION ── */
     .tv-section { margin-bottom: 4rem; }
     .tv-section-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
@@ -489,15 +499,15 @@
     <div class="hero-content">
       <p class="hero-eyebrow">Tech</p>
       <h1>3D <span>Printing</span></h1>
-      <p class="hero-lead">Every model I've designed and uploaded to Thingiverse: small functional prints and a few experiments. Click any tile to open the design page, view photos, or download the STLs.</p>
+      <p class="hero-lead">The models I've designed and published on Thingiverse, and the ones I've printed from other makers. Click any tile to open it on Thingiverse.</p>
       <div class="hero-stats">
         <div>
           <div class="hero-stat-num">3</div>
           <div class="hero-stat-lbl">Original designs<br>published</div>
         </div>
         <div>
-          <div class="hero-stat-num">FDM</div>
-          <div class="hero-stat-lbl">Printer type<br>PLA · 0.2 mm</div>
+          <div class="hero-stat-num">10</div>
+          <div class="hero-stat-lbl">Makes<br>printed</div>
         </div>
         <div>
           <div class="hero-stat-num">2020</div>
@@ -516,10 +526,15 @@
 <main>
   <div class="container">
 
-    <!-- ══ DESIGNS ══ -->
-    <section class="tv-section wow" id="designs">
+    <nav class="tp-tabs" role="tablist" aria-label="3D printing pages">
+      <a class="tp-tab" role="tab" id="tabDesigned" href="#designed" aria-controls="designed" aria-selected="true">Models I've designed <span>3</span></a>
+      <a class="tp-tab" role="tab" id="tabPrinted" href="#printed" aria-controls="printed" aria-selected="false">Models I've printed <span>10</span></a>
+    </nav>
+
+    <!-- ══ DESIGNED ══ -->
+    <section class="tv-section tp-panel" id="designed" role="tabpanel" aria-labelledby="tabDesigned">
       <div class="tv-section-head">
-        <h2>Models I've made</h2>
+        <h2>Models I've designed</h2>
         <span class="tv-section-count">3 things</span>
       </div>
 
@@ -594,6 +609,217 @@
       </div>
     </section>
 
+    <!-- ══ PRINTED (makes of other people's designs) ══ -->
+    <section class="tv-section tp-panel" id="printed" role="tabpanel" aria-labelledby="tabPrinted" hidden>
+      <div class="tv-section-head">
+        <h2>Models I've printed</h2>
+        <span class="tv-section-count">10 makes</span>
+      </div>
+      <div class="designs-grid">
+        <a class="design-card" href="https://www.thingiverse.com/make:885730" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/b8/11/c5/ef/2f/TintinRocket.png" alt="Tintin rocket" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Tintin rocket</h3>
+            <p class="design-desc">Printed from the design by jorgenp on Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">by jorgenp</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:885729" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/c0/c0/a4/9d/fc/vise.jpg" alt="Yet Another Machine Vise" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Yet Another Machine Vise</h3>
+            <p class="design-desc">Printed from the design by TheGoofy on Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">by TheGoofy</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:885726" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/0b/48/e6/90/20/Bench_Blue.jpeg" alt="#3DBenchy, in blue" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">#3DBenchy, in blue</h3>
+            <p class="design-desc">Printed from the design by CreativeTools.se on Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">by CreativeTools.se</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:884776" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/be/a5/c6/8f/50/Nikon_55mm.jpeg" alt="Nikon Lens Cap Holder" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Nikon Lens Cap Holder</h3>
+            <p class="design-desc">A print of my own design, the one in Models I've designed.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">My design</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:884745" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/e8/1e/0d/b6/08/Capo.png" alt="Guitar capo" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Guitar capo</h3>
+            <p class="design-desc">Printed from a design that has since been taken down from Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">Original removed</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:884742" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/f1/45/17/ba/3d/sander2.png" alt="Customizable Sanding Stick" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Customizable Sanding Stick</h3>
+            <p class="design-desc">Printed from the design by mightynozzle on Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">by mightynozzle</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:884741" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/8f/d2/f6/71/96/BabyYoda.png" alt="Baby Yoda" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Baby Yoda</h3>
+            <p class="design-desc">Printed from the design by MarVin_Miniatures on Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">by MarVin_Miniatures</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:884737" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/72/8d/90/e0/40/planetarygears.png" alt="Gear Bearing" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Gear Bearing</h3>
+            <p class="design-desc">Printed from the design by emmett on Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">by emmett</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:884735" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/81/50/be/6f/da/TintinRocket.png" alt="Tintin rocket, first print" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">Tintin rocket, first print</h3>
+            <p class="design-desc">Printed from the design by jorgenp on Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">by jorgenp</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+        <a class="design-card" href="https://www.thingiverse.com/make:884730" target="_blank" rel="noopener">
+          <div class="design-thumb">
+            <span class="design-badge">Make</span>
+            <img src="https://cdn.thingiverse.com/assets/c1/e7/c8/16/b9/Benchy.png" alt="#3DBenchy" loading="lazy" onerror="this.style.display='none'">
+            <div class="design-overlay">
+              <span class="design-overlay-btn">
+                View on Thingiverse
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="design-body">
+            <h3 class="design-title">#3DBenchy</h3>
+            <p class="design-desc">Printed from the design by CreativeTools.se on Thingiverse.</p>
+            <div class="design-meta">
+              <span class="design-meta-id">by CreativeTools.se</span>
+              <span class="design-meta-link">Open ↗</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
   </div>
 </main>
 
@@ -660,6 +886,20 @@
     el.style.transitionDelay = (i * 0.06) + 's';
     cardObserver.observe(el);
   });
+</script>
+<script>
+  // Two pages in one: #designed and #printed, so each has its own link
+  (function(){
+    const tabs = [...document.querySelectorAll('.tp-tab')];
+    function show(id, focus){
+      if (!document.getElementById(id)) id = 'designed';
+      tabs.forEach(t => { const on = t.getAttribute('aria-controls') === id; t.setAttribute('aria-selected', on); document.getElementById(t.getAttribute('aria-controls')).hidden = !on; if (on && focus) t.focus(); });
+      document.querySelectorAll('#' + id + ' .design-card').forEach(c => c.classList.add('visible'));
+    }
+    tabs.forEach(t => t.addEventListener('click', e => { e.preventDefault(); const id = t.getAttribute('aria-controls'); history.replaceState(null, '', '#' + id); show(id); }));
+    addEventListener('hashchange', () => show(location.hash.slice(1)));
+    show(location.hash.slice(1));
+  })();
 </script>
 <script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body>
