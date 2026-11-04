@@ -581,141 +581,58 @@
     }
     .hobbies-inner { max-width: 1140px; margin: 0 auto; padding: 0 30px; }
 
-    /* ══════════════════════════════════════════════════════════════════
-       ══ HOBBY REEL — vertical 3D picker cylinder                     ══
-       ══   Hobbies are cards arranged around the surface of an        ══
-       ══   invisible cylinder. Drag / scroll to rotate it; the card   ══
-       ══   facing front is "in focus" and gets the colour glow.       ══
-       ══   Inspired by Vegas slot reels, iOS pickers, vinyl B-sides.  ══
-       ══════════════════════════════════════════════════════════════════ */
-    .reel-stage {
-      position: relative; height: 480px; margin-top: 2.5rem;
-      perspective: 1400px; perspective-origin: 50% 50%;
-      cursor: grab; user-select: none; touch-action: none;
-      -webkit-user-select: none;
-      overflow: hidden;
-    }
-    .reel-stage:active { cursor: grabbing; }
-
-    /* Soft top/bottom vignette so cards rotating away fade out instead of clipping */
-    .reel-stage::before, .reel-stage::after {
-      content: ''; position: absolute; left: 0; right: 0; height: 32%;
-      pointer-events: none; z-index: 4;
-    }
-    .reel-stage::before {
-      top: 0;
-      background: linear-gradient(to bottom, var(--bg) 0%, rgba(8,9,14,0.85) 30%, transparent 100%);
-    }
-    .reel-stage::after {
-      bottom: 0;
-      background: linear-gradient(to top, var(--navy) 0%, rgba(5,6,15,0.85) 30%, transparent 100%);
-    }
-
-    /* The two horizontal rails that bracket the focused card */
-    .reel-rails {
-      position: absolute; top: 50%; left: 50%;
-      width: min(360px, 86%); height: 84px;
-      transform: translate(-50%, -50%);
-      border-top:    1px solid rgba(232,220,196,0.18);
-      border-bottom: 1px solid rgba(232,220,196,0.18);
-      pointer-events: none; z-index: 3;
-    }
-    .reel-rails::before, .reel-rails::after {
-      content: ''; position: absolute; width: 14px; height: 14px;
-      border: 1px solid var(--accent); border-radius: 50%;
-      background: rgba(232,220,196,0.1);
-      box-shadow: 0 0 14px rgba(232,220,196,0.3);
-    }
-    .reel-rails::before { left: -7px; top: 50%; transform: translateY(-50%); }
-    .reel-rails::after  { right: -7px; top: 50%; transform: translateY(-50%); }
-
-    .reel-scene {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      transform-style: preserve-3d;
-    }
-
-    .reel-cylinder {
-      position: relative;
-      width: min(340px, 80vw); height: 72px;
-      transform-style: preserve-3d;
-      transform: rotateX(0deg);
-      will-change: transform;
-    }
-
-    .reel-card {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      gap: 0.9rem; padding: 0 1.5rem;
-      border-radius: 16px;
-      background:
-        radial-gradient(ellipse at 36% 22%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 50%, transparent 70%),
-        linear-gradient(135deg, rgba(16,18,36,0.85), rgba(5,6,18,0.94));
-      backdrop-filter: blur(8px) saturate(160%);
-      -webkit-backdrop-filter: blur(8px) saturate(160%);
+    /* ── HOBBIES — bento of things I love; most link to a page on this site ── */
+    .hob-head { text-align: center; margin-bottom: 3rem; }
+    .hob-kicker { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+    .hob-head .melan-h2 { margin: 0.6rem 0 0.6rem; }
+    .hob-sub { color: var(--dim); font-size: 1rem; line-height: 1.7; }
+    .hob-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 200px; gap: 14px;
+      grid-template-areas: "av av dv dv" "av av sk pr" "ai ai rn rn"; }
+    .hob { --t: var(--accent); --mx: 50%; --my: 50%; position: relative; overflow: hidden; isolation: isolate;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 1.4rem 1.5rem;
+      border-radius: 18px; color: var(--text); text-decoration: none;
+      background: linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));
       border: 1px solid rgba(255,255,255,0.08);
-      border-top: 1px solid rgba(255,255,255,0.18);
-      box-shadow:
-        0 8px 24px rgba(0,0,0,0.5),
-        0 1px 0 rgba(255,255,255,0.06) inset;
-      backface-visibility: hidden;
-      transition: background 0.35s, border-color 0.35s;
-      cursor: pointer;
-      font-family: inherit;
+      transition: border-color .35s, transform .35s cubic-bezier(.2,.7,.2,1); }
+    .hob::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: 0; transition: opacity .35s;
+      background: radial-gradient(420px circle at var(--mx) var(--my), color-mix(in srgb, var(--t) 22%, transparent), transparent 60%); }
+    .hob:hover { border-color: color-mix(in srgb, var(--t) 45%, transparent); transform: translateY(-3px); }
+    .hob:hover::before { opacity: 1; }
+    .hob:focus-visible { outline: 2px solid var(--t); outline-offset: 3px; }
+    .hob-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .hob-ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--t);
+      background: color-mix(in srgb, var(--t) 12%, transparent); border: 1px solid color-mix(in srgb, var(--t) 25%, transparent); }
+    .hob-ico svg { width: 22px; height: 22px; }
+    .hob-go { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--mute);
+      display: inline-flex; align-items: center; gap: .35rem; transition: color .3s, transform .3s; }
+    .hob:hover .hob-go { color: var(--t); transform: translate(2px,-2px); }
+    .hob h3 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; color: #fff; margin-bottom: .3rem; }
+    .hob p { font-size: 0.88rem; color: var(--dim); line-height: 1.6; max-width: 34ch; }
+    .hob-mark { position: absolute; right: -18px; bottom: -22px; width: 150px; height: 150px; z-index: -1;
+      color: var(--t); opacity: 0.07; transition: opacity .4s, transform .6s cubic-bezier(.2,.7,.2,1); }
+    .hob:hover .hob-mark { opacity: 0.14; transform: rotate(-6deg) scale(1.04); }
+    .hob--av { grid-area: av; padding: 1.8rem 1.9rem; }
+    .hob--av h3 { font-size: clamp(1.6rem, 2.6vw, 2.2rem); }
+    .hob--av .hob-mark { width: 260px; height: 260px; right: -30px; bottom: -40px; }
+    .hob-arc { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+    .hob-arc path { stroke: var(--t); stroke-width: 1.2; stroke-dasharray: 3 7; fill: none; opacity: .35; animation: hobDash 14s linear infinite; }
+    @keyframes hobDash { to { stroke-dashoffset: -200; } }
+    .hob--dv { grid-area: dv; } .hob--sk { grid-area: sk; } .hob--pr { grid-area: pr; } .hob--ai { grid-area: ai; } .hob--rn { grid-area: rn; }
+    .hob-also { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 1.6rem; }
+    .hob-also > span:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); margin-right: .4rem; }
+    .hob-chip { font-size: 0.84rem; color: var(--dim); padding: .45rem .9rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.025); }
+    @media (max-width: 900px) {
+      .hob-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 180px; grid-template-areas: "av av" "av av" "dv dv" "sk pr" "ai rn"; }
     }
-    .reel-card .card-icon {
-      font-size: 1.65rem;
-      filter: grayscale(0.3) drop-shadow(0 1px 2px rgba(0,0,0,0.6));
-      transition: filter 0.3s, transform 0.3s;
+    @media (max-width: 560px) {
+      .hob-grid { grid-template-columns: 1fr; grid-auto-rows: auto; grid-template-areas: "av" "dv" "sk" "pr" "ai" "rn"; }
+      .hob { min-height: 150px; gap: 1.4rem; }
+      .hob--av { min-height: 260px; }
     }
-    .reel-card .card-label {
-      font-size: 1.05rem; font-weight: 500; color: var(--dim);
-      letter-spacing: 0.01em; white-space: nowrap;
-      transition: color 0.3s, letter-spacing 0.3s;
-    }
+    @media (prefers-reduced-motion: reduce) { .hob-arc path { animation: none; } }
 
-    /* Focused card — the one currently sitting between the rails */
-    .reel-card.focused {
-      background:
-        radial-gradient(ellipse at 36% 22%, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 50%, transparent 70%),
-        linear-gradient(135deg, rgba(22,26,52,0.88), rgba(8,10,28,0.96));
-      border-color: var(--card-color, var(--accent));
-      border-top-color: rgba(255,255,255,0.28);
-      box-shadow:
-        0 0 0 1.5px var(--card-color, var(--accent)) inset,
-        0 18px 50px -10px var(--card-glow, rgba(232,220,196,0.5)),
-        0 8px 24px rgba(0,0,0,0.55),
-        0 1px 0 rgba(255,255,255,0.08) inset;
-    }
-    .reel-card.focused .card-icon {
-      filter: grayscale(0) drop-shadow(0 0 8px var(--card-color, var(--accent)));
-      transform: scale(1.12);
-    }
-    .reel-card.focused .card-label {
-      color: #fff; font-weight: 600; letter-spacing: 0.04em;
-    }
-
-    .reel-card[data-color="travel"] { --card-color: var(--c-travel); --card-glow: rgba(106,141,181,0.55); }
-    .reel-card[data-color="photo"]  { --card-color: var(--c-photo);  --card-glow: rgba(200,120,74,0.55); }
-    .reel-card[data-color="tech"]   { --card-color: var(--c-tech);   --card-glow: rgba(106,141,181,0.55); }
-    .reel-card[data-color="accent"] { --card-color: var(--accent);   --card-glow: rgba(232,220,196,0.5); }
-
-    /* Drag hint */
-    .reel-hint {
-      position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%);
-      color: var(--mute); font-size: 0.6rem; letter-spacing: 0.18em;
-      font-family: 'JetBrains Mono', monospace; text-transform: uppercase;
-      opacity: 0.55; pointer-events: none; z-index: 5;
-      transition: opacity 0.4s;
-    }
-    .reel-hint::before {
-      content: '◆'; margin-right: 0.45rem; color: var(--accent);
-      animation: hintBlink 2s ease-in-out infinite;
-    }
-    @keyframes hintBlink { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
-    .reel-stage.has-spun .reel-hint { opacity: 0; }
-
-    /* ── FOOTER — slim, copyright + socials only ── */
+        /* ── FOOTER — slim, copyright + socials only ── */
     footer { background: var(--navy); position: relative; z-index: 2; }
     .footer-slim {
       max-width: 1140px; margin: 0 auto; padding: 24px 30px;
@@ -740,6 +657,8 @@
     .d2 { transition-delay: 0.2s; }
     .d3 { transition-delay: 0.3s; }
     .d4 { transition-delay: 0.4s; }
+    .hob.wow { transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1), border-color .35s; }
+    .hob.wow.visible:hover { transform: translateY(-3px); transition-delay: 0s; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 960px) {
@@ -756,7 +675,6 @@
       .career-img-header { gap: 0.5rem; }
       .portfolio_row_top, .portfolio_row_bottom { grid-template-columns: 1fr; }
       .portfolio_row_top .portfolio_thumb { height: 240px; }
-      .reel-stage { height: 420px; }
     }
     @media (max-width: 768px) {
       /* ── Hero — stack the headshot ABOVE the text (not faded behind it). ── */
@@ -810,12 +728,6 @@
       .home-thumb h1 { font-size: 2.5rem; }
       .home-tagline { white-space: normal; font-size: 0.88rem; }
       .cta-wrap { flex-direction: column; }
-      .reel-stage { height: 380px; }
-      .reel-cylinder { height: 64px; }
-      .reel-rails { width: 88%; height: 76px; }
-      .reel-card { padding: 0 1rem; gap: 0.7rem; border-radius: 14px; }
-      .reel-card .card-icon { font-size: 1.4rem; }
-      .reel-card .card-label { font-size: 0.95rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -1171,34 +1083,57 @@
   </div>
 </div>
 
-<!-- ── HOBBIES (Melan section style + rotating wheel) ── -->
+<!-- ── HOBBIES — bento grid ── -->
 <section id="hobbies">
   <div class="hobbies-inner">
-    <h2 class="melan-h2 wow">Other stuff I love</h2>
+    <div class="hob-head wow">
+      <span class="hob-kicker">Off the clock</span>
+      <h2 class="melan-h2">Other stuff I love</h2>
+      <p class="hob-sub">Most of them ended up as a page on this site.</p>
+    </div>
 
-    <!-- 3-D vertical scroll reel: hobbies are arranged around the surface of
-         an invisible cylinder. Drag or scroll vertically to rotate it; the
-         card sitting between the two horizontal rails is "in focus". -->
-    <div class="reel-stage wow d2" id="reelStage" style="margin-top:2rem;">
-      <div class="reel-rails" aria-hidden="true"></div>
-      <div class="reel-scene">
-        <div class="reel-cylinder" id="reelCylinder">
-          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">✈</span><span class="card-label">Aviation</span></button>
-          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">🏎</span><span class="card-label">Formula 1</span></button>
-          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🔭</span><span class="card-label">Astronomy</span></button>
-          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">🤿</span><span class="card-label">Scuba Diving</span></button>
-          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">📈</span><span class="card-label">Investing</span></button>
-          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">🖨</span><span class="card-label">3D Printing</span></button>
-          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🤖</span><span class="card-label">AI &amp; ML</span></button>
-          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">🌌</span><span class="card-label">Space</span></button>
-          <button class="reel-card" data-color="travel" type="button"><span class="card-icon">🏃</span><span class="card-label">Running</span></button>
-          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">🚴</span><span class="card-label">Cycling</span></button>
-          <button class="reel-card" data-color="photo"  type="button"><span class="card-icon">📚</span><span class="card-label">Reading</span></button>
-          <button class="reel-card" data-color="accent" type="button"><span class="card-icon">☕</span><span class="card-label">Coffee</span></button>
-          <button class="reel-card" data-color="tech"   type="button"><span class="card-icon">🌊</span><span class="card-label">Open Water</span></button>
-        </div>
-      </div>
-      <div class="reel-hint">Scroll or drag to spin</div>
+    <div class="hob-grid">
+      <a class="hob hob--av wow d0" style="--t:var(--c-travel)" href="pages/tech/flight-radar.html">
+        <svg class="hob-arc" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true"><path d="M-20 330 Q 200 40 430 210"/></svg>
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span><span class="hob-go">Flight radar →</span></div>
+        <div><h3>Aviation</h3><p>A rooftop antenna in Aarhus and a live radar of the sky above it.</p></div>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+      </a>
+      <a class="hob hob--dv wow d1" style="--t:#3fb6c8" href="pages/travel/dive-log.html">
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></span><span class="hob-go">Dive log →</span></div>
+        <div><h3>Scuba diving</h3><p>Every dive logged, with depth, time and place.</p></div>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>
+      </a>
+      <a class="hob hob--sk wow d2" style="--t:#a78bfa" href="pages/photography/northern-lights.html">
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M19 3v4M17 5h4"/></svg></span><span class="hob-go">Aurora →</span></div>
+        <div><h3>Astronomy</h3><p>Dark skies and northern lights.</p></div>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M19 3v4M17 5h4"/></svg>
+      </a>
+      <a class="hob hob--pr wow d3" style="--t:var(--c-photo)" href="pages/tech/3d-printing.html">
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg></span><span class="hob-go">Prints →</span></div>
+        <div><h3>3D printing</h3><p>Things I have designed and printed.</p></div>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg>
+      </a>
+      <a class="hob hob--ai wow d3" style="--t:var(--accent)" href="pages/tech/ai-projects.html">
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg></span><span class="hob-go">Playground →</span></div>
+        <div><h3>AI &amp; ML</h3><p>Experiments, simulators and games, all running in the browser.</p></div>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>
+      </a>
+      <a class="hob hob--rn wow d3" style="--t:#fc5200" href="https://www.strava.com/athletes/22414565" target="_blank" rel="noopener">
+        <div class="hob-top"><span class="hob-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg></span><span class="hob-go">Strava ↗</span></div>
+        <div><h3>Running &amp; cycling</h3><p>Training lives on Strava.</p></div>
+        <svg class="hob-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+      </a>
+    </div>
+
+    <div class="hob-also wow">
+      <span>Also</span>
+      <span class="hob-chip">Formula 1</span>
+      <span class="hob-chip">Space</span>
+      <span class="hob-chip">Open water</span>
+      <span class="hob-chip">Investing</span>
+      <span class="hob-chip">Reading</span>
+      <span class="hob-chip">Coffee</span>
     </div>
   </div>
 </section>
@@ -1289,159 +1224,12 @@
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.wow').forEach(el => revealObserver.observe(el));
 
-  /* ── Hobby reel (3D vertical picker cylinder) ── */
-  (function initHobbyReel() {
-    const stage    = document.getElementById('reelStage');
-    const cylinder = document.getElementById('reelCylinder');
-    if (!stage || !cylinder) return;
-
-    const cards = Array.from(cylinder.querySelectorAll('.reel-card'));
-    const N = cards.length;
-    const STEP = 360 / N;                 // degrees between adjacent cards
-    // Radius so card faces sit "behind" the cylinder surface at the right
-    // depth. We use the *visible* cylinder height (CSS-controlled) as the
-    // chord length between adjacent cards; the radius then falls out of
-    // basic trig: chord = 2 R sin(STEP/2).
-    function getRadius() {
-      const h = cylinder.getBoundingClientRect().height;
-      return h / (2 * Math.sin((STEP * Math.PI / 180) / 2));
-    }
-
-    // Place each card at its angular slot around the cylinder.
-    function placeCards() {
-      const R = getRadius();
-      cards.forEach((card, i) => {
-        const a = i * STEP;
-        card.style.transform =
-          `rotateX(${a}deg) translateZ(${R.toFixed(2)}px)`;
-      });
-    }
-    placeCards();
-    window.addEventListener('resize', placeCards);
-
-    // ── State ──
-    let rotation = 0;                     // degrees; positive = scrolling DOWN brings later cards forward
-    let velocity = 0;                     // degrees per second
-    let isDragging = false, didDrag = false;
-    let lastY = 0, lastT = 0, lastFrame = performance.now();
-    let idle = true, idleTO = null, inView = false;
-
-    const io = new IntersectionObserver(([e]) => { inView = e.isIntersecting; }, { threshold: 0.05 });
-    io.observe(stage);
-
-    function applyRotation() {
-      cylinder.style.transform = `rotateX(${(-rotation).toFixed(3)}deg)`;
-      // Mark whichever card is closest to the front (rotation modulo STEP)
-      const norm = ((rotation % 360) + 360) % 360;
-      const focusedIdx = Math.round(norm / STEP) % N;
-      cards.forEach((c, i) => c.classList.toggle('focused', i === focusedIdx));
-    }
-    applyRotation();
-
-    function nearestSnap() {
-      return Math.round(rotation / STEP) * STEP;
-    }
-
-    function tick(now) {
-      const dt = Math.min(0.05, (now - lastFrame) / 1000);
-      lastFrame = now;
-      if (inView && !isDragging) {
-        if (Math.abs(velocity) > 8) {
-          rotation += velocity * dt;
-          velocity *= Math.pow(0.04, dt);          // exponential decay
-        } else if (idle) {
-          // Idle auto-rotate — gentle drift, one card every ~3s.
-          rotation += (STEP / 3) * dt;
-        } else {
-          // Magnetic snap to the nearest card slot.
-          const target = nearestSnap();
-          const ease = 1 - Math.pow(0.0008, dt);
-          rotation += (target - rotation) * ease;
-          if (Math.abs(target - rotation) < 0.05) rotation = target;
-          velocity = 0;
-        }
-        applyRotation();
-      }
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-
-    // ── Pointer / touch ──
-    function getY(e) {
-      if (e.touches && e.touches[0]) return e.touches[0].clientY;
-      return e.clientY;
-    }
-    function onDown(e) {
-      isDragging = true; didDrag = false; idle = false;
-      lastY = getY(e); lastT = performance.now(); velocity = 0;
-    }
-    function onMove(e) {
-      if (!isDragging) return;
-      const y = getY(e);
-      const dy = y - lastY;
-      const now = performance.now();
-      const dt = Math.max(1, now - lastT);
-      lastY = y; lastT = now;
-      // 1 pixel of vertical movement → 0.6 deg of cylinder rotation
-      const dDeg = dy * 0.6;
-      rotation += dDeg;
-      velocity = (dDeg / (dt / 1000)) * 0.85;
-      if (!didDrag && Math.abs(dy) > 3) {
-        didDrag = true; stage.classList.add('has-spun');
-      }
-    }
-    function onUp() {
-      if (!isDragging) return;
-      isDragging = false;
-      clearTimeout(idleTO);
-      idleTO = setTimeout(() => { idle = true; }, 4000);
-    }
-    stage.addEventListener('mousedown', onDown);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    stage.addEventListener('touchstart', onDown, { passive: true });
-    window.addEventListener('touchmove', onMove, { passive: true });
-    window.addEventListener('touchend', onUp);
-    window.addEventListener('touchcancel', onUp);
-
-    // Mouse wheel — direct rotation. Prevent the page from scrolling away
-    // when the pointer is over the reel; restore it once we reach a snap.
-    stage.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      idle = false;
-      // Trackpad fast scroll can produce large deltas; clamp so one twitch
-      // doesn't spin half the cylinder.
-      const d = Math.max(-30, Math.min(30, e.deltaY)) * 0.35;
-      rotation += d;
-      velocity = d * 12;        // a little inertia per scroll tick
-      stage.classList.add('has-spun');
-      clearTimeout(idleTO);
-      idleTO = setTimeout(() => { idle = true; }, 4000);
-    }, { passive: false });
-
-    // Click a visible card → snap that card to the front
-    cards.forEach((card, i) => {
-      card.addEventListener('click', () => {
-        if (didDrag) { didDrag = false; return; }
-        idle = false; velocity = 0;
-        // Choose the closest *equivalent* angle so we don't spin the long way
-        const target = i * STEP;
-        const wrap = Math.round((rotation - target) / 360) * 360;
-        rotation = target + wrap;
-        // ease towards target — handled by the snap branch in tick()
-        clearTimeout(idleTO);
-        idleTO = setTimeout(() => { idle = true; }, 4000);
-        stage.classList.add('has-spun');
-      });
-    });
-
-    // Keyboard
-    stage.tabIndex = 0;
-    stage.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { rotation += STEP; idle = false; stage.classList.add('has-spun'); }
-      if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  { rotation -= STEP; idle = false; stage.classList.add('has-spun'); }
-    });
-  })();
+  /* ── Hobby tiles: spotlight follows the pointer ── */
+  document.querySelectorAll('.hob').forEach(el => el.addEventListener('pointermove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }));
 
   /* ── Career tab toggle (Experience / Education) ── */
   (function initCareerTabs() {
