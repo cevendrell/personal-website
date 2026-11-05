@@ -2566,8 +2566,8 @@ function runGlobeInit() {
 
   // ── State machine ────────────────────────────────────────
   const POOL = window.TRAVEL_DATA.filter(d => d.p && d.p.length);
-  // 1400px versions: the originals are 3-19 MB each, far too slow for a round
-  const PHOTO_PATH = '../../media/travel/medium/';
+  // Web-sized photos (2000px); the full originals live outside the repo
+  const PHOTO_PATH = '../../media/travel/photos/';
   const ROUNDS = 10;
   const LS_KEY = 'cv_travelGame_leaderboard_v1';
   const SS_ADMIN_KEY = 'cv_travelGame_admin';
