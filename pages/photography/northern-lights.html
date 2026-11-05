@@ -460,6 +460,18 @@
       .page-header h1 { font-size: clamp(2rem, 8vw, 2.6rem); }
     }
 
+    /* Aurora zoom: lake to oxygen atom, carrying the photos and films */
+    .nl-zoom { max-width: 1240px; margin: 3rem auto 1rem; padding: 0 2rem; }
+    .nl-zoom-frame { position: relative; aspect-ratio: 16 / 10; max-height: 86vh; margin: 0 auto; border-radius: 16px; overflow: hidden;
+      background: #03060D; border: 1px solid rgba(255,255,255,0.06); }
+    .nl-zoom-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+    .nl-zoom-foot { display: flex; justify-content: flex-end; margin-top: 0.7rem; }
+    .nl-zoom-foot a { font-size: 0.78rem; color: var(--dim); text-decoration: none; }
+    .nl-zoom-foot a:hover { color: #fff; }
+    @media (max-width: 700px) {
+      .nl-zoom { padding: 0 1rem; margin-top: 2rem; }
+      .nl-zoom-frame { aspect-ratio: 4 / 5; border-radius: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -536,9 +548,16 @@
 <!-- Intro + index of winters -->
 <div class="nl-intro">
   <nav class="nl-index" aria-label="Winters">
-    <a href="#y2018">2018</a><a href="#y2023">2023</a><a href="#y2024">2024</a><a href="#videos">Videos</a>
+    <a href="#zoom">Zoom</a><a href="#y2018">2018</a><a href="#y2023">2023</a><a href="#y2024">2024</a><a href="#videos">Videos</a>
   </nav>
 </div>
+
+<section class="nl-zoom" id="zoom" aria-label="Zoom from a lake under the northern lights to one oxygen atom">
+  <div class="nl-zoom-frame">
+    <iframe src="aurora-zoom.html?embed" title="From a lake under the northern lights down to one oxygen atom" loading="lazy" allow="autoplay"></iframe>
+  </div>
+  <div class="nl-zoom-foot"><a href="aurora-zoom.html" target="_blank" rel="noopener">Open full screen ↗</a></div>
+</section>
 
 <section class="night" id="y2018" aria-labelledby="y2018-t">
   <header class="night-head">
@@ -795,6 +814,16 @@
   });
 </script>
 
+<script>
+  // pause the zoom while it is off screen
+  (function(){
+    var f = document.querySelector('.nl-zoom iframe');
+    if (!f || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (f.contentWindow) f.contentWindow.postMessage({ auroraZoom: e.isIntersecting ? 'show' : 'hide' }, location.origin); });
+    }, { threshold: 0.05 }).observe(f);
+  })();
+</script>
 <script>document.querySelectorAll(".js-year").forEach(function(e){e.textContent=new Date().getFullYear();});</script>
 </body>
 </html>

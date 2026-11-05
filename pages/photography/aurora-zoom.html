@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<!--
+  Aurora zoom — from a lake in the far north down to one oxygen atom, and back.
+
+  PROMPT (tweaked to carry Carlos's own photos and films)
+
+  BRAND
+  SUBJECT: the northern lights over a still lake in the far north
+  CHAPTERS: northern lights, the curtain, the rays, electrons, thin air, one oxygen atom; one true fact each
+  PALETTE: oxygen green 1AFF5C, oxygen red FF1A38, nitrogen violet BF2EFF, night 03060D, accent 6FEF8A (the site's aurora green)
+
+  One HTML file, three.js 0.160, 27 s seamless loop at 60 fps. It fills whatever frame it is given (the field of
+  view is measured across the short side); ?export renders 1080x1350.
+  renderAt(t, slot) draws exact time t, seeded random, ?t= freezes it (?slot= picks the media). Frozen and exported
+  frames use 12 sub-frames (180° shutter, thin lens); live playback uses one and lowers resolution to keep 60 fps.
+  Bloom, ACES, grain.
+
+  MEDIA: the lake hold is where the real pictures live. From 26.1 s, through the seam, to 4.4 s, crossfade from the
+  rendered lake to one of Carlos's photographs or films and back, cover-fitted with a slow 7% push-in. Each loop
+  takes the next slot: 13 photographs and 2 films (muted, from 2 s in). A caption names the place and year; rendered
+  frames say "Simulation". renderAt(27, n) equals renderAt(0, n).
+
+  ZOOM: one curve, log10 of the field of view, from 435 km down to 1.4 nm. Six slow holds joined by eased moves
+  that never overshoot; in until 21.8 s, back out to the lake in 4.2 s.
+
+  SET: three worlds in km, m and nm, crossfading where detail turns to glow. The sky: four curtains, each a thin
+  sheet whose centre line folds in the horizontal plane and leans 12° south with height; integrate its glow where
+  each view ray crosses it (thickness × √π over the crossing rate, an erfc when the camera is inside). Green 557.7
+  nm from 100 km up, red 630 nm above 200 km, a violet nitrogen fringe at the bottom edge; field-aligned rays and
+  pulses running along the arcs. Stars, the Milky Way, a curved Earth. The ground: a hillside with spruces above a
+  still lake that mirrors the same sky; snow lit green. Inside the curtain: green haze and electrons spiralling
+  down the field lines, metre-wide helices. The air 120 km up: N2, O2 and O about a micrometre apart, as points.
+  One oxygen atom: its 1s, 2s and 2p density ray-marched; an electron passes, and 0.74 s later a green wave front
+  leaves.
+
+  MOTION: one shot, from the hillside up to the curtain, into a ray and down to one atom. A thin lens throughout.
+  HUD in the site's type (Inter only, no mono, no eyebrow labels): six step bars, title and fact top left; a log ruler from 1000 km to 0.1 nm marking the field of view;
+  magnification bottom left; the media caption bottom right.
+  CHECKS: renderAt(27) equals renderAt(0); every motion has whole cycles per loop; every number on screen is true.
+  Embedded on the Northern Lights page: pauses off-screen, and shows a still frame for reduced motion.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurora Zoom - Carlos Ebrahim Vendrell</title>
+<meta name="description" content="A 27-second zoom from a lake under the northern lights down to the oxygen atom that makes them green.">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --green:#1AFF5C; --red:#FF1A38; --violet:#BF2EFF; --night:#03060D; --glow:#6fef8a; --ink:#ececea; --dim:#a8a9af; --mute:#6b6d75; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { height:100%; background:var(--night); overflow:hidden; }
+  body { font-family:'Inter', -apple-system, sans-serif; color:var(--ink); -webkit-font-smoothing:antialiased; }
+  #stage { position:fixed; inset:0; }
+  canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+  body.export #stage { inset:auto; left:0; top:0; width:1080px; height:1350px; }
+
+  .hud { position:absolute; pointer-events:none; text-shadow:0 2px 16px rgba(0,0,0,.6); }
+  #hud-tl { left:clamp(18px,3.4vw,44px); top:clamp(18px,3.4vw,44px); max-width:min(30ch, 60%); }
+  #title { font-size:clamp(1.7rem,3.6vw,3rem); font-weight:800; letter-spacing:-.04em; line-height:1.02; color:#fff; margin-bottom:.45em; }
+  #fact { font-size:clamp(.88rem,1.25vw,1.02rem); line-height:1.6; color:var(--dim); }
+  #tnote { margin-top:.6em; font-size:.82rem; font-style:italic; color:var(--mute); min-height:1.3em; }
+  .swap { transition:opacity .45s ease; }
+  .swap.out { opacity:0; }
+  #legend { margin-top:.5em; font-size:.82rem; color:var(--dim); display:flex; gap:1.1em; }
+  #legend[hidden] { display:none; }
+  #legend i { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:.45em; vertical-align:1px; }
+  #steps { display:flex; gap:5px; margin-bottom:1.1em; }
+  #steps span { width:18px; height:3px; border-radius:2px; background:rgba(255,255,255,.18); transition:background .4s, width .4s; }
+  #steps span.on { width:30px; background:var(--glow); }
+
+  #hud-bl { left:clamp(18px,3.4vw,44px); bottom:clamp(18px,3.4vw,44px); }
+  #mag { font-size:clamp(1.5rem,2.8vw,2.3rem); font-weight:800; letter-spacing:-.03em; line-height:1; color:#fff; font-variant-numeric:tabular-nums; }
+  #mag sup { font-size:.5em; vertical-align:.85em; margin-left:.06em; letter-spacing:0; }
+  #fov { font-size:.85rem; color:var(--dim); margin-top:.45em; font-variant-numeric:tabular-nums; }
+
+  #hud-br { right:clamp(58px,7vw,96px); bottom:clamp(18px,3.4vw,44px); text-align:right; }
+  #cap-place { display:block; font-size:clamp(1.05rem,1.8vw,1.45rem); font-weight:700; letter-spacing:-.02em; color:#fff; }
+  #cap-kind { display:block; font-size:.82rem; color:var(--dim); margin-top:.25em; }
+
+  #ruler { right:clamp(16px,2.4vw,30px); top:clamp(18px,3.4vw,44px); bottom:clamp(64px,8vw,96px); width:34px; }
+  #ruler .line { position:absolute; right:0; top:0; bottom:0; width:1px; background:rgba(255,255,255,.16); }
+  #ruler .tick { position:absolute; right:0; height:1px; background:rgba(255,255,255,.22); width:5px; }
+  #ruler .tick.major { width:10px; background:rgba(255,255,255,.45); }
+  #ruler .lab { position:absolute; right:15px; transform:translateY(-50%); font-size:.68rem; font-weight:500; color:var(--mute); white-space:nowrap; }
+  #ruler .mark { position:absolute; right:-3px; width:22px; height:2px; border-radius:1px; background:var(--glow); box-shadow:0 0 12px rgba(111,239,138,.7); }
+
+  #pp { position:absolute; right:clamp(16px,2.4vw,30px); bottom:clamp(18px,3.4vw,44px); width:32px; height:32px; border-radius:999px;
+        border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:var(--ink); cursor:pointer; display:grid; place-items:center; pointer-events:auto;
+        backdrop-filter:blur(6px); transition:color .2s, border-color .2s, background .2s; }
+  #pp:hover { border-color:rgba(111,239,138,.5); background:rgba(111,239,138,.08); }
+  #pp svg { width:11px; height:11px; }
+
+  @media (max-width: 560px) {
+    #ruler .lab { display:none; }
+    #ruler { width:12px; }
+    #hud-br { right:58px; }
+  }
+  body.export #pp { display:none; }
+  #fallback { position:absolute; inset:0; display:none; place-items:center; color:var(--dim); font-size:.95rem; text-align:center; padding:24px; }
+  body.embed #hud-tl { max-width:min(30ch, 58%); }
+</style>
+</head>
+<body>
+<div id="stage" aria-label="Animated zoom from a lake under the northern lights down to a single oxygen atom">
+  <canvas id="c"></canvas>
+
+  <div class="hud" id="hud-tl">
+    <div id="steps" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div id="title" class="swap">Northern lights</div>
+    <div id="fact" class="swap"></div>
+    <div id="tnote"></div>
+    <div id="legend" hidden><span><i style="background:var(--violet)"></i>N₂</span><span><i style="background:#cfd9ff"></i>O₂</span><span><i style="background:var(--green)"></i>O</span></div>
+  </div>
+
+  <div class="hud" id="ruler" aria-hidden="true"><div class="line"></div></div>
+
+  <div class="hud" id="hud-bl">
+    <div id="mag">×1</div>
+    <div id="fov">Field of view 435 km</div>
+  </div>
+
+  <div class="hud" id="hud-br"><span id="cap-place"></span><span id="cap-kind">Simulation</span></div>
+
+  <button id="pp" type="button" aria-label="Pause animation"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg></button>
+  <div id="fallback">This animation needs WebGL 2.</div>
+</div>
+
+<!-- ───────────────────────── scene: three worlds, one shader ───────────────────────── -->
+<script type="x-shader/x-fragment" id="fs-scene">
+precision highp float;
+precision highp int;
+out vec4 outColor;
+
+uniform vec2  uRes;
+uniform float uT;          // loop time, 0..27 s
+uniform vec2  uJit;        // sub-pixel jitter
+uniform vec2  uLens;       // point on the unit disk
+uniform float uTanHalf;    // tan(half the short-side angular field)
+uniform vec3  uFwd, uRight, uUp;
+uniform vec3  uCamKm;      // km world camera
+uniform vec3  uD;          // focus distance per world: km, m, nm
+uniform vec3  uAp;         // lens aperture radius per world (same units)
+uniform vec4  uW;          // world weights: km, m, nm, glow
+uniform float uLowCam;     // 1 while the camera is near the ground
+uniform float uGain;       // aurora brightness
+uniform float uFar;        // distant arcs fade once we leave the ground
+
+#define TAU 6.28318530718
+#define PI 3.14159265359
+#define LOOP 27.0
+#define RE 6371.0
+#define SIG 0.22
+#define TAN12 0.212557
+
+const vec3 GREEN  = vec3(0.0103, 1.0, 0.107);
+const vec3 RED    = vec3(1.0, 0.0103, 0.0395);
+const vec3 VIOLET = vec3(0.521, 0.0273, 1.0);
+const vec3 NIGHT  = vec3(0.00091, 0.0018, 0.0040);
+const vec3 AURI   = vec3(0.0006, 0.042, 0.0062);   // aurora light falling on the ground
+const float HAZE  = 0.16;                          // glow level inside the curtain
+
+float ph(float m){ return TAU * m * uT / LOOP; }   // whole cycles per loop
+
+float hash11(float p){ p = fract(p*0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
+float hash13(vec3 p3){ p3 = fract(p3*0.1031); p3 += dot(p3, p3.zyx + 31.32); return fract((p3.x + p3.y) * p3.z); }
+vec3  hash33(vec3 p3){ p3 = fract(p3*vec3(.1031,.1030,.0973)); p3 += dot(p3, p3.yxz + 33.33); return fract((p3.xxy + p3.yxx) * p3.zyx); }
+vec3  hash31(float p){ vec3 p3 = fract(vec3(p)*vec3(.1031,.1030,.0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xxy + p3.yzz) * p3.zyx); }
+float vnoise(vec3 x){
+  vec3 i = floor(x), f = fract(x); f = f*f*(3.0 - 2.0*f);
+  return mix(mix(mix(hash13(i), hash13(i+vec3(1,0,0)), f.x), mix(hash13(i+vec3(0,1,0)), hash13(i+vec3(1,1,0)), f.x), f.y),
+             mix(mix(hash13(i+vec3(0,0,1)), hash13(i+vec3(1,0,1)), f.x), mix(hash13(i+vec3(0,1,1)), hash13(i+vec3(1,1,1)), f.x), f.y), f.z);
+}
+float fbm(vec3 p){ float a = 0.5, s = 0.0; for (int i = 0; i < 5; i++){ s += a*vnoise(p); p = p*2.03 + vec3(1.7,9.2,3.1); a *= 0.5; } return s; }
+float erfc_(float x){
+  float z = abs(x), t = 1.0/(1.0 + 0.3275911*z);
+  float y = t*(0.254829592 + t*(-0.284496736 + t*(1.421413741 + t*(-1.453152027 + t*1.061405429))))*exp(-z*z);
+  return x >= 0.0 ? y : 2.0 - y;
+}
+
+/* ───────────── km world: Earth, sky and the four curtains ───────────── */
+
+vec2 earthSphere(vec3 o, vec3 d, float r){        // sphere centred on the Earth's centre
+  vec3 oc = o + vec3(0.0, RE, 0.0);
+  float b = dot(oc, d), c = dot(oc, oc) - r*r, h = b*b - c;
+  if (h < 0.0) return vec2(-1.0, -2.0);
+  h = sqrt(h); return vec2(-b - h, -b + h);
+}
+vec3 geo(vec3 p){                                  // (east km, north km, altitude km)
+  vec3 q = p + vec3(0.0, RE, 0.0);
+  float r = length(q);
+  return vec3(RE*asin(clamp(q.x/r, -1.0, 1.0)), RE*atan(-q.z, q.y), r - RE);
+}
+float baseN(int i){ return i == 0 ? 332.1256 : (i == 1 ? 232.0 : (i == 2 ? 560.0 : 700.0)); }
+float envC(int i){ return i == 0 ? 0.0 : (i == 1 ? -210.0 : (i == 2 ? 160.0 : -80.0)); }
+float brightC(int i){ return i == 0 ? 1.0 : (i == 1 ? 0.45 : (i == 2 ? 0.8 : 0.6)*uFar); }
+
+float foldRaw(int i, float x){
+  float fi = float(i);
+  return 17.0*sin(x/95.0 + ph(1.0) + fi*1.7)
+       +  6.5*sin(x/33.0 - ph(2.0) + fi*2.9)
+       +  2.4*sin(x/11.0 + ph(3.0) + fi*0.7)
+       +  0.7*sin(x/3.3  - ph(5.0) + fi*4.1);
+}
+float fold(int i, float x){ return i == 0 ? foldRaw(0, x) - foldRaw(0, 0.0) : foldRaw(i, x); }   // curtain 0 always passes the target
+float gOf(int i, vec3 g){ return g.y - (baseN(i) + fold(i, g.x) - (g.z - 100.0)*TAN12); }        // north offset from the sheet
+
+float rayTerm(float x, float k, float p, float n, float fp){   // one family of rays, faded to its mean when finer than ~4 px
+  float v = pow(0.5 + 0.5*sin(x*k + p), n);
+  return mix(v, inversesqrt(PI*n), smoothstep(0.35, 1.6, k*fp));
+}
+float rays(int i, float x, float fp){
+  float f = float(i)*3.1, r = 0.0;
+  r += rayTerm(x, 0.37, ph(1.0) + f,        6.0, fp)*0.50;
+  r += rayTerm(x, 1.13, -ph(2.0) + f*1.3,   8.0, fp)*0.45;
+  r += rayTerm(x, 2.90, ph(3.0) + f*0.7,   10.0, fp)*0.38;
+  r += rayTerm(x, 7.70, -ph(4.0) + f*2.3,  12.0, fp)*0.50;
+  r += rayTerm(x, 19.0, ph(6.0) + f*1.9,   14.0, fp)*0.50;
+  r += rayTerm(x, 47.0, -ph(7.0) + f*0.4,  16.0, fp)*0.42;
+  return 0.10 + 1.3*r;
+}
+float pulse(int i, float x){
+  float u = fract(x/260.0 - uT*2.0/LOOP + float(i)*0.37) - 0.5;
+  return 1.0 + 0.9*exp(-u*u*140.0);
+}
+vec3 emitAt(int i, vec3 g, float fp){
+  float x = g.x, h = g.z;
+  float ry = rays(i, x, fp);
+  float hb = 100.0 - 2.0*clamp(ry - 0.6, 0.0, 2.0);                      // brighter rays reach a little lower
+  float green = smoothstep(hb - 1.5, hb + 2.5, h) * exp(-max(h - hb, 0.0)/26.0);
+  float red   = smoothstep(185.0, 245.0, h) * exp(-max(h - 245.0, 0.0)/110.0);
+  float vio   = exp(-pow((h - (hb + 0.6))/1.5, 2.0));
+  float env   = smoothstep(720.0, 380.0, abs(x - envC(i))) * brightC(i) * pulse(i, x);
+  return (GREEN*green*ry + mix(RED, VIOLET, 0.48)*red*0.065*(0.5 + 0.5*ry) + VIOLET*vio*0.45*ry) * env;
+}
+
+vec3 curtains(vec3 o, vec3 d, float sMax, float pixA){
+  vec3 acc = vec3(0.0);
+  float ha = length(o + vec3(0.0, RE, 0.0)) - RE;
+  vec2 so = earthSphere(o, d, RE + 420.0);
+  if (so.y < 0.0) return acc;
+  vec2 si = earthSphere(o, d, RE + 88.0);
+  float s0, s1;
+  if (ha < 88.0) { s0 = max(si.y, 0.0); s1 = so.y; }
+  else { s0 = 0.0; s1 = si.x > 0.0 ? si.x : so.y; }
+  s1 = min(min(s1, sMax), s0 + 2600.0);
+  if (s1 <= s0) return acc;
+
+  float gp[4]; bool inside[4]; bool first[4];
+  vec3 g0 = geo(o + d*s0);
+  for (int i = 0; i < 4; i++){ gp[i] = gOf(i, g0); inside[i] = false; first[i] = true; }
+
+  if (s0 == 0.0){                                         // camera inside the shell: the erfc term
+    vec3 ge = geo(o + d*0.05);
+    for (int i = 0; i < 4; i++){
+      if (abs(gp[i]) < 6.0*SIG){
+        float gd = (gOf(i, ge) - gp[i])/0.05;
+        float ad = max(abs(gd), 0.004);
+        acc += emitAt(i, g0, 0.0) * SIG*0.886227/ad * erfc_(gp[i]*sign(gd)/SIG);
+        inside[i] = true;
+      }
+    }
+  }
+
+  const int N = 44;                                       // geometric steps: fine near the camera, coarse far away
+  float sp = s0;
+  for (int k = 1; k <= N; k++){
+    float s = min(s0 + 0.06*(pow(1.28, float(k)) - 1.0), s1);
+    if (s <= sp) break;
+    vec3 g = geo(o + d*s);
+    for (int i = 0; i < 4; i++){
+      float gc = gOf(i, g);
+      if (gp[i]*gc < 0.0){
+        float a = sp, b = s, ga = gp[i], gb = gc;
+        for (int r = 0; r < 3; r++){
+          float m = a - ga*(b - a)/(gb - ga);
+          float gm = gOf(i, geo(o + d*m));
+          if (ga*gm < 0.0){ b = m; gb = gm; } else { a = m; ga = gm; }
+        }
+        float sr = a - ga*(b - a)/(gb - ga);
+        float e = max(0.05, 0.002*sr);                     // crossing rate over ±50 m: float noise at Earth scale is ~0.5 m
+        float ad = max(abs(gOf(i, geo(o + d*(sr + e))) - gOf(i, geo(o + d*(sr - e))))/(2.0*e), 0.004);
+        bool skip = inside[i] && first[i] && sr*ad < 8.0*SIG;
+        if (!skip) acc += emitAt(i, geo(o + d*sr), sr*pixA/max(ad, 0.15)) * SIG*0.886227/ad * erfc_(-ad*sr/SIG);
+        first[i] = false;
+      }
+      gp[i] = gc;
+    }
+    sp = s;
+  }
+  return acc;
+}
+
+vec3 starsMW(vec3 d, float pixA){
+  vec3 c = vec3(0.0);
+  vec3 nmw = normalize(vec3(0.62, 0.38, 0.69));
+  float b = dot(d, nmw);
+  float band = exp(-b*b/0.03);
+  float dust = smoothstep(0.42, 0.78, fbm(d*9.0 + 3.0));
+  c += vec3(0.55, 0.60, 0.78) * 0.0035 * band * (0.35 + fbm(d*5.0)) * (1.0 - 0.75*dust*exp(-b*b/0.006));
+  for (int l = 0; l < 2; l++){
+    float sc = l == 0 ? 85.0 : 210.0;
+    vec3 ci = floor(d*sc);
+    float h = hash13(ci + float(l)*17.0);
+    float thr = (l == 0 ? 0.93 : 0.91) - 0.05*band;
+    if (h > thr){
+      vec3 sd = normalize((ci + 0.25 + 0.5*hash33(ci + float(l)*5.0))/sc);
+      float a = length(cross(d, sd));
+      float w = pixA*0.85;
+      float mag = (l == 0 ? 0.05 : 0.018) + (l == 0 ? 1.4 : 0.25)*pow(hash11(h*91.7), 9.0);
+      vec3 tint = mix(vec3(1.0, 0.78, 0.58), vec3(0.72, 0.82, 1.0), hash11(h*13.3));
+      c += tint * mag * exp(-a*a/(w*w));
+    }
+  }
+  float ext = exp(-0.12/max(d.y + 0.035, 0.012));
+  return c*ext + GREEN*0.0018*exp(-max(d.y, 0.0)/0.07);   // airglow low on the horizon
+}
+
+float bank(vec2 xz){                                       // > 0 on land: a shore at our feet, banks either side
+  return max(abs(xz.x) - (0.012 + 0.22*max(-xz.y, 0.0)), xz.y + 0.004);
+}
+float hill(vec2 xz){
+  float b = bank(xz);
+  if (b <= 0.0) return -0.001;
+  return 0.0012*smoothstep(0.0, 0.01, b) + 0.004*smoothstep(0.01, 0.12, b) + 0.0005*sin(xz.x*300.0 + xz.y*270.0)*smoothstep(0.0, 0.02, b);
+}
+vec3 treeAt(int i){
+  if (i == 0) return vec3(-0.050, -0.120, 0.020);
+  if (i == 1) return vec3(-0.072, -0.200, 0.024);
+  if (i == 2) return vec3(-0.100, -0.300, 0.022);
+  if (i == 3) return vec3( 0.055, -0.140, 0.021);
+  if (i == 4) return vec3( 0.082, -0.230, 0.025);
+  if (i == 5) return vec3( 0.120, -0.360, 0.022);
+  if (i == 6) return vec3(-0.036, -0.070, 0.014);
+  return vec3(0.040, -0.085, 0.016);
+}
+float treeSDF(vec3 p, vec3 t){
+  float y = p.y - hill(t.xy), H = t.z;
+  float yy = clamp(y/H, 0.0, 1.0);
+  float rad = H*0.30*(1.0 - yy)*(0.70 + 0.30*fract(yy*7.0)) + 0.0002;
+  return max((length(p.xz - t.xy) - rad)*0.8, max(y - H, -y));
+}
+float ridge(float x){
+  float tips = pow(1.0 - 2.0*abs(fract(x*95.0 + 0.3*sin(x*7.0)) - 0.5), 1.6);
+  return 0.085 + 0.045*sin(x*1.6 + 1.3) + 0.020*sin(x*4.1 + 0.4) + 0.014*tips;      // the spruce hillside across the lake
+}
+
+vec3 skyFar(vec3 o, vec3 d, float pixA, bool low){
+  if (low && d.z < 0.0){                                  // far shore: forest under a ridge line
+    float tw = (-1.6 - o.z)/d.z;
+    vec3 p = o + d*tw;
+    if (tw > 0.0 && p.y < ridge(p.x) && p.y > -0.01){
+      float snow = step(0.86, hash13(floor(p*vec3(900.0, 900.0, 1.0))));
+      return AURI*(0.05 + 0.25*snow) + NIGHT*0.3;
+    }
+  }
+  vec3 c;
+  float sMax = 1e6;
+  vec2 se = earthSphere(o, d, RE);
+  if (se.x > 0.0){                                        // the curved Earth below
+    vec3 p = o + d*se.x;
+    vec3 n = normalize(p + vec3(0.0, RE, 0.0));
+    c = AURI*0.55*(0.6 + 0.4*fbm(p*0.05)) * max(dot(n, -d), 0.0) + NIGHT*0.2;
+    sMax = se.x;
+  } else {
+    c = NIGHT*0.55 + starsMW(d, pixA);
+  }
+  return c + curtains(o, d, sMax, pixA)*uGain;
+}
+
+vec3 water(vec3 o, vec3 d, float pixA){
+  float tl = -o.y/d.y;
+  vec3 p = o + d*tl;
+  vec3 n = normalize(vec3(0.0018*sin(p.x*900.0 + ph(3.0)), 1.0, 0.0018*sin(p.z*1100.0 - ph(2.0))));
+  vec3 rd = reflect(d, n);
+  float fres = 0.02 + 0.98*pow(1.0 - max(dot(-d, n), 0.0), 5.0);
+  return skyFar(p + vec3(0.0, 1e-5, 0.0), rd, pixA, true)*mix(0.55, 1.0, fres);
+}
+vec3 sceneKm(vec3 o, vec3 d, float pixA){
+  bool low = uLowCam > 0.5;
+  if (low){
+    float t = 0.0003;
+    for (int k = 0; k < 96; k++){
+      vec3 p = o + d*t;
+      if (p.z < -0.45 || t > 0.6 || (p.y > 0.04 && d.y > 0.0)) break;
+      float hg = hill(p.xz);
+      if (p.y < 0.0 && hg < 0.0) return water(o, d, pixA);
+      float dh = (p.y - max(hg, 0.0))*0.6, dt = 1e9;
+      for (int i = 0; i < 8; i++){ float q = treeSDF(p, treeAt(i)); if (q < dt) dt = q; }
+      float dd = min(dh, dt);
+      if (dd < 0.00002 + t*0.0006){
+        if (dt >= dh && hg < 0.0) return water(o, d, pixA);
+        if (dt < dh){                                     // spruce: dark, a green rim
+          float rim = pow(1.0 - abs(dot(d, normalize(vec3(p.x, 0.0, p.z + 1.0)))), 2.0);
+          return AURI*(0.02 + 0.06*rim) + NIGHT*0.2;
+        }
+        vec2 e = vec2(0.0002, 0.0);
+        vec3 n = normalize(vec3(hill(p.xz - e.xy) - hill(p.xz + e.xy), 2.0*e.x, hill(p.xz - e.yx) - hill(p.xz + e.yx)));
+        float lit = 0.35 + 0.65*max(dot(n, normalize(vec3(0.0, 0.55, -1.0))), 0.0);
+        float spark = pow(hash13(floor(p*24000.0)), 60.0)*3.0;
+        return AURI*0.8*lit*(1.0 + spark) + NIGHT*0.4;    // snow, lit green
+      }
+      t += max(dd, 0.00008);
+    }
+    if (d.y < 0.0){
+      vec3 p = o + d*(-o.y/d.y);
+      if (p.z > -1.6 && hill(p.xz) < 0.0) return water(o, d, pixA);
+    }
+  }
+  return skyFar(o, d, pixA, low);
+}
+
+/* ───────────── m world: inside the curtain ───────────── */
+
+vec3 sceneM(vec3 o, vec3 d, float pixA){
+  vec3 bU = vec3(0.0, 0.978148, 0.207912);               // field line, leaning 12° south going up
+  vec3 e1 = vec3(1.0, 0.0, 0.0);
+  vec3 e2 = vec3(0.0, 0.207912, -0.978148);
+  float hz = 0.0;
+  for (int k = 0; k < 10; k++){
+    vec3 p = o + d*((float(k) + 0.5)*7.0);
+    vec3 q = vec3(dot(p, e1), dot(p, e2), dot(p, bU)*0.03);
+    float nz = vnoise(q*0.22); hz += 0.15 + 2.6*nz*nz*nz;
+  }
+  vec3 col = GREEN*HAZE*hz/10.0;
+  for (int i = 0; i < 18; i++){
+    vec3 h = hash31(float(i)*7.13 + 1.0), h2 = hash31(float(i)*3.71 + 9.0);
+    vec3 c = e1*(h.x - 0.5)*30.0 + e2*(h.y - 0.5)*30.0;
+    float r = 0.45 + 0.65*h2.x;                          // gyroradius, metres
+    float L = 60.0, vpar = (2.0 + floor(h2.y*2.0))*L/LOOP;
+    for (int j = 0; j < 14; j++){
+      float tj = uT - float(j)*0.035;
+      float along = mod(h.z*L - vpar*tj, L) - 0.5*L;
+      float a = TAU*20.0*tj/LOOP + h2.z*TAU;              // 20 gyrations per loop
+      vec3 q = c + bU*along + r*(e1*cos(a) + e2*sin(a));
+      vec3 v = q - o; float s = dot(v, d);
+      if (s < 0.3) continue;
+      float dist = length(v - d*s), w = max(0.03, s*pixA*1.2);
+      float edge = smoothstep(0.5*L, 0.5*L - 6.0, abs(along));
+      col += vec3(0.55, 0.85, 1.0) * 2.4 * exp(-float(j)*0.2) * edge * exp(-dist*dist/(w*w)) * min(1.0, 0.05/w);
+    }
+  }
+  return col;
+}
+
+/* ───────────── nm world: thin air, then one atom ───────────── */
+
+#define SP 1260.0
+vec3 cellJ(vec3 c){ return hash33(c + vec3(11.0)); }
+int ptype(vec3 c){
+  if (all(equal(c, vec3(0.0)))) return 2;
+  float h = hash13(c + vec3(5.0));
+  return h < 0.70 ? 0 : (h < 0.82 ? 1 : 2);
+}
+vec3 molecules(vec3 o, vec3 d, float pixA){
+  vec3 col = vec3(0.0);
+  vec3 off = cellJ(vec3(0.0));
+  vec3 u = o/SP + off;                                   // cell space; particle of cell c sits at c + cellJ(c)
+  vec3 cell = floor(u);
+  vec3 st = sign(d);
+  vec3 tD = abs(1.0/max(abs(d), 1e-6));
+  vec3 tM = (st*(cell - u) + st*0.5 + 0.5)*tD;
+  for (int k = 0; k < 44; k++){
+    vec3 pc = (cell + cellJ(cell) - off)*SP;             // particle centre, nm
+    int ty = ptype(cell);
+    vec3 v = pc - o; float s = dot(v, d);
+    if (s > 0.0){
+      bool target = all(equal(cell, vec3(0.0)));
+      float fadeT = target ? smoothstep(4.0, 30.0, uD.z) : 1.0;
+      float bond = ty == 0 ? 0.110 : (ty == 1 ? 0.121 : 0.0);
+      vec3 ax = normalize(hash33(cell + 3.0) - 0.5);
+      float w = max(0.07, s*pixA*0.9);
+      float d1 = length(cross(pc + ax*bond*0.5 - o, d)), d2 = length(cross(pc - ax*bond*0.5 - o, d));
+      float g = exp(-d1*d1/(w*w)) + (bond > 0.0 ? exp(-d2*d2/(w*w)) : 0.0);
+      vec3 tint = ty == 0 ? VIOLET*1.2 : (ty == 1 ? vec3(0.62, 0.70, 1.0) : GREEN*1.3);
+      float fog = exp(-pow(s/(1.5*uD.z + 2.0), 2.0));        // depth cue relative to the view
+      col += tint * g * fog * fadeT * 1.6;
+    }
+    if (tM.x < tM.y){ if (tM.x < tM.z){ cell.x += st.x; tM.x += tD.x; } else { cell.z += st.z; tM.z += tD.z; } }
+    else            { if (tM.y < tM.z){ cell.y += st.y; tM.y += tD.y; } else { cell.z += st.z; tM.z += tD.z; } }
+  }
+  return col;
+}
+
+#define T_E 20.40
+#define T_W 21.14            // 0.74 s after the electron passes
+vec3 atom(vec3 o, vec3 d){
+  vec3 col = vec3(0.0);
+  float exc = smoothstep(T_E, T_E + 0.08, uT) * (1.0 - smoothstep(T_W - 0.04, T_W + 0.06, uT));
+  float b = dot(o, d), c = dot(o, o) - 0.45*0.45, h = b*b - c;
+  if (h > 0.0){
+    h = sqrt(h);
+    float s0 = max(-b - h, 0.0), s1 = -b + h;
+    const int N = 64;
+    float ds = (s1 - s0)/float(N);
+    const float A0 = 0.0529177;                           // Bohr radius, nm
+    const float Z1 = 7.658, Z2 = 2.246, ZP = 2.227;        // Clementi-Raimondi exponents for oxygen
+    for (int k = 0; k < N; k++){
+      vec3 p = (o + d*(s0 + (float(k) + 0.5)*ds))/A0;
+      float r = length(p);
+      float d1s = 2.0*pow(Z1, 3.0)/PI*exp(-2.0*Z1*r);
+      float d2s = 2.0*pow(Z2, 5.0)/(3.0*PI)*r*r*exp(-2.0*Z2*r);
+      float e2p = pow(ZP, 5.0)/PI*exp(-2.0*ZP*r);
+      float pxx = 2.0*e2p*p.x*p.x, pyz = e2p*(p.y*p.y + p.z*p.z);                    // 2px paired, 2py and 2pz unpaired
+      col += (vec3(1.0, 0.88, 0.74)*0.010*pow(d1s, 0.6)
+            + vec3(0.30, 0.55, 1.0)*0.40*pow(d2s, 0.45)
+            + mix(vec3(0.15, 1.0, 0.45), GREEN*1.6, exc)*(1.0 + 1.6*exc)*0.8*pow(pxx, 0.45)
+            + vec3(0.10, 0.75, 0.80)*0.6*pow(pyz, 0.45)) * ds/A0 * 0.16;
+    }
+  }
+  // the passing electron
+  for (int j = 0; j < 10; j++){
+    float tj = uT - float(j)*0.012;
+    vec3 q = vec3((tj - T_E)*5.0, 0.17, 0.11);
+    vec3 v = q - o; float s = dot(v, d);
+    if (s > 0.0 && abs(tj - T_E) < 0.6){
+      float dist = length(v - d*s);
+      col += vec3(0.6, 0.85, 1.0)*3.0*exp(-float(j)*0.3)*exp(-dist*dist/0.0009);
+    }
+  }
+  // the green wave front
+  if (uT > T_W){
+    float age = uT - T_W, rw = 0.02 + 1.9*age;
+    float dmin = length(cross(o, d));
+    float ring = exp(-pow((dmin - rw)/0.016, 2.0));
+    float fill = dmin < rw ? 0.03*rw/sqrt(max(rw*rw - dmin*dmin, 1e-4)) : 0.0;
+    col += GREEN*3.2*(ring + min(fill, 0.2))*exp(-age*1.1);
+  }
+  return col;
+}
+
+vec3 sceneNm(vec3 o, vec3 d, float pixA){
+  vec3 col = GREEN*0.012 + NIGHT*0.4 + molecules(o, d, pixA);
+  float wa = 1.0 - smoothstep(4.0, 30.0, uD.z);
+  if (wa > 0.0) col += atom(o, d)*wa;
+  return col;
+}
+
+/* ───────────── camera and composition ───────────── */
+
+void lensRay(vec3 o, vec3 dir, float D, float ap, out vec3 ro, out vec3 rd){
+  vec3 F = o + dir*(D/dot(dir, uFwd));
+  ro = o + (uLens.x*uRight + uLens.y*uUp)*ap;
+  rd = normalize(F - ro);
+}
+
+void main(){
+  vec2 fc = gl_FragCoord.xy + uJit;
+  float sh = min(uRes.x, uRes.y);
+  vec2 uv = (fc - 0.5*uRes)/(0.5*sh);
+  vec3 dir = normalize(uFwd + uTanHalf*(uv.x*uRight + uv.y*uUp));
+  float pixA = 2.0*uTanHalf/sh;
+  vec3 col = vec3(0.0), ro, rd;
+  if (uW.x > 0.001){ lensRay(uCamKm, dir, uD.x, uAp.x, ro, rd); col += uW.x*sceneKm(ro, rd, pixA); }
+  if (uW.y > 0.001){ lensRay(-uFwd*uD.y, dir, uD.y, uAp.y, ro, rd); col += uW.y*sceneM(ro, rd, pixA); }
+  if (uW.z > 0.001){ lensRay(-uFwd*uD.z, dir, uD.z, uAp.z, ro, rd); col += uW.z*sceneNm(ro, rd, pixA); }
+  col += uW.w*GREEN*HAZE*1.05;
+  outColor = vec4(col, 1.0);
+}
+</script>
+
+<!-- bloom: downsample / upsample -->
+<script type="x-shader/x-fragment" id="fs-down">
+precision highp float;
+out vec4 outColor;
+uniform sampler2D uSrc; uniform vec2 uSrcTexel; uniform vec2 uDstRes; uniform float uScale;
+void main(){
+  vec2 uv = gl_FragCoord.xy/uDstRes; vec2 t = uSrcTexel;
+  vec3 c = texture(uSrc, uv + vec2(-t.x,-t.y)).rgb + texture(uSrc, uv + vec2(t.x,-t.y)).rgb
+         + texture(uSrc, uv + vec2(-t.x, t.y)).rgb + texture(uSrc, uv + vec2(t.x, t.y)).rgb;
+  outColor = vec4(c*0.25*uScale, 1.0);
+}
+</script>
+<script type="x-shader/x-fragment" id="fs-up">
+precision highp float;
+out vec4 outColor;
+uniform sampler2D uLow; uniform sampler2D uCur; uniform vec2 uLowTexel; uniform vec2 uDstRes;
+void main(){
+  vec2 uv = gl_FragCoord.xy/uDstRes; vec2 t = uLowTexel;
+  vec3 b = texture(uLow, uv).rgb*4.0
+         + (texture(uLow, uv + vec2(t.x,0)).rgb + texture(uLow, uv - vec2(t.x,0)).rgb + texture(uLow, uv + vec2(0,t.y)).rgb + texture(uLow, uv - vec2(0,t.y)).rgb)*2.0
+         + texture(uLow, uv + t).rgb + texture(uLow, uv - t).rgb + texture(uLow, uv + vec2(t.x,-t.y)).rgb + texture(uLow, uv + vec2(-t.x,t.y)).rgb;
+  outColor = vec4(b/16.0 + texture(uCur, uv).rgb, 1.0);
+}
+</script>
+<!-- composite: exposure, ACES, the real photo, grain -->
+<script type="x-shader/x-fragment" id="fs-post">
+precision highp float;
+out vec4 outColor;
+uniform sampler2D uScene; uniform sampler2D uBloom; uniform sampler2D uPhoto;
+uniform vec2 uRes; uniform float uScale; uniform float uExposure; uniform float uBloomAmt;
+uniform float uPhotoMix; uniform float uPhotoAspect; uniform float uKB; uniform float uFrame;
+vec3 aces(vec3 x){ return clamp((x*(2.51*x + 0.03))/(x*(2.43*x + 0.59) + 0.14), 0.0, 1.0); }
+float hash(vec3 p){ p = fract(p*0.1031); p += dot(p, p.zyx + 31.32); return fract((p.x + p.y)*p.z); }
+void main(){
+  vec2 uv = gl_FragCoord.xy/uRes;
+  vec3 h = texture(uScene, uv).rgb*uScale + texture(uBloom, uv).rgb*uBloomAmt;
+  vec3 c = pow(aces(h*uExposure), vec3(1.0/2.2));
+  if (uPhotoMix > 0.0){
+    float sa = uRes.x/uRes.y; vec2 p = uv - 0.5;
+    if (sa > uPhotoAspect) p.y *= uPhotoAspect/sa; else p.x *= sa/uPhotoAspect;
+    vec3 ph = texture(uPhoto, p/uKB + 0.5).rgb;
+    c = mix(c, ph, uPhotoMix);
+  }
+  vec2 q = uv - 0.5;
+  c *= 1.0 - 0.22*dot(q, q)*2.0;
+  float n = hash(vec3(gl_FragCoord.xy, uFrame)) + hash(vec3(gl_FragCoord.yx + 17.0, uFrame)) - 1.0;
+  c += n*0.028*(1.0 - 0.7*c);
+  outColor = vec4(c, 1.0);
+}
+</script>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ───────── media: Carlos's own photographs and films ───────── */
+const NL = '../../media/Northern%20Lights/';
+const MEDIA = [
+  { kind:'photo', src:'mid/DSC_0622-4.jpg', place:'Finland, 2018' },
+  { kind:'photo', src:'mid/DSC_9764.jpg',   place:'Denmark, 2023' },
+  { kind:'photo', src:'mid/_CEV0371.JPG',   place:'Denmark, 2024' },
+  { kind:'film',  src:'AUnorthernLights.mp4', place:'Aarhus University' },
+  { kind:'photo', src:'mid/DSC_9675.jpg',   place:'Denmark, 2023' },
+  { kind:'photo', src:'mid/_CEV0835-2.jpg', place:'Denmark, 2024' },
+  { kind:'photo', src:'mid/DSC_9804.jpg',   place:'Denmark, 2023' },
+  { kind:'photo', src:'mid/_CEV0398.JPG',   place:'Denmark, 2024' },
+  { kind:'film',  src:'northern-lights.mp4', place:'Djursland' },
+  { kind:'photo', src:'mid/DSC_5026.jpg',   place:'Denmark, 2023' },
+  { kind:'photo', src:'mid/DSC_6966.jpg',   place:'Denmark, 2024' },
+  { kind:'photo', src:'mid/DSC_9860.jpg',   place:'Denmark, 2023' },
+  { kind:'photo', src:'mid/_CEV0399.JPG',   place:'Denmark, 2024' },
+  { kind:'photo', src:'mid/_CEV0388.JPG',   place:'Denmark, 2024' },
+  { kind:'photo', src:'mid/_CEV0405.JPG',   place:'Denmark, 2024' },
+];
+const FILM_IN = 2.0;
+
+/* ───────── the zoom curve ───────── */
+const LOOP = 27;
+const L = { A: Math.log10(435e3), B: Math.log10(40e3), C: Math.log10(3e3), D: Math.log10(20), E: Math.log10(8e-6), F: Math.log10(1.4e-9) };
+const KEYS = [
+  [-1.0, L.A], [4.6, L.A],          // the lake hold stays still: any drift here would lift the camera off the hill
+  [5.8, L.B + 0.03], [7.4, L.B - 0.03],
+  [8.8, L.C + 0.03], [10.4, L.C - 0.03],
+  [12.2, L.D + 0.03], [13.8, L.D - 0.03],
+  [16.6, L.E + 0.03], [18.2, L.E - 0.03],
+  [20.2, L.F + 0.03], [21.8, L.F],
+  [26.0, L.A],
+];
+// monotone cubic (Fritsch–Butland): eased, C1, never overshoots
+const SLOPES = KEYS.map((k, i) => {
+  if (i === 0 || i === KEYS.length - 1) return 0;
+  const h0 = k[0] - KEYS[i-1][0], h1 = KEYS[i+1][0] - k[0];
+  const d0 = (k[1] - KEYS[i-1][1])/h0, d1 = (KEYS[i+1][1] - k[1])/h1;
+  if (d0*d1 <= 0) return 0;
+  const w1 = 2*h1 + h0, w2 = h1 + 2*h0;
+  return (w1 + w2)/(w1/d0 + w2/d1);
+});
+function loopTime(t){ const m = ((t % LOOP) + LOOP) % LOOP; return m; }
+function logW(t){
+  let u = loopTime(t); if (u >= 26) u -= LOOP;         // curve domain is [-1, 26)
+  let i = 0; while (i < KEYS.length - 2 && u > KEYS[i+1][0]) i++;
+  const [t0, y0] = KEYS[i], [t1, y1] = KEYS[i+1], h = t1 - t0, s = (u - t0)/h;
+  const h00 = 2*s*s*s - 3*s*s + 1, h10 = s*s*s - 2*s*s + s, h01 = -2*s*s*s + 3*s*s, h11 = s*s*s - s*s;
+  return h00*y0 + h10*h*SLOPES[i] + h01*y1 + h11*h*SLOPES[i+1];
+}
+
+/* ───────── the camera ───────── */
+const RE = 6371, th = 330/RE;
+const P  = new THREE.Vector3(0, (RE + 110)*Math.cos(th) - RE, -(RE + 110)*Math.sin(th));   // 110 km up, 330 km north
+const HILL_Y = 0.000422 + 0.0017;                                                         // eye 1.7 m above the hilltop, km
+const C0 = new THREE.Vector3(0, HILL_Y, 0.0);
+const D0 = C0.distanceTo(P);
+const W0 = 435;                                                                          // km
+const TAN_HALF = (W0/2)/D0;
+const FWD = P.clone().sub(C0).normalize();
+const RIGHT = new THREE.Vector3().crossVectors(FWD, new THREE.Vector3(0,1,0)).normalize();
+const UP = new THREE.Vector3().crossVectors(RIGHT, FWD).normalize();
+const sm = (a, b, x) => { const t = Math.min(Math.max((x - a)/(b - a), 0), 1); return t*t*(3 - 2*t); };
+
+function state(t){
+  const lw = logW(t), Wm = Math.pow(10, lw), Wkm = Wm/1000;
+  const cam = P.clone().add(C0.clone().sub(P).multiplyScalar(Wkm/W0));
+  const camAlt = Math.hypot(cam.x, cam.y + RE, cam.z) - RE;
+  const Dkm = D0*Wkm/W0, Dm = Wm/(2*TAN_HALF), Dnm = Wm*1e9/(2*TAN_HALF);
+  const wKm = sm(1.6, 2.4, lw);
+  const wM  = (1 - wKm)*sm(-2.0, -0.8, lw);
+  const wNm = 1 - sm(-3.6, -2.6, lw);
+  const wGlow = Math.max(0, 1 - wKm - wM - wNm);
+  const apKm = 1e-5 + 0.003*Dkm*sm(0.3, 6, camAlt);
+  return { lw, Wm, cam, camAlt, Dkm, Dm, Dnm, w:[wKm, wM, wNm, wGlow], ap:[apKm, 0.004*Dm, 0.004*Dnm] };
+}
+function photoMix(t){ const u = loopTime(t); return u >= 25 ? sm(26.1, 26.8, u) : 1 - sm(3.6, 4.4, u); }
+function kenBurns(t){ let u = loopTime(t); if (u >= 25) u -= LOOP; return 1 + 0.07*sm(-0.9, 4.4, u); }
+
+/* ───────── chapters ───────── */
+const CH = [
+  { title:'Northern lights', fact:'The glow starts about 100 km up, roughly ten times higher than airliners fly.' },
+  { title:'The curtain',     fact:'An auroral arc can run more than 1,000 km east to west, yet be less than a kilometre thick.' },
+  { title:'The rays',        fact:'Each ray traces Earth’s magnetic field, which dips about 78° here, so the rays lean 12° from vertical.' },
+  { title:'Electrons',       fact:'Electrons carrying a few thousand electronvolts spiral down the field lines at about 30,000 km/s.' },
+  { title:'Thin air',        fact:'At 120 km the air is about 50 million times thinner than at sea level; molecules sit about a micrometre apart.' },
+  { title:'One oxygen atom', fact:'Oxygen holds the energy for about 0.74 s before releasing green light at 557.7 nm. Lower down, a collision would steal it first.' },
+];
+const HOLDS = [L.A, L.B, L.C, L.D, L.E, L.F];
+function chapterOf(lw){ let best = 0; for (let i = 1; i < 6; i++) if (Math.abs(lw - HOLDS[i]) < Math.abs(lw - HOLDS[best])) best = i; return best; }
+
+/* ───────── setup ───────── */
+const qs = new URLSearchParams(location.search);
+const EXPORT = qs.has('export');
+const EMBED = qs.has('embed');
+const FREEZE_T = qs.has('t') ? parseFloat(qs.get('t')) : null;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (EXPORT) document.body.classList.add('export');
+if (EMBED) document.body.classList.add('embed');
+
+const canvas = document.getElementById('c');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias:false, alpha:false, powerPreference:'high-performance', preserveDrawingBuffer:EXPORT }); }
+catch (e) { document.getElementById('fallback').style.display = 'grid'; throw e; }
+if (!renderer.capabilities.isWebGL2) { document.getElementById('fallback').style.display = 'grid'; }
+renderer.autoClear = false;
+THREE.ColorManagement.enabled = false;
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+const VS = 'in vec3 position; void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const src = id => document.getElementById(id).textContent;
+const tri = new THREE.BufferGeometry();
+tri.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-1,-1,0, 3,-1,0, -1,3,0]), 3));
+const ortho = new THREE.Camera();
+function pass(fs, uniforms, additive){
+  const m = new THREE.RawShaderMaterial({ glslVersion:THREE.GLSL3, vertexShader:VS, fragmentShader:fs, uniforms, depthTest:false, depthWrite:false });
+  if (additive){ m.transparent = true; m.blending = THREE.CustomBlending; m.blendEquation = THREE.AddEquation; m.blendSrc = THREE.OneFactor; m.blendDst = THREE.OneFactor; }
+  const mesh = new THREE.Mesh(tri, m); mesh.frustumCulled = false;
+  const sc = new THREE.Scene(); sc.add(mesh);
+  return { sc, u: uniforms };
+}
+const V2 = () => new THREE.Vector2(), V3 = () => new THREE.Vector3();
+const scene = pass(src('fs-scene'), {
+  uRes:{value:V2()}, uT:{value:0}, uJit:{value:V2()}, uLens:{value:V2()}, uTanHalf:{value:TAN_HALF},
+  uFwd:{value:FWD}, uRight:{value:RIGHT}, uUp:{value:UP}, uCamKm:{value:V3()}, uD:{value:V3()}, uAp:{value:V3()},
+  uW:{value:new THREE.Vector4()}, uLowCam:{value:1}, uGain:{value:1.4}, uFar:{value:1},
+}, true);
+const down = pass(src('fs-down'), { uSrc:{value:null}, uSrcTexel:{value:V2()}, uDstRes:{value:V2()}, uScale:{value:1} });
+const up   = pass(src('fs-up'),   { uLow:{value:null}, uCur:{value:null}, uLowTexel:{value:V2()}, uDstRes:{value:V2()} });
+const blackTex = new THREE.DataTexture(new Uint8Array([0,0,0,255]), 1, 1); blackTex.needsUpdate = true;
+const post = pass(src('fs-post'), {
+  uScene:{value:null}, uBloom:{value:null}, uPhoto:{value:blackTex}, uRes:{value:V2()}, uScale:{value:1},
+  uExposure:{value:1.0}, uBloomAmt:{value:0.07}, uPhotoMix:{value:0}, uPhotoAspect:{value:1.5}, uKB:{value:1}, uFrame:{value:0},
+});
+
+const rtOpts = { type:THREE.HalfFloatType, format:THREE.RGBAFormat, minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, depthBuffer:false };
+let acc = null, bDown = [], bUp = [], cssW = 0, cssH = 0, scale = EXPORT ? 1 : 0.8;
+const LEVELS = 6;
+function sizeTargets(){
+  const dpr = EXPORT ? 1 : Math.min(devicePixelRatio || 1, 2);
+  if (EXPORT){ cssW = 1080; cssH = 1350; } else { cssW = canvas.clientWidth || innerWidth; cssH = canvas.clientHeight || innerHeight; }
+  renderer.setPixelRatio(dpr); renderer.setSize(cssW, cssH, false);
+  const rDpr = EXPORT ? 1 : Math.min(devicePixelRatio || 1, 1.5);
+  const w = Math.max(64, Math.round(cssW*rDpr*scale)), h = Math.max(64, Math.round(cssH*rDpr*scale));
+  if (acc) acc.dispose(); bDown.forEach(r => r.dispose()); bUp.forEach(r => r.dispose());
+  acc = new THREE.WebGLRenderTarget(w, h, rtOpts);
+  bDown = []; bUp = [];
+  let lw = w, lh = h;
+  for (let i = 0; i < LEVELS; i++){ lw = Math.max(2, lw >> 1); lh = Math.max(2, lh >> 1); bDown.push(new THREE.WebGLRenderTarget(lw, lh, rtOpts)); bUp.push(new THREE.WebGLRenderTarget(lw, lh, rtOpts)); }
+  scene.u.uRes.value.set(w, h);
+  accCount = 0;
+}
+
+/* ───────── sub-frames ───────── */
+const halton = (i, b) => { let f = 1, r = 0; while (i > 0){ f /= b; r += f*(i % b); i = Math.floor(i/b); } return r; };
+const SUB = 12, SHUTTER = 0.5/60;
+let accCount = 0;
+function renderSub(t, i, n, lens){
+  const ts = n > 1 ? t + ((i + 0.5)/n)*SHUTTER : t;
+  const s = state(ts), u = scene.u;
+  u.uT.value = loopTime(ts);
+  u.uCamKm.value.copy(s.cam);
+  u.uD.value.set(s.Dkm, s.Dm, s.Dnm);
+  u.uW.value.set(...s.w);
+  u.uLowCam.value = s.camAlt < 2 ? 1 : 0;
+  u.uFar.value = 1 - sm(15, 70, s.camAlt);
+  if (lens){
+    u.uJit.value.set(halton(i + 1, 2) - 0.5, halton(i + 1, 3) - 0.5);
+    const r = Math.sqrt(halton(i + 1, 5)), a = 2*Math.PI*halton(i + 1, 7);
+    u.uLens.value.set(r*Math.cos(a), r*Math.sin(a));
+    u.uAp.value.set(...s.ap);
+  } else { u.uJit.value.set(0, 0); u.uLens.value.set(0, 0); u.uAp.value.set(0, 0, 0); }
+  renderer.setRenderTarget(acc);
+  if (accCount === 0) { renderer.setClearColor(0x000000, 1); renderer.clear(); }
+  renderer.render(scene.sc, ortho);
+  accCount++;
+}
+function composite(t){
+  // bloom chain
+  let srcRT = acc;
+  for (let i = 0; i < LEVELS; i++){
+    const dst = bDown[i];
+    down.u.uSrc.value = srcRT.texture; down.u.uSrcTexel.value.set(1/srcRT.width, 1/srcRT.height);
+    down.u.uDstRes.value.set(dst.width, dst.height); down.u.uScale.value = i === 0 ? 1/accCount : 1;
+    renderer.setRenderTarget(dst); renderer.render(down.sc, ortho); srcRT = dst;
+  }
+  let low = bDown[LEVELS - 1];
+  for (let i = LEVELS - 2; i >= 0; i--){
+    const dst = bUp[i];
+    up.u.uLow.value = low.texture; up.u.uCur.value = bDown[i].texture; up.u.uLowTexel.value.set(1/low.width, 1/low.height);
+    up.u.uDstRes.value.set(dst.width, dst.height);
+    renderer.setRenderTarget(dst); renderer.render(up.sc, ortho); low = dst;
+  }
+  const pu = post.u;
+  pu.uScene.value = acc.texture; pu.uBloom.value = bUp[0].texture; pu.uScale.value = 1/accCount;
+  pu.uRes.value.set(canvas.width, canvas.height);
+  pu.uFrame.value = Math.round(loopTime(t)*60) % (LOOP*60);
+  pu.uKB.value = kenBurns(t);
+  renderer.setRenderTarget(null); renderer.render(post.sc, ortho);
+}
+
+/* ───────── media slots ───────── */
+const texCache = new Map();
+let video = null, videoSlot = -1;
+function photoTex(i){
+  const m = MEDIA[i];
+  if (texCache.has(i)) return texCache.get(i);
+  const rec = { tex:null, aspect:1.5, ready:false };
+  texCache.set(i, rec);
+  if (m.kind === 'photo'){
+    new THREE.TextureLoader().load(NL + m.src.replace(/ /g, '%20'), tex => {
+      tex.colorSpace = THREE.NoColorSpace; tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false;
+      rec.tex = tex; rec.aspect = tex.image.width/tex.image.height; rec.ready = true;
+    });
+  }
+  return rec;
+}
+function filmTex(i, startFresh){
+  if (videoSlot !== i){
+    if (video){ video.pause(); video.removeAttribute('src'); video.load(); }
+    video = document.createElement('video');
+    Object.assign(video, { muted:true, playsInline:true, loop:true, preload:'auto' });
+    video.setAttribute('muted', ''); video.setAttribute('playsinline', '');
+    video.src = NL + MEDIA[i].src;
+    const rec = { tex:new THREE.VideoTexture(video), aspect:16/9, ready:false };
+    rec.tex.colorSpace = THREE.NoColorSpace; rec.tex.minFilter = THREE.LinearFilter; rec.tex.generateMipmaps = false;
+    video.addEventListener('loadeddata', () => { rec.aspect = video.videoWidth/video.videoHeight; video.currentTime = FILM_IN; rec.ready = true; video.play().catch(() => {}); }, { once:true });
+    video._rec = rec; videoSlot = i;
+  } else if (startFresh && video._rec.ready){ video.currentTime = FILM_IN; video.play().catch(() => {}); }
+  return video._rec;
+}
+// slot n is shown from 26.1 s of loop n-1 through 4.4 s of loop n; it changes at 25.5 s
+const slotAt = tAbs => Math.floor((tAbs + 1.5)/LOOP);
+let lastSlot = -1;
+function applyMedia(t, slot){
+  const i = ((slot % MEDIA.length) + MEDIA.length) % MEDIA.length;
+  const m = MEDIA[i];
+  let rec = null;
+  if (m.kind === 'film' && FREEZE_T === null && !EXPORT) rec = filmTex(i, slot !== lastSlot);
+  else if (m.kind === 'photo') rec = photoTex(i);
+  lastSlot = slot;
+  // preload the next photo
+  const nx = (i + 1) % MEDIA.length; if (MEDIA[nx].kind === 'photo') photoTex(nx);
+  const mix = rec && rec.ready ? photoMix(t) : 0;
+  post.u.uPhotoMix.value = mix;
+  if (rec && rec.ready){ post.u.uPhoto.value = rec.tex; post.u.uPhotoAspect.value = rec.aspect; }
+  if (video && m.kind !== 'film' && !video.paused) video.pause();
+  return { m, mix };
+}
+
+/* ───────── HUD ───────── */
+const $ = id => document.getElementById(id);
+const ruler = $('ruler');
+const R_TOP = 6, R_BOT = -10;                                   // 1000 km … 0.1 nm, log10 metres
+const rFrac = lw => (R_TOP - lw)/(R_TOP - R_BOT);
+(function buildRuler(){
+  const labels = { 6:'1000 km', 3:'1 km', 0:'1 m', [-3]:'1 mm', [-6]:'1 µm', [-9]:'1 nm', [-10]:'0.1 nm' };
+  for (let e = R_TOP; e >= R_BOT; e--){
+    const tk = document.createElement('div'); tk.className = 'tick' + (labels[e] ? ' major' : '');
+    tk.style.top = (rFrac(e)*100) + '%'; ruler.appendChild(tk);
+    if (labels[e]){ const lb = document.createElement('div'); lb.className = 'lab'; lb.textContent = labels[e]; lb.style.top = (rFrac(e)*100) + '%'; ruler.appendChild(lb); }
+  }
+  const mk = document.createElement('div'); mk.className = 'mark'; mk.id = 'mark'; ruler.appendChild(mk);
+})();
+function fmtLen(m){
+  const units = [[1e3,'km'],[1,'m'],[1e-3,'mm'],[1e-6,'µm'],[1e-9,'nm']];
+  for (const [f, u] of units){ if (m >= f*0.9995 || u === 'nm'){ const v = m/f; return (v >= 100 ? Math.round(v) : Number(v.toPrecision(3))) + ' ' + u; } }
+}
+const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻' };
+function fmtMag(x){
+  if (x < 999.5) return '×' + (x < 10 ? x.toFixed(2) : x < 100 ? x.toFixed(1) : Math.round(x));
+  const e = Math.floor(Math.log10(x)); const m = x/Math.pow(10, e);
+  return '×' + m.toFixed(1) + ' × 10<sup>' + e + '</sup>';
+}
+let hudCh = -1, hudKind = '';
+function swapText(el, html){ el.classList.add('out'); setTimeout(() => { el.innerHTML = html; el.classList.remove('out'); }, 260); }
+function updateHUD(t, media){
+  const s = state(t), ch = chapterOf(s.lw), u = loopTime(t);
+  if (ch !== hudCh){
+    if (hudCh < 0){ $('title').textContent = CH[ch].title; $('fact').textContent = CH[ch].fact; }
+    else { swapText($('title'), CH[ch].title); swapText($('fact'), CH[ch].fact); }
+    document.querySelectorAll('#steps span').forEach((el, k) => el.classList.toggle('on', k === ch));
+    $('legend').hidden = ch !== 4;
+    hudCh = ch;
+  }
+  let note = '';
+  if (ch === 3) note = 'Shown about 2 million times slower';
+  if (ch === 5) note = (u > 20.2 && u < 21.8) ? 'The electron is slowed; the 0.74 s wait is real time' : 'The electron is slowed';
+  if ($('tnote').textContent !== note) $('tnote').textContent = note;
+  $('mag').innerHTML = fmtMag(435e3/s.Wm);
+  $('fov').textContent = 'Field of view ' + fmtLen(s.Wm);
+  $('mark').style.top = `calc(${(rFrac(s.lw)*100).toFixed(3)}% - 1px)`;
+  const kind = media && media.mix > 0.5 ? (media.m.kind === 'film' ? 'My film' : 'My photograph') : 'Simulation';
+  const place = kind === 'Simulation' ? '' : media.m.place;
+  if (kind !== hudKind){ $('cap-kind').textContent = kind; $('cap-place').textContent = place; hudKind = kind; }
+}
+
+/* ───────── loop ───────── */
+let paused = false, hidden = false, t0 = performance.now(), tPaused = 0, pausedAt = 0;
+let frames = [], lastNow = 0, resizePending = true, lastResize = 0;
+const frozen = FREEZE_T !== null || REDUCED;
+const tFrozen = FREEZE_T !== null ? FREEZE_T : 9.6;
+const slotFrozen = qs.has('slot') ? parseInt(qs.get('slot'), 10) : 0;
+
+addEventListener('resize', () => { resizePending = true; });
+function tick(now){
+  requestAnimationFrame(tick);
+  if (resizePending && (!acc || now - lastResize > 150)){ sizeTargets(); resizePending = false; lastResize = now; }
+  if (frozen){
+    if (accCount < SUB){ renderSub(tFrozen, accCount, SUB, true); const md = applyMedia(tFrozen, slotFrozen); composite(tFrozen); updateHUD(tFrozen, md); }
+    return;
+  }
+  if (paused || hidden) { lastNow = 0; return; }
+  const t = (now - t0 - tPaused)/1000;
+  accCount = 0;
+  renderSub(t, 0, 1, false);
+  const md = applyMedia(t, slotAt(t) + slotFrozen);
+  composite(t);
+  updateHUD(t, md);
+  // keep the frame rate: adjust render scale
+  if (lastNow){ frames.push(now - lastNow); if (frames.length > 24) frames.shift(); }
+  lastNow = now;
+  if (frames.length === 24 && now - lastResize > 1200){
+    const avg = frames.reduce((a, b) => a + b, 0)/frames.length;
+    if (avg > 21 && scale > 0.42){ scale = Math.max(0.42, scale*0.85); resizePending = true; frames = []; }
+    else if (avg < 17.6 && scale < 1){ scale = Math.min(1, scale*1.08); resizePending = true; frames = []; }
+  }
+}
+
+function setPaused(p){
+  if (p === paused) return;
+  paused = p;
+  if (p) pausedAt = performance.now(); else tPaused += performance.now() - pausedAt;
+  if (video) p ? video.pause() : (MEDIA[videoSlot]?.kind === 'film' && video.play().catch(() => {}));
+  $('pp').setAttribute('aria-label', p ? 'Play animation' : 'Pause animation');
+  $('pp').innerHTML = p ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>'
+                        : '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>';
+}
+$('pp').addEventListener('click', () => setPaused(!paused));
+if (frozen) $('pp').style.display = 'none';
+document.addEventListener('visibilitychange', () => { const h = document.hidden; if (h && !hidden) pausedAt = performance.now(); if (!h && hidden) tPaused += performance.now() - pausedAt; hidden = h; });
+// the parent page tells us when we scroll out of view
+addEventListener('message', e => {
+  if (e.origin !== location.origin || !e.data || e.data.auroraZoom === undefined) return;
+  const h = e.data.auroraZoom === 'hide';
+  if (h && !hidden) pausedAt = performance.now();
+  if (!h && hidden) tPaused += performance.now() - pausedAt;
+  hidden = h;
+  if (video) h ? video.pause() : (!paused && MEDIA[videoSlot]?.kind === 'film' && video.play().catch(() => {}));
+});
+
+/* ───────── deterministic API ───────── */
+window.renderAt = function(t, slot = 0){
+  if (resizePending){ sizeTargets(); resizePending = false; }
+  accCount = 0;
+  for (let i = 0; i < SUB; i++) renderSub(t, i, SUB, true);
+  const md = applyMedia(t, slot);
+  composite(t); updateHUD(t, md);
+  return canvas;
+};
+window.auroraState = state;
+window.auroraLogW = logW;
+
+if (EXPORT){ sizeTargets(); resizePending = false; window.renderAt(FREEZE_T ?? 0, slotFrozen); }
+else requestAnimationFrame(tick);
+</script>
+</body>
+</html>
