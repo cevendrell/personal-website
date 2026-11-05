@@ -223,21 +223,10 @@
     @media (max-width: 560px) { .exp-head { flex-direction: column; align-items: flex-start; gap: 0.6rem; } .exp-body { padding: 1.1rem; } }
 
     /* ── ARCADE: two cabinets on a synthwave floor. Grid Race leans Miami neon, Tetris leans 8-bit pixel ── */
-    .exp--games { background: #0d0221; border-color: #2a0b4e; }
-    .exp--games .exp-head { background: #12042a; border-bottom-color: rgba(255,46,151,0.25); }
-    .exp--games .exp-id { color: #b9a3e3; }
+    .exp--games { background: transparent; box-shadow: none; }
+    .exp--games .exp-head { background: transparent; }
     .exp--games .exp-id em { color: #ff2e97; }
-    .exp--games .exp-id b { color: #fff; }
-    .arcade { position: relative; overflow: hidden; isolation: isolate; padding: 1.8rem 1.6rem 4.5rem;
-      background: linear-gradient(180deg, #0d0221 0%, #1a0536 40%, #3a0d5c 66%, #12042a 100%); }
-    .arcade::before { content: ''; position: absolute; z-index: -1; left: 50%; bottom: 18%; width: 900px; height: 360px; transform: translateX(-50%);
-      background: radial-gradient(ellipse at 50% 100%, rgba(255,138,61,0.35), rgba(255,46,151,0.22) 40%, transparent 70%); }
-    .arcade::after { content: ''; position: absolute; z-index: -1; left: -50%; right: -50%; bottom: -6%; height: 34%;
-      background-image: linear-gradient(rgba(255,46,151,0.55) 1px, transparent 1px), linear-gradient(90deg, rgba(255,46,151,0.55) 1px, transparent 1px);
-      background-size: 56px 56px; transform: perspective(320px) rotateX(62deg); transform-origin: 50% 100%;
-      -webkit-mask: linear-gradient(transparent, #000 60%); mask: linear-gradient(transparent, #000 60%); opacity: 0.55;
-      animation: arcadeFloor 3s linear infinite; }
-    @keyframes arcadeFloor { to { background-position: 0 56px, 0 0; } }
+    .arcade { padding: 1.8rem 1.6rem 2.4rem; }
     .arcade-lede { color: #d9c9ff; font-size: 0.92rem; line-height: 1.7; max-width: 62ch; margin: 0 0 1.6rem; }
     .arcade-lede kbd { font-family: 'Press Start 2P', monospace; font-size: 0.55rem; color: #0d0221; background: #ffe14d; border-radius: 2px; padding: 2px 5px; box-shadow: 2px 2px 0 #ff2e97; }
     .arcade-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1.6rem; align-items: stretch; }
@@ -319,7 +308,7 @@
       .hud-val { font-size: 0.7rem; }
       #tetrisNext { width: 56px; height: 56px; }
     }
-    @media (prefers-reduced-motion: reduce) { .arcade::after, .cab-overlay .cab-btn { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .cab-overlay .cab-btn { animation: none; } }
 
     /* ── FEATURED STUDIO BLOCKS (Bike Fit, Pump Teardown) ── */
     .bikefit-block { display: grid; grid-template-columns: 1.15fr 1fr; overflow: hidden; color: inherit; background: var(--panel); transition: background 0.3s; }

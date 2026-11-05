@@ -153,19 +153,18 @@
       display: flex; align-items: flex-end;
     }
     .hero-img {
-      display: block; height: 80vh; width: auto; max-width: none;
-      user-select: none; object-fit: cover;
+      display: block; height: min(58vh, 520px); width: auto; max-width: none;
+      user-select: none; margin-bottom: 4vh;
     }
     /* Gradient: solid dark left → transparent right */
     #hero::before {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(
         to right,
-        rgba(12,13,18,1)    0%,
-        rgba(12,13,18,0.98) 40%,
-        rgba(12,13,18,0.72) 60%,
-        rgba(12,13,18,0.1)  80%,
-        rgba(12,13,18,0)    100%
+        rgba(12,13,18,0.95) 0%,
+        rgba(12,13,18,0.85) 35%,
+        rgba(12,13,18,0.2)  55%,
+        rgba(12,13,18,0)    70%
       );
       z-index: 1;
     }
@@ -513,7 +512,7 @@
 <section id="hero">
   <div class="hero-img-wrap" aria-hidden="true">
     <div class="hero-img-center">
-      <img src="../../media/3DPrinting/ChatGPT Image May 25, 2025, 08_29_37 PM.png"
+      <img src="../../media/3DPrinting/spools.png"
            alt="" class="hero-img">
     </div>
   </div>
