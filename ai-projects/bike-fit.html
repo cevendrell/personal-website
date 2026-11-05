@@ -60,6 +60,8 @@
       border-bottom: 1px solid transparent; transition: all 0.3s ease;
     }
     nav#navbar.scrolled { padding: 0.85rem 2.5rem; background: rgba(14,15,17,0.94); border-bottom-color: rgba(255,255,255,0.08); }
+    /* Same bar height on every page: do not inherit the body line-height */
+    nav#navbar { line-height: normal; }
     .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; color: #fff; }
     .nav-links { display: flex; gap: 2.25rem; list-style: none; align-items: center; }
     .nav-item { position: relative; }
@@ -80,6 +82,7 @@
     .hamburger span { width: 22px; height: 1.5px; background: #fff; display: block; transition: all 0.3s; }
     @media (max-width: 768px) {
       nav#navbar { padding: 1rem 1.5rem; }
+      nav#navbar.scrolled { padding: 0.85rem 1.5rem; }
       .nav-links, .nav-socials { display: none; }
       .hamburger { display: flex; }
     }

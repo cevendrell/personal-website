@@ -70,6 +70,8 @@
       transition: all 0.3s ease;
     }
     nav#navbar.scrolled {
+    /* Same bar height on every page: do not inherit the body line-height */
+    nav#navbar { line-height: normal; }
       padding: 0.85rem 2.5rem;
       background: rgba(10, 11, 16, 0.82);
       border-bottom-color: var(--line);
@@ -167,7 +169,8 @@
     }
     @media (max-width: 768px) {
       nav#navbar { padding: 1rem 1.5rem; }
-      nav#navbar.scrolled { padding: 0.75rem 1.5rem; }
+      nav#navbar.scrolled { padding: 0.85rem 1.5rem; }
+      nav#navbar.scrolled { padding: 0.85rem 2.5rem; }
       .nav-links { display: none; }
       .nav-cta { display: none; }
       .hamburger { display: flex; }

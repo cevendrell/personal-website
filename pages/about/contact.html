@@ -50,6 +50,8 @@
       border-bottom: 1px solid transparent; transition: all 0.3s ease;
     }
     nav#navbar.scrolled { padding: 0.85rem 2.5rem; background: rgba(10,11,16,0.82); border-bottom-color: var(--line); }
+    /* Same bar height on every page: do not inherit the body line-height */
+    nav#navbar { line-height: normal; }
     .nav-logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text); display: flex; align-items: center; gap: 0.65rem; }
     .nav-logo span { color: inherit; }
     .nav-links { display: flex; gap: 2.25rem; list-style: none; align-items: center; }
@@ -69,7 +71,7 @@
     .hamburger span { width: 22px; height: 1.5px; background: var(--text); display: block; transition: all 0.3s; }
     @media (max-width: 768px) {
       nav#navbar { padding: 1rem 1.5rem; }
-      nav#navbar.scrolled { padding: 0.75rem 1.5rem; }
+      nav#navbar.scrolled { padding: 0.85rem 1.5rem; }
       .nav-links { display: none; }
       .nav-cta { display: none; }
       .hamburger { display: flex; }
