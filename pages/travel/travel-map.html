@@ -1330,7 +1330,6 @@
     <div class="geoguessr-band-inner">
       <div class="geoguessr-callout">
         <h2>Want to play some Geoguessr?</h2>
-        <p>Ten random photos from my travels; guess where each was taken by clicking on the map. The closer the pin, the more points.</p>
       </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
@@ -2567,7 +2566,8 @@ function runGlobeInit() {
 
   // ── State machine ────────────────────────────────────────
   const POOL = window.TRAVEL_DATA.filter(d => d.p && d.p.length);
-  const PHOTO_PATH = '../../media/travel/photos/';
+  // 1400px versions: the originals are 3-19 MB each, far too slow for a round
+  const PHOTO_PATH = '../../media/travel/medium/';
   const ROUNDS = 10;
   const LS_KEY = 'cv_travelGame_leaderboard_v1';
   const SS_ADMIN_KEY = 'cv_travelGame_admin';
@@ -2652,12 +2652,6 @@ function runGlobeInit() {
     return a;
   }
   function fmtNumber(n)  { return n.toLocaleString(); }
-  function fmtKm(km) {
-    if (km < 10)   return km.toFixed(1) + ' km';
-    if (km < 1000) return Math.round(km) + ' km';
-    return (km / 1000).toFixed(1).replace(/\.0$/, '') + ',000 km'.replace(',000','') + (km >= 1000 ? ' km' : '');
-  }
-  // Cleaner formatter
   function fmtDist(km) {
     if (km < 1)    return Math.round(km * 1000) + ' m';
     if (km < 100)  return km.toFixed(1) + ' km';
@@ -2667,15 +2661,19 @@ function runGlobeInit() {
   // ── Game flow ────────────────────────────────────────────
   async function startGame() {
     if (POOL.length < ROUNDS) {
-      els.msg.textContent = 'Not enough photos available for a full game.';
+      els.start.textContent = 'Not enough photos for a game';
       return;
     }
+    const label = els.start.textContent;
+    els.start.disabled = true; els.again.disabled = true;
     try { await loadLeaflet(); }
     catch (e) {
       console.error(e);
-      els.msg.textContent = 'Map library failed to load. Check your connection and try again.';
+      els.start.disabled = false; els.again.disabled = false;
+      els.start.textContent = 'Map failed to load. Try again';
       return;
     }
+    els.start.disabled = false; els.again.disabled = false; els.start.textContent = label;
 
     // Pick 10 distinct random records, pick one photo per record
     rounds = shuffle(POOL).slice(0, ROUNDS).map(rec => ({
@@ -2692,6 +2690,7 @@ function runGlobeInit() {
     show(els.bar); show(els.stage); show(els.actions);
 
     initMap();
+    map.invalidateSize();          // the map was hidden; make sure it knows its size
     loadRound();
   }
 
@@ -2701,7 +2700,7 @@ function runGlobeInit() {
       center: [20, 0],
       zoom: 2,
       minZoom: 2,
-      maxZoom: 12,
+      maxZoom: 8,                  // the physical map has no tiles beyond zoom 8
       worldCopyJump: true,
       attributionControl: false,
       zoomControl: true,
@@ -2716,7 +2715,7 @@ function runGlobeInit() {
 
   function onMapClick(e) {
     if (!rounds[roundIdx] || rounds[roundIdx].guess) return; // already submitted
-    placeGuessMarker(e.latlng);
+    placeGuessMarker(e.latlng.wrap());   // a click on a repeated world copy still means -180..180
     els.submit.disabled = false;
     els.mapHint.classList.add('hidden');
     els.map.classList.add('has-guess');
@@ -2751,9 +2750,18 @@ function runGlobeInit() {
 
     // Photo
     els.photoImg.classList.add('loading');
+    els.photoImg.onload = () => els.photoImg.classList.remove('loading');
+    els.photoImg.onerror = () => {          // missing photo: swap in a place not used this game
+      const used = new Set(rounds.map(x => x.rec));
+      const spare = shuffle(POOL).find(rec => !used.has(rec));
+      if (!spare) return;
+      rounds[roundIdx] = { rec: spare, photo: spare.p[Math.floor(Math.random() * spare.p.length)], guess: null, distanceKm: null, points: 0 };
+      els.photoImg.src = PHOTO_PATH + encodeURI(rounds[roundIdx].photo);
+    };
     els.photoImg.src = PHOTO_PATH + encodeURI(r.photo);
     els.photoImg.alt = 'Guess the location of photo ' + (roundIdx + 1);
-    els.photoImg.onload = () => els.photoImg.classList.remove('loading');
+    const nxt = rounds[roundIdx + 1];
+    if (nxt) { const pre = new Image(); pre.src = PHOTO_PATH + encodeURI(nxt.photo); }
     els.photoCount.textContent = 'Photo ' + (roundIdx + 1) + ' / ' + ROUNDS;
     els.roundLabel.innerHTML = 'Round <strong>' + (roundIdx + 1) + '</strong> / ' + ROUNDS;
     els.score.textContent = fmtNumber(totalScore);
@@ -2978,6 +2986,12 @@ function runGlobeInit() {
   els.lbClose.addEventListener('click', resetToIdle);
   els.lbClear.addEventListener('click', clearLeaderboard);
   els.lbKey.addEventListener('click', toggleAdmin);
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' || els.stage.classList.contains('gg-hidden')) return;
+    if (/INPUT|TEXTAREA|BUTTON/.test(document.activeElement && document.activeElement.tagName)) return;
+    if (!els.submit.classList.contains('gg-hidden') && !els.submit.disabled) { e.preventDefault(); submitGuess(); }
+    else if (!els.next.classList.contains('gg-hidden')) { e.preventDefault(); nextRound(); }
+  });
 })();
 </script>
 
