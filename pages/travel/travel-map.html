@@ -664,24 +664,17 @@
       backdrop-filter: blur(6px); padding: 0.3rem 0.55rem;
       border-radius: 999px; border: 1px solid rgba(255,255,255,0.12);
     }
+    /* A real map: the globe's satellite texture (already loaded on this page), cropped to East Africa
+       with the pin on Ngorongoro, where the preview's lion photo was taken */
     .gg-prev-map {
-      position: relative;
-      background:
-        radial-gradient(circle at 30% 40%, rgba(106,141,181,0.18), transparent 60%),
-        radial-gradient(circle at 70% 65%, rgba(200,120,74,0.10), transparent 60%),
-        linear-gradient(135deg, #0d1228 0%, #050818 100%);
-      overflow: hidden;
+      position: relative; overflow: hidden;
+      background: #050818 url('../../media/shared/earth-marble.jpg') no-repeat;
+      background-size: 520% auto;
+      background-position: 62.3% 53.5%;
     }
-    /* Continent silhouettes — rough abstract shapes hinting at a world map */
     .gg-prev-map::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        radial-gradient(ellipse 30% 22% at 22% 38%, rgba(232,220,196,0.18) 0%, rgba(232,220,196,0.10) 50%, transparent 70%),
-        radial-gradient(ellipse 18% 28% at 52% 60%, rgba(232,220,196,0.16) 0%, rgba(232,220,196,0.08) 50%, transparent 70%),
-        radial-gradient(ellipse 22% 18% at 78% 35%, rgba(232,220,196,0.14) 0%, rgba(232,220,196,0.07) 50%, transparent 70%),
-        radial-gradient(ellipse 14% 14% at 80% 70%, rgba(232,220,196,0.12) 0%, transparent 70%);
-      pointer-events: none;
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(5,8,24,0.55) 100%), rgba(5,8,24,0.12);
     }
     /* Lat-long grid */
     .gg-prev-map::after {
@@ -693,7 +686,7 @@
       pointer-events: none;
     }
     .gg-prev-pin {
-      position: absolute; left: 38%; top: 52%;
+      position: absolute; left: 50%; top: 50%;
       width: 14px; height: 14px;
       transform: translate(-50%, -50%);
       z-index: 2;
