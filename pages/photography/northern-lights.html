@@ -285,12 +285,12 @@
 
     /* Films: full-bleed panels */
     .film { position: relative; z-index: 2; margin: 5rem 0 0; }
-    .film-frame { --inset: 0px; --r: 0px; position: relative; width: 100%; height: min(78vh, 56.25vw); overflow: hidden; background: #000;
-      }
+    /* each film keeps its own aspect ratio (--ar); narrower than the screen only when it would be taller than it */
+    .film-frame { position: relative; width: min(100%, calc(84vh * var(--ar, 1.5))); aspect-ratio: var(--ar, 1.5); margin: 0 auto; overflow: hidden; background: #000; }
     .film-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .film-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none;
       background: linear-gradient(to top, rgba(0,0,0,0.6), transparent 40%), linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 25%); }
-    .film-cap { position: absolute; z-index: 2; left: max(2rem, calc((100vw - 1100px) / 2 + 2rem)); right: max(2rem, calc((100vw - 1100px) / 2 + 2rem)); bottom: 1.8rem;
+    .film-cap { position: absolute; z-index: 2; left: max(2rem, calc((100% - 1100px) / 2 + 2rem)); right: max(2rem, calc((100% - 1100px) / 2 + 2rem)); bottom: 1.8rem;
       display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; color: #fff; pointer-events: none; }
     .film-tag { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #6fef8a; margin-bottom: 0.4rem; }
     .film-title { font-size: clamp(1.4rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; text-shadow: 0 4px 24px rgba(0,0,0,0.6); }
@@ -299,7 +299,7 @@
     .film-toggle:hover { background: rgba(255,255,255,0.22); }
     .film-toggle svg { width: 16px; height: 16px; }
     .film--finale { margin-top: 6rem; }
-    .film--finale .film-frame { height: min(92vh, 62vw); }
+    .film--finale .film-frame { width: min(100%, calc(92vh * var(--ar, 1.5))); }
     .nl-outro { position: relative; z-index: 2; text-align: center; padding: 3.5rem 1.5rem 4.5rem; color: var(--mute); font-size: 0.9rem; }
     .nl-outro a { color: #b6f5a0; border-bottom: 1px solid rgba(182,245,160,0.35); }
 
@@ -327,8 +327,6 @@
       .night-grid .aur.big { grid-column: span 2 !important; grid-row: span 2 !important; }
       .night-grid .aur.tall { grid-row: span 2 !important; }
       .film { margin-top: 3.5rem; }
-      .film-frame { --inset: 0px; --r: 0px; height: 62vw; }
-      .film--finale .film-frame { height: 70vw; }
       .film-cap { left: 1.25rem; right: 1.25rem; bottom: 1rem; }
       .nl-lightbox { padding: 3.5rem 0.75rem 1.5rem; }
       .nl-prev, .nl-next { top: auto; bottom: 1rem; transform: none; }
@@ -608,7 +606,7 @@
 
 <div id="videos"></div>
 <figure class="film">
-  <div class="film-frame">
+  <div class="film-frame" style="--ar: 1920 / 1348">
     <video autoplay muted loop playsinline preload="metadata" disableRemotePlayback>
       <source src="../../media/Northern Lights/AUnorthernLights.mp4" type="video/mp4">
     </video>
@@ -620,7 +618,7 @@
 </figure>
 
 <figure class="film film--finale">
-  <div class="film-frame">
+  <div class="film-frame" style="--ar: 1280 / 852">
     <video autoplay muted loop playsinline preload="metadata" disableRemotePlayback>
       <source src="../../media/Northern Lights/northern-lights.mp4" type="video/mp4">
     </video>
