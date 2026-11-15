@@ -195,7 +195,7 @@ sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.2;
 sun.shadow.camera.near = 10; sun.shadow.camera.far = 7000;
 scene.add(sun, sun.target);
 
-const DATA_VERSION = 6;           // bump with every data change so browsers refetch
+const DATA_VERSION = 9;           // bump with every data change so browsers refetch
 async function getJSON(p) {
   const r = await fetch(new URL(p + '?v=' + DATA_VERSION, import.meta.url));
   if (!r.ok) throw new Error(p + ' ' + r.status);
@@ -308,8 +308,12 @@ function buildGround(city) {
 }
 
 /* ── buildings: walls, flat / gabled / pyramid / dome roofs ───────────── */
-function buildBuildings(city) {
+function buildBuildings(city, models = {}) {
   const u = city.unit, cols = (city.cols || []).map((h) => C(h));
+  // the hand-built landmarks replace whatever OSM has inside their footprints
+  const replaced = ['lighthouse', 'dokk1', 'navitas', 'bestseller'].filter((k) => models[k]).map((k) => ringOf(models[k]));
+  const radhus = models.radhus ? ringOf(models.radhus) : null;
+  const marble = C('#d9d6cd'), copper = C('#8fb3a1'), leadGrey = C('#9a9c9e');
   const wallBase = C(PAL.wall), flatBase = C(PAL.roofFlat), tile = C(PAL.roofTile), slate = C(PAL.roofSlate);
   const pos = [], col = [];
   const push = (x, y, z, c) => { pos.push(x, y, z); col.push(c.r, c.g, c.b); };
@@ -320,11 +324,17 @@ function buildBuildings(city) {
     const pts = [];
     for (let i = 6; i < b.length; i += 2) pts.push([b[i] * u, b[i + 1] * u]);
     const n = pts.length; if (n < 3) continue;
+    const ctr = centroid(pts);
+    if (replaced.some((r) => pip(ctr[0], ctr[1], r))) continue;
+    if (models.aros && mh >= 44 && Math.hypot(ctr[0] - models.aros[0], ctr[1] - models.aros[1]) < models.aros[2] + 8) continue;   // drawn as one glass ring instead
+    const inRadhus = radhus && pip(ctr[0], ctr[1], radhus);
     const jitter = (hash(bi) - 0.5) * 0.06;
-    const wall = (wc >= 0 ? wallBase.clone().lerp(cols[wc], 0.55) : wallBase.clone()).offsetHSL(0, 0, jitter);
+    let wall = (wc >= 0 ? wallBase.clone().lerp(cols[wc], 0.55) : wallBase.clone()).offsetHSL(0, 0, jitter);
+    if (inRadhus) wall = marble.clone();                                    // Norwegian marble cladding
     const wallLo = mh < 0.5 ? wall.clone().multiplyScalar(0.8) : wall;   // soft contact shade at street level
     let roof;
-    if (rcol >= 0) roof = flatBase.clone().lerp(cols[rcol], 0.7);
+    if (inRadhus) roof = (h >= 54 ? copper : leadGrey).clone();
+    else if (rcol >= 0) roof = flatBase.clone().lerp(cols[rcol], 0.7);
     else if (rc === 1 || rc === 2) roof = (hash(bi * 3 + 1) < 0.62 ? tile : slate).clone();
     else roof = flatBase.clone();
     roof.offsetHSL(0, 0, jitter);
@@ -388,16 +398,210 @@ function buildTrees(city) {
   inst.castShadow = true; inst.receiveShadow = true;
   scene.add(inst);
 }
-function buildLandmarkExtras(lm) {
-  const aros = lm.find((l) => l.name === 'ARoS');
-  if (!aros) return;                              // Your rainbow panorama
-  const g = new THREE.TorusGeometry(26, 2.4, 10, 120); g.rotateX(Math.PI / 2);
-  const c = [], p = g.attributes.position, tmp = new THREE.Color();
-  for (let i = 0; i < p.count; i++) { tmp.setHSL((Math.atan2(p.getZ(i), p.getX(i)) / (Math.PI * 2) + 1) % 1, 0.85, 0.6); c.push(tmp.r, tmp.g, tmp.b); }
-  g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-  const ring = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, emissive: C('#222222') }));
-  ring.position.set(aros.x, 46.5, aros.z); ring.castShadow = true;
-  scene.add(ring);
+/* ── landmarks: hand-built models of the buildings along the course ──── */
+const ringOf = (flat) => { const r = []; for (let i = 0; i < flat.length; i += 2) r.push([flat[i], flat[i + 1]]); return r; };
+const centroid = (r) => r.reduce((a, p) => [a[0] + p[0] / r.length, a[1] + p[1] / r.length], [0, 0]);
+const scaleRing = (r, s, c = centroid(r)) => r.map((p) => [c[0] + (p[0] - c[0]) * s, c[1] + (p[1] - c[1]) * s]);
+function pip(x, z, r) {
+  let ins = false;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+    const [xi, zi] = r[i], [xj, zj] = r[j];
+    if ((zi > z) !== (zj > z) && x < (xj - xi) * (z - zi) / (zj - zi) + xi) ins = !ins;
+  }
+  return ins;
+}
+function canvasTex(w, h, draw) {
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  draw(cv.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+}
+// one facade tile = one bay wide, one floor high
+const FACADE = {
+  lighthouse: () => canvasTex(128, 128, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#a9c0cf'); gr.addColorStop(1, '#8aa5b8');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(w * 0.48, 0, 3, h);
+    g.fillStyle = '#f7f6f2'; g.fillRect(0, 0, w, h * 0.3);                    // balcony slab edge
+  }),
+  dokk1: () => canvasTex(128, 128, (g, w, h) => {
+    g.fillStyle = '#dedad2'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#4a5560'; g.fillRect(0, h * 0.36, w, h * 0.34);               // the long window band
+    g.fillStyle = 'rgba(255,255,255,.25)'; for (let x = 0; x < w; x += 32) g.fillRect(x, h * 0.36, 2, h * 0.34);
+  }),
+  glass: () => canvasTex(128, 128, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#9db8c2'); gr.addColorStop(1, '#7f9ea9');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#eef0ee'; g.fillRect(0, 0, w, 10);                           // floor line
+    g.fillStyle = 'rgba(238,240,238,.8)'; for (let x = 0; x < w; x += 32) g.fillRect(x, 0, 3, h);
+  }),
+  dark: () => canvasTex(128, 128, (g, w, h) => {
+    g.fillStyle = '#34353b'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#7d8a96'; for (let x = 10; x < w; x += 32) g.fillRect(x, h * 0.18, 12, h * 0.66);   // tall slit windows
+  }),
+  marble: () => canvasTex(128, 128, (g, w, h) => {
+    g.fillStyle = '#d9d6cd'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#5c6670'; g.fillRect(w * 0.3, h * 0.25, w * 0.4, h * 0.55);   // the Rådhus' square window grid
+  }),
+};
+// walls of a ring from y0 up to top(i) (a number or a per-vertex function), UVs in bays and floors
+function wallGeo(ring, y0, top, bay, floor, out = 0) {
+  const pos = [], uv = [], n = ring.length, topAt = typeof top === 'function' ? top : () => top;
+  let run = 0;
+  for (let i = 0; i < n; i++) {
+    const [ax, az] = ring[i], [bx, bz] = ring[(i + 1) % n], L = Math.hypot(bx - ax, bz - az);
+    const ta = topAt(i), tb = topAt((i + 1) % n);
+    pos.push(ax, y0, az, bx, y0, bz, bx, tb, bz, ax, y0, az, bx, tb, bz, ax, ta, az);
+    const u0 = run / bay, u1 = (run + L) / bay;
+    uv.push(u0, y0 / floor, u1, y0 / floor, u1, tb / floor, u0, y0 / floor, u1, tb / floor, u0, ta / floor);
+    run += L;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.computeVertexNormals();
+  return g;
+}
+function capGeo(ring, top) {
+  const pos = [], topAt = typeof top === 'function' ? top : () => top;
+  let tris; try { tris = THREE.ShapeUtils.triangulateShape(ring.map((p) => new THREE.Vector2(p[0], p[1])), []); } catch { tris = []; }
+  for (const t of tris) for (const k of t) pos.push(ring[k][0], topAt(k), ring[k][1]);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.computeVertexNormals();
+  return g;
+}
+function slabGeo(ring, y0, y1) {     // a closed flat slab (walls + top + bottom)
+  const w = wallGeo(ring, y0, y1, 10, 10), a = capGeo(ring, y1), b = capGeo(ring, y0);
+  const pos = [...w.attributes.position.array, ...a.attributes.position.array, ...b.attributes.position.array];
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
+  return g;
+}
+function landmarkMesh(geo, mat) {
+  mat.onBeforeCompile = addGrow;          // grows with the city, but never fades into the edge (the Lighthouse stands near it)
+  const m = new THREE.Mesh(geo, mat);
+  m.customDepthMaterial = growDepth(); m.castShadow = true; m.receiveShadow = true;
+  scene.add(m); return m;
+}
+const LM_MAT = (opts) => new THREE.MeshLambertMaterial({ side: THREE.DoubleSide, ...opts });
+
+function buildLandmarks(models, lm) {
+  if (!models) return;
+  // Lighthouse (Aarhus Ø, 142 m): glass tower, undulating white balconies, sloping crown
+  if (models.lighthouse) {
+    const r = ringOf(models.lighthouse), c = centroid(r);
+    let far = r[0]; for (const p of r) if (Math.hypot(p[0] - c[0], p[1] - c[1]) > Math.hypot(far[0] - c[0], far[1] - c[1])) far = p;
+    const dx = far[0] - c[0], dz = far[1] - c[1], dl = Math.hypot(dx, dz) || 1;
+    const crown = (i) => 128 + 14 * (0.5 + 0.5 * ((r[i][0] - c[0]) * dx + (r[i][1] - c[1]) * dz) / (dl * dl));
+    const tex = FACADE.lighthouse();
+    landmarkMesh(wallGeo(r, 0, crown, 4, 3.15), LM_MAT({ map: tex }));
+    landmarkMesh(capGeo(r, crown), LM_MAT({ color: C('#f2f1ec') }));
+    const slabs = [];
+    for (let f = 2; f * 3.15 < 124; f++) {
+      const s = 1.035 + 0.03 * Math.sin(f * 0.55);                            // the balconies wave up the tower
+      const g = slabGeo(scaleRing(r, s, c), f * 3.15 - 0.35, f * 3.15);
+      slabs.push(g);
+    }
+    const merged = mergeGeos(slabs);
+    landmarkMesh(merged, LM_MAT({ color: C('#fbfaf6') }));
+  }
+  // Dokk1: recessed glass ground floor, light volume with a window band, overhanging deck, glass pavilion
+  if (models.dokk1) {
+    const r = ringOf(models.dokk1), c = centroid(r);
+    landmarkMesh(wallGeo(scaleRing(r, 0.93, c), 0, 5.5, 6, 5.5), LM_MAT({ map: FACADE.glass() }));
+    landmarkMesh(wallGeo(r, 5.5, 16.5, 8, 11), LM_MAT({ map: FACADE.dokk1() }));
+    landmarkMesh(slabGeo(scaleRing(r, 1.05, c), 16.5, 17.6), LM_MAT({ color: C('#ecebe6') }));
+    const top = scaleRing(r, 0.36, c);
+    landmarkMesh(wallGeo(top, 17.6, 23, 5, 5.4), LM_MAT({ map: FACADE.glass() }));
+    landmarkMesh(capGeo(top, 23), LM_MAT({ color: C('#e4e2dc') }));
+    landmarkMesh(capGeo(scaleRing(r, 0.93, c), 5.5), LM_MAT({ color: C('#c9c6be') }));
+  }
+  // Navitas: the big glass block at the entrance to Aarhus Ø
+  if (models.navitas) {
+    const r = ringOf(models.navitas);
+    landmarkMesh(wallGeo(r, 0, 30, 4, 3.75), LM_MAT({ map: FACADE.glass() }));
+    landmarkMesh(capGeo(r, 30), LM_MAT({ color: C('#d8d6d0') }));
+    landmarkMesh(slabGeo(scaleRing(r, 1.012), 30, 31), LM_MAT({ color: C('#f1f0ec') }));
+  }
+  // BESTSELLER: dark office block with the name on the roof, turned towards the course
+  if (models.bestseller) {
+    const r = ringOf(models.bestseller), c = centroid(r);
+    const H = 35;                       // shares a block with Navitas; its dark wing rises just above it
+    landmarkMesh(wallGeo(r, 0, H, 4, 3.5), LM_MAT({ map: FACADE.dark() }));
+    landmarkMesh(capGeo(r, H), LM_MAT({ color: C('#55565c') }));
+    let best = null, bd = Infinity;
+    for (let k = 0; k < R.n; k += 4) { const d = Math.hypot(R.x[k] - c[0], R.z[k] - c[1]); if (d < bd) { bd = d; best = k; } }
+    const ang = Math.atan2(R.x[best] - c[0], R.z[best] - c[1]);
+    const sign = canvasTex(1024, 128, (g, w, h) => {
+      g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#111111'; g.font = '800 92px "Open Sans", Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      if ('letterSpacing' in g) g.letterSpacing = '14px';
+      g.fillText('BESTSELLER', w / 2, h / 2 + 4);
+    });
+    sign.wrapS = sign.wrapT = THREE.ClampToEdgeWrapping;
+    // two one-sided faces back to back, so the name reads correctly from both sides
+    let ext = 0; for (const p of r) ext = Math.max(ext, (p[0] - c[0]) * Math.sin(ang) + (p[1] - c[1]) * Math.cos(ang));
+    for (const flip of [0, Math.PI]) {
+      const plate = new THREE.Mesh(new THREE.PlaneGeometry(56, 7), new THREE.MeshBasicMaterial({ map: sign }));
+      plate.position.set(c[0] + Math.sin(ang) * (ext - 4), H + 4.2, c[1] + Math.cos(ang) * (ext - 4));
+      plate.rotation.y = ang + flip;
+      scene.add(plate);
+    }
+  }
+  // Rådhus: four clock faces on the tower (the building itself comes from OSM's detailed parts)
+  if (models.tower) {
+    const [tx, tz, hx, hz] = models.tower;
+    const face = canvasTex(128, 128, (g, w) => {
+      g.fillStyle = '#f4f1e6'; g.beginPath(); g.arc(w / 2, w / 2, w * 0.46, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = '#2f3a36'; g.lineWidth = 6; g.stroke();
+      g.lineCap = 'round'; g.lineWidth = 7; g.beginPath(); g.moveTo(w / 2, w / 2); g.lineTo(w / 2, w * 0.2); g.stroke();
+      g.lineWidth = 9; g.beginPath(); g.moveTo(w / 2, w / 2); g.lineTo(w * 0.72, w / 2); g.stroke();
+    });
+    face.wrapS = face.wrapT = THREE.ClampToEdgeWrapping;
+    const fm = new THREE.MeshBasicMaterial({ map: face, transparent: true, side: THREE.DoubleSide });
+    for (const [ox, oz, ry] of [[hx + 0.15, 0, Math.PI / 2], [-hx - 0.15, 0, -Math.PI / 2], [0, hz + 0.15, 0], [0, -hz - 0.15, Math.PI]]) {
+      const m = new THREE.Mesh(new THREE.CircleGeometry(Math.min(hx, hz) * 0.62, 32), fm);
+      m.position.set(tx + ox, 48, tz + oz); m.rotation.y = ry; scene.add(m);
+    }
+  }
+  // ARoS: Your rainbow panorama, one glass ring on the real ring's centre with red where it really is
+  if (models.aros) {
+    const [ax, az, rad, aRed, dir] = models.aros;
+    const g = new THREE.CylinderGeometry(rad + 2.6, rad + 2.6, 3.5, 128, 1, true);
+    const g2 = new THREE.CylinderGeometry(rad - 2.6, rad - 2.6, 3.5, 128, 1, true);
+    const tint = (geo) => {
+      const p = geo.attributes.position, c = [], tmp = new THREE.Color();
+      for (let i = 0; i < p.count; i++) {
+        const th = Math.atan2(p.getZ(i), p.getX(i));
+        const h = ((((th - aRed) * dir) / (Math.PI * 2)) % 1 + 1) % 1;
+        tmp.setHSL(h * 0.85, 0.9, 0.55); c.push(tmp.r, tmp.g, tmp.b);
+      }
+      geo.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+    };
+    tint(g); tint(g2);
+    const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide, emissive: C('#2a2a2a'), transparent: true, opacity: 0.92 });
+    for (const geo of [g, g2]) { const m = new THREE.Mesh(geo, mat); m.position.set(ax, 46.25, az); m.castShadow = true; scene.add(m); }
+    // the walkway's roof and floor carry the colours too, lighter, so the ring reads from above
+    const deckGeo = new THREE.RingGeometry(rad - 2.6, rad + 2.6, 128, 1).rotateX(-Math.PI / 2);
+    { const p = deckGeo.attributes.position, c = [], tmp = new THREE.Color();
+      for (let i = 0; i < p.count; i++) { const th = Math.atan2(p.getZ(i), p.getX(i)); const h = ((((th - aRed) * dir) / (Math.PI * 2)) % 1 + 1) % 1; tmp.setHSL(h * 0.85, 0.75, 0.72); c.push(tmp.r, tmp.g, tmp.b); }
+      deckGeo.setAttribute('color', new THREE.Float32BufferAttribute(c, 3)); }
+    const deck = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
+    for (const y of [44.5, 48]) {
+      const m = new THREE.Mesh(deckGeo, deck);
+      m.position.set(ax, y, az); m.castShadow = true; scene.add(m);
+    }
+  }
+}
+function mergeGeos(list) {
+  let n = 0; for (const g of list) n += g.attributes.position.count;
+  const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3); let o = 0;
+  for (const g of list) { pos.set(g.attributes.position.array, o * 3); nor.set(g.attributes.normal.array, o * 3); o += g.attributes.position.count; }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  return g;
 }
 
 /* ── the course ───────────────────────────────────────────────────────── */
@@ -868,7 +1072,7 @@ async function main() {
   routeData = route;
   await new Promise((r) => setTimeout(r, 60));      // let the bar paint before the city is built
   R = makeRoute(route);
-  buildSky(); buildGround(city); buildBuildings(city); buildTrees(city); buildLandmarkExtras(route.lm);
+  buildSky(); buildGround(city); buildBuildings(city, route.models || {}); buildTrees(city); buildLandmarks(route.models, route.lm);
   ribbon = buildRibbon(await ribbonTexture());
   furniture = buildCourseFurniture();
   lead = buildLead();
