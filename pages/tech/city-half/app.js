@@ -6,13 +6,16 @@
                  shapes, colours), streets, water, parks, trees, coastline,
                  in local metres around Rådhusparken (x east, z south), ×0.5
      route.json  the 2026 course (GPS track snapped to OSM streets, 5 m steps),
-                 landmarks with their km, places where the course meets itself
-     field.json  every finisher: place, net time, bib, age group, club, country
-                 (no names), a pacing model from sampled chip splits, anecdotes
+                 street half-width per point, landmarks, places where the course
+                 meets itself, start staging points (Musikhus side) and finish
+                 points (Rådhusparken)
+     field.json  every finisher: place, net time, start-mat time and start group
+                 (estimated from sampled chip data), bib, age group, club,
+                 country (no names), a pacing model and anecdotes
 
-   Each runner's position at clock time t is modelled: shuffle to the start mat
-   (start delay from the sampled chip data), then run the course following the
-   split profile of their finish-time group, scaled to their own net time.
+   Each runner waits in the park, walks to the start mat at their start time,
+   runs the course following the split profile of their finish-time group
+   scaled to their own net time, then walks into Rådhusparken.
    ══════════════════════════════════════════════════════════════════════════ */
 import * as THREE from 'three';
 
@@ -21,40 +24,149 @@ const $$ = (s) => [...document.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 const smooth = (t) => t * t * (3 - 2 * t);
-const fmtInt = (n) => Math.round(n).toLocaleString('en-US');
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MOBILE = matchMedia('(max-width: 860px)').matches;
+function hash(i) { let x = (i + 1) * 374761393; x = (x ^ (x >>> 13)) * 1274126177; x ^= x >>> 16; return (x >>> 0) / 4294967296; }
+const C = (hex) => new THREE.Color(hex);
 
+/* ── language ─────────────────────────────────────────────────────────── */
+let LANG = 'da';
+try { const q = new URLSearchParams(location.search).get('lang'); LANG = q === 'en' || q === 'da' ? q : (localStorage.getItem('ch-lang') || 'da'); } catch { /* storage blocked */ }
+const fmtInt = (n) => Math.round(n).toLocaleString(LANG === 'da' ? 'da-DK' : 'en-US');
+const fmtDec = (n, d = 1) => (LANG === 'da' ? n.toFixed(d).replace('.', ',') : n.toFixed(d));
 function hms(sec) {
   sec = Math.max(0, Math.round(sec));
   const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, s = sec % 60;
   return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
-const clockStr = (t, secs = false) => {           // t = seconds after 10:00:00
-  const a = 36000 + Math.round(t);
-  const h = Math.floor(a / 3600), m = Math.floor(a / 60) % 60, s = a % 60;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}` + (secs ? `:${String(s).padStart(2, '0')}` : '');
+const clockStr = (t) => {                          // t = seconds after 10:00:00
+  const a = 36000 + Math.round(t), h = Math.floor(a / 3600), m = Math.floor(a / 60) % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 };
 const durWords = (sec) => {
   const m = Math.round(sec / 60);
-  if (m < 60) return `${m} minutes`;
+  if (m < 60) return LANG === 'da' ? `${m} minutter` : `${m} minutes`;
   const h = Math.floor(m / 60), r = m % 60;
-  return r ? `${h} h ${r} min` : `${h} hours`;
+  return LANG === 'da' ? (r ? `${h} t ${r} min` : `${h} timer`) : (r ? `${h} h ${r} min` : `${h} hours`);
 };
-const ordinal = (n) => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
-function hash(i) { let x = (i + 1) * 374761393; x = (x ^ (x >>> 13)) * 1274126177; x ^= x >>> 16; return (x >>> 0) / 4294967296; }
-const C = (hex) => new THREE.Color(hex);
+const ordinal = (n) => {
+  if (LANG === 'da') return `nr. ${fmtInt(n)}`;
+  const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return fmtInt(n) + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+const LM_DA = { 'Rådhusparken: start & finish': 'Rådhusparken: start & mål', 'Latin Quarter': 'Latinerkvarteret', 'Strandvejen turn, by the bay': 'Vending på Strandvejen' };
+const lmName = (n) => (LANG === 'da' ? (LM_DA[n] || n) : n);
+const GROUP_NAMES = ['A', 'B', 'C', 'D'];
 
-/* ── palette: daytime Aarhus in the race's blue and beige ─────────────── */
+const TEXT = {
+  da: {
+    loading: 'Bygger Aarhus', nogl: 'Siden kræver WebGL for at tegne byen. Prøv en nyere browser på en computer.',
+    nav: { hero: 'Top', course: 'Ruten', start: 'Starten', river: 'Formiddagen', pressure: 'Travle steder', dist: 'Sub-2', pace: 'Tempo', community: 'Fællesskab', find: 'Dit løb', close: 'Udforsk' },
+    'hero.date': 'Søndag 14. juni 2026',
+    wave: (v) => `21,0975 KM · ${v.n} LØBERE · AARHUS · 21,0975 KM`,
+    'hero.cue': 'Scroll',
+    'hero.sub': 'En søndag formiddag i Aarhus, genskabt ud fra de offentlige resultater. Hver prik er en løber. Scroll ned og løb med.',
+    'course.h': 'Ruten',
+    'course.p': 'Fra Rådhusparken gennem Frederiksbjerg, forbi ARoS og Latinerkvarteret, ud til Aarhus Ø, tilbage forbi Dokk1 og Domkirken, ned ad Strandvejen og hjem igen.',
+    'start.h': 'Starten',
+    'start.p1': (v) => `Startskuddet lyder kl. 10:00, men ikke alle løber afsted på én gang. Chiptiderne viser fire startgrupper, der krydser startmåtten fra kl. 10:00 til omkring kl. ${v.lastStart}.`,
+    'start.p2': 'Følg farverne: hurtige løbere fra de senere grupper arbejder sig op gennem feltet.',
+    'start.note': (v) => `Grupper og starttider er udledt af chiptiderne for ${v.samples} løbere.`,
+    group: (v) => `fra kl. ${v.from} · ${v.n} løbere`,
+    'river.h': 'Formiddagen',
+    'river.p1': (v) => `Vinderen er i mål efter <strong>${v.win}</strong>. I det øjeblik har omkring <strong>${v.not10} løbere</strong> endnu ikke passeret 10 km.`,
+    'river.p2': (v) => `Hurtigste kvinde løber <strong>${v.woman}</strong> og bliver ${v.womanPl} samlet.`,
+    'river.p3': (v) => `Den sidste løber er i mål <strong>${v.last}</strong> efter startskuddet.`,
+    'busy.h': 'Travle steder',
+    'busy.p': 'Båndet bliver rødt, hvor flest løbere deler vejen.',
+    busy: (v) => `Travlest efter starten: ${v.parts}.`,
+    busyPart: (v) => `km ${v.km}${v.near ? ` (${v.near})` : ''} kl. ${v.t}`,
+    two: (v) => `Strandvejen er ud og hjem. Fra kl. ${v.from} møder løbere på vej sydpå ved km ${v.a} dem, der er på vej tilbage ved km ${v.b}, og vejen er <strong>tovejs i ${v.dur}</strong>.`,
+    lblBusy: 'Travlt', lblTwo: 'Tovejs',
+    'dist.h': 'Ruset mod sub-2',
+    'dist.p1': 'Sluttiderne følger ikke en pæn klokkekurve. Lige før de runde tider topper søjlerne, og lige efter falder de: folk presser på for at nå under målet.',
+    'dist.p2': (v) => `<strong>${v.a} løbere</strong> kom i mål i de to minutter før 2:00:00, og kun ${v.b} i de to minutter efter. Ved 1:30 er det ${v.c} lige under og ${v.d} lige over.`,
+    distAxis: 'løbere pr. minut', distTarget: 'to minutter før en rund tid',
+    'pace.h': 'Tempoet',
+    'pace.p': (v) => `Mediantempo på hver del af ruten, efter sluttid. Alle taber fart efter 15 km, men <strong>${v.kick} %</strong> sætter tempoet op på den sidste kilometer.`,
+    paceAxis: 'min/km, hurtigst øverst',
+    paceGroups: ['Under 1:35', '1:35–1:55', '1:55–2:15', 'Over 2:15'],
+    'com.h': 'Fællesskab',
+    'com.s1': 'løbere i mål', 'com.s2': (v) => `km tilsammen, ${v.earth} gange rundt om Jorden`, 'com.s3': 'nationaliteter', 'com.s4': 'kvinder',
+    'com.p': (v) => `<strong>${v.eftN} elever</strong> fra ${v.eftClubs} efterskoler, <strong>${v.young}</strong> løbere under 16 og <strong>${v.old}</strong> på 75 år eller mere. Den hurtigste over 75 løb ${v.oldBest}.`,
+    'com.teams': 'Største hold',
+    'find.h': 'Dit løb',
+    'find.p': 'Skriv dit startnummer, og følg dit eget løb blandt de løbere, der var omkring dig.',
+    'find.ph': 'Startnummer', 'find.go': 'Find',
+    'find.time': 'Tid', 'find.place': 'Placering', 'find.cat': 'Aldersgruppe', 'find.group': 'Startgruppe', 'find.passed': 'Overhalet / blev overhalet',
+    'find.k1': 'du har overhalet', 'find.k2': 'har overhalet dig', 'find.card': 'Gem løbskort',
+    notFound: (v) => `Intet startnummer ${v.bib} blandt de gennemførte løbere i 2026.`, typeBib: 'Skriv et startnummer.',
+    of: 'af', pin: (v) => `#${v.bib}<small>km ${v.km}</small><em class="up">▲${v.up}</em><em class="down">▼${v.down}</em>`,
+    cats: { M: 'Mænd', K: 'Kvinder', U: 'Åben' },
+    'ex.h': 'Udforsk', 'ex.p': 'Træk i kortet for at dreje og vippe det. Brug tidslinjen nederst til at spole gennem formiddagen.', 'ex.reset': 'Nulstil',
+    footer: (v) => `Resultater fra <a href="https://www.aarhusmotion.dk/event/293/resultater" target="_blank" rel="noopener">aarhusmotion.dk</a>. Løbernes positioner er modelleret ud fra hver løbers nettotid, med startgrupper og tempo fra ${v.samples} løberes chiptider. Ingen navne gemmes. Kortdata © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-bidragydere</a>. Ikke en officiel side fra Aarhus Motion eller BESTSELLER.`,
+    card1: 'MIT LØB · 14. JUNI 2026', card2: (v) => `PLACERING ${v.pl} AF ${v.n}  ·  STARTNR. ${v.bib}`,
+  },
+  en: {
+    loading: 'Building Aarhus', nogl: 'This page needs WebGL to draw the city. Try a recent desktop browser.',
+    nav: { hero: 'Top', course: 'Course', start: 'The start', river: 'Morning', pressure: 'Busy spots', dist: 'Sub-2', pace: 'Pacing', community: 'Fællesskab', find: 'Your race', close: 'Explore' },
+    'hero.date': 'Sunday 14 June 2026',
+    wave: (v) => `21.0975 KM · ${v.n} RUNNERS · AARHUS · 21.0975 KM`,
+    'hero.cue': 'Scroll',
+    'hero.sub': 'One Sunday morning in Aarhus, rebuilt from the public results. Every dot is a runner. Scroll down to run it.',
+    'course.h': 'The course',
+    'course.p': 'From Rådhusparken through Frederiksbjerg, past ARoS and the Latin Quarter, out to Aarhus Ø, back by Dokk1 and the cathedral, down the coast road and home.',
+    'start.h': 'The start',
+    'start.p1': (v) => `The gun goes at 10:00, but not everyone leaves at once. The chip times show four start groups crossing the mat from 10:00 until about ${v.lastStart}.`,
+    'start.p2': 'Follow the colours: fast runners from the later groups work their way up through the field.',
+    'start.note': (v) => `Groups and start times are estimated from ${v.samples} runners' chip times.`,
+    group: (v) => `from ${v.from} · ${v.n} runners`,
+    'river.h': 'The morning',
+    'river.p1': (v) => `The winner finishes in <strong>${v.win}</strong>. At that moment, about <strong>${v.not10} runners</strong> haven't reached 10 km.`,
+    'river.p2': (v) => `The fastest woman runs <strong>${v.woman}</strong>, ${v.womanPl} overall.`,
+    'river.p3': (v) => `The last finisher comes home <strong>${v.last}</strong> after the gun.`,
+    'busy.h': 'Busy spots',
+    'busy.p': 'The ribbon turns red where most runners share the road.',
+    busy: (v) => `Busiest after the start: ${v.parts}.`,
+    busyPart: (v) => `km ${v.km}${v.near ? ` (${v.near})` : ''} at ${v.t}`,
+    two: (v) => `The coast road is out and back. From ${v.from}, runners heading south at km ${v.a} meet runners coming back at km ${v.b}, and the road stays <strong>two-way for ${v.dur}</strong>.`,
+    lblBusy: 'Busy', lblTwo: 'Two-way',
+    'dist.h': 'The sub-2 rush',
+    'dist.p1': "Finish times don't follow a neat bell curve. The bars peak just before the round times and drop just after: people push to get under their target.",
+    'dist.p2': (v) => `<strong>${v.a} runners</strong> finished in the two minutes before 2:00:00, and only ${v.b} in the two minutes after. At 1:30 it's ${v.c} just under and ${v.d} just over.`,
+    distAxis: 'runners per minute', distTarget: 'two minutes before a round time',
+    'pace.h': 'Pacing',
+    'pace.p': (v) => `Median pace on each part of the course, by finish time. Everyone slows after 15 km, but <strong>${v.kick}%</strong> speed up again for the last kilometre.`,
+    paceAxis: 'min/km, fastest at the top',
+    paceGroups: ['Under 1:35', '1:35–1:55', '1:55–2:15', 'Over 2:15'],
+    'com.h': 'Fællesskab',
+    'com.s1': 'finishers', 'com.s2': (v) => `km together, ${v.earth} times around the Earth`, 'com.s3': 'nationalities', 'com.s4': 'women',
+    'com.p': (v) => `<strong>${v.eftN} students</strong> from ${v.eftClubs} efterskoler, <strong>${v.young}</strong> runners under 16 and <strong>${v.old}</strong> aged 75 or more. The fastest 75+ runner finished in ${v.oldBest}.`,
+    'com.teams': 'Biggest teams',
+    'find.h': 'Your race',
+    'find.p': 'Type your bib number to follow your own race among the runners around you.',
+    'find.ph': 'Bib number', 'find.go': 'Find',
+    'find.time': 'Time', 'find.place': 'Place', 'find.cat': 'Age group', 'find.group': 'Start group', 'find.passed': 'Passed / passed by',
+    'find.k1': 'you passed them', 'find.k2': 'they passed you', 'find.card': 'Save race card',
+    notFound: (v) => `No finisher with bib ${v.bib} in the 2026 results.`, typeBib: 'Type a bib number.',
+    of: 'of', pin: (v) => `#${v.bib}<small>km ${v.km}</small><em class="up">▲${v.up}</em><em class="down">▼${v.down}</em>`,
+    cats: { M: 'Men', K: 'Women', U: 'Open' },
+    'ex.h': 'Explore', 'ex.p': 'Drag the map to rotate and tilt it. Use the timeline at the bottom to scrub through the morning.', 'ex.reset': 'Reset',
+    footer: (v) => `Results from <a href="https://www.aarhusmotion.dk/event/293/resultater" target="_blank" rel="noopener">aarhusmotion.dk</a>. Runner positions are modelled from each finisher's net time, with start groups and pacing from ${v.samples} runners' chip times. No names are stored. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Not an official Aarhus Motion or BESTSELLER page.`,
+    card1: 'MY RACE · 14 JUNE 2026', card2: (v) => `PLACE ${v.pl} OF ${v.n}  ·  BIB ${v.bib}`,
+  },
+};
+const T = (k, v = {}) => { const x = TEXT[LANG][k]; return typeof x === 'function' ? x(v) : (x ?? k); };
+
+/* ── palette ──────────────────────────────────────────────────────────── */
 const PAL = {
-  blue: '#0d00c4', beige: '#c4c0ac', sweater: '#cdbfa9', brown: '#8c7461', brownDark: '#5f4a3a',
-  skyTop: '#9dbcd9', skyHorizon: '#efe8dc', fog: '#e9e1d3',
+  blue: '#0d00c4', sweater: '#cdbfa9', brown: '#8c7461', coral: '#e4572e',
+  skyTop: '#9dbcd9', skyHorizon: '#efe9df', fog: '#ebe5da',
   land: '#e6dccb', green: '#b4c99a', water: '#a9c6d6', pier: '#dcd1bf',
   road: ['#f8f3ea', '#f5efe4', '#f1eadd', '#ece3d4'],
   wall: '#efe6d8', roofFlat: '#cdbfa9', roofTile: '#b4826a', roofSlate: '#8a8580',
   tree: ['#8aa872', '#779a60', '#9cb783', '#6b8d57'],
-  heatLo: '#0d00c4', heatMid: '#cdbfa9', heatHi: '#d2462a',
-  fast: '#ffffff', mid: '#cdbfa9', slow: '#8c7461',
+  heatMid: '#cdbfa9', heatHi: '#d2462a',
+  groups: ['#ffffff', '#9fd0ff', '#e6d3b3', '#ff9d7a'],
   chart: ['#0d00c4', '#6a62de', '#b39b80', '#5f4a3a'],
 };
 
@@ -71,28 +183,62 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 stageEl.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(C(PAL.fog), 2600, 15000);
+scene.fog = new THREE.Fog(C(PAL.fog), 3200, 14000);
 const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 20, 40000);
 camera.position.set(-2600, 2200, 400);
-
-// June, late morning: the sun stands high in the south-east (x east, z south)
-const SUN_DIR = new THREE.Vector3(0.48, 0.78, 0.40).normalize();
+const SUN_DIR = new THREE.Vector3(0.48, 0.78, 0.40).normalize();      // June, late morning: high in the south-east
 scene.add(new THREE.HemisphereLight(C('#eef1f5'), C(PAL.sweater), 1.15));
 const sun = new THREE.DirectionalLight(C('#fff3e0'), 2.1);
 sun.castShadow = true;
 sun.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 1024 : 2048);
-sun.shadow.bias = -0.0004;
-sun.shadow.normalBias = 1.2;
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.2;
 sun.shadow.camera.near = 10; sun.shadow.camera.far = 7000;
 scene.add(sun, sun.target);
 
+const DATA_VERSION = 6;           // bump with every data change so browsers refetch
 async function getJSON(p) {
-  const r = await fetch(new URL(p, import.meta.url));
+  const r = await fetch(new URL(p + '?v=' + DATA_VERSION, import.meta.url));
   if (!r.ok) throw new Error(p + ' ' + r.status);
   return r.json();
 }
-const msg = (t) => { $('#loadmsg').textContent = t; };
 const OUTPUT = '\n#include <colorspace_fragment>\n';   // preprocessor line: must stand alone
+
+/* soft edge: the map dissolves into the ground colour towards the window edge */
+const FADE = { uFadeC: { value: new THREE.Vector2(550, 325) }, uFadeR: { value: new THREE.Vector2(2200, 2825) }, uFadeCol: { value: new THREE.Color().setHex(0xe6dccb, THREE.LinearSRGBColorSpace) } };
+/* intro: the city rises outwards from Rådhusparken (same code in the shadow pass, so shadows grow too) */
+const GROW = { uGrow: { value: REDUCED ? 1 : 0 } };
+function addGrow(sh) {
+  sh.uniforms.uGrow = GROW.uGrow;
+  sh.vertexShader = 'uniform float uGrow;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+      #ifdef USE_INSTANCING
+        float growG = clamp(uGrow * 2.7 - length(instanceMatrix[3].xz) / 2600.0, 0.0, 1.0);
+        transformed *= 1.0 - pow(1.0 - growG, 3.0);
+      #else
+        float growG = clamp(uGrow * 2.7 - length(position.xz) / 2600.0, 0.0, 1.0);
+        transformed.y *= 1.0 - pow(1.0 - growG, 3.0);
+      #endif`);
+}
+function growDepth() {
+  const m = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  m.onBeforeCompile = addGrow;
+  return m;
+}
+function withFade(mat, grow = false) {
+  mat.onBeforeCompile = (sh) => {
+    if (grow) addGrow(sh);
+    Object.assign(sh.uniforms, FADE);
+    sh.vertexShader = 'varying vec2 vFadeXZ;\n' + sh.vertexShader.replace('#include <project_vertex>', `#include <project_vertex>
+      vec4 fadeW = vec4(transformed, 1.0);
+      #ifdef USE_INSTANCING
+        fadeW = instanceMatrix * fadeW;
+      #endif
+      vFadeXZ = (modelMatrix * fadeW).xz;`);
+    sh.fragmentShader = 'uniform vec2 uFadeC; uniform vec2 uFadeR; uniform vec3 uFadeCol; varying vec2 vFadeXZ;\n' + sh.fragmentShader.replace('#include <fog_fragment>', `float fadeE = length((vFadeXZ - uFadeC) / uFadeR);
+      gl_FragColor.rgb = mix(gl_FragColor.rgb, uFadeCol, smoothstep(0.74, 0.98, fadeE));
+      #include <fog_fragment>`);
+  };
+  return mat;
+}
 
 /* ── sky ──────────────────────────────────────────────────────────────── */
 function buildSky() {
@@ -104,28 +250,15 @@ function buildSky() {
       void main(){ float h = clamp(vDir.y, 0.0, 1.0); vec3 c = mix(uHor, uTop, pow(smoothstep(0.0, 0.6, h), 0.8)); gl_FragColor = vec4(c, 1.0); ${OUTPUT} }`,
   });
   const sky = new THREE.Mesh(new THREE.SphereGeometry(30000, 32, 16), m);
-  sky.renderOrder = -10;
-  scene.add(sky);
+  sky.renderOrder = -10; scene.add(sky);
 }
 
 /* ── ground layers ────────────────────────────────────────────────────── */
-function lambert(hex, off = 0) {
-  return new THREE.MeshLambertMaterial({ color: C(hex), polygonOffset: off !== 0, polygonOffsetFactor: off, polygonOffsetUnits: off });
+function lambert(hex, off = 0, fade = true) {
+  const m = new THREE.MeshLambertMaterial({ color: C(hex), polygonOffset: off !== 0, polygonOffsetFactor: off, polygonOffsetUnits: off });
+  return fade ? withFade(m) : m;
 }
-function polyGeometry(list, unit, y) {
-  const pos = [];
-  for (const f of list) {
-    const pts = [];
-    for (let i = 0; i < f.length; i += 2) pts.push(new THREE.Vector2(f[i] * unit, f[i + 1] * unit));
-    if (pts.length < 3) continue;
-    let tris;
-    try { tris = THREE.ShapeUtils.triangulateShape(pts, []); } catch { continue; }
-    for (const t of tris) upTri(pos, pts[t[0]].x, pts[t[0]].y, pts[t[1]].x, pts[t[1]].y, pts[t[2]].x, pts[t[2]].y, y);
-  }
-  return flatGeo(pos);
-}
-// push a ground triangle wound so its front face (and normal) points up
-function upTri(pos, ax, az, bx, bz, cx, cz, y) {
+function upTri(pos, ax, az, bx, bz, cx, cz, y) {      // wound so the front face points up
   if ((bz - az) * (cx - ax) - (bx - ax) * (cz - az) >= 0) pos.push(ax, y, az, bx, y, bz, cx, y, cz);
   else pos.push(ax, y, az, cx, y, cz, bx, y, bz);
 }
@@ -135,15 +268,24 @@ function flatGeo(pos) {
   g.setAttribute('normal', new THREE.Float32BufferAttribute(new Float32Array(pos.length).map((_, i) => (i % 3 === 1 ? 1 : 0)), 3));
   return g;
 }
+function polyGeometry(list, unit, y) {
+  const pos = [];
+  for (const f of list) {
+    const pts = [];
+    for (let i = 0; i < f.length; i += 2) pts.push(new THREE.Vector2(f[i] * unit, f[i + 1] * unit));
+    if (pts.length < 3) continue;
+    let tris; try { tris = THREE.ShapeUtils.triangulateShape(pts, []); } catch { continue; }
+    for (const t of tris) upTri(pos, pts[t[0]].x, pts[t[0]].y, pts[t[1]].x, pts[t[1]].y, pts[t[2]].x, pts[t[2]].y, y);
+  }
+  return flatGeo(pos);
+}
 function ribbonGeometry(lines, unit, width, y) {
   const pos = [];
   for (const f of lines) {
     for (let i = 0; i + 3 < f.length; i += 2) {
       const ax = f[i] * unit, az = f[i + 1] * unit, bx = f[i + 2] * unit, bz = f[i + 3] * unit;
       const dx = bx - ax, dz = bz - az, L = Math.hypot(dx, dz) || 1;
-      const nx = -dz / L * width / 2, nz = dx / L * width / 2;
-      // a little overlap at the joints so bends stay closed
-      const ex = dx / L * width * 0.35, ez = dz / L * width * 0.35;
+      const nx = -dz / L * width / 2, nz = dx / L * width / 2, ex = dx / L * width * 0.35, ez = dz / L * width * 0.35;
       const a0x = ax - ex, a0z = az - ez, b0x = bx + ex, b0z = bz + ez;
       upTri(pos, a0x + nx, a0z + nz, b0x - nx, b0z - nz, b0x + nx, b0z + nz, y);
       upTri(pos, a0x + nx, a0z + nz, a0x - nx, a0z - nz, b0x - nx, b0z - nz, y);
@@ -154,9 +296,9 @@ function ribbonGeometry(lines, unit, width, y) {
 function buildGround(city) {
   const u = city.unit;
   const add = (geo, mat) => { const m = new THREE.Mesh(geo, mat); m.receiveShadow = true; scene.add(m); return m; };
-  const sea = new THREE.Mesh(new THREE.PlaneGeometry(80000, 80000).rotateX(-Math.PI / 2), lambert(PAL.water));
+  const sea = new THREE.Mesh(new THREE.PlaneGeometry(80000, 80000).rotateX(-Math.PI / 2), lambert(PAL.water, 0, false));
   sea.position.y = -0.4; scene.add(sea);
-  add(polyGeometry(city.land, u, 0), lambert(PAL.land, -1));
+  add(polyGeometry(city.land, u, 0), lambert(PAL.land, -1, false));
   add(polyGeometry(city.green, u, 0.1), lambert(PAL.green, -2));
   add(polyGeometry(city.water, u, 0.2), lambert(PAL.water, -3));
   add(ribbonGeometry(city.rivers, u, 7, 0.2), lambert(PAL.water, -3));
@@ -167,11 +309,9 @@ function buildGround(city) {
 
 /* ── buildings: walls, flat / gabled / pyramid / dome roofs ───────────── */
 function buildBuildings(city) {
-  const u = city.unit;
-  const cols = (city.cols || []).map((h) => C(h));
+  const u = city.unit, cols = (city.cols || []).map((h) => C(h));
   const wallBase = C(PAL.wall), flatBase = C(PAL.roofFlat), tile = C(PAL.roofTile), slate = C(PAL.roofSlate);
   const pos = [], col = [];
-  const tmp = new THREE.Color();
   const push = (x, y, z, c) => { pos.push(x, y, z); col.push(c.r, c.g, c.b); };
   const tri = (a, b, c, k) => { push(a[0], a[1], a[2], k); push(b[0], b[1], b[2], k); push(c[0], c[1], c[2], k); };
   for (let bi = 0; bi < city.b.length; bi++) {
@@ -182,6 +322,7 @@ function buildBuildings(city) {
     const n = pts.length; if (n < 3) continue;
     const jitter = (hash(bi) - 0.5) * 0.06;
     const wall = (wc >= 0 ? wallBase.clone().lerp(cols[wc], 0.55) : wallBase.clone()).offsetHSL(0, 0, jitter);
+    const wallLo = mh < 0.5 ? wall.clone().multiplyScalar(0.8) : wall;   // soft contact shade at street level
     let roof;
     if (rcol >= 0) roof = flatBase.clone().lerp(cols[rcol], 0.7);
     else if (rc === 1 || rc === 2) roof = (hash(bi * 3 + 1) < 0.62 ? tile : slate).clone();
@@ -189,15 +330,14 @@ function buildBuildings(city) {
     roof.offsetHSL(0, 0, jitter);
     const gable = rc === 1 && n === 4 && rh > 0.3;
     const eave = rc === 0 || rh <= 0.3 ? h : (rc === 1 && !gable ? h - rh * 0.6 : h - rh);
-    // walls
     for (let i = 0; i < n; i++) {
       const [ax, az] = pts[i], [bx, bz] = pts[(i + 1) % n];
-      tri([ax, mh, az], [bx, mh, bz], [bx, eave, bz], wall);
-      tri([ax, mh, az], [bx, eave, bz], [ax, eave, az], wall);
+      push(ax, mh, az, wallLo); push(bx, mh, bz, wallLo); push(bx, eave, bz, wall);
+      push(ax, mh, az, wallLo); push(bx, eave, bz, wall); push(ax, eave, az, wall);
     }
     if (gable) {
       const L = (i) => Math.hypot(pts[(i + 1) % 4][0] - pts[i][0], pts[(i + 1) % 4][1] - pts[i][1]);
-      const o = L(0) + L(2) >= L(1) + L(3) ? 0 : 1;       // ridge parallel to edge o
+      const o = L(0) + L(2) >= L(1) + L(3) ? 0 : 1;
       const p = [0, 1, 2, 3].map((k) => pts[(k + o) % 4]);
       const mid = (a, c) => [(a[0] + c[0]) / 2, (a[1] + c[1]) / 2];
       const r0 = mid(p[3], p[0]), r1 = mid(p[1], p[2]);
@@ -210,17 +350,16 @@ function buildBuildings(city) {
       if (rc === 2) {
         for (let i = 0; i < n; i++) { const a = pts[i], c = pts[(i + 1) % n]; tri([a[0], eave, a[1]], [c[0], eave, c[1]], [cx, h, cz], roof); }
       } else {
-        const R = 5; let prev = pts.map((q) => [q[0], eave, q[1]]);
-        for (let k = 1; k <= R; k++) {
-          const ang = k / R * Math.PI / 2, s = Math.cos(ang), y = eave + rh * Math.sin(ang);
+        const RR = 5; let prev = pts.map((q) => [q[0], eave, q[1]]);
+        for (let k = 1; k <= RR; k++) {
+          const ang = k / RR * Math.PI / 2, s = Math.cos(ang), y = eave + rh * Math.sin(ang);
           const ring = pts.map((q) => [cx + (q[0] - cx) * s, y, cz + (q[1] - cz) * s]);
           for (let i = 0; i < n; i++) { const j = (i + 1) % n; tri(prev[i], prev[j], ring[j], roof); tri(prev[i], ring[j], ring[i], roof); }
           prev = ring;
         }
       }
     } else {
-      let tris;
-      try { tris = THREE.ShapeUtils.triangulateShape(pts.map((q) => new THREE.Vector2(q[0], q[1])), []); } catch { tris = []; }
+      let tris; try { tris = THREE.ShapeUtils.triangulateShape(pts.map((q) => new THREE.Vector2(q[0], q[1])), []); } catch { tris = []; }
       for (const t of tris) tri([pts[t[0]][0], eave, pts[t[0]][1]], [pts[t[1]][0], eave, pts[t[1]][1]], [pts[t[2]][0], eave, pts[t[2]][1]], roof);
     }
   }
@@ -228,51 +367,45 @@ function buildBuildings(city) {
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   g.computeVertexNormals();
-  const mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+  const mesh = new THREE.Mesh(g, withFade(new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }), true));
+  mesh.customDepthMaterial = growDepth();
   mesh.castShadow = true; mesh.receiveShadow = true;
   scene.add(mesh);
-  return mesh;
 }
-
 function buildTrees(city) {
   const t = city.trees || [], n = t.length / 2, u = city.unit;
-  const geo = new THREE.IcosahedronGeometry(1, 1);
-  const inst = new THREE.InstancedMesh(geo, new THREE.MeshLambertMaterial({ flatShading: true }), n);
-  const M = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), p = new THREE.Vector3();
+  const inst = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), withFade(new THREE.MeshLambertMaterial({ flatShading: true }), true), n);
+  inst.customDepthMaterial = growDepth();
+  const M = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), p = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
   const greens = PAL.tree.map((h) => C(h));
   for (let i = 0; i < n; i++) {
     const r = 3.2 + hash(i * 7) * 3.2;
     p.set(t[i * 2] * u, r * 1.25, t[i * 2 + 1] * u); s.set(r, r * 1.3, r);
-    q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), hash(i * 11) * 6.28);
+    q.setFromAxisAngle(up, hash(i * 11) * 6.28);
     M.compose(p, q, s); inst.setMatrixAt(i, M);
     inst.setColorAt(i, greens[Math.floor(hash(i * 5) * greens.length)]);
   }
   inst.castShadow = true; inst.receiveShadow = true;
   scene.add(inst);
 }
-
-/* ── landmark specials ────────────────────────────────────────────────── */
 function buildLandmarkExtras(lm) {
   const aros = lm.find((l) => l.name === 'ARoS');
-  if (aros) {                                   // Your rainbow panorama
-    const g = new THREE.TorusGeometry(26, 2.4, 10, 120);
-    g.rotateX(Math.PI / 2);
-    const c = [], p = g.attributes.position;
-    const tmp = new THREE.Color();
-    for (let i = 0; i < p.count; i++) { tmp.setHSL((Math.atan2(p.getZ(i), p.getX(i)) / (Math.PI * 2) + 1) % 1, 0.85, 0.6); c.push(tmp.r, tmp.g, tmp.b); }
-    g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
-    const ring = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, emissive: C('#222222') }));
-    ring.position.set(aros.x, 46.5, aros.z); ring.castShadow = true;
-    scene.add(ring);
-  }
+  if (!aros) return;                              // Your rainbow panorama
+  const g = new THREE.TorusGeometry(26, 2.4, 10, 120); g.rotateX(Math.PI / 2);
+  const c = [], p = g.attributes.position, tmp = new THREE.Color();
+  for (let i = 0; i < p.count; i++) { tmp.setHSL((Math.atan2(p.getZ(i), p.getX(i)) / (Math.PI * 2) + 1) % 1, 0.85, 0.6); c.push(tmp.r, tmp.g, tmp.b); }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+  const ring = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, emissive: C('#222222') }));
+  ring.position.set(aros.x, 46.5, aros.z); ring.castShadow = true;
+  scene.add(ring);
 }
 
-/* ── the course: the race's blue ribbon with its name running along it ── */
+/* ── the course ───────────────────────────────────────────────────────── */
 let R = null;
 function makeRoute(route) {
   const step = route.step, P = route.pts, n = P.length / 2;
-  const x = new Float32Array(n), z = new Float32Array(n), hx = new Float32Array(n), hz = new Float32Array(n);
-  for (let i = 0; i < n; i++) { x[i] = P[2 * i] / 10; z[i] = P[2 * i + 1] / 10; }
+  const x = new Float32Array(n), z = new Float32Array(n), hx = new Float32Array(n), hz = new Float32Array(n), hw = new Float32Array(n);
+  for (let i = 0; i < n; i++) { x[i] = P[2 * i] / 10; z[i] = P[2 * i + 1] / 10; hw[i] = (route.hw ? route.hw[i] : 50) / 10; }
   for (let i = 0; i < n; i++) {
     const a = Math.max(0, i - 4), b = Math.min(n - 1, i + 4);
     const dx = x[b] - x[a], dz = z[b] - z[a], L = Math.hypot(dx, dz) || 1;
@@ -280,45 +413,44 @@ function makeRoute(route) {
   }
   const len = (n - 1) * step;
   function at(d, o = {}) {
-    if (d <= 0) { o.x = x[0] + hx[0] * d; o.z = z[0] + hz[0] * d; o.hx = hx[0]; o.hz = hz[0]; return o; }
+    if (d <= 0) { o.x = x[0] + hx[0] * d; o.z = z[0] + hz[0] * d; o.hx = hx[0]; o.hz = hz[0]; o.w = hw[0]; return o; }
     const f = Math.min(d / step, n - 1.0001), i = Math.floor(f), t = f - i;
-    o.x = x[i] + (x[i + 1] - x[i]) * t; o.z = z[i] + (z[i + 1] - z[i]) * t; o.hx = hx[i]; o.hz = hz[i];
+    o.x = x[i] + (x[i + 1] - x[i]) * t; o.z = z[i] + (z[i + 1] - z[i]) * t; o.hx = hx[i]; o.hz = hz[i]; o.w = hw[i];
     return o;
   }
   function headingAvg(d, span = 140) {
     const a = at(d - span), b = at(d + span);
     const dx = b.x - a.x, dz = b.z - a.z, L = Math.hypot(dx, dz) || 1; return [dx / L, dz / L];
   }
-  return { n, x, z, hx, hz, step, len, at, headingAvg };
+  const pts2 = (arr) => { const o = []; for (let i = 0; i < (arr || []).length; i += 2) o.push([arr[i] / 10, arr[i + 1] / 10]); return o; };
+  return { n, x, z, hx, hz, hw, step, len, at, headingAvg, stage: pts2(route.stage), fin: pts2(route.fin) };
 }
 async function ribbonTexture() {
-  try { await document.fonts.load('700 80px "Barlow Condensed"'); } catch {}
+  try { await document.fonts.load('700 80px "Barlow Condensed"'); } catch { /* fall back */ }
   const cv = document.createElement('canvas'); cv.width = 2048; cv.height = 128;
   const g = cv.getContext('2d');
   g.fillStyle = PAL.blue; g.fillRect(0, 0, cv.width, cv.height);
   g.fillStyle = '#ffffff'; g.textBaseline = 'middle';
   g.font = '700 74px "Barlow Condensed", "Arial Narrow", sans-serif';
-  const text = 'BESTSELLER AARHUS CITY HALF', spacing = 9;
   let xx = 70;
   for (let rep = 0; rep < 2; rep++) {
-    for (const ch of text) { g.fillText(ch, xx, 68); xx += g.measureText(ch).width + spacing; }
+    for (const ch of 'BESTSELLER AARHUS CITY HALF') { g.fillText(ch, xx, 68); xx += g.measureText(ch).width + 9; }
     xx += 160;
   }
   const tex = new THREE.CanvasTexture(cv);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.wrapS = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace; tex.wrapS = THREE.RepeatWrapping;
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   return tex;
 }
 function buildRibbon(tex) {
-  const n = R.n, W = 13;
-  const pos = new Float32Array(n * 2 * 3), dist = new Float32Array(n * 2), side = new Float32Array(n * 2);
+  const n = R.n;
+  const pos = new Float32Array(n * 2 * 3), dist = new Float32Array(n * 2), side = new Float32Array(n * 2), wid = new Float32Array(n * 2);
   for (let i = 0; i < n; i++) {
-    const nx = -R.hz[i], nz = R.hx[i];
+    const nx = -R.hz[i], nz = R.hx[i], w = R.hw[i];
     for (let s = 0; s < 2; s++) {
       const sg = s ? 1 : -1, k = i * 2 + s;
-      pos[k * 3] = R.x[i] + nx * W / 2 * sg; pos[k * 3 + 1] = 1.6; pos[k * 3 + 2] = R.z[i] + nz * W / 2 * sg;
-      dist[k] = i * R.step; side[k] = sg;
+      pos[k * 3] = R.x[i] + nx * w * sg; pos[k * 3 + 1] = 1.6; pos[k * 3 + 2] = R.z[i] + nz * w * sg;
+      dist[k] = i * R.step; side[k] = sg; wid[k] = w;
     }
   }
   const idx = [];
@@ -327,92 +459,102 @@ function buildRibbon(tex) {
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g.setAttribute('aDist', new THREE.BufferAttribute(dist, 1));
   g.setAttribute('aSide', new THREE.BufferAttribute(side, 1));
+  g.setAttribute('aW', new THREE.BufferAttribute(wid, 1));
   const heat = new Float32Array(n * 2);
   g.setAttribute('aHeat', new THREE.BufferAttribute(heat, 1).setUsage(THREE.DynamicDrawUsage));
   g.setIndex(idx);
   const m = new THREE.ShaderMaterial({
     side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -12, polygonOffsetUnits: -12,
     depthWrite: false,          // runners on top of the ribbon must never be hidden by it
-    uniforms: {
-      uTex: { value: tex }, uRepeat: { value: W * 16 }, uReveal: { value: 1e9 }, uHeat: { value: 0 },
-      uLo: { value: C(PAL.heatLo) }, uMid: { value: C(PAL.heatMid) }, uHi: { value: C(PAL.heatHi) }, uBlue: { value: C(PAL.blue) },
-    },
-    vertexShader: `attribute float aDist; attribute float aSide; attribute float aHeat; varying float vD; varying float vS; varying float vH;
-      void main(){ vD = aDist; vS = aSide; vH = aHeat; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-    fragmentShader: `uniform sampler2D uTex; uniform float uRepeat, uReveal, uHeat; uniform vec3 uLo, uMid, uHi, uBlue;
-      varying float vD; varying float vS; varying float vH;
+    uniforms: { uTex: { value: tex }, uReveal: { value: 1e9 }, uHeat: { value: 0 }, uMid: { value: C(PAL.heatMid) }, uHi: { value: C(PAL.heatHi) }, uBlue: { value: C(PAL.blue) } },
+    vertexShader: `attribute float aDist; attribute float aSide; attribute float aHeat; attribute float aW; varying float vD; varying float vS; varying float vH; varying float vW;
+      void main(){ vD = aDist; vS = aSide; vH = aHeat; vW = aW; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `uniform sampler2D uTex; uniform float uReveal, uHeat; uniform vec3 uMid, uHi, uBlue;
+      varying float vD; varying float vS; varying float vH; varying float vW;
       void main(){
-        if (vD > uReveal) discard;
-        vec2 uv = vec2(vD / uRepeat, 0.5 - vS * 0.62);   // letter tops to the left of the running direction
-        vec3 tex = texture2D(uTex, uv).rgb;
-        float textMask = smoothstep(0.25, 0.75, tex.r);          // white letters on blue
+        float ahead = vD - uReveal;
+        if (ahead > 0.0) {                         // not drawn yet: a pale dashed centre line shows where the course goes
+          if (abs(vS) > 0.2 || fract(vD / 26.0) > 0.55) discard;
+          gl_FragColor = vec4(mix(uBlue, vec3(1.0), 0.45), 1.0); ${OUTPUT}
+          return;
+        }
+        float tip = clamp(-ahead / vW, 0.0, 1.0);   // round cap, one half street-width long
+        if (abs(vS) > sqrt(1.0 - (1.0 - tip) * (1.0 - tip))) discard;
+        // text keeps its proportions: the repeat length follows the local street width
+        vec2 uv = vec2(vD / (vW * 32.0), 0.5 - vS * 0.62);
+        float textMask = smoothstep(0.25, 0.75, texture2D(uTex, uv).r);
         float h = clamp(vH, 0.0, 1.0);
-        vec3 band = mix(uLo, uMid, smoothstep(0.15, 0.55, h));
+        vec3 band = mix(uBlue, uMid, smoothstep(0.15, 0.55, h));
         band = mix(band, uHi, smoothstep(0.55, 1.0, h));
         band = mix(uBlue, band, uHeat);
         vec3 c = mix(band, vec3(1.0), textMask * (1.0 - 0.6*uHeat));
-        float edge = smoothstep(0.86, 0.93, abs(vS));
-        c = mix(c, vec3(1.0), edge);
+        c = mix(c, vec3(1.0), smoothstep(0.86, 0.93, abs(vS)));
+        c = mix(c, vec3(1.0), (1.0 - smoothstep(0.0, 90.0, uReveal - vD)) * 0.9);
         gl_FragColor = vec4(c, 1.0); ${OUTPUT}
       }`,
   });
   const mesh = new THREE.Mesh(g, m);
-  mesh.renderOrder = 20;
-  scene.add(mesh);
+  mesh.renderOrder = 20; scene.add(mesh);
   return { mesh, heat, attr: g.getAttribute('aHeat') };
 }
 function buildCourseFurniture() {
   const grp = new THREE.Group();
-  // km posts: blue poles with a white band
   const count = Math.floor(R.len / 1000);
   const pole = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.9, 0.9, 24, 8).translate(0, 12, 0), new THREE.MeshLambertMaterial({ color: C(PAL.blue) }), count);
   const cap = new THREE.InstancedMesh(new THREE.SphereGeometry(2.4, 12, 8).translate(0, 25, 0), new THREE.MeshLambertMaterial({ color: C('#ffffff') }), count);
-  const M = new THREE.Matrix4(), o = {};
+  const M = new THREE.Matrix4(), o = {}, posts = [];
   for (let k = 1; k <= count; k++) {
-    R.at(k * 1000 * R.len / 21097.5, o);
-    M.makeTranslation(o.x - o.hz * 9, 0, o.z + o.hx * 9);
+    const d = k * 1000 * R.len / 21097.5; R.at(d, o);
+    posts.push([o.x - o.hz * (o.w + 3), o.z + o.hx * (o.w + 3), d]);
+    M.makeTranslation(posts[k - 1][0], 0, posts[k - 1][1]);
     pole.setMatrixAt(k - 1, M); cap.setMatrixAt(k - 1, M);
   }
-  pole.castShadow = true;
-  grp.add(pole, cap);
-  // start / finish arch across the course at Rådhusparken
+  let shown = Infinity;
+  const q0 = new THREE.Quaternion(), pv = new THREE.Vector3(), sv = new THREE.Vector3();
+  grp.userData.reveal = (d) => {                    // posts spring up as the ribbon reaches them
+    if (d === shown) return; shown = d;
+    posts.forEach(([x, z, pd], k) => {
+      const t = clamp((d - pd) / 160, 0, 1), u = t - 1, s = Math.max(0.0001, 1 + 2.7 * u * u * u + 1.7 * u * u);   // ease-out with a little overshoot
+      M.compose(pv.set(x, 0, z), q0, sv.set(s, s, s)); pole.setMatrixAt(k, M); cap.setMatrixAt(k, M);
+    });
+    pole.instanceMatrix.needsUpdate = true; cap.instanceMatrix.needsUpdate = true;
+  };
+  pole.castShadow = true; grp.add(pole, cap);
   const s = R.at(0, {});
-  const arch = new THREE.Mesh(new THREE.TorusGeometry(10, 1.1, 10, 40, Math.PI), new THREE.MeshLambertMaterial({ color: C(PAL.blue) }));
-  arch.position.set(s.x, 0, s.z);
-  arch.rotation.y = Math.atan2(s.hx, s.hz);
-  arch.castShadow = true;
-  scene.add(arch);
-  scene.add(grp);
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(Math.max(8, s.w + 2), 1.1, 10, 40, Math.PI), new THREE.MeshLambertMaterial({ color: C(PAL.blue) }));
+  arch.position.set(s.x, 0, s.z); arch.rotation.y = Math.atan2(s.hx, s.hz); arch.castShadow = true;
+  scene.add(arch, grp);
+  return grp;
+}
+
+function buildLead() {                              // the puck at the front of the ribbon while the course is drawn
+  const grp = new THREE.Group();
+  const flat = (geo, hex, op) => { const m = new THREE.Mesh(geo.rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: C(hex), transparent: true, opacity: op, depthTest: false, depthWrite: false })); m.renderOrder = 26; grp.add(m); return m; };
+  flat(new THREE.CircleGeometry(1.25, 48), PAL.blue, 1);
+  flat(new THREE.CircleGeometry(0.9, 48), '#ffffff', 1);
+  grp.userData.pulse = flat(new THREE.RingGeometry(1.25, 1.5, 48), '#ffffff', 0);
+  grp.position.y = 2; grp.visible = false; scene.add(grp);
   return grp;
 }
 
 /* ── runners ──────────────────────────────────────────────────────────── */
 let F = null;
 function prepField(field, routeLen) {
-  const N = field.t.length;
-  const T = Float32Array.from(field.t), S = new Float32Array(N), B = new Uint8Array(N), O = new Float32Array(N);
-  const md = field.model;
-  const delayAt = (net) => {
-    const D = md.delay; if (net <= D[0][0]) return [D[0][1], D[0][2]];
-    for (let i = 1; i < D.length; i++) if (net <= D[i][0]) { const t = (net - D[i - 1][0]) / (D[i][0] - D[i - 1][0]); return [lerp(D[i - 1][1], D[i][1], t), lerp(D[i - 1][2], D[i][2], t)]; }
-    return [D[D.length - 1][1], D[D.length - 1][2]];
-  };
+  const N = field.t.length, md = field.model;
+  const T = Float32Array.from(field.t), S = Float32Array.from(field.s), G = Uint8Array.from(field.g);
+  const B = new Uint8Array(N), O = new Float32Array(N);
   for (let i = 0; i < N; i++) {
-    const [med, spr] = delayAt(T[i]);
-    S[i] = Math.max(0, med + (hash(i * 7 + 3) - 0.5) * 2 * spr);
     let b = 0; while (b < md.buckets.length - 1 && T[i] > md.buckets[b].max) b++;
-    B[i] = b;
-    O[i] = (hash(i * 13 + 1) - 0.5) * 9.0;
+    B[i] = b; O[i] = (hash(i * 13 + 1) - 0.5) * 2;           // −1…1 across the street
   }
-  const Dm = md.D.map((k) => k * 1000 * routeLen / 21097.5);
-  const sd = Array.from(S).sort((a, b) => a - b), qv = 620 / Math.max(300, sd[Math.floor(N * 0.99)]);
-  let maxEnd = 0; for (let i = 0; i < N; i++) maxEnd = Math.max(maxEnd, T[i] + S[i]);
-  return { N, T, S, B, O, Dm, prof: md.buckets.map((b) => b.F), qv, raw: field, maxEnd, lastStart: sd[Math.floor(N * 0.995)] };
+  let maxEnd = 0, lastStart = 0;
+  for (let i = 0; i < N; i++) { maxEnd = Math.max(maxEnd, T[i] + S[i]); lastStart = Math.max(lastStart, S[i]); }
+  return { N, T, S, G, B, O, Dm: md.D.map((k) => k * 1000 * routeLen / 21097.5), prof: md.buckets.map((b) => b.F), raw: field, maxEnd, lastStart };
 }
 // distance along the course of runner i at clock t; state 0 waiting, 1 running, 2 finished
 function runnerDist(i, t) {
   const el = t - F.S[i];
-  if (el < 0) return [Math.max(-640, el * F.qv - 4), 0];
+  if (el < 0) return [el, 0];
   const T = F.T[i];
   if (el >= T) return [el - T, 2];
   const f = el / T, Fp = F.prof[F.B[i]], D = F.Dm;
@@ -420,61 +562,89 @@ function runnerDist(i, t) {
   const u = (f - Fp[k]) / (Fp[k + 1] - Fp[k] || 1);
   return [D[k] + (D[k + 1] - D[k]) * u, 1];
 }
-const _o = {};
+const WALK_IN = 150, WALK_OUT = 200, LINGER = 700, FADE_OUT = 140;
+const _o = {}, _s = {};
 function runnerXZ(i, t, out) {
   const [d, st] = runnerDist(i, t);
-  if (st === 2) {
-    const e = d; if (e > 600) { out.v = 0; return st; }
+  out.d = d; out.hx = 0; out.hz = 0;
+  if (st === 0) {                                  // in the park, then walk to the mat
+    const sp = R.stage[Math.floor(hash(i * 3 + 7) * R.stage.length)];
+    R.at(0, _s);
+    const w = -d, q = w > WALK_IN ? 0 : smooth(1 - w / WALK_IN);
+    const lx = _s.x - _s.hz * F.O[i] * (_s.w - 1), lz = _s.z + _s.hx * F.O[i] * (_s.w - 1);
+    out.x = lerp(sp[0], lx, q); out.z = lerp(sp[1], lz, q); out.v = 1; return st;
+  }
+  if (st === 2) {                                  // walk into Rådhusparken, linger, fade
+    const e = d; if (e > LINGER + FADE_OUT) { out.v = 0; return st; }
+    const fp = R.fin[Math.floor(hash(i * 5 + 11) * R.fin.length)];
     R.at(R.len, _o);
-    const drift = Math.min(60, e * 0.3);
-    out.x = _o.x + _o.hx * drift - _o.hz * F.O[i] * 3; out.z = _o.z + _o.hz * drift + _o.hx * F.O[i] * 3;
-    out.v = 1 - e / 600; out.d = R.len; return st;
+    const q = smooth(Math.min(1, e / WALK_OUT));
+    out.x = lerp(_o.x, fp[0], q); out.z = lerp(_o.z, fp[1], q);
+    out.v = e < LINGER ? 1 : 1 - (e - LINGER) / FADE_OUT; return st;
   }
   R.at(d, _o);
-  const w = st === 0 ? 3.2 : 1.0;
-  out.x = _o.x - _o.hz * F.O[i] * w; out.z = _o.z + _o.hx * F.O[i] * w; out.v = 1; out.d = d;
+  const w = Math.max(1, _o.w - 1.2);
+  out.x = _o.x - _o.hz * F.O[i] * w; out.z = _o.z + _o.hx * F.O[i] * w; out.v = 1;
+  out.hx = _o.hx; out.hz = _o.hz;
   return st;
+}
+// progress for ranking on the road: waiting < running (by distance) < finished (earlier is ahead)
+function progress(i, t) {
+  const [d, st] = runnerDist(i, t);
+  return st === 0 ? -1e6 + d : st === 1 ? d : 1e6 - (F.S[i] + F.T[i]);
 }
 function buildRunners() {
   const N = F.N;
-  const pos = new Float32Array(N * 3), alpha = new Float32Array(N), col2 = new Float32Array(N * 3);
-  const fast = C(PAL.fast), mid = C(PAL.mid), slow = C(PAL.slow);
-  const tmin = F.T[0];
-  for (let i = 0; i < N; i++) {
-    const q = clamp((F.T[i] - tmin) / (9000 - tmin), 0, 1);
-    const p = q < 0.5 ? fast.clone().lerp(mid, q * 2) : mid.clone().lerp(slow, (q - 0.5) * 2);
-    col2[i * 3] = p.r; col2[i * 3 + 1] = p.g; col2[i * 3 + 2] = p.b;
-  }
+  const pos = new Float32Array(N * 3), alpha = new Float32Array(N), col = new Float32Array(N * 3), size = new Float32Array(N).fill(1);
+  const base = new Float32Array(N * 3), gc = PAL.groups.map((h) => C(h));
+  for (let i = 0; i < N; i++) { const c = gc[F.G[i]]; base[i * 3] = col[i * 3] = c.r; base[i * 3 + 1] = col[i * 3 + 1] = c.g; base[i * 3 + 2] = col[i * 3 + 2] = c.b; }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
   g.setAttribute('aAlpha', new THREE.BufferAttribute(alpha, 1).setUsage(THREE.DynamicDrawUsage));
-  g.setAttribute('aCol2', new THREE.BufferAttribute(col2, 3));
+  g.setAttribute('aCol', new THREE.BufferAttribute(col, 3).setUsage(THREE.DynamicDrawUsage));
+  g.setAttribute('aSize', new THREE.BufferAttribute(size, 1).setUsage(THREE.DynamicDrawUsage));
+  const head = new Float32Array(N * 2);
+  g.setAttribute('aHead', new THREE.BufferAttribute(head, 2).setUsage(THREE.DynamicDrawUsage));
   const m = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false,
-    uniforms: { uSize: { value: 4.6 }, uScale: { value: 1 }, uMix: { value: 0 }, uOp: { value: 0 }, uRim: { value: C(PAL.blue) }, uFill: { value: C('#ffffff') } },
-    vertexShader: `attribute float aAlpha; attribute vec3 aCol2; uniform float uSize, uScale, uOp; varying vec3 vC; varying float vA; uniform float uMix; uniform vec3 uFill;
+    uniforms: { uSize: { value: 4.4 }, uScale: { value: 1 }, uOp: { value: 0 }, uAspect: { value: 1 }, uRim: { value: C('#0a0870') } },
+    // the sprite is 2.6× the dot so the trail fits behind it
+    vertexShader: `attribute float aAlpha; attribute vec3 aCol; attribute float aSize; attribute vec2 aHead;
+      uniform float uSize, uScale, uOp, uAspect; varying vec3 vC; varying float vA; varying vec2 vDir; varying float vTail;
       void main(){ vec4 mv = modelViewMatrix*vec4(position,1.0); gl_Position = projectionMatrix*mv;
-        float px = uSize * uScale / -mv.z; gl_PointSize = clamp(px, 2.4, 11.0);
-        vA = aAlpha * uOp; vC = mix(uFill, aCol2, uMix); }`,
-    fragmentShader: `uniform vec3 uRim; varying vec3 vC; varying float vA;
-      void main(){ vec2 p = gl_PointCoord - 0.5; float r = length(p); if (r > 0.5 || vA < 0.01) discard;
-        float rim = smoothstep(0.34, 0.40, r);
-        vec3 c = mix(vC, uRim, rim);
-        float a = (1.0 - smoothstep(0.44, 0.5, r)) * vA;
-        gl_FragColor = vec4(c, a); ${OUTPUT} }`,
+        float px = clamp(uSize * aSize * uScale / -mv.z, 2.4 * aSize, 11.0 * aSize);
+        gl_PointSize = px * 2.6;
+        vec4 c1 = projectionMatrix * modelViewMatrix * vec4(position + vec3(aHead.x, 0.0, aHead.y) * 6.0, 1.0);
+        vec2 d = (c1.xy / c1.w - gl_Position.xy / gl_Position.w) * vec2(uAspect, 1.0);
+        float l = length(d);
+        vDir = l > 0.000001 ? vec2(d.x, -d.y) / l : vec2(0.0);      // point-sprite y runs downwards
+        vTail = step(0.000001, l) * smoothstep(3.0, 6.5, px / aSize);
+        vA = aAlpha * uOp; vC = aCol; }`,
+    fragmentShader: `uniform vec3 uRim; varying vec3 vC; varying float vA; varying vec2 vDir; varying float vTail;
+      void main(){ if (vA < 0.01) discard;
+        vec2 p = (gl_PointCoord - 0.5) * 2.6; float r = length(p);
+        float dotA = 1.0 - smoothstep(0.44, 0.5, r);
+        float along = dot(p, -vDir), across = abs(dot(p, vec2(-vDir.y, vDir.x)));
+        float f = clamp(along / 1.15, 0.0, 1.0), w = 0.3 * (1.0 - f);
+        float tail = vTail * step(0.0, along) * (1.0 - smoothstep(w, w + 0.08, across)) * (1.0 - f) * (1.0 - f) * 0.6;
+        float a = max(dotA, tail);
+        if (a < 0.01) discard;
+        vec3 c = mix(mix(vC, uRim, 0.3), mix(vC, uRim, smoothstep(0.34, 0.40, r)), dotA);
+        gl_FragColor = vec4(c, a * vA); ${OUTPUT} }`,
   });
   const pts = new THREE.Points(g, m);
-  pts.renderOrder = 30; pts.frustumCulled = false;
-  scene.add(pts);
-  return { pts, pos, alpha, m, g };
+  pts.renderOrder = 30; pts.frustumCulled = false; scene.add(pts);
+  return { pts, pos, alpha, col, size, base, head, m, g };
 }
 function buildMarker() {
   const grp = new THREE.Group();
-  const pin = new THREE.Mesh(new THREE.ConeGeometry(7, 22, 20).rotateX(Math.PI).translate(0, 22, 0), new THREE.MeshLambertMaterial({ color: C(PAL.blue), emissive: C('#1a0f8a') }));
-  const ball = new THREE.Mesh(new THREE.SphereGeometry(8.5, 20, 14).translate(0, 34, 0), new THREE.MeshLambertMaterial({ color: C('#ffffff') }));
-  const disc = new THREE.Mesh(new THREE.RingGeometry(8, 11, 32).rotateX(-Math.PI / 2).translate(0, 2.2, 0), new THREE.MeshBasicMaterial({ color: C(PAL.blue), transparent: true, opacity: 0.85 }));
-  pin.castShadow = ball.castShadow = true;
-  grp.add(pin, ball, disc); grp.visible = false; scene.add(grp);
+  const mat = new THREE.MeshLambertMaterial({ color: C(PAL.blue), emissive: C('#140a90') });
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 30, 10).translate(0, 15, 0), mat);
+  const ring = new THREE.Mesh(new THREE.RingGeometry(6, 8.5, 40).rotateX(-Math.PI / 2).translate(0, 2.4, 0), new THREE.MeshBasicMaterial({ color: C(PAL.blue) }));
+  const pulse = new THREE.Mesh(new THREE.RingGeometry(8.5, 10.5, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: C(PAL.blue), transparent: true, opacity: 0, depthWrite: false }));
+  pulse.position.y = 2.2; pulse.visible = !REDUCED;
+  pole.castShadow = true;
+  grp.add(pole, ring, pulse); grp.visible = false; grp.userData.pulse = pulse; scene.add(grp);
   return grp;
 }
 
@@ -492,14 +662,14 @@ function sampleGrid(x, z) {
   for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { const ii = i + a, jj = j + b; if (ii >= 0 && jj >= 0 && ii < gw && jj < gh) s += grid[jj * gw + ii]; }
   return s;
 }
-// the busiest 36 m of road in the model holds ~160 runners (~0.5/m² on an 8 m street): call ~190 full
-const HEAT_FULL = 190;
+const HEAT_FULL = 190;      // the busiest 36 m of road holds ~160 runners in the model
 
-function computeStats(route) {
-  const N = F.N, o = {};
-  const best = new Map();
+async function computeStats() {
+  const N = F.N, o = {}, best = new Map();
+  let slice = performance.now();
   for (let t = 300; t <= 4800; t += 30) {
-    grid.fill(0);
+    if (performance.now() - slice > 7) { await new Promise((r) => setTimeout(r, 0)); slice = performance.now(); }
+    grid.fill(0);                                  // each time step is synchronous, so sharing the grid with the frame loop is safe
     for (let i = 0; i < N; i++) { if (runnerXZ(i, t, o) !== 1) continue; const c = cellOf(o.x, o.z); if (c >= 0) grid[c]++; }
     for (let k = 0; k < R.n; k += 3) {
       const c = cellOf(R.x[k], R.z[k]); if (c < 0) continue;
@@ -514,32 +684,38 @@ function computeStats(route) {
     if (hot.every((h) => Math.hypot(h.x - x, h.z - z) > 450)) hot.push({ x, z, n: c[0], t: c[1], d: c[2] * R.step });
     if (hot.length >= 3) break;
   }
-  const kmOf = (d) => d / R.len * 21.0975;
-  const leadKm = kmOf(runnerDist(0, F.lastStart)[0]);
-  let winHome = Infinity, wi = 0; for (let i = 0; i < N; i++) if (F.S[i] + F.T[i] < winHome) { winHome = F.S[i] + F.T[i]; wi = i; }
+  const leadKm = runnerDist(0, F.lastStart)[0] / R.len * 21.0975;
+  let winHome = Infinity; for (let i = 0; i < N; i++) winHome = Math.min(winHome, F.S[i] + F.T[i]);
   const ten = 10000 * R.len / 21097.5; let not10 = 0;
-  for (let i = 0; i < N; i++) { const [d, st] = runnerDist(i, winHome); if (st !== 2 && d < ten) not10++; }
-  return { hot, leadKm, winHome, not10 };
+  for (let i = 0; i < N; i++) { const [d, st] = runnerDist(i, winHome); if (st === 0 || (st === 1 && d < ten)) not10++; }
+  return { hot, leadKm, not10 };
 }
 
 /* ── labels ───────────────────────────────────────────────────────────── */
 const labelsEl = $('#labels');
 const labels = [];
-function addLabel(x, y, z, html, cls = '') {
-  const el = document.createElement('div'); el.className = 'lbl ' + cls; el.innerHTML = `<span class="t">${html}</span>`;
+function addLabel(x, y, z, cls = '') {
+  const el = document.createElement('div'); el.className = 'lbl ' + cls; el.innerHTML = '<span class="t"></span>';
   labelsEl.appendChild(el);
-  const L = { el, p: new THREE.Vector3(x, y, z), on: false };
+  const L = { el, t: el.firstChild, p: new THREE.Vector3(x, y, z), on: false };
   labels.push(L); return L;
 }
 const _v = new THREE.Vector3();
 function updateLabels() {
-  const w = innerWidth, h = innerHeight;
+  const w = innerWidth, h = innerHeight, placed = [];
   for (const L of labels) {
     if (!L.on) { if (L.el.classList.contains('on')) L.el.classList.remove('on'); continue; }
     _v.copy(L.p).project(camera);
-    const vis = _v.z < 1 && Math.abs(_v.x) < 1.05 && Math.abs(_v.y) < 1.05;
+    let vis = _v.z < 1 && Math.abs(_v.x) < 1.05 && Math.abs(_v.y) < 1.05;
+    const sx = (_v.x * 0.5 + 0.5) * w, sy = (-_v.y * 0.5 + 0.5) * h;
+    if (vis) {                                     // labels never sit on top of each other
+      const bw = L.el.offsetWidth || 120, bh = (L.t.offsetHeight || 24) + 4;
+      const box = [sx - bw / 2, sy - L.el.offsetHeight, sx + bw / 2, sy - L.el.offsetHeight + bh];
+      if (placed.some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) vis = false;
+      else placed.push(box);
+    }
     L.el.classList.toggle('on', vis);
-    if (vis) L.el.style.transform = `translate(${(_v.x * 0.5 + 0.5) * w}px, ${(-_v.y * 0.5 + 0.5) * h}px) translate(-50%, -100%)`;
+    if (vis) L.el.style.transform = `translate(${sx}px, ${sy}px) translate(-50%, -100%)`;
   }
 }
 
@@ -549,7 +725,7 @@ function activeChapter() {
   const mid = innerHeight * 0.5;
   for (const s of sections) {
     const r = s.getBoundingClientRect();
-    if (r.top <= mid && r.bottom > mid) return { id: s.dataset.ch, p: clamp((mid - r.top) / r.height, 0, 1) };
+    if (r.top <= mid && r.bottom > mid) return { id: s.dataset.ch, p: clamp((mid - r.top) / r.height, 0, 1), el: s };
   }
   return sections[0].getBoundingClientRect().top > mid ? { id: 'hero', p: 0 } : { id: 'close', p: 1 };
 }
@@ -558,7 +734,7 @@ function buildNav() {
   const nav = $('#chnav');
   for (const s of sections) {
     const b = document.createElement('button'); b.type = 'button';
-    b.innerHTML = `<span>${s.dataset.label}</span><i></i>`;
+    b.innerHTML = '<span></span><i></i>';
     b.addEventListener('click', () => {
       const top = s.getBoundingClientRect().top + scrollY;
       const y = s.dataset.ch === 'hero' ? 0 : top - innerHeight * 0.5 + Math.max(s.offsetHeight * 0.06, innerHeight * 0.75);
@@ -569,20 +745,25 @@ function buildNav() {
 }
 let navActive = '';
 function updateNav(id) {
-  if (id === navActive) return; navActive = id;
+  if (id === navActive) return;
+  navActive = id;
+  userYawGoal = 0; userPitchGoal = 0;                // each chapter starts from its own framing
   for (const [cid, b] of navBtns) {
     b.classList.toggle('on', cid === id);
+    if (cid === id) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
     if (cid === id && MOBILE) b.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
   }
 }
 
 const camPos = new THREE.Vector3(), camTgt = new THREE.Vector3(), wantPos = new THREE.Vector3(), wantTgt = new THREE.Vector3();
-let simT = 2100, runnersOp = 0, heatOn = 0, colorMix = 0, furnitureOn = 0;
-let selected = -1, replayStart = -1, exPlaying = false;
-let userYaw = 0, autoRotate = false;
+let simT = 2100, runnersOp = 0, heatOn = 0, furnitureOn = 0;
+let userYaw = 0, userPitch = 0, userYawGoal = 0, userPitchGoal = 0;
+let exPlaying = false;
+const rp = { i: -1, el: 0, playing: true, speed: 1 };          // replay of a selected runner
+const SPEEDS = [0.5, 1, 2, 4];
 
 function overview(angle = 0, dist = 1, tx = 520, tz = 260) {
-  const az = 0.55 + angle;                       // 0 = camera due south, positive swings it west
+  const az = 0.55 + angle;
   wantTgt.set(tx, 0, tz);
   wantPos.set(tx - Math.sin(az) * 3500 * dist, 2600 * dist, tz + Math.cos(az) * 3500 * dist);
 }
@@ -593,30 +774,34 @@ function follow(d, back = 420, up = 300, side = 140) {
 }
 function orbitAround(x, z, ang, dist, up) { wantTgt.set(x, 0, z); wantPos.set(x + Math.cos(ang) * dist, up, z + Math.sin(ang) * dist); }
 
-let STATS = null, stopEls = [], lmLabels = [], hotLabels = [];
-function chapterState(ch, now) {
+let STATS = null, stopEls = [], lmLabels = [], hotLabels = [], meLabel = null;
+let introStart = -1;
+const introEase = (now, dur) => { if (REDUCED || introStart < 0) return 1; const k = clamp((now - introStart) / dur, 0, 1); return 1 - Math.pow(1 - k, 4); };
+function chapterState(ch, now, dt) {
   const p = ch.p;
-  heatOn = 0; colorMix = 0; furnitureOn = 0;
-  let reveal = 1e9, clock = false, showLm = false, showHot = false;
+  heatOn = 0; furnitureOn = 0;
+  let reveal = 1e9, clock = false, showLm = false, showHot = false, pill = '';
   switch (ch.id) {
-    case 'hero':
-      overview(Math.sin(now * 0.00004) * 0.1 + p * 0.2, 1.0 - p * 0.12);
+    case 'hero': {
+      const io = 1 - introEase(now, 3600);          // opening move: descend and swing in from further out
+      overview(Math.sin(now * 0.00004) * 0.1 + p * 0.2 - io * 0.55, (1.0 - p * 0.12) * (1 + io * 0.5));
       simT = 1500 + (REDUCED ? 0 : (now * 0.01) % 3200);
-      runnersOp = 1; break;
+      runnersOp = REDUCED || now - introStart > 1900 ? 1 : 0; break;   // runners fade in once the centre has risen
+    }
     case 'course': {
-      const q = clamp((p - 0.04) / 0.92, 0, 1);
-      const d = smooth(q) * R.len;
+      const q = clamp((p - 0.04) / 0.92, 0, 1), d = smooth(q) * R.len;
       reveal = d + 2;
       if (q <= 0) overview(0.2, 0.85); else if (q >= 1) overview(0.2, 0.9); else follow(d);
       runnersOp = 0; furnitureOn = 1; showLm = true;
       const km = d / R.len * 21.0975;
+      if (q > 0) { clock = true; pill = `${fmtDec(km)} km`; }
       stopEls.forEach((el) => el.classList.toggle('on', +el.dataset.km <= km + 0.05));
       lmLabels.forEach((L) => { L.on = L.km <= km + 0.3; });
       break;
     }
     case 'start':
-      simT = lerp(-30, F.lastStart + 150, smooth(p));
-      orbitAround(-40, 80, -0.9 - p * 0.7, 560, 360);
+      simT = lerp(-240, F.lastStart + 180, smooth(p));
+      orbitAround(-20, -10, -1.0 - p * 0.6, 640, 430);
       runnersOp = 1; clock = true; furnitureOn = 1; break;
     case 'river':
       simT = lerp(F.lastStart, F.maxEnd + 60, p);
@@ -626,16 +811,19 @@ function chapterState(ch, now) {
       heatOn = 1; runnersOp = 0.6; clock = true; showHot = true;
       const hs = STATS ? STATS.hot : [];
       if (hs.length) {
-        const k = Math.min(hs.length - 1, Math.floor(p * hs.length * 0.999));
-        const h = hs[k], lp = (p * hs.length) % 1;
+        const k = Math.min(hs.length - 1, Math.floor(p * hs.length * 0.999)), h = hs[k], lp = (p * hs.length) % 1;
         simT = h.t - 240 + lp * 480;
         orbitAround(h.x, h.z, -0.7 + k * 1.1 + lp * 0.5, 460, 400);
         hotLabels.forEach((L, j) => { L.on = j === k; });
       } else { overview(0.2, 0.7); simT = 1800; }
       break;
     }
+    case 'dist':
+      simT = lerp(5000, 7600, p);                      // the finish around 1:30–2:00
+      orbitAround(60, 0, 2.2 + p * 0.5, 620, 520);
+      runnersOp = 1; clock = true; break;
     case 'pace':
-      colorMix = 1; runnersOp = 1; clock = true;
+      runnersOp = 1; clock = true;
       simT = lerp(2600, 4800, p);
       overview(0.5 + p * 0.3, 0.62, 650, 250);
       break;
@@ -646,291 +834,419 @@ function chapterState(ch, now) {
       break;
     case 'find':
       runnersOp = 1; clock = true;
-      if (selected >= 0) {
-        if (replayStart >= 0) {
-          const q = clamp((now - replayStart) / 45000, 0, 1);
-          simT = lerp(F.S[selected] - 20, F.S[selected] + F.T[selected] + 30, q);
-          if (q >= 1) replayStart = -1;
-        }
-        const o = {}; runnerXZ(selected, simT, o);
-        const [hx, hz] = (o.d > 0 && o.d < R.len) ? R.headingAvg(o.d, 200) : [0.7, 0.7];
-        // keep the runner right of centre, clear of the card on the left
-        wantTgt.set(o.x + hz * 110, 0, o.z - hx * 110); wantPos.set(o.x - hx * 360 + hz * 240, 300, o.z - hz * 360 - hx * 240);
+      if (rp.i >= 0) {
+        const T = F.T[rp.i];
+        if (rp.playing) { rp.el += dt * (T / 50) * rp.speed; if (rp.el > T + 240) { rp.el = T + 240; rp.playing = false; syncReplayUi(); } }
+        simT = F.S[rp.i] + rp.el;
+        const o = {}; runnerXZ(rp.i, simT, o);
+        const [hx, hz] = (o.d > 0 && o.d < R.len && rp.el > 0 && rp.el < T) ? R.headingAvg(o.d, 200) : [0.6, 0.8];
+        wantTgt.set(o.x - hz * 90, 0, o.z + hx * 90);
+        wantPos.set(o.x - hx * 300 - hz * 200, 430, o.z - hz * 300 + hx * 200);   // high enough that roofs rarely hide the pin
       } else { simT = lerp(1200, 2400, p); orbitAround(0, 0, 0.6 + p, 900, 700); }
       break;
     case 'close':
       runnersOp = 1; clock = true; showLm = true;
       lmLabels.forEach((L) => { L.on = true; });
-      if (!exPlaying) simT = +$('#exTime').value;
+      if (exPlaying) { simT += dt * 120; if (simT > F.maxEnd + 120) simT = -300; $('#exTime').value = simT; }
+      else simT = +$('#exTime').value;
       overview(0.6 + p * 0.3, 0.95);
       break;
   }
   if (!showLm) lmLabels.forEach((L) => { L.on = false; });
   if (!showHot) hotLabels.forEach((L) => { L.on = false; });
-  return { reveal, clock };
+  return { reveal, clock, pill };
 }
 
 /* ── main ─────────────────────────────────────────────────────────────── */
-let ribbon, runners, marker, furniture;
-let routeData = null;
+let ribbon, runners, marker, furniture, lead, routeData;
 async function main() {
-  msg('Loading the city');
-  const [city, route, field] = await Promise.all([getJSON('./data/city.json'), getJSON('./data/route.json'), getJSON('./data/field.json')]);
+  const bar = $('#loadBar'); let got = 0;
+  const setLoad = (v) => { bar.style.transform = `scaleX(${v})`; };
+  const step = (pr) => pr.then((r) => { setLoad(0.1 + ++got * 0.2); return r; });
+  setLoad(0.1);
+  const [city, route, field] = await Promise.all([step(getJSON('./data/city.json')), step(getJSON('./data/route.json')), step(getJSON('./data/field.json'))]);
   routeData = route;
-  msg('Raising buildings');
-  await new Promise((r) => setTimeout(r, 20));
+  await new Promise((r) => setTimeout(r, 60));      // let the bar paint before the city is built
   R = makeRoute(route);
-  buildSky(); buildGround(city);
-  buildBuildings(city);
-  buildTrees(city);
-  buildLandmarkExtras(route.lm);
+  buildSky(); buildGround(city); buildBuildings(city); buildTrees(city); buildLandmarkExtras(route.lm);
   ribbon = buildRibbon(await ribbonTexture());
   furniture = buildCourseFurniture();
+  lead = buildLead();
   F = prepField(field, R.len);
   runners = buildRunners();
   marker = buildMarker();
+  meLabel = addLabel(0, 34, 0, 'me');
   initGrid(city.win);
-
-  const stops = $('#stops');
   for (const l of route.lm) {
-    const li = document.createElement('li'); li.dataset.km = l.km;
-    li.innerHTML = `<span>${l.km.toFixed(1)} km</span>${l.name}`; stops.appendChild(li); stopEls.push(li);
-    const L = addLabel(l.x, (l.h || 25) + 10, l.z, `${l.name}<small>${l.km.toFixed(1)} km</small>`);
-    L.km = l.km; lmLabels.push(L);
+    const L = addLabel(l.x, (l.h || 25) + 10, l.z); L.km = l.km; L.name = l.name; lmLabels.push(L);
   }
   buildNav();
-  fillText();
+  applyLang();
   onResize();
+  watchCards();
+  setLoad(1);
+  await new Promise((r) => setTimeout(r, REDUCED ? 0 : 320));
+  renderer.compile(scene, camera);                  // shaders ready before the curtain lifts
+  introStart = performance.now();
   requestAnimationFrame(loop);
   $('#loading').classList.add('done');
-  setTimeout(() => {
-    STATS = computeStats(route);
-    $$('.js-leadKm').forEach((e) => { e.textContent = STATS.leadKm.toFixed(1); });
-    $$('.js-not10').forEach((e) => { e.textContent = fmtInt(Math.round(STATS.not10 / 50) * 50); });
-    const parts = STATS.hot.map((h) => {
-      const km = (h.d / R.len * 21.0975).toFixed(1);
-      hotLabels.push(addLabel(h.x, 30, h.z, `Busy<small>km ${km}</small>`, 'hot'));
-      const near = (nearestLandmark(route.lm, h.x, h.z) || '').split(':')[0];
-      return `km ${km}${near ? ` (${near})` : ''} at ${clockStr(h.t)}`;
-    });
-    const two = (route.over || []).filter((z) => z.two).sort((a, b) => (b.a[1] - b.a[0]) - (a.a[1] - a.a[0]));
-    let twoText = '';
-    if (two.length) {
-      const z = two[0];
-      STATS.hot.push({ x: z.x, z: z.z, t: z.win[0] + 900 });
-      hotLabels.push(addLabel(z.x, 30, z.z, `Two-way<small>km ${z.a[0]} ⇄ ${z.b[1]}</small>`, 'hot'));
-      twoText = `<p>The coast road is out and back. From ${clockStr(z.win[0])}, runners heading south at km ${z.a[0]}–${z.a[1]} meet runners coming back at km ${z.b[0]}–${z.b[1]}, and the road stays <strong>two-way for ${durWords(z.win[1] - z.win[0])}</strong>.</p>`;
-    }
-    $('#hotText').innerHTML = `<p>Busiest after the start: ${parts.join(', ')}.</p>${twoText}`;
+  document.body.classList.add('ready');
+  setTimeout(async () => {
+    STATS = await computeStats();
+    for (const h of STATS.hot) hotLabels.push(addLabel(h.x, 30, h.z, 'hot'));
+    const two = twoWay();
+    if (two) { STATS.hot.push({ x: two.x, z: two.z, t: two.win[0] + 900 }); hotLabels.push(addLabel(two.x, 30, two.z, 'hot')); }
+    applyLang();
   }, 60);
 }
-function nearestLandmark(lm, x, z) {
-  let best = null, bd = 380;
-  for (const l of lm) { const d = Math.hypot(l.x - x, l.z - z); if (d < bd) { bd = d; best = l.name; } }
-  return best;
+/* cards animate in the first time they come on screen; numbers count up with them */
+function watchCards() {
+  const io = new IntersectionObserver((es) => {
+    for (const e of es) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('in'); io.unobserve(e.target);
+      if (e.target.querySelector('.stats')) countStats();
+    }
+  }, { threshold: 0.12 });
+  $$('.card').forEach((c) => io.observe(c));
 }
-const setAll = (cls, v) => $$(cls).forEach((e) => { e.textContent = v; });
-function fillText() {
+let STAT = [];
+function setStats(k) { for (const [sel, val, f] of STAT) $(sel).textContent = f(val * k); }
+function countStats() {
+  if (REDUCED) return;
+  const t0 = performance.now();
+  const tick = (now) => { const k = clamp((now - t0 - 300) / 1500, 0, 1); setStats(1 - Math.pow(1 - k, 4)); if (k < 1) requestAnimationFrame(tick); };
+  tick(t0);
+}
+const twoWay = () => (routeData.over || []).filter((z) => z.two).sort((a, b) => (b.a[1] - b.a[0]) - (a.a[1] - a.a[0]))[0];
+function nearestLandmark(x, z) {
+  let best = null, bd = 380;
+  for (const l of routeData.lm) { const d = Math.hypot(l.x - x, l.z - z); if (d < bd) { bd = d; best = l.name; } }
+  return best ? lmName(best).split(':')[0] : '';
+}
+
+/* fill every text in the current language */
+function applyLang() {
+  document.documentElement.lang = LANG;
+  $$('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
+  if (!F) { for (const el of document.querySelectorAll('[data-t="loading"], [data-t="nogl"]')) el.textContent = T(el.dataset.t); return; }
   const fd = F.raw, N = F.N, fx = fd.facts || {};
   const km = N * 21.0975;
-  setAll('.js-n', fmtInt(N));
-  setAll('.js-km', fmtInt(Math.round(km / 1000) * 1000));
-  setAll('.js-earth', (km / 40075).toFixed(0));
-  setAll('.js-win', hms(F.T[0]));
-  setAll('.js-last', durWords(F.maxEnd));
-  setAll('.js-lastStart', `about ${Math.round(F.lastStart / 60)} minutes`);
-  setAll('.js-samples', fmtInt(fd.model.samples));
-  if (fx.woman) { setAll('.js-woman', hms(fx.woman[0])); setAll('.js-womanPl', ordinal(fx.woman[1])); }
-  if (fx.sub2) { setAll('.js-sub2a', fmtInt(fx.sub2[0])); setAll('.js-sub2b', fmtInt(fx.sub2[1])); }
-  if (fx.sub130) { setAll('.js-s130a', fmtInt(fx.sub130[0])); setAll('.js-s130b', fmtInt(fx.sub130[1])); }
-  setAll('.js-kick', fx.kick ?? '–');
-  setAll('.js-countries', fmtInt(fx.countries ?? fd.ctys.length));
-  setAll('.js-eftN', fmtInt(fx.eftN ?? 0)); setAll('.js-eftClubs', fmtInt(fx.eftClubs ?? 0));
-  setAll('.js-young', fmtInt(fx.youngN ?? 0));
-  if (fx.oldest) { setAll('.js-old', fmtInt(fx.oldest[1])); setAll('.js-oldBest', hms(fx.oldest[2])); }
   let women = 0; for (let i = 0; i < N; i++) if ((fd.cats[fd.cat[i]] || '')[0] === 'K') women++;
-  setAll('.js-women', `${Math.round(women / N * 100)}%`);
+  const v = {
+    n: fmtInt(N), samples: fmtInt(fd.model.samples), lastStart: clockStr(F.lastStart),
+    win: hms(F.T[0]), last: durWords(F.maxEnd), not10: STATS ? fmtInt(Math.round(STATS.not10 / 50) * 50) : '…',
+    woman: fx.woman ? hms(fx.woman[0]) : '–', womanPl: fx.woman ? ordinal(fx.woman[1]) : '–',
+    a: fmtInt(fx.sub2?.[0] ?? 0), b: fmtInt(fx.sub2?.[1] ?? 0), c: fmtInt(fx.sub130?.[0] ?? 0), d: fmtInt(fx.sub130?.[1] ?? 0),
+    kick: fx.kick ?? '–', earth: Math.round(km / 40075),
+    eftN: fmtInt(fx.eftN ?? 0), eftClubs: fmtInt(fx.eftClubs ?? 0), young: fmtInt(fx.youngN ?? 0),
+    old: fmtInt(fx.oldest?.[1] ?? 0), oldBest: fx.oldest ? hms(fx.oldest[2]) : '–',
+  };
+  $$('[data-t]').forEach((el) => { el.innerHTML = T(el.dataset.t, v); });
+  $$('[data-tp]').forEach((el) => { el.placeholder = T(el.dataset.tp); });
+  $('#waveText').textContent = T('wave', v);
+  STAT = [
+    ['.js-n', N, fmtInt],
+    ['.js-km', km, (x) => fmtInt(Math.round(x / 1000) * 1000)],
+    ['.js-countries', fx.countries ?? fd.ctys.length, fmtInt],
+    ['.js-women', women / N * 100, (x) => `${Math.round(x)}${LANG === 'da' ? ' %' : '%'}`],
+  ];
+  setStats(1);
+  $('#brand').setAttribute('aria-label', TEXT[LANG].nav.hero);
+  for (const [id, b] of navBtns) b.firstChild.textContent = TEXT[LANG].nav[id];
+  // course stops and landmark labels
+  const stops = $('#stops'); stops.innerHTML = ''; stopEls = [];
+  for (const l of routeData.lm) {
+    const li = document.createElement('li'); li.dataset.km = l.km;
+    li.innerHTML = `<span>${fmtDec(l.km)} km</span>${lmName(l.name)}`; stops.appendChild(li); stopEls.push(li);
+  }
+  for (const L of lmLabels) L.t.innerHTML = `${lmName(L.name)}<small>${fmtDec(L.km)} km</small>`;
+  // start groups
+  const counts = [0, 0, 0, 0]; for (let i = 0; i < N; i++) counts[F.G[i]]++;
+  $('#groups').innerHTML = fd.groups.map((g, k) => `<li><i style="background:${PAL.groups[k]}"></i><b>${LANG === 'da' ? 'Gruppe' : 'Group'} ${GROUP_NAMES[k]}</b><span>${T('group', { from: clockStr(g[0]), n: fmtInt(counts[k]) })}</span></li>`).join('');
+  // clubs
   const cnt = new Map();
   for (let i = 0; i < N; i++) if (fd.club[i] >= 0) cnt.set(fd.club[i], (cnt.get(fd.club[i]) || 0) + 1);
-  const top = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
-  const mx = top.length ? top[0][1] : 1;
-  $('#clubBars').innerHTML = top.map(([c, n]) => `<div class="bar"><span>${escapeHtml(fd.clubs[c])}</span><em>${n}</em><i style="width:${(n / mx * 100).toFixed(1)}%"></i></div>`).join('');
-  drawPaceChart(fd.model);
+  const top = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5), mx = top.length ? top[0][1] : 1;
+  $('#clubBars').innerHTML = top.map(([c, n], k) => `<div class="bar"><span>${escapeHtml(fd.clubs[c])}</span><em>${fmtInt(n)}</em><i style="width:${(n / mx * 100).toFixed(1)}%;--k:${k}"></i></div>`).join('');
+  // busy spots
+  if (STATS) {
+    const parts = STATS.hot.filter((h) => h.d != null).map((h) => T('busyPart', { km: fmtDec(h.d / R.len * 21.0975), near: nearestLandmark(h.x, h.z), t: clockStr(h.t) }));
+    const z = twoWay();
+    $('#hotText').innerHTML = `<p>${T('busy', { parts: parts.join(', ') })}</p>` + (z ? `<p>${T('two', { from: clockStr(z.win[0]), a: `${fmtDec(z.a[0])}–${fmtDec(z.a[1])}`, b: `${fmtDec(z.b[0])}–${fmtDec(z.b[1])}`, dur: durWords(z.win[1] - z.win[0]) })}</p>` : '');
+    hotLabels.forEach((L, j) => {
+      const h = STATS.hot[j];
+      L.t.innerHTML = h && h.d != null ? `${T('lblBusy')}<small>km ${fmtDec(h.d / R.len * 21.0975)}</small>` : `${T('lblTwo')}<small>km ${z ? fmtDec(z.a[0]) : ''} ⇄ ${z ? fmtDec(z.b[1]) : ''}</small>`;
+    });
+  }
+  drawDistChart(); drawPaceChart(fd.model);
   $('#exTime').max = Math.ceil(F.maxEnd + 120);
-  const wt = $('#waveText'); if (wt) wt.textContent = `14 JUNE 2026 · 21.0975 KM · ${fmtInt(N)} RUNNERS · AARHUS`;
+  if (rp.i >= 0) fillRace();
 }
 function escapeHtml(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+/* finish-time distribution: spikes just before the round times */
+function drawDistChart() {
+  const svg = $('#distChart'); const W = 380, H = 200, L = 34, Rr = 10, Tp = 10, Bm = 24, FS = 10, DIM = '#5d5d66';
+  const t0 = 3600, t1 = 12600, bins = new Array((t1 - t0) / 60).fill(0);
+  for (let i = 0; i < F.N; i++) { const k = Math.floor((F.T[i] - t0) / 60); if (k >= 0 && k < bins.length) bins[k]++; }
+  const mx = Math.max(...bins), targets = [5400, 6300, 7200, 8100, 9000, 9900];
+  const X = (t) => L + (t - t0) / (t1 - t0) * (W - L - Rr), Y = (v) => H - Bm - v / mx * (H - Tp - Bm);
+  const bw = (W - L - Rr) / bins.length;
+  let s = '';
+  for (let v = 0; v <= mx; v += 100) s += `<line x1="${L}" x2="${W - Rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(0,0,0,${v ? .07 : .25})"/><text x="${L - 5}" y="${Y(v) + 3.5}" fill="${DIM}" font-size="${FS}" text-anchor="end">${fmtInt(v)}</text>`;
+  s += `<line x1="${X(7200)}" x2="${X(7200)}" y1="${Tp}" y2="${H - Bm}" stroke="${PAL.blue}" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>`;
+  bins.forEach((n, k) => {
+    const t = t0 + k * 60, hot = targets.some((g) => t >= g - 120 && t < g);
+    s += `<rect class="b" style="--k:${k}" x="${(X(t) + 0.15).toFixed(2)}" y="${Y(n).toFixed(1)}" width="${Math.max(0.6, bw - 0.3).toFixed(2)}" height="${(H - Bm - Y(n)).toFixed(1)}" fill="${hot ? PAL.coral : PAL.blue}"/>`;
+  });
+  for (let t = t0; t <= t1; t += 1800) s += `<text x="${X(t)}" y="${H - 7}" fill="${t === 7200 ? PAL.blue : DIM}" font-size="${FS}" font-weight="${t === 7200 ? 700 : 400}" text-anchor="${t === t1 ? 'end' : t === t0 ? 'start' : 'middle'}">${Math.floor(t / 3600)}:${String((t / 60) % 60).padStart(2, '0')}</text>`;
+  svg.innerHTML = s;
+  svg.setAttribute('aria-label', `${T('distAxis')}, 1:00–3:30`);
+  $('#distLegend').innerHTML = `<span><i class="sq" style="background:${PAL.blue}"></i>${T('distAxis')}</span><span><i class="sq" style="background:${PAL.coral}"></i>${T('distTarget')}</span>`;
+}
 function drawPaceChart(md) {
-  const svg = $('#paceChart'); const W = 380, H = 190, L = 40, Rr = 10, T = 14, Bm = 26;
-  const secs = ['0–1', '1–5', '5–10', '10–15', '15–20', '20–21.1'];
-  const colors = PAL.chart;
+  const svg = $('#paceChart'); const W = 380, H = 190, L = 38, Rr = 18, Tp = 24, Bm = 24, FS = 10;
+  const secs = ['0–1', '1–5', '5–10', '10–15', '15–20', '20–21'];
   const rows = md.paceTable;
   let lo = Infinity, hi = -Infinity;
   for (const r of rows) for (const v of r.pace) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
   lo = Math.floor(lo / 30) * 30; hi = Math.ceil(hi / 30) * 30;
-  const X = (i) => L + i * (W - L - Rr) / (secs.length - 1), Y = (v) => T + (v - lo) / (hi - lo) * (H - T - Bm);
+  const X = (i) => L + i * (W - L - Rr) / (secs.length - 1), Y = (v) => Tp + (v - lo) / (hi - lo) * (H - Tp - Bm);
   let s = '';
-  for (let v = lo; v <= hi; v += 30) s += `<line x1="${L}" x2="${W - Rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(95,74,58,.12)"/><text x="${L - 6}" y="${Y(v) + 3}" fill="#8a8b9e" font-size="9" text-anchor="end" font-family="JetBrains Mono">${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}</text>`;
-  secs.forEach((t, i) => { s += `<text x="${X(i)}" y="${H - 8}" fill="#8a8b9e" font-size="9" text-anchor="middle" font-family="JetBrains Mono">${t}</text>`; });
+  for (let v = lo; v <= hi; v += 30) s += `<line x1="${L}" x2="${W - Rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(0,0,0,.07)"/><text x="${L - 6}" y="${Y(v) + 3}" fill="#5d5d66" font-size="${FS}" text-anchor="end">${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}</text>`;
+  secs.forEach((t, i) => { s += `<text x="${X(i)}" y="${H - 7}" fill="#5d5d66" font-size="${FS}" text-anchor="middle">${t}</text>`; });
   rows.forEach((r, j) => {
-    const c = colors[j % colors.length];
-    s += `<path d="${r.pace.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join('')}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linejoin="round"/>`;
-    r.pace.forEach((v, i) => { s += `<circle cx="${X(i)}" cy="${Y(v)}" r="3" fill="${c}" stroke="#fff" stroke-width="1.2"/>`; });
+    const c = PAL.chart[j % PAL.chart.length];
+    s += `<path class="ln" style="--k:${j}" pathLength="1" d="${r.pace.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join('')}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    r.pace.forEach((v, i) => { s += `<circle class="dot" style="--k:${j}" cx="${X(i)}" cy="${Y(v)}" r="3" fill="${c}" stroke="#fff" stroke-width="1.2"/>`; });
   });
-  s += `<text x="${L}" y="${T - 4}" fill="#8a8b9e" font-size="8.5" font-family="JetBrains Mono">min/km (lower is faster)</text>`;
+  s += `<text x="${L - 30}" y="${Tp - 12}" fill="#5d5d66" font-size="${FS}">${T('paceAxis')}</text>`;
+  svg.setAttribute('aria-label', T('paceAxis'));
   svg.innerHTML = s;
-  $('#paceLegend').innerHTML = rows.map((r, j) => `<span><i style="background:${colors[j % colors.length]}"></i>${r.label}</span>`).join('');
+  $('#paceLegend').innerHTML = rows.map((r, j) => `<span><i style="background:${PAL.chart[j % PAL.chart.length]}"></i>${TEXT[LANG].paceGroups[j] || r.label}</span>`).join('');
 }
 
 /* ── frame loop ───────────────────────────────────────────────────────── */
 let last = performance.now(), firstFrame = true, shadowSize = 0;
-const _r = {}, _off = new THREE.Vector3();
+const _r = {}, _off = new THREE.Vector3(), _sph = new THREE.Spherical();
+let prevNear = [];
+const ui = { hf: '', pg: '', pin: '', clock: '' }, heroEl = $('.hero'), progEl = $('#prog'), brandEl = $('#brand');
 function loop(now) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.1, (now - last) / 1000); last = now;
   const ch = activeChapter();
   updateNav(ch.id);
-  const st = chapterState(ch, now);
-  if (exPlaying) { simT += dt * 120; if (simT > F.maxEnd + 120) simT = -60; $('#exTime').value = simT; }
+  const st = chapterState(ch, now, dt);
+  // hero backdrop: full at the top of the page, gone after ~60 % of a screen of scrolling
+  const hf = (1 - smooth(clamp(scrollY / (innerHeight * 0.6), 0, 1))).toFixed(3);
+  if (hf !== ui.hf) { ui.hf = hf; heroEl.style.setProperty('--heroFade', hf); }
+  const pg = clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight), 0, 1).toFixed(4);
+  if (pg !== ui.pg) { ui.pg = pg; progEl.style.transform = `scaleX(${pg})`; }
+  if (ch.el && ch.id !== 'hero') {                   // progress line under the chapter title
+    const cp = clamp((ch.p - 0.04) / 0.92, 0, 1).toFixed(3);
+    if (cp !== ch.el.dataset.p) { ch.el.dataset.p = cp; ch.el.style.setProperty('--p', cp); }
+  }
+  brandEl.classList.toggle('on', ch.id !== 'hero');
+  if (GROW.uGrow.value < 1) { const g = REDUCED ? 1 : clamp((now - introStart - 250) / 3000, 0, 1); GROW.uGrow.value = g * g * (3 - 2 * g); }
 
-  // camera: chapter target, then the user's rotation around it
-  if (autoRotate && !REDUCED) userYaw += dt * 0.1;
-  _off.subVectors(wantPos, wantTgt).applyAxisAngle(THREE.Object3D.DEFAULT_UP, userYaw);
-  const goal = _off.add(wantTgt);
-  const tight = ch.id === 'course' || (ch.id === 'find' && selected >= 0);
+  // camera: the chapter's framing, then the user's own rotation and tilt
+  const ku = 1 - Math.exp(-dt * 4);
+  if (dragging) { userYaw = userYawGoal; userPitch = userPitchGoal; } else { userYaw += (userYawGoal - userYaw) * ku; userPitch += (userPitchGoal - userPitch) * ku; }
+  _off.subVectors(wantPos, wantTgt);
+  _sph.setFromVector3(_off);
+  _sph.theta += userYaw;
+  _sph.phi = clamp(_sph.phi + userPitch, 0.12, 1.42);
+  _off.setFromSpherical(_sph).add(wantTgt);
+  const tight = ch.id === 'course' || (ch.id === 'find' && rp.i >= 0) || dragging;
   const k = firstFrame ? 1 : 1 - Math.exp(-dt * (tight ? 7 : 2.4));
-  camPos.lerp(goal, k); camTgt.lerp(wantTgt, k);
+  camPos.lerp(_off, k); camTgt.lerp(wantTgt, k);
   camera.position.copy(camPos); camera.lookAt(camTgt);
   firstFrame = false;
 
-  // sun and shadow box follow the view
   const dist = camPos.distanceTo(camTgt);
   const size = clamp(Math.round(dist * 0.5 / 100) * 100, 400, 2600);
   sun.target.position.copy(camTgt);
   sun.position.copy(camTgt).addScaledVector(SUN_DIR, 3500);
-  if (size !== shadowSize) {
-    shadowSize = size;
-    const c = sun.shadow.camera; c.left = -size; c.right = size; c.top = size; c.bottom = -size; c.updateProjectionMatrix();
-  }
+  if (size !== shadowSize) { shadowSize = size; const c = sun.shadow.camera; c.left = -size; c.right = size; c.top = size; c.bottom = -size; c.updateProjectionMatrix(); }
 
-  // uniforms
   const ease = 1 - Math.exp(-dt * 3);
   const rm = ribbon.mesh.material.uniforms;
   rm.uReveal.value = st.reveal;
   rm.uHeat.value += (heatOn - rm.uHeat.value) * ease;
   runners.m.uniforms.uOp.value += (runnersOp - runners.m.uniforms.uOp.value) * ease;
-  runners.m.uniforms.uMix.value += (colorMix - runners.m.uniforms.uMix.value) * ease;
   furniture.visible = furnitureOn > 0;
+  if (furniture.visible) furniture.userData.reveal(st.reveal);
+  lead.visible = ch.id === 'course' && st.reveal > 3 && st.reveal < R.len;
+  if (lead.visible) {
+    R.at(st.reveal - 2, _r);
+    lead.position.set(_r.x, 2, _r.z); lead.scale.setScalar(_r.w);
+    const lp = REDUCED ? 0 : (now * 0.0009) % 1, pu = lead.userData.pulse;
+    pu.scale.setScalar(1 + lp * 1.6); pu.material.opacity = (1 - lp) * (1 - lp) * 0.8;
+  }
 
   // runners
-  const vis = runners.m.uniforms.uOp.value > 0.01;
-  const heatVis = rm.uHeat.value > 0.01;
+  const vis = runners.m.uniforms.uOp.value > 0.01, heatVis = rm.uHeat.value > 0.01;
+  const tracking = rp.i >= 0 && (ch.id === 'find');
+  let meProg = 0, up = 0, down = 0;
+  if (tracking) meProg = progress(rp.i, simT);
   if (vis || heatVis) {
     if (heatVis) grid.fill(0);
-    const P = runners.pos, A = runners.alpha;
+    const P = runners.pos, A = runners.alpha, Col = runners.col, Sz = runners.size, Base = runners.base, Hd = runners.head;
+    for (const j of prevNear) { Sz[j] = 1; Col[j * 3] = Base[j * 3]; Col[j * 3 + 1] = Base[j * 3 + 1]; Col[j * 3 + 2] = Base[j * 3 + 2]; }
+    prevNear = [];
+    const sI = tracking ? F.S[rp.i] : 0;
     for (let i = 0; i < F.N; i++) {
       const s = runnerXZ(i, simT, _r);
       if (s === 1 && heatVis) { const c = cellOf(_r.x, _r.z); if (c >= 0) grid[c]++; }
-      if (vis) { P[i * 3] = _r.x; P[i * 3 + 1] = 3.2; P[i * 3 + 2] = _r.z; A[i] = _r.v; }
+      if (vis) { P[i * 3] = _r.x; P[i * 3 + 1] = 3.2; P[i * 3 + 2] = _r.z; A[i] = _r.v; Hd[i * 2] = _r.hx; Hd[i * 2 + 1] = _r.hz; }
+      if (tracking && i !== rp.i) {
+        const pj = s === 0 ? -1e6 + _r.d : s === 1 ? _r.d : 1e6 - (F.S[i] + F.T[i]);
+        const passedThem = F.S[i] < sI && pj < meProg, passedMe = F.S[i] > sI && pj > meProg;
+        if (passedThem) up++; else if (passedMe) down++;
+        if (s === 1 && Math.abs(pj - meProg) < 140) {
+          Sz[i] = 2.1; prevNear.push(i);
+          const c = passedThem ? PAL_C.sweater : passedMe ? PAL_C.coral : null;
+          if (c) { Col[i * 3] = c.r; Col[i * 3 + 1] = c.g; Col[i * 3 + 2] = c.b; }
+        }
+      }
     }
-    if (vis) { runners.g.attributes.position.needsUpdate = true; runners.g.attributes.aAlpha.needsUpdate = true; }
+    if (vis) {
+      runners.g.attributes.position.needsUpdate = true; runners.g.attributes.aAlpha.needsUpdate = true;
+      runners.g.attributes.aCol.needsUpdate = true; runners.g.attributes.aSize.needsUpdate = true;
+      runners.g.attributes.aHead.needsUpdate = true;
+    }
     if (heatVis) {
       const H = ribbon.heat;
       for (let j = 0; j < R.n; j++) { const v = sampleGrid(R.x[j], R.z[j]) / HEAT_FULL; H[j * 2] = H[j * 2 + 1] = v; }
       ribbon.attr.needsUpdate = true;
     }
   }
+  runners.m.uniforms.uAspect.value = innerWidth / innerHeight;
   runners.m.uniforms.uScale.value = innerHeight * renderer.getPixelRatio() / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
 
-  if (selected >= 0 && (ch.id === 'find' || ch.id === 'close')) {
-    runnerXZ(selected, simT, _r); marker.visible = true; marker.position.set(_r.x, 0, _r.z);
-    const s = clamp(dist / 700, 0.6, 3); marker.scale.setScalar(s);
-  } else marker.visible = false;
+  // the selected runner's pin
+  if (tracking) {
+    runnerXZ(rp.i, simT, _r);
+    marker.visible = true; marker.position.set(_r.x, 0, _r.z); marker.scale.setScalar(clamp(dist / 700, 0.6, 2.5));
+    meLabel.on = true; meLabel.p.set(_r.x, 32 * marker.scale.x, _r.z);
+    const kmNow = clamp(_r.d, 0, R.len) / R.len * 21.0975, done = rp.el >= F.T[rp.i];
+    const kmTxt = fmtDec(rp.el <= 0 ? 0 : done ? 21.1 : kmNow);
+    const pin = T('pin', { bib: F.raw.bib[rp.i], km: kmTxt, up: fmtInt(up), down: fmtInt(down) });
+    if (pin !== ui.pin) {
+      ui.pin = pin; meLabel.t.innerHTML = pin;
+      $('#rpRead').textContent = `${kmTxt} km`;
+      $('#rPassed').innerHTML = `<span class="up">▲ ${fmtInt(up)}</span> / <span class="down">▼ ${fmtInt(down)}</span>`;
+    }
+    const pu = marker.userData.pulse, ph = (now * 0.0007) % 1;
+    pu.scale.set(1 + ph * 2.2, 1, 1 + ph * 2.2); pu.material.opacity = (1 - ph) * (1 - ph) * 0.75;
+    if (!rpDragging) $('#rpPos').value = Math.round(clamp((rp.el + 60) / (F.T[rp.i] + 300), 0, 1) * 1000);
+  } else { marker.visible = false; if (meLabel) meLabel.on = false; }
 
   $('#clock').classList.toggle('on', st.clock);
-  if (st.clock) $('#clock').textContent = clockStr(simT);
+  if (st.clock) { const tx = st.pill || (LANG === 'da' ? 'kl. ' : '') + clockStr(simT); if (tx !== ui.clock) { ui.clock = tx; $('#clock').textContent = tx; } }
+  $('#replayBar').classList.toggle('on', tracking);
   $('#explore').classList.toggle('on', ch.id === 'close');
   if (ch.id === 'close') $('#exClock').textContent = clockStr(simT);
 
   updateLabels();
   renderer.render(scene, camera);
 }
+const PAL_C = { sweater: C(PAL.sweater), coral: C(PAL.coral) };
 
 /* ── interactions ─────────────────────────────────────────────────────── */
-function onResize() {
-  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-}
+function onResize() { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); }
 addEventListener('resize', onResize);
 
-// drag to rotate the map around the current view (horizontal drags; vertical still scrolls)
-let dragX = null, dragId = null;
+// drag: sideways rotates, up/down tilts (mouse); on touch only sideways so the page still scrolls
+let dragging = false, dragX = 0, dragY = 0, dragId = null, dragMouse = false;
 const cv = renderer.domElement;
-cv.addEventListener('pointerdown', (e) => { dragX = e.clientX; dragId = e.pointerId; cv.classList.add('drag'); });
+cv.addEventListener('pointerdown', (e) => { dragging = true; dragX = e.clientX; dragY = e.clientY; dragId = e.pointerId; dragMouse = e.pointerType === 'mouse'; cv.classList.add('drag'); });
 addEventListener('pointermove', (e) => {
-  if (dragX === null || e.pointerId !== dragId) return;
-  userYaw -= (e.clientX - dragX) * 0.006; dragX = e.clientX;
+  if (!dragging || e.pointerId !== dragId) return;
+  userYawGoal -= (e.clientX - dragX) * 0.006;
+  if (dragMouse) userPitchGoal = clamp(userPitchGoal + (e.clientY - dragY) * 0.004, -1.1, 0.9);
+  dragX = e.clientX; dragY = e.clientY;
 });
-const endDrag = () => { dragX = null; dragId = null; cv.classList.remove('drag'); };
+const endDrag = () => { dragging = false; dragId = null; cv.classList.remove('drag'); };
 addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
-$('#rotate').addEventListener('click', (e) => {
-  autoRotate = !autoRotate; e.currentTarget.setAttribute('aria-pressed', String(autoRotate));
-});
 
-$('#exTime').addEventListener('input', (e) => { exPlaying = false; $('#exPlay').textContent = 'Play'; simT = +e.target.value; });
-$('#exPlay').addEventListener('click', () => { exPlaying = !exPlaying; $('#exPlay').textContent = exPlaying ? 'Pause' : 'Play'; });
+$$('.lang button').forEach((b) => b.addEventListener('click', () => {
+  LANG = b.dataset.lang;
+  try { localStorage.setItem('ch-lang', LANG); } catch { /* storage blocked */ }
+  applyLang();
+}));
 
+$('#exTime').addEventListener('input', (e) => { exPlaying = false; $('#exPlay').innerHTML = ICON_PLAY; simT = +e.target.value; });
+$('#exPlay').addEventListener('click', () => { exPlaying = !exPlaying; $('#exPlay').innerHTML = exPlaying ? ICON_PAUSE : ICON_PLAY; });
+$('#brand').addEventListener('click', () => scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }));
+$('#exReset').addEventListener('click', () => { userYawGoal = 0; userPitchGoal = 0; });
+
+// your race
+function fillRace() {
+  const i = rp.i, fd = F.raw, cat = fd.cats[fd.cat[i]] || '-';
+  let catRank = 0, catN = 0;
+  for (let j = 0; j < F.N; j++) if (fd.cat[j] === fd.cat[i]) { catN++; if (fd.pl[j] <= fd.pl[i]) catRank++; }
+  $('#rTime').textContent = hms(F.T[i]);
+  $('#rPlace').textContent = `${fmtInt(fd.pl[i])} ${T('of')} ${fmtInt(F.N)}`;
+  $('#rCat').textContent = cat === '-' ? '–' : `${catLabel(cat)} · ${fmtInt(catRank)} ${T('of')} ${fmtInt(catN)}`;
+  $('#rGroup').textContent = `${GROUP_NAMES[F.G[i]]} · ${clockStr(F.S[i])}`;
+}
+function catLabel(c) { return `${TEXT[LANG].cats[c[0]] || ''} ${c.slice(1).replace('-', '–')}`.trim(); }
+const ICON_PLAY = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z" fill="currentColor"/></svg>';
+function syncReplayUi() {
+  $('#rpPlay').innerHTML = rp.playing ? ICON_PAUSE : ICON_PLAY;
+  $('#rpSpeed').textContent = `${String(rp.speed).replace('.', LANG === 'da' ? ',' : '.')}×`;
+}
 $('#findForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const bib = $('#bib').value.trim().replace(/\D/g, '');
   const i = F ? F.raw.bib.indexOf(+bib) : -1;
-  if (!bib || i < 0) { $('#findErr').textContent = bib ? `No finisher with bib ${bib} in the 2026 results.` : 'Type a bib number.'; $('#race').classList.remove('on'); selected = -1; return; }
+  if (!bib || i < 0) {
+    const er = $('#findErr'); er.textContent = bib ? T('notFound', { bib }) : T('typeBib');
+    er.classList.remove('shake'); void er.offsetWidth; er.classList.add('shake'); return;
+  }
   $('#findErr').textContent = '';
-  selected = i; replayStart = performance.now(); userYaw = 0;
-  const fd = F.raw, cat = fd.cats[fd.cat[i]] || '-';
-  let catRank = 0, catN = 0;
-  for (let j = 0; j < F.N; j++) if (fd.cat[j] === fd.cat[i]) { catN++; if (fd.pl[j] <= fd.pl[i]) catRank++; }
-  const pace = F.T[i] / 21.0975;
-  $('#rTime').textContent = hms(F.T[i]);
-  $('#rPlace').textContent = `${fmtInt(fd.pl[i])} of ${fmtInt(F.N)}`;
-  $('#rCat').textContent = cat === '-' ? '–' : `${catLabel(cat)} · ${fmtInt(catRank)} of ${fmtInt(catN)}`;
-  $('#rPace').textContent = `${Math.floor(pace / 60)}:${String(Math.round(pace % 60)).padStart(2, '0')} min/km`;
-  $('#race').classList.add('on');
+  ui.pin = ''; rp.i = i; rp.el = -120; rp.playing = true; rp.speed = 1; userYawGoal = 0; userPitchGoal = 0;
+  fillRace(); $('#race').classList.add('on'); syncReplayUi();
 });
-function catLabel(c) {
-  const g = { M: 'Men', K: 'Women', U: 'Open' }[c[0]] || '';
-  return `${g} ${c.slice(1).replace('-', '–')}`.trim();
-}
-$('#replay').addEventListener('click', () => { if (selected >= 0) replayStart = performance.now(); });
+$('#rpPlay').addEventListener('click', () => { if (rp.i < 0) return; if (rp.el >= F.T[rp.i] + 240) rp.el = -120; rp.playing = !rp.playing; syncReplayUi(); });
+$('#rpSpeed').addEventListener('click', () => { rp.speed = SPEEDS[(SPEEDS.indexOf(rp.speed) + 1) % SPEEDS.length]; syncReplayUi(); });
+let rpDragging = false;
+$('#rpPos').addEventListener('input', (e) => { if (rp.i < 0) return; rpDragging = true; rp.el = +e.target.value / 1000 * (F.T[rp.i] + 300) - 60; });
+$('#rpPos').addEventListener('change', () => { rpDragging = false; });
+$('#rpClose').addEventListener('click', () => {
+  rp.i = -1; $('#race').classList.remove('on'); $('#bib').value = ''; $('#findErr').textContent = '';
+  $('#bib').focus({ preventScroll: true });
+});
 
-// race card in the race's own look: blue, beige and the wavy ribbon
+// race card in the race's own look
 $('#card').addEventListener('click', async () => {
-  if (selected < 0) return;
-  try { await document.fonts.load('800 160px "Barlow Condensed"'); } catch {}
-  const i = selected, fd = F.raw;
+  if (rp.i < 0) return;
+  try { await document.fonts.load('800 160px "Open Sans"'); await document.fonts.load('700 40px "Barlow Condensed"'); } catch { /* fall back */ }
+  const i = rp.i, fd = F.raw;
   const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H;
   const g = c.getContext('2d');
   g.fillStyle = PAL.blue; g.fillRect(0, 0, W, H);
-  // course outline in beige
   let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
   for (let k = 0; k < R.n; k++) { x0 = Math.min(x0, R.x[k]); x1 = Math.max(x1, R.x[k]); z0 = Math.min(z0, R.z[k]); z1 = Math.max(z1, R.z[k]); }
   const sc = Math.min(520 / (x1 - x0), 640 / (z1 - z0)), ox = W - 90 - (x1 - x0) * sc, oz = 170;
   g.lineWidth = 9; g.lineJoin = 'round'; g.lineCap = 'round'; g.strokeStyle = PAL.sweater;
   g.beginPath(); for (let k = 0; k < R.n; k += 2) { const X = ox + (R.x[k] - x0) * sc, Y = oz + (R.z[k] - z0) * sc; k ? g.lineTo(X, Y) : g.moveTo(X, Y); } g.stroke();
-  // wavy white ribbon with the name
   g.save(); g.strokeStyle = '#fff'; g.lineWidth = 64;
   g.beginPath(); g.moveTo(-20, 920); g.bezierCurveTo(260, 820, 420, 1020, 700, 930); g.bezierCurveTo(880, 870, 980, 900, 1100, 860); g.stroke(); g.restore();
   g.fillStyle = PAL.blue; g.font = '700 34px "Barlow Condensed", sans-serif';
-  const txt = 'BESTSELLER AARHUS CITY HALF 2026';
-  let tx = 60; for (const chh of txt) { const t = (tx + 20) / W; const y = 920 + Math.sin(t * Math.PI * 2.1 - 0.4) * -45; g.fillText(chh, tx, y + 12); tx += g.measureText(chh).width + 7; }
-  g.fillStyle = '#fff'; g.font = '700 34px "Barlow Condensed", sans-serif';
-  g.fillText('MY RACE · 14 JUNE 2026', 80, 120);
-  g.font = '800 190px "Barlow Condensed", sans-serif'; g.fillText(hms(F.T[i]), 70, 1150);
-  g.fillStyle = PAL.sweater; g.font = '600 44px "Barlow Condensed", sans-serif';
+  let tx = 60; for (const chh of 'BESTSELLER AARHUS CITY HALF 2026') { const y = 920 + Math.sin(((tx + 20) / W) * Math.PI * 2.1 - 0.4) * -45; g.fillText(chh, tx, y + 12); tx += g.measureText(chh).width + 7; }
+  g.fillStyle = '#fff'; g.font = '700 32px "Open Sans", sans-serif'; g.fillText(T('card1'), 80, 120);
+  g.font = '800 170px "Open Sans", sans-serif'; g.fillText(hms(F.T[i]), 70, 1150);
+  g.fillStyle = PAL.sweater; g.font = '700 36px "Open Sans", sans-serif';
+  g.fillText(T('card2', { pl: fmtInt(fd.pl[i]), n: fmtInt(F.N), bib: fd.bib[i] }), 80, 1230);
   const cat = fd.cats[fd.cat[i]] || '';
-  g.fillText(`PLACE ${fmtInt(fd.pl[i])} OF ${fmtInt(F.N)}  ·  BIB ${fd.bib[i]}`, 80, 1230);
   if (cat && cat !== '-') g.fillText(catLabel(cat).toUpperCase(), 80, 1290);
   c.toBlob((b) => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `city-half-2026-${fd.bib[i]}.png`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }, 'image/png');
 });
 
-main().catch((e) => { console.error(e); msg('Could not load the data'); });
+$('#exPlay').innerHTML = ICON_PLAY; syncReplayUi();
+applyLang();
+main().catch((e) => { console.error(e); $('#loading').classList.add('fail'); $('#loading span').textContent = LANG === 'da' ? 'Kunne ikke hente data' : 'Could not load the data'; });
