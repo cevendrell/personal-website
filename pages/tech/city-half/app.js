@@ -47,14 +47,15 @@ const C = (hex) => new THREE.Color(hex);
 
 /* ── palette: daytime Aarhus in the race's blue and beige ─────────────── */
 const PAL = {
-  blue: '#0d00c4', beige: '#c4c0ac',
-  skyTop: '#8fb6dd', skyHorizon: '#eeece6', fog: '#e8e6df',
-  land: '#ebe6da', green: '#b7cf9c', water: '#a7c8dc', pier: '#e1dccf',
-  road: ['#fbfaf6', '#f8f6f0', '#f4f1e9', '#efebe1'],
-  wall: '#efebe3', roofFlat: '#d4cfc4', roofTile: '#b98a72', roofSlate: '#8e9098',
-  tree: ['#7fa86a', '#6c9858', '#91b77a', '#5f8c50'],
-  heatLo: '#0d00c4', heatMid: '#f2c14e', heatHi: '#e4572e',
-  fast: '#2ec4b6', mid: '#f2c14e', slow: '#e4572e',
+  blue: '#0d00c4', beige: '#c4c0ac', sweater: '#cdbfa9', brown: '#8c7461', brownDark: '#5f4a3a',
+  skyTop: '#9dbcd9', skyHorizon: '#efe8dc', fog: '#e9e1d3',
+  land: '#e6dccb', green: '#b4c99a', water: '#a9c6d6', pier: '#dcd1bf',
+  road: ['#f8f3ea', '#f5efe4', '#f1eadd', '#ece3d4'],
+  wall: '#efe6d8', roofFlat: '#cdbfa9', roofTile: '#b4826a', roofSlate: '#8a8580',
+  tree: ['#8aa872', '#779a60', '#9cb783', '#6b8d57'],
+  heatLo: '#0d00c4', heatMid: '#cdbfa9', heatHi: '#d2462a',
+  fast: '#ffffff', mid: '#cdbfa9', slow: '#8c7461',
+  chart: ['#0d00c4', '#6a62de', '#b39b80', '#5f4a3a'],
 };
 
 /* ── boot ─────────────────────────────────────────────────────────────── */
@@ -76,7 +77,7 @@ camera.position.set(-2600, 2200, 400);
 
 // June, late morning: the sun stands high in the south-east (x east, z south)
 const SUN_DIR = new THREE.Vector3(0.48, 0.78, 0.40).normalize();
-scene.add(new THREE.HemisphereLight(C('#e6eef8'), C('#cdc4ae'), 1.15));
+scene.add(new THREE.HemisphereLight(C('#eef1f5'), C(PAL.sweater), 1.15));
 const sun = new THREE.DirectionalLight(C('#fff3e0'), 2.1);
 sun.castShadow = true;
 sun.shadow.mapSize.set(MOBILE ? 1024 : 2048, MOBILE ? 1024 : 2048);
@@ -91,7 +92,7 @@ async function getJSON(p) {
   return r.json();
 }
 const msg = (t) => { $('#loadmsg').textContent = t; };
-const OUTPUT = '#include <colorspace_fragment>';
+const OUTPUT = '\n#include <colorspace_fragment>\n';   // preprocessor line: must stand alone
 
 /* ── sky ──────────────────────────────────────────────────────────────── */
 function buildSky() {
@@ -331,6 +332,7 @@ function buildRibbon(tex) {
   g.setIndex(idx);
   const m = new THREE.ShaderMaterial({
     side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -12, polygonOffsetUnits: -12,
+    depthWrite: false,          // runners on top of the ribbon must never be hidden by it
     uniforms: {
       uTex: { value: tex }, uRepeat: { value: W * 16 }, uReveal: { value: 1e9 }, uHeat: { value: 0 },
       uLo: { value: C(PAL.heatLo) }, uMid: { value: C(PAL.heatMid) }, uHi: { value: C(PAL.heatHi) }, uBlue: { value: C(PAL.blue) },
@@ -429,7 +431,7 @@ function runnerXZ(i, t, out) {
     out.v = 1 - e / 600; out.d = R.len; return st;
   }
   R.at(d, _o);
-  const w = st === 0 ? 1.8 : 1.0;
+  const w = st === 0 ? 3.2 : 1.0;
   out.x = _o.x - _o.hz * F.O[i] * w; out.z = _o.z + _o.hx * F.O[i] * w; out.v = 1; out.d = d;
   return st;
 }
@@ -449,14 +451,14 @@ function buildRunners() {
   g.setAttribute('aCol2', new THREE.BufferAttribute(col2, 3));
   const m = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false,
-    uniforms: { uSize: { value: 4.6 }, uScale: { value: 1 }, uMix: { value: 0 }, uOp: { value: 0 }, uRim: { value: C('#0a0870') }, uFill: { value: C('#ffffff') } },
+    uniforms: { uSize: { value: 4.6 }, uScale: { value: 1 }, uMix: { value: 0 }, uOp: { value: 0 }, uRim: { value: C(PAL.blue) }, uFill: { value: C('#ffffff') } },
     vertexShader: `attribute float aAlpha; attribute vec3 aCol2; uniform float uSize, uScale, uOp; varying vec3 vC; varying float vA; uniform float uMix; uniform vec3 uFill;
       void main(){ vec4 mv = modelViewMatrix*vec4(position,1.0); gl_Position = projectionMatrix*mv;
-        float px = uSize * uScale / -mv.z; gl_PointSize = clamp(px, 2.2, 22.0);
+        float px = uSize * uScale / -mv.z; gl_PointSize = clamp(px, 2.4, 11.0);
         vA = aAlpha * uOp; vC = mix(uFill, aCol2, uMix); }`,
     fragmentShader: `uniform vec3 uRim; varying vec3 vC; varying float vA;
       void main(){ vec2 p = gl_PointCoord - 0.5; float r = length(p); if (r > 0.5 || vA < 0.01) discard;
-        float rim = smoothstep(0.28, 0.36, r);
+        float rim = smoothstep(0.34, 0.40, r);
         vec3 c = mix(vC, uRim, rim);
         float a = (1.0 - smoothstep(0.44, 0.5, r)) * vA;
         gl_FragColor = vec4(c, a); ${OUTPUT} }`,
@@ -559,7 +561,7 @@ function buildNav() {
     b.innerHTML = `<span>${s.dataset.label}</span><i></i>`;
     b.addEventListener('click', () => {
       const top = s.getBoundingClientRect().top + scrollY;
-      const y = s.dataset.ch === 'hero' ? 0 : top - innerHeight * 0.5 + s.offsetHeight * 0.06;
+      const y = s.dataset.ch === 'hero' ? 0 : top - innerHeight * 0.5 + Math.max(s.offsetHeight * 0.06, innerHeight * 0.75);
       scrollTo({ top: Math.max(0, y), behavior: REDUCED ? 'auto' : 'smooth' });
     });
     nav.appendChild(b); navBtns.push([s.dataset.ch, b]);
@@ -646,13 +648,14 @@ function chapterState(ch, now) {
       runnersOp = 1; clock = true;
       if (selected >= 0) {
         if (replayStart >= 0) {
-          const q = clamp((now - replayStart) / 26000, 0, 1);
+          const q = clamp((now - replayStart) / 45000, 0, 1);
           simT = lerp(F.S[selected] - 20, F.S[selected] + F.T[selected] + 30, q);
           if (q >= 1) replayStart = -1;
         }
         const o = {}; runnerXZ(selected, simT, o);
         const [hx, hz] = (o.d > 0 && o.d < R.len) ? R.headingAvg(o.d, 200) : [0.7, 0.7];
-        wantTgt.set(o.x, 0, o.z); wantPos.set(o.x - hx * 360 + hz * 130, 300, o.z - hz * 360 - hx * 130);
+        // keep the runner right of centre, clear of the card on the left
+        wantTgt.set(o.x + hz * 110, 0, o.z - hx * 110); wantPos.set(o.x - hx * 360 + hz * 240, 300, o.z - hz * 360 - hx * 240);
       } else { simT = lerp(1200, 2400, p); orbitAround(0, 0, 0.6 + p, 900, 700); }
       break;
     case 'close':
@@ -707,8 +710,8 @@ async function main() {
     const parts = STATS.hot.map((h) => {
       const km = (h.d / R.len * 21.0975).toFixed(1);
       hotLabels.push(addLabel(h.x, 30, h.z, `Busy<small>km ${km}</small>`, 'hot'));
-      const near = nearestLandmark(route.lm, h.x, h.z);
-      return `<strong>km ${km}</strong>${near ? ` (${near})` : ''} around ${clockStr(h.t)}`;
+      const near = (nearestLandmark(route.lm, h.x, h.z) || '').split(':')[0];
+      return `km ${km}${near ? ` (${near})` : ''} at ${clockStr(h.t)}`;
     });
     const two = (route.over || []).filter((z) => z.two).sort((a, b) => (b.a[1] - b.a[0]) - (a.a[1] - a.a[0]));
     let twoText = '';
@@ -716,9 +719,9 @@ async function main() {
       const z = two[0];
       STATS.hot.push({ x: z.x, z: z.z, t: z.win[0] + 900 });
       hotLabels.push(addLabel(z.x, 30, z.z, `Two-way<small>km ${z.a[0]} ⇄ ${z.b[1]}</small>`, 'hot'));
-      twoText = `<p class="fact">The coast road is out-and-back: between <strong>km ${z.a[0]} and ${z.a[1]}</strong> runners heading south share the road with runners coming back at <strong>km ${z.b[0]}–${z.b[1]}</strong>. The leaders meet the field there from ${clockStr(z.win[0])}, and it stays two-way for <strong>${durWords(z.win[1] - z.win[0])}</strong>.</p>`;
+      twoText = `<p>The coast road is out and back. From ${clockStr(z.win[0])}, runners heading south at km ${z.a[0]}–${z.a[1]} meet runners coming back at km ${z.b[0]}–${z.b[1]}, and the road stays <strong>two-way for ${durWords(z.win[1] - z.win[0])}</strong>.</p>`;
     }
-    $('#hotText').outerHTML = `<p class="fact">After the start, the field is tightest at ${parts.join(', ')}.</p>${twoText}`;
+    $('#hotText').innerHTML = `<p>Busiest after the start: ${parts.join(', ')}.</p>${twoText}`;
   }, 60);
 }
 function nearestLandmark(lm, x, z) {
@@ -743,7 +746,7 @@ function fillText() {
   setAll('.js-kick', fx.kick ?? '–');
   setAll('.js-countries', fmtInt(fx.countries ?? fd.ctys.length));
   setAll('.js-eftN', fmtInt(fx.eftN ?? 0)); setAll('.js-eftClubs', fmtInt(fx.eftClubs ?? 0));
-  setAll('.js-young', fmtInt(fx.youngN ?? 0)); setAll('.js-youngBest', hms(fx.youngBest ?? 0));
+  setAll('.js-young', fmtInt(fx.youngN ?? 0));
   if (fx.oldest) { setAll('.js-old', fmtInt(fx.oldest[1])); setAll('.js-oldBest', hms(fx.oldest[2])); }
   let women = 0; for (let i = 0; i < N; i++) if ((fd.cats[fd.cat[i]] || '')[0] === 'K') women++;
   setAll('.js-women', `${Math.round(women / N * 100)}%`);
@@ -754,20 +757,20 @@ function fillText() {
   $('#clubBars').innerHTML = top.map(([c, n]) => `<div class="bar"><span>${escapeHtml(fd.clubs[c])}</span><em>${n}</em><i style="width:${(n / mx * 100).toFixed(1)}%"></i></div>`).join('');
   drawPaceChart(fd.model);
   $('#exTime').max = Math.ceil(F.maxEnd + 120);
-  const wt = $('#waveText'); if (wt) wt.textContent = `21.0975 KM · ${fmtInt(N)} FINISHERS · ONE LOOP THROUGH AARHUS · 21.0975 KM`;
+  const wt = $('#waveText'); if (wt) wt.textContent = `14 JUNE 2026 · 21.0975 KM · ${fmtInt(N)} RUNNERS · AARHUS`;
 }
 function escapeHtml(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 function drawPaceChart(md) {
   const svg = $('#paceChart'); const W = 380, H = 190, L = 40, Rr = 10, T = 14, Bm = 26;
   const secs = ['0–1', '1–5', '5–10', '10–15', '15–20', '20–21.1'];
-  const colors = [PAL.fast, '#8fcf8a', PAL.mid, PAL.slow];
+  const colors = PAL.chart;
   const rows = md.paceTable;
   let lo = Infinity, hi = -Infinity;
   for (const r of rows) for (const v of r.pace) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
   lo = Math.floor(lo / 30) * 30; hi = Math.ceil(hi / 30) * 30;
   const X = (i) => L + i * (W - L - Rr) / (secs.length - 1), Y = (v) => T + (v - lo) / (hi - lo) * (H - T - Bm);
   let s = '';
-  for (let v = lo; v <= hi; v += 30) s += `<line x1="${L}" x2="${W - Rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(19,20,58,.08)"/><text x="${L - 6}" y="${Y(v) + 3}" fill="#8a8b9e" font-size="9" text-anchor="end" font-family="JetBrains Mono">${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}</text>`;
+  for (let v = lo; v <= hi; v += 30) s += `<line x1="${L}" x2="${W - Rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(95,74,58,.12)"/><text x="${L - 6}" y="${Y(v) + 3}" fill="#8a8b9e" font-size="9" text-anchor="end" font-family="JetBrains Mono">${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}</text>`;
   secs.forEach((t, i) => { s += `<text x="${X(i)}" y="${H - 8}" fill="#8a8b9e" font-size="9" text-anchor="middle" font-family="JetBrains Mono">${t}</text>`; });
   rows.forEach((r, j) => {
     const c = colors[j % colors.length];
@@ -794,7 +797,8 @@ function loop(now) {
   if (autoRotate && !REDUCED) userYaw += dt * 0.1;
   _off.subVectors(wantPos, wantTgt).applyAxisAngle(THREE.Object3D.DEFAULT_UP, userYaw);
   const goal = _off.add(wantTgt);
-  const k = firstFrame ? 1 : 1 - Math.exp(-dt * (ch.id === 'course' ? 5 : 2.4));
+  const tight = ch.id === 'course' || (ch.id === 'find' && selected >= 0);
+  const k = firstFrame ? 1 : 1 - Math.exp(-dt * (tight ? 7 : 2.4));
   camPos.lerp(goal, k); camTgt.lerp(wantTgt, k);
   camera.position.copy(camPos); camera.lookAt(camTgt);
   firstFrame = false;
@@ -891,7 +895,6 @@ $('#findForm').addEventListener('submit', (e) => {
   $('#rPlace').textContent = `${fmtInt(fd.pl[i])} of ${fmtInt(F.N)}`;
   $('#rCat').textContent = cat === '-' ? '–' : `${catLabel(cat)} · ${fmtInt(catRank)} of ${fmtInt(catN)}`;
   $('#rPace').textContent = `${Math.floor(pace / 60)}:${String(Math.round(pace % 60)).padStart(2, '0')} min/km`;
-  $('#rPct').textContent = `${Math.round((F.N - fd.pl[i]) / F.N * 100)}% of the field`;
   $('#race').classList.add('on');
 });
 function catLabel(c) {
@@ -912,7 +915,7 @@ $('#card').addEventListener('click', async () => {
   let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
   for (let k = 0; k < R.n; k++) { x0 = Math.min(x0, R.x[k]); x1 = Math.max(x1, R.x[k]); z0 = Math.min(z0, R.z[k]); z1 = Math.max(z1, R.z[k]); }
   const sc = Math.min(520 / (x1 - x0), 640 / (z1 - z0)), ox = W - 90 - (x1 - x0) * sc, oz = 170;
-  g.lineWidth = 9; g.lineJoin = 'round'; g.lineCap = 'round'; g.strokeStyle = PAL.beige;
+  g.lineWidth = 9; g.lineJoin = 'round'; g.lineCap = 'round'; g.strokeStyle = PAL.sweater;
   g.beginPath(); for (let k = 0; k < R.n; k += 2) { const X = ox + (R.x[k] - x0) * sc, Y = oz + (R.z[k] - z0) * sc; k ? g.lineTo(X, Y) : g.moveTo(X, Y); } g.stroke();
   // wavy white ribbon with the name
   g.save(); g.strokeStyle = '#fff'; g.lineWidth = 64;
@@ -923,7 +926,7 @@ $('#card').addEventListener('click', async () => {
   g.fillStyle = '#fff'; g.font = '700 34px "Barlow Condensed", sans-serif';
   g.fillText('MY RACE · 14 JUNE 2026', 80, 120);
   g.font = '800 190px "Barlow Condensed", sans-serif'; g.fillText(hms(F.T[i]), 70, 1150);
-  g.fillStyle = PAL.beige; g.font = '600 44px "Barlow Condensed", sans-serif';
+  g.fillStyle = PAL.sweater; g.font = '600 44px "Barlow Condensed", sans-serif';
   const cat = fd.cats[fd.cat[i]] || '';
   g.fillText(`PLACE ${fmtInt(fd.pl[i])} OF ${fmtInt(F.N)}  ·  BIB ${fd.bib[i]}`, 80, 1230);
   if (cat && cat !== '-') g.fillText(catLabel(cat).toUpperCase(), 80, 1290);

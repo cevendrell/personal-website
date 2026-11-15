@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <meta name="description" content="BESTSELLER Aarhus City Half 2026 seen from above: 13,373 finishers moving through a 3D Aarhus, built from the public results.">
+  <meta name="description" content="BESTSELLER Aarhus City Half 2026 in 3D: 13,373 runners on one Sunday morning in Aarhus, rebuilt from the public results.">
   <title>BESTSELLER Aarhus City Half 2026 - Carlos Ebrahim Vendrell</title>
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,18 +13,15 @@
   <style>
     :root {
       --blue: #0d00c4;
-      --blue-deep: #0a0890;
       --beige: #c4c0ac;
-      --sand: #e9e4d6;
-      --paper: #f4f1ea;
-      --ink: #13143a;
-      --dim: #4c4e6b;
-      --mute: #8a8b9e;
-      --line: rgba(19,20,58,0.12);
-      --glass: rgba(255,255,255,0.86);
-      --coral: #e4572e;
-      --teal: #2ec4b6;
-      --gold: #f2c14e;
+      --sweater: #cdbfa9;
+      --brown: #8c7461;
+      --brown-dark: #5f4a3a;
+      --paper: #efe8dc;
+      --cream: rgba(250,246,238,0.94);
+      --ink: #1f1a3a;
+      --dim: #5a5160;
+      --line: rgba(95,74,58,0.18);
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { background: var(--paper); }
@@ -37,102 +34,92 @@
     #labels { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
     .lbl { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity .45s ease; }
     .lbl.on { opacity: 1; }
-    .lbl .t { display: inline-flex; gap: 7px; align-items: baseline; font: 700 12.5px/1 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .1em; padding: 6px 10px 5px; border-radius: 999px; background: #fff; color: var(--blue); box-shadow: 0 4px 14px rgba(13,0,196,.18); }
-    .lbl .t small { font: 600 11px/1 'Barlow Condensed', sans-serif; color: var(--mute); letter-spacing: .06em; }
-    .lbl::after { content: ''; display: block; width: 2px; height: 22px; margin: 0 auto; background: linear-gradient(var(--blue), rgba(13,0,196,0)); }
+    .lbl .t { display: inline-flex; gap: 7px; align-items: baseline; font: 700 12.5px/1 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .1em; padding: 6px 10px 5px; border-radius: 999px; background: #fffaf2; color: var(--blue); box-shadow: 0 3px 12px rgba(95,74,58,.25); }
+    .lbl .t small { font: 600 11px/1 'Barlow Condensed', sans-serif; color: var(--brown); letter-spacing: .06em; }
+    .lbl::after { content: ''; display: block; width: 2px; height: 22px; margin: 0 auto; background: linear-gradient(var(--brown), rgba(140,116,97,0)); }
     .lbl.hot .t { background: var(--blue); color: #fff; }
-    .lbl.hot .t small { color: var(--beige); }
+    .lbl.hot .t small { color: var(--sweater); }
 
-    /* top bar */
     .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 12; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 24px; pointer-events: none; }
-    .topbar > a { pointer-events: auto; text-decoration: none; font: 700 14px/1 'Barlow Condensed', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); background: rgba(255,255,255,.8); padding: 9px 12px 8px; border-radius: 999px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-    .tools { pointer-events: auto; display: flex; gap: 8px; align-items: center; }
-    .pill { display: inline-flex; align-items: center; gap: 8px; font: 600 13px/1 'Barlow Condensed', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); background: rgba(255,255,255,.86); border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px 8px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-    .pill.clock { color: var(--blue); font-family: 'JetBrains Mono', monospace; letter-spacing: 0; font-size: 12.5px; text-transform: none; opacity: 0; transition: opacity .35s; }
+    .pill { pointer-events: auto; display: inline-flex; align-items: center; gap: 8px; font: 600 13px/1 'Barlow Condensed', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--brown-dark); background: var(--cream); border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px 8px; text-decoration: none; }
+    .pill.home { color: var(--blue); }
+    .tools { display: flex; gap: 8px; align-items: center; }
+    .pill.clock { font: 500 12.5px/1 'JetBrains Mono', monospace; letter-spacing: 0; text-transform: none; color: var(--blue); opacity: 0; transition: opacity .35s; }
     .pill.clock.on { opacity: 1; }
     button.pill { cursor: pointer; }
-    button.pill[aria-pressed="true"] { background: var(--blue); color: #fff; border-color: var(--blue); }
+    button.pill[aria-pressed="true"] { background: var(--brown); color: #fff; border-color: var(--brown); }
     button.pill svg { width: 14px; height: 14px; }
 
-    /* chapter nav */
     .chnav { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); z-index: 11; display: flex; flex-direction: column; gap: 4px; }
-    .chnav button { display: flex; align-items: center; justify-content: flex-end; gap: 10px; background: none; border: none; cursor: pointer; padding: 5px 0; font: 600 12.5px/1 'Barlow Condensed', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
-    .chnav button span { opacity: 0; transform: translateX(6px); transition: opacity .2s, transform .2s; background: rgba(255,255,255,.9); padding: 5px 8px 4px; border-radius: 6px; }
+    .chnav button { display: flex; align-items: center; justify-content: flex-end; gap: 10px; background: none; border: none; cursor: pointer; padding: 5px 0; font: 600 12.5px/1 'Barlow Condensed', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--brown-dark); }
+    .chnav button span { opacity: 0; transform: translateX(6px); transition: opacity .2s, transform .2s; background: var(--cream); padding: 5px 8px 4px; border-radius: 6px; }
     .chnav:hover button span, .chnav button:focus-visible span { opacity: 1; transform: none; }
-    .chnav button i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--blue); background: rgba(255,255,255,.85); transition: transform .2s, background .2s; }
-    .chnav button.on i { background: var(--blue); transform: scale(1.25); }
+    .chnav button i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--brown); background: var(--cream); transition: transform .2s, background .2s, border-color .2s; }
+    .chnav button.on i { background: var(--blue); border-color: var(--blue); transform: scale(1.25); }
     .chnav button.on span { opacity: 1; transform: none; color: var(--blue); }
 
     main { position: relative; z-index: 3; pointer-events: none; }
     .ch { min-height: 190vh; position: relative; }
     .ch.short { min-height: 140vh; }
     .ch.tall { min-height: 290vh; }
-    .card { pointer-events: auto; position: sticky; top: 16vh; width: min(440px, calc(100vw - 32px)); margin-left: 5vw; background: var(--glass); border-radius: 18px; padding: 26px 28px; backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); box-shadow: 0 24px 70px rgba(19,20,58,.16); border-top: 5px solid var(--blue); }
-    .card.right { margin-left: auto; margin-right: 92px; }
-    .kicker { font: 700 13px/1 'Barlow Condensed', sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
-    .card h2 { font: 800 30px/1.02 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .02em; margin-bottom: 12px; color: var(--ink); }
+    .card { pointer-events: auto; position: sticky; top: 16vh; width: min(420px, calc(100vw - 32px)); margin-left: 5vw; background: var(--cream); border-radius: 16px; padding: 24px 26px; box-shadow: 0 18px 50px rgba(95,74,58,.18); }
+    .card.right { margin-left: auto; margin-right: 170px; }
+    .card h2 { font: 800 30px/1.02 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .02em; margin-bottom: 12px; color: var(--blue); }
     .card p { color: var(--dim); font-size: .94rem; margin-bottom: 10px; }
     .card p:last-child { margin-bottom: 0; }
     .card strong { color: var(--ink); font-weight: 600; }
-    .num { color: var(--blue); font-weight: 700; font-variant-numeric: tabular-nums; }
-    .note { font-size: .76rem !important; color: var(--mute) !important; }
-    .fact { border-left: 3px solid var(--beige); padding: 2px 0 2px 12px; margin: 12px 0; }
 
-    /* hero */
     .hero { min-height: 170vh; }
-    .hero-inner { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 5vw 9vh; }
-    .hero .kicker { font-size: 15px; }
-    .hero h1 { font: 800 clamp(3rem, 9vw, 7.6rem)/.9 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .01em; color: var(--blue); text-shadow: 0 2px 30px rgba(255,255,255,.7); }
-    .hero h1 span { display: block; color: var(--ink); }
-    .wave { display: block; width: min(980px, 100%); height: auto; margin: 14px 0 6px -1%; overflow: visible; }
-    .wave text { font: 700 19px 'Barlow Condensed', sans-serif; letter-spacing: .2em; fill: #fff; }
-    .hero .sub { max-width: 560px; color: var(--dim); font-size: 1.02rem; background: rgba(255,255,255,.72); padding: 12px 16px; border-radius: 12px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-    .hero .scroll { margin-top: 18px; font: 600 13px 'Barlow Condensed', sans-serif; letter-spacing: .2em; text-transform: uppercase; color: var(--blue); }
-    .hero .scroll::after { content: ' ↓'; display: inline-block; animation: bob 1.8s ease-in-out infinite; }
-    @keyframes bob { 50% { transform: translateY(4px); } }
+    .hero-inner { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 5vw 10vh; }
+    .hero h1 { font: 800 clamp(3rem, 9vw, 7.4rem)/.9 'Barlow Condensed', sans-serif; text-transform: uppercase; color: var(--blue); }
+    .hero h1 span { display: block; color: var(--brown); }
+    .wave { display: block; width: min(900px, 100%); height: auto; margin: 16px 0 8px -1%; overflow: visible; }
+    .wave text { font: 700 19px 'Barlow Condensed', sans-serif; letter-spacing: .22em; fill: #fff; }
+    .hero .sub { max-width: 520px; color: var(--ink); font-size: 1.05rem; background: var(--cream); padding: 12px 16px; border-radius: 12px; }
 
     .stops { list-style: none; margin-top: 8px; }
-    .stops li { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: .9rem; color: var(--mute); transition: color .3s; }
+    .stops li { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: .9rem; color: var(--brown); transition: color .3s; }
     .stops li:last-child { border-bottom: none; }
     .stops li span { font-family: 'JetBrains Mono', monospace; min-width: 56px; font-size: .78rem; padding-top: 2px; }
     .stops li.on { color: var(--ink); }
     .stops li.on span { color: var(--blue); }
 
-    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
-    .stat { background: var(--sand); border-radius: 12px; padding: 11px 13px; }
-    .stat b { display: block; font: 800 27px/1.05 'Barlow Condensed', sans-serif; color: var(--blue); font-variant-numeric: tabular-nums; }
-    .stat span { font-size: .74rem; color: var(--dim); }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+    .stat { background: var(--sweater); border-radius: 10px; padding: 10px 12px; }
+    .stat b { display: block; font: 800 26px/1.05 'Barlow Condensed', sans-serif; color: var(--blue); font-variant-numeric: tabular-nums; }
+    .stat span { font-size: .74rem; color: var(--brown-dark); }
     .bar { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: .8rem; color: var(--dim); margin-bottom: 7px; }
-    .bar i { grid-column: 1 / -1; height: 5px; border-radius: 5px; background: var(--blue); display: block; }
-    .bar em { font-style: normal; font-family: 'JetBrains Mono', monospace; color: var(--mute); }
+    .bar i { grid-column: 1 / -1; height: 5px; border-radius: 5px; background: var(--brown); display: block; }
+    .bar em { font-style: normal; font-family: 'JetBrains Mono', monospace; color: var(--brown); }
 
     .chart { width: 100%; height: auto; margin: 10px 0 4px; display: block; }
     .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: .72rem; color: var(--dim); }
-    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; border: 1.5px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
 
     .find { display: flex; gap: 8px; margin: 14px 0 6px; }
-    .find input { flex: 1; min-width: 0; font: 500 1rem 'JetBrains Mono', monospace; color: var(--ink); background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; outline: none; }
+    .find input { flex: 1; min-width: 0; font: 500 1rem 'JetBrains Mono', monospace; color: var(--ink); background: #fffaf2; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; outline: none; }
     .find input:focus { border-color: var(--blue); }
     .btn { font: 700 14px/1 'Barlow Condensed', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #fff; background: var(--blue); border: none; border-radius: 10px; padding: 12px 16px 11px; cursor: pointer; white-space: nowrap; }
-    .btn.ghost { color: var(--blue); background: #fff; border: 1.5px solid var(--blue); }
+    .btn.ghost { color: var(--brown-dark); background: var(--sweater); }
     .race { margin-top: 12px; display: none; }
     .race.on { display: block; }
     .race .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: .9rem; color: var(--dim); }
     .race .row b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
     .race .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-    .err { color: var(--coral); font-size: .82rem; min-height: 1.2em; }
+    .err { color: #b4432a; font-size: .82rem; min-height: 1.2em; }
 
-    .ideas { list-style: none; margin-top: 10px; }
-    .ideas li { padding: 9px 0 9px 22px; position: relative; color: var(--dim); font-size: .92rem; border-bottom: 1px solid var(--line); }
+    .ideas { list-style: none; margin: 8px 0 12px; }
+    .ideas li { padding: 8px 0; color: var(--dim); font-size: .92rem; border-bottom: 1px solid var(--line); }
     .ideas li:last-child { border-bottom: none; }
-    .ideas li::before { content: ''; position: absolute; left: 2px; top: 17px; width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
     .ideas li b { color: var(--ink); font-weight: 600; }
-    .explore { position: fixed; left: 50%; transform: translateX(-50%); bottom: 22px; z-index: 11; display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,.92); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px 6px 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(19,20,58,.14); opacity: 0; pointer-events: none; transition: opacity .4s; }
+    .sign { font: 700 15px 'Barlow Condensed', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--brown); }
+
+    .explore { position: fixed; left: 5vw; bottom: 22px; z-index: 11; display: flex; gap: 10px; align-items: center; background: var(--cream); border: 1px solid var(--line); border-radius: 999px; padding: 6px 8px 6px 16px; box-shadow: 0 10px 30px rgba(95,74,58,.18); opacity: 0; pointer-events: none; transition: opacity .4s; }
     .explore.on { opacity: 1; pointer-events: auto; }
     .explore input[type=range] { width: 220px; accent-color: var(--blue); }
     .explore .mono { font: 500 12.5px 'JetBrains Mono', monospace; color: var(--blue); min-width: 44px; }
-    footer { position: relative; z-index: 3; padding: 0 5vw 40px; color: var(--mute); font-size: .74rem; max-width: 780px; }
-    footer a { color: var(--dim); }
+    footer { position: relative; z-index: 3; padding: 0 5vw 40px; color: var(--brown); font-size: .74rem; max-width: 780px; }
+    footer a { color: var(--brown-dark); }
 
     #loading { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center; background: var(--blue); transition: opacity .8s ease, visibility .8s; font: 700 14px 'Barlow Condensed', sans-serif; letter-spacing: .2em; text-transform: uppercase; color: #fff; }
     #loading.done { opacity: 0; visibility: hidden; }
@@ -142,24 +129,23 @@
 
     @media (max-width: 860px) {
       .topbar { padding: 12px 16px; }
-      .topbar > a { font-size: 12px; }
       .pill { padding: 8px 10px 7px; font-size: 12px; }
-      .chnav { top: auto; bottom: 0; left: 0; right: 0; transform: none; flex-direction: row; justify-content: flex-start; gap: 6px; overflow-x: auto; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(rgba(244,241,234,0), rgba(244,241,234,.95) 40%); scrollbar-width: none; }
+      .chnav { top: auto; bottom: 0; left: 0; right: 0; transform: none; flex-direction: row; justify-content: flex-start; gap: 6px; overflow-x: auto; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(rgba(239,232,220,0), rgba(239,232,220,.96) 40%); scrollbar-width: none; }
       .chnav::-webkit-scrollbar { display: none; }
       .chnav button { flex: none; padding: 0; }
       .chnav button i { display: none; }
-      .chnav button span { opacity: 1; transform: none; padding: 7px 11px 6px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,.9); }
+      .chnav button span { opacity: 1; transform: none; padding: 7px 11px 6px; border-radius: 999px; border: 1px solid var(--line); }
       .chnav button.on span { background: var(--blue); color: #fff; border-color: var(--blue); }
       .card, .card.right { margin: 0 16px; width: auto; padding: 20px; }
-      .ch .card { top: 46vh; }
+      .ch { padding-top: 65vh; }
+      .ch .card { position: relative; top: auto; }
       .card h2 { font-size: 24px; }
       .card p { font-size: .88rem; }
       .hero-inner { padding: 0 16px 14vh; }
-      .explore { bottom: 64px; left: 16px; right: 16px; transform: none; justify-content: space-between; }
+      .explore { bottom: 64px; left: 16px; right: 16px; justify-content: space-between; }
       .explore input[type=range] { width: 100%; flex: 1; }
       .lbl .t { font-size: 11px; padding: 5px 8px 4px; }
     }
-    @media (prefers-reduced-motion: reduce) { .hero .scroll::after { animation: none; } }
   </style>
   <script type="importmap">
   {
@@ -177,10 +163,10 @@
   <div id="labels"></div>
 
   <div class="topbar">
-    <a href="../../index.html">Carlos Ebrahim Vendrell</a>
+    <a class="pill home" href="../../index.html">Carlos Ebrahim Vendrell</a>
     <div class="tools">
       <span class="pill clock" id="clock">10:00</span>
-      <button class="pill" id="rotate" type="button" aria-pressed="false" title="Slowly rotate the map (you can also drag it)">
+      <button class="pill" id="rotate" type="button" aria-pressed="false" title="Rotate the map slowly. You can also drag it.">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
         Rotate
       </button>
@@ -190,64 +176,55 @@
   <nav class="chnav" id="chnav" aria-label="Chapters"></nav>
 
   <main>
-    <section class="hero" data-ch="hero" data-label="Start">
+    <section class="hero" data-ch="hero" data-label="Top">
       <div class="hero-inner">
-        <div class="kicker">Sunday 14 June 2026 · seen from above</div>
         <h1>BESTSELLER<br>Aarhus City Half<span>2026</span></h1>
         <svg class="wave" viewBox="0 0 1000 90" aria-hidden="true">
           <path id="wavePath" d="M0,55 C120,10 220,10 330,48 S560,92 680,46 S880,6 1000,40" fill="none" stroke="#0d00c4" stroke-width="40" stroke-linecap="round"/>
-          <text dy="6.5"><textPath href="#wavePath" startOffset="2%" id="waveText">21.0975 KM · 13,373 FINISHERS · ONE LOOP THROUGH AARHUS · 21.0975 KM</textPath></text>
+          <text dy="6.5"><textPath href="#wavePath" startOffset="3%" id="waveText">14 JUNE 2026 · 21.0975 KM · 13,373 RUNNERS · AARHUS</textPath></text>
         </svg>
-        <p class="sub">The whole race, rebuilt in 3D from the public results. Every finisher is a dot moving through the city at their own pace.</p>
-        <div class="scroll">Scroll to run it</div>
+        <p class="sub">One Sunday morning in Aarhus, replayed from the public results. Scroll down to run it.</p>
       </div>
     </section>
 
-    <section class="ch tall" data-ch="course" data-label="The course">
+    <section class="ch tall" data-ch="course" data-label="Course">
       <div class="card">
-        <div class="kicker">01 · The course</div>
-        <h2>One loop through the whole city</h2>
-        <p>Start and finish at Rådhusparken. In between: Frederiksbjerg, ARoS, the Latin Quarter, out to Aarhus Ø, back past Dokk1 and the cathedral, and down the coast road along the bay.</p>
+        <h2>The course</h2>
+        <p>From Rådhusparken through Frederiksbjerg, past ARoS and the Latin Quarter, out to Aarhus Ø, back by Dokk1 and the cathedral, then down the coast road and home.</p>
         <ul class="stops" id="stops"></ul>
       </div>
     </section>
 
     <section class="ch" data-ch="start" data-label="10:00">
       <div class="card right">
-        <div class="kicker">02 · 10:00</div>
-        <h2>One start, one very long queue</h2>
-        <p>The front of the field is away in seconds. Further back, people shuffle towards the mat for <span class="num js-lastStart">–</span>.</p>
-        <p class="fact">By the time the last runners start their chip, the leaders are already at <strong>km <span class="js-leadKm">–</span></strong>.</p>
-        <p class="note">Start times come from the chip data of a sample of runners.</p>
+        <h2>10:00, one start</h2>
+        <p>The front is gone in seconds. At the back, people shuffle towards the start mat for <strong class="js-lastStart">–</strong>.</p>
+        <p>When the last runners cross it, the leaders are already at <strong>km <span class="js-leadKm">–</span></strong>.</p>
       </div>
     </section>
 
-    <section class="ch tall" data-ch="river" data-label="The morning">
+    <section class="ch tall" data-ch="river" data-label="Morning">
       <div class="card">
-        <div class="kicker">03 · The morning</div>
-        <h2>A river through Aarhus</h2>
-        <p class="fact">The winner crosses the line in <strong class="js-win">–</strong>. At that moment, <strong><span class="js-not10">–</span> runners</strong> haven't reached 10 km yet.</p>
-        <p class="fact">The fastest woman finishes in <strong class="js-woman">–</strong>, <span class="js-womanPl">–</span> overall.</p>
-        <p class="fact">The last finisher comes home <strong class="js-last">–</strong> after the gun. The coast road is busy for most of that time.</p>
+        <h2>The morning</h2>
+        <p>The winner finishes in <strong class="js-win">–</strong>. At that moment, about <strong><span class="js-not10">–</span> runners</strong> haven't reached 10 km.</p>
+        <p>The fastest woman runs <strong class="js-woman">–</strong>, <span class="js-womanPl">–</span> overall.</p>
+        <p>The last finisher comes home <strong class="js-last">–</strong> after the gun.</p>
       </div>
     </section>
 
     <section class="ch tall" data-ch="pressure" data-label="Busy spots">
       <div class="card right">
-        <div class="kicker">04 · Where it gets busy</div>
-        <h2>Busy stretches and a two-way road</h2>
-        <p>The ribbon turns from blue to red where the most runners share the same stretch of road.</p>
-        <p id="hotText">Working it out…</p>
-        <p class="note">Positions are modelled from each finisher's net time, plus start delays and pacing from <span class="js-samples">a sample of</span> runners' chip splits. Good for spotting where to look, not for exact counts.</p>
+        <h2>Busy spots</h2>
+        <p>The ribbon turns red where most runners share the road.</p>
+        <div id="hotText"><p>Working it out…</p></div>
       </div>
     </section>
 
     <section class="ch" data-ch="pace" data-label="Pacing">
       <div class="card">
-        <div class="kicker">05 · Running</div>
         <h2>The sub-2 rush</h2>
-        <p class="fact"><strong><span class="js-sub2a">–</span> runners</strong> crossed the line in the two minutes before 2:00:00, and only <span class="js-sub2b">–</span> in the two minutes after. Same story at 1:30: <span class="js-s130a">–</span> just under, <span class="js-s130b">–</span> just over.</p>
-        <p>Median pace on each part of the course, by finish group. Everyone fades after 15 km, but <strong><span class="js-kick">–</span>%</strong> still find a faster last kilometre into Rådhusparken.</p>
+        <p><strong><span class="js-sub2a">–</span> runners</strong> finished in the two minutes before 2:00:00, and <span class="js-sub2b">–</span> in the two minutes after. Around 1:30 it's <span class="js-s130a">–</span> just under and <span class="js-s130b">–</span> just over.</p>
+        <p>Everyone slows after 15 km, but <strong><span class="js-kick">–</span>%</strong> speed up again for the last kilometre.</p>
         <svg class="chart" id="paceChart" viewBox="0 0 380 190" aria-label="Pace by course section and finish group"></svg>
         <div class="legend" id="paceLegend"></div>
       </div>
@@ -255,58 +232,51 @@
 
     <section class="ch" data-ch="community" data-label="Fællesskab">
       <div class="card right">
-        <div class="kicker">06 · Fællesskab</div>
-        <h2>Together, <span class="js-earth">7</span> times around the planet</h2>
+        <h2>Fællesskab</h2>
         <div class="stats">
           <div class="stat"><b class="js-n">13,373</b><span>finishers</span></div>
-          <div class="stat"><b class="js-km">282,000</b><span>km run together</span></div>
+          <div class="stat"><b class="js-km">282,000</b><span>km together, <span class="js-earth">7</span>× around the Earth</span></div>
           <div class="stat"><b class="js-countries">–</b><span>nationalities</span></div>
           <div class="stat"><b class="js-women">–</b><span>women</span></div>
         </div>
-        <p class="fact"><strong><span class="js-eftN">–</span> students</strong> ran for <span class="js-eftClubs">–</span> efterskoler. <strong><span class="js-young">–</span> runners</strong> were under 16 (the fastest: <span class="js-youngBest">–</span>), and <strong><span class="js-old">–</span> were 75 or older</strong> (fastest: <span class="js-oldBest">–</span>).</p>
-        <p style="margin-bottom:6px"><strong>Biggest teams</strong></p>
+        <p><strong><span class="js-eftN">–</span> students</strong> from <span class="js-eftClubs">–</span> efterskoler, <strong><span class="js-young">–</span></strong> runners under 16, and <strong><span class="js-old">–</span></strong> aged 75 or more. The fastest 75+ runner finished in <span class="js-oldBest">–</span>.</p>
         <div id="clubBars"></div>
       </div>
     </section>
 
-    <section class="ch tall" data-ch="find" data-label="Find yourself">
+    <section class="ch tall" data-ch="find" data-label="Your race">
       <div class="card">
-        <div class="kicker">07 · Find yourself</div>
-        <h2>Ran it? Type your bib</h2>
-        <p>Your dot gets a marker and the camera follows your race, start to finish.</p>
+        <h2>Your race</h2>
+        <p>Type your bib number to follow your own race and save a race card.</p>
         <form class="find" id="findForm" autocomplete="off">
-          <input id="bib" inputmode="numeric" placeholder="Bib, e.g. 1142" aria-label="Bib number">
+          <input id="bib" inputmode="numeric" placeholder="Bib number" aria-label="Bib number">
           <button class="btn" type="submit">Find</button>
         </form>
         <div class="err" id="findErr"></div>
         <div class="race" id="race">
-          <div class="row"><span>Net time</span><b id="rTime">–</b></div>
+          <div class="row"><span>Time</span><b id="rTime">–</b></div>
           <div class="row"><span>Place</span><b id="rPlace">–</b></div>
           <div class="row"><span>Age group</span><b id="rCat">–</b></div>
           <div class="row"><span>Pace</span><b id="rPace">–</b></div>
-          <div class="row"><span>Faster than</span><b id="rPct">–</b></div>
           <div class="actions">
-            <button class="btn" type="button" id="replay">Replay my race</button>
+            <button class="btn" type="button" id="replay">Replay</button>
             <button class="btn ghost" type="button" id="card">Save race card</button>
           </div>
         </div>
-        <p class="note" style="margin-top:12px">No names are stored on this page: only bib, time, age group, club and country from the public results.</p>
       </div>
     </section>
 
-    <section class="ch short" data-ch="close" data-label="Ideas">
+    <section class="ch" data-ch="close" data-label="Next term">
       <div class="card right">
-        <div class="kicker">08 · Why this page exists</div>
-        <h2>What data and AI could do for Aarhus Motion</h2>
-        <p>I built this for my application to continue as an Aarhus Motion ambassador, using only the public results, OpenStreetMap and a GPS track of the course. Some things it could become:</p>
+        <h2>Two more years?</h2>
+        <p>I've been an Aarhus Motion ambassador for two years and would like to continue. I made this page with AI tools from the public results, OpenStreetMap and my GPS track of the race. Next term, I'd like to try:</p>
         <ul class="ideas">
-          <li><b>A recap page after every race</b>, with a shareable card for each runner.</li>
-          <li><b>A planning view for the organisers</b>: try start waves, route changes or new aid stations against last year's field before race day.</li>
-          <li><b>Social clips</b>: short flyovers of the course and the field for Instagram and the newsletter.</li>
-          <li><b>Community stories</b>: which clubs, schools and companies grow, and who comes back from the winter runs to the City Half.</li>
+          <li><b>Race cards after every event</b>, like the one above, for runners to share.</li>
+          <li><b>Sub-2 and sub-1:30 social runs</b> in the spring, for the hundreds who finish just around those times.</li>
+          <li><b>Team stories</b> about the efterskoler, clubs and companies that bring big groups.</li>
+          <li><b>A replay like this one for the organisers</b>, to try changes to the start or the course before race day.</li>
         </ul>
-        <p style="margin-top:12px">Use the slider at the bottom to scrub through the morning, and drag the map to look around.</p>
-        <p class="note">Carlos Ebrahim Vendrell · Aarhus Motion ambassador 2025–2026</p>
+        <p class="sign">Carlos Ebrahim Vendrell</p>
       </div>
     </section>
   </main>
@@ -318,7 +288,7 @@
   </div>
 
   <footer>
-    Results: <a href="https://www.aarhusmotion.dk/event/293/resultater" target="_blank" rel="noopener">aarhusmotion.dk</a> (public results, BESTSELLER Aarhus City Half 2026). Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>, ODbL. Course line from a GPS recording of the 2026 race, snapped to the street network. An unofficial project, not affiliated with or endorsed by Aarhus Motion or BESTSELLER.
+    Results from <a href="https://www.aarhusmotion.dk/event/293/resultater" target="_blank" rel="noopener">aarhusmotion.dk</a>. Runner positions are modelled from each finisher's net time, with start delays and pacing from <span class="js-samples">300</span> runners' chip splits. No names are stored. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Not an official Aarhus Motion or BESTSELLER page.
   </footer>
 
   <script type="module" src="city-half/app.js"></script>
