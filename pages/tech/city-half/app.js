@@ -60,7 +60,7 @@ const GROUP_NAMES = ['A', 'B', 'C', 'D'];
 const TEXT = {
   da: {
     loading: 'Bygger Aarhus', nogl: 'Siden kræver WebGL for at tegne byen. Prøv en nyere browser på en computer.',
-    nav: { hero: 'Top', course: 'Ruten', start: 'Starten', river: 'Formiddagen', pressure: 'Travle steder', dist: 'Sub-2', pace: 'Tempo', community: 'Fællesskab', find: 'Dit løb', close: 'Udforsk' },
+    nav: { hero: 'Top', course: 'Ruten', start: 'Starten', river: 'Formiddagen', poi: 'Undervejs', dist: 'Sub-2', pace: 'Tempo', community: 'Fællesskab', find: 'Dit løb', close: 'Udforsk' },
     'hero.date': 'Søndag 14. juni 2026',
     wave: (v) => `21,0975 KM · ${v.n} LØBERE · AARHUS · 21,0975 KM`,
     'hero.cue': 'Scroll',
@@ -76,12 +76,14 @@ const TEXT = {
     'river.p1': (v) => `Vinderen er i mål efter <strong>${v.win}</strong>. I det øjeblik har omkring <strong>${v.not10} løbere</strong> endnu ikke passeret 10 km.`,
     'river.p2': (v) => `Hurtigste kvinde løber <strong>${v.woman}</strong> og bliver ${v.womanPl} samlet.`,
     'river.p3': (v) => `Den sidste løber er i mål <strong>${v.last}</strong> efter startskuddet.`,
-    'busy.h': 'Travle steder',
-    'busy.p': 'Båndet bliver rødt, hvor flest løbere deler vejen.',
-    busy: (v) => `Travlest efter starten: ${v.parts}.`,
-    busyPart: (v) => `km ${v.km}${v.near ? ` (${v.near})` : ''} kl. ${v.t}`,
-    two: (v) => `Strandvejen er ud og hjem. Fra kl. ${v.from} møder løbere på vej sydpå ved km ${v.a} dem, der er på vej tilbage ved km ${v.b}, og vejen er <strong>tovejs i ${v.dur}</strong>.`,
-    lblBusy: 'Travlt', lblTwo: 'Tovejs',
+    'poi.h': 'Undervejs',
+    'poi.p': 'Ruten løber forbi byens ikoner og titelsponsoren, og nogle steder kan man heppe på de samme løbere flere gange. Tryk på et sted for at se det.',
+    poiIcons: 'Byens ikoner', poiSponsor: 'Titelsponsor', poiCheer: 'Heppesteder: se feltet flere gange', and: 'og',
+    poi_aros: 'ARoS og Your rainbow panorama', poi_latin: 'Latinerkvarteret', poi_lighthouse: 'Aarhus Ø og Lighthouse (142 m)',
+    poi_dokk1: 'Dokk1, biblioteket ved havnen', poi_domkirke: 'Domkirken og Bispetorvet', poi_bay: 'Strandvejen langs bugten',
+    poi_bestseller: 'BESTSELLER ved Navitas, Aarhus Ø',
+    poiOutback: (v) => `Ud og hjem: løberne kommer forbi i begge retninger (km ${v.a} og ${v.b}) fra kl. ${v.from} i ${v.dur}`,
+    poiTimes: (v) => `Feltet kommer forbi ${v.n} gange: km ${v.km}`,
     'dist.h': 'Ruset mod sub-2',
     'dist.p1': 'Sluttiderne følger ikke en pæn klokkekurve. Lige før de runde tider topper søjlerne, og lige efter falder de: folk presser på for at nå under målet.',
     'dist.p2': (v) => `<strong>${v.a} løbere</strong> kom i mål i de to minutter før 2:00:00, og kun ${v.b} i de to minutter efter. Ved 1:30 er det ${v.c} lige under og ${v.d} lige over.`,
@@ -103,12 +105,12 @@ const TEXT = {
     of: 'af', pin: (v) => `#${v.bib}<small>km ${v.km}</small><em class="up">▲${v.up}</em><em class="down">▼${v.down}</em>`,
     cats: { M: 'Mænd', K: 'Kvinder', U: 'Åben' },
     'ex.h': 'Udforsk', 'ex.p': 'Træk i kortet for at dreje og vippe det. Brug tidslinjen nederst til at spole gennem formiddagen.', 'ex.reset': 'Nulstil',
-    footer: (v) => `Resultater fra <a href="https://www.aarhusmotion.dk/event/293/resultater" target="_blank" rel="noopener">aarhusmotion.dk</a>. Løbernes positioner er modelleret ud fra hver løbers nettotid, med startgrupper og tempo fra ${v.samples} løberes chiptider. Ingen navne gemmes. Kortdata © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-bidragydere</a>. Ikke en officiel side fra Aarhus Motion eller BESTSELLER.`,
+    footer: (v) => `Resultater fra <a href="https://www.aarhusmotion.dk/event/293/resultater" target="_blank" rel="noopener">aarhusmotion.dk</a>. Løbernes positioner er modelleret ud fra hver løbers nettotid, med startgrupper og tempo fra ${v.samples} løberes chiptider. Ingen navne gemmes. Kortdata © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-bidragydere</a>. Tagfarver udledt af luftfoto fra Esri, Maxar, Earthstar Geographics. Ikke en officiel side fra Aarhus Motion eller BESTSELLER.`,
     card1: 'MIT LØB · 14. JUNI 2026', card2: (v) => `PLACERING ${v.pl} AF ${v.n}  ·  STARTNR. ${v.bib}`,
   },
   en: {
     loading: 'Building Aarhus', nogl: 'This page needs WebGL to draw the city. Try a recent desktop browser.',
-    nav: { hero: 'Top', course: 'Course', start: 'The start', river: 'Morning', pressure: 'Busy spots', dist: 'Sub-2', pace: 'Pacing', community: 'Fællesskab', find: 'Your race', close: 'Explore' },
+    nav: { hero: 'Top', course: 'Course', start: 'The start', river: 'Morning', poi: 'Along the way', dist: 'Sub-2', pace: 'Pacing', community: 'Fællesskab', find: 'Your race', close: 'Explore' },
     'hero.date': 'Sunday 14 June 2026',
     wave: (v) => `21.0975 KM · ${v.n} RUNNERS · AARHUS · 21.0975 KM`,
     'hero.cue': 'Scroll',
@@ -124,12 +126,14 @@ const TEXT = {
     'river.p1': (v) => `The winner finishes in <strong>${v.win}</strong>. At that moment, about <strong>${v.not10} runners</strong> haven't reached 10 km.`,
     'river.p2': (v) => `The fastest woman runs <strong>${v.woman}</strong>, ${v.womanPl} overall.`,
     'river.p3': (v) => `The last finisher comes home <strong>${v.last}</strong> after the gun.`,
-    'busy.h': 'Busy spots',
-    'busy.p': 'The ribbon turns red where most runners share the road.',
-    busy: (v) => `Busiest after the start: ${v.parts}.`,
-    busyPart: (v) => `km ${v.km}${v.near ? ` (${v.near})` : ''} at ${v.t}`,
-    two: (v) => `The coast road is out and back. From ${v.from}, runners heading south at km ${v.a} meet runners coming back at km ${v.b}, and the road stays <strong>two-way for ${v.dur}</strong>.`,
-    lblBusy: 'Busy', lblTwo: 'Two-way',
+    'poi.h': 'Along the way',
+    'poi.p': 'The course passes the city\'s icons and the title sponsor, and in a few places you can cheer for the same runners more than once. Tap a place to see it.',
+    poiIcons: 'City icons', poiSponsor: 'Title sponsor', poiCheer: 'Cheering spots: see the field more than once', and: 'and',
+    poi_aros: 'ARoS and Your rainbow panorama', poi_latin: 'The Latin Quarter', poi_lighthouse: 'Aarhus Ø and the Lighthouse (142 m)',
+    poi_dokk1: 'Dokk1, the library on the harbour', poi_domkirke: 'The cathedral and Bispetorvet', poi_bay: 'Strandvejen along the bay',
+    poi_bestseller: 'BESTSELLER by Navitas, Aarhus Ø',
+    poiOutback: (v) => `Out and back: runners pass in both directions (km ${v.a} and ${v.b}) from ${v.from} for ${v.dur}`,
+    poiTimes: (v) => `The field passes ${v.n} times: km ${v.km}`,
     'dist.h': 'The sub-2 rush',
     'dist.p1': "Finish times don't follow a neat bell curve. The bars peak just before the round times and drop just after: people push to get under their target.",
     'dist.p2': (v) => `<strong>${v.a} runners</strong> finished in the two minutes before 2:00:00, and only ${v.b} in the two minutes after. At 1:30 it's ${v.c} just under and ${v.d} just over.`,
@@ -151,7 +155,7 @@ const TEXT = {
     of: 'of', pin: (v) => `#${v.bib}<small>km ${v.km}</small><em class="up">▲${v.up}</em><em class="down">▼${v.down}</em>`,
     cats: { M: 'Men', K: 'Women', U: 'Open' },
     'ex.h': 'Explore', 'ex.p': 'Drag the map to rotate and tilt it. Use the timeline at the bottom to scrub through the morning.', 'ex.reset': 'Reset',
-    footer: (v) => `Results from <a href="https://www.aarhusmotion.dk/event/293/resultater" target="_blank" rel="noopener">aarhusmotion.dk</a>. Runner positions are modelled from each finisher's net time, with start groups and pacing from ${v.samples} runners' chip times. No names are stored. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Not an official Aarhus Motion or BESTSELLER page.`,
+    footer: (v) => `Results from <a href="https://www.aarhusmotion.dk/event/293/resultater" target="_blank" rel="noopener">aarhusmotion.dk</a>. Runner positions are modelled from each finisher's net time, with start groups and pacing from ${v.samples} runners' chip times. No names are stored. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Roof colours derived from imagery by Esri, Maxar, Earthstar Geographics. Not an official Aarhus Motion or BESTSELLER page.`,
     card1: 'MY RACE · 14 JUNE 2026', card2: (v) => `PLACE ${v.pl} OF ${v.n}  ·  BIB ${v.bib}`,
   },
 };
@@ -195,7 +199,7 @@ sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.2;
 sun.shadow.camera.near = 10; sun.shadow.camera.far = 7000;
 scene.add(sun, sun.target);
 
-const DATA_VERSION = 9;           // bump with every data change so browsers refetch
+const DATA_VERSION = 11;           // bump with every data change so browsers refetch
 async function getJSON(p) {
   const r = await fetch(new URL(p + '?v=' + DATA_VERSION, import.meta.url));
   if (!r.ok) throw new Error(p + ' ' + r.status);
@@ -308,6 +312,18 @@ function buildGround(city) {
 }
 
 /* ── buildings: walls, flat / gabled / pyramid / dome roofs ───────────── */
+// a roof colour sampled from satellite imagery, tamed to the page's daytime palette
+const _hsl = {};
+function satRoof(hex, fallback) {
+  if (hex == null || hex < 0) return null;
+  const c = new THREE.Color().setHex(hex);
+  c.getHSL(_hsl);
+  if (_hsl.h > 0.16 && _hsl.h < 0.47 && _hsl.s > 0.1) return null;          // tree canopy over the roof, not the roof
+  _hsl.l = clamp(_hsl.l * 1.2 + 0.07, 0.24, 0.86);                          // lift shade and haze from the photo
+  _hsl.s = Math.min(_hsl.s * 1.1, 0.42);
+  c.setHSL(_hsl.h, _hsl.s, _hsl.l);
+  return fallback.clone().lerp(c, 0.72);
+}
 function buildBuildings(city, models = {}) {
   const u = city.unit, cols = (city.cols || []).map((h) => C(h));
   // the hand-built landmarks replace whatever OSM has inside their footprints
@@ -329,15 +345,18 @@ function buildBuildings(city, models = {}) {
     if (models.aros && mh >= 44 && Math.hypot(ctr[0] - models.aros[0], ctr[1] - models.aros[1]) < models.aros[2] + 8) continue;   // drawn as one glass ring instead
     const inRadhus = radhus && pip(ctr[0], ctr[1], radhus);
     const jitter = (hash(bi) - 0.5) * 0.06;
-    let wall = (wc >= 0 ? wallBase.clone().lerp(cols[wc], 0.55) : wallBase.clone()).offsetHSL(0, 0, jitter);
-    if (inRadhus) wall = marble.clone();                                    // Norwegian marble cladding
-    const wallLo = mh < 0.5 ? wall.clone().multiplyScalar(0.8) : wall;   // soft contact shade at street level
     let roof;
     if (inRadhus) roof = (h >= 54 ? copper : leadGrey).clone();
     else if (rcol >= 0) roof = flatBase.clone().lerp(cols[rcol], 0.7);
     else if (rc === 1 || rc === 2) roof = (hash(bi * 3 + 1) < 0.62 ? tile : slate).clone();
     else roof = flatBase.clone();
+    const sat = !inRadhus && city.sat ? satRoof(city.sat[bi], roof) : null;   // the roof's real colour, seen from above
+    if (sat) roof = sat;
     roof.offsetHSL(0, 0, jitter);
+    let wall = (wc >= 0 ? wallBase.clone().lerp(cols[wc], 0.55) : wallBase.clone()).offsetHSL(0, 0, jitter);
+    if (sat && wc < 0) wall.lerp(sat, 0.14);                                // a hint of the roof in the facade
+    if (inRadhus) wall = marble.clone();                                    // Norwegian marble cladding
+    const wallLo = mh < 0.5 ? wall.clone().multiplyScalar(0.8) : wall;   // soft contact shade at street level
     const gable = rc === 1 && n === 4 && rh > 0.3;
     const eave = rc === 0 || rh <= 0.3 ? h : (rc === 1 && !gable ? h - rh * 0.6 : h - rh);
     for (let i = 0; i < n; i++) {
@@ -525,30 +544,12 @@ function buildLandmarks(models, lm) {
     landmarkMesh(capGeo(r, 30), LM_MAT({ color: C('#d8d6d0') }));
     landmarkMesh(slabGeo(scaleRing(r, 1.012), 30, 31), LM_MAT({ color: C('#f1f0ec') }));
   }
-  // BESTSELLER: dark office block with the name on the roof, turned towards the course
+  // BESTSELLER: the dark office wing at Navitas
   if (models.bestseller) {
-    const r = ringOf(models.bestseller), c = centroid(r);
+    const r = ringOf(models.bestseller);
     const H = 35;                       // shares a block with Navitas; its dark wing rises just above it
     landmarkMesh(wallGeo(r, 0, H, 4, 3.5), LM_MAT({ map: FACADE.dark() }));
     landmarkMesh(capGeo(r, H), LM_MAT({ color: C('#55565c') }));
-    let best = null, bd = Infinity;
-    for (let k = 0; k < R.n; k += 4) { const d = Math.hypot(R.x[k] - c[0], R.z[k] - c[1]); if (d < bd) { bd = d; best = k; } }
-    const ang = Math.atan2(R.x[best] - c[0], R.z[best] - c[1]);
-    const sign = canvasTex(1024, 128, (g, w, h) => {
-      g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h);
-      g.fillStyle = '#111111'; g.font = '800 92px "Open Sans", Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-      if ('letterSpacing' in g) g.letterSpacing = '14px';
-      g.fillText('BESTSELLER', w / 2, h / 2 + 4);
-    });
-    sign.wrapS = sign.wrapT = THREE.ClampToEdgeWrapping;
-    // two one-sided faces back to back, so the name reads correctly from both sides
-    let ext = 0; for (const p of r) ext = Math.max(ext, (p[0] - c[0]) * Math.sin(ang) + (p[1] - c[1]) * Math.cos(ang));
-    for (const flip of [0, Math.PI]) {
-      const plate = new THREE.Mesh(new THREE.PlaneGeometry(56, 7), new THREE.MeshBasicMaterial({ map: sign }));
-      plate.position.set(c[0] + Math.sin(ang) * (ext - 4), H + 4.2, c[1] + Math.cos(ang) * (ext - 4));
-      plate.rotation.y = ang + flip;
-      scene.add(plate);
-    }
   }
   // Rådhus: four clock faces on the tower (the building itself comes from OSM's detailed parts)
   if (models.tower) {
@@ -627,7 +628,16 @@ function makeRoute(route) {
     const dx = b.x - a.x, dz = b.z - a.z, L = Math.hypot(dx, dz) || 1; return [dx / L, dz / L];
   }
   const pts2 = (arr) => { const o = []; for (let i = 0; i < (arr || []).length; i += 2) o.push([arr[i] / 10, arr[i + 1] / 10]); return o; };
-  return { n, x, z, hx, hz, hw, step, len, at, headingAvg, stage: pts2(route.stage), fin: pts2(route.fin) };
+  // official km markers (from the organiser's GPX): course distance ↔ race km, piecewise between markers
+  const marks = route.km && route.km.length ? route.km : [];
+  const mk = [0, ...marks, len], mkKm = [0, ...marks.map((_, i) => i + 1), 21.0975];
+  const interp = (v, xs, ys) => {
+    if (v <= xs[0]) return ys[0];
+    for (let i = 1; i < xs.length; i++) if (v <= xs[i]) return ys[i - 1] + (v - xs[i - 1]) / (xs[i] - xs[i - 1]) * (ys[i] - ys[i - 1]);
+    return ys[ys.length - 1];
+  };
+  const dToKm = (d) => interp(d, mk, mkKm), kmToD = (km) => interp(km, mkKm, mk);
+  return { n, x, z, hx, hz, hw, step, len, at, headingAvg, dToKm, kmToD, stage: pts2(route.stage), fin: pts2(route.fin) };
 }
 async function ribbonTexture() {
   try { await document.fonts.load('700 80px "Barlow Condensed"'); } catch { /* fall back */ }
@@ -708,7 +718,7 @@ function buildCourseFurniture() {
   const cap = new THREE.InstancedMesh(new THREE.SphereGeometry(2.4, 12, 8).translate(0, 25, 0), new THREE.MeshLambertMaterial({ color: C('#ffffff') }), count);
   const M = new THREE.Matrix4(), o = {}, posts = [];
   for (let k = 1; k <= count; k++) {
-    const d = k * 1000 * R.len / 21097.5; R.at(d, o);
+    const d = R.kmToD(k); R.at(d, o);
     posts.push([o.x - o.hz * (o.w + 3), o.z + o.hx * (o.w + 3), d]);
     M.makeTranslation(posts[k - 1][0], 0, posts[k - 1][1]);
     pole.setMatrixAt(k - 1, M); cap.setMatrixAt(k - 1, M);
@@ -753,7 +763,7 @@ function prepField(field, routeLen) {
   }
   let maxEnd = 0, lastStart = 0;
   for (let i = 0; i < N; i++) { maxEnd = Math.max(maxEnd, T[i] + S[i]); lastStart = Math.max(lastStart, S[i]); }
-  return { N, T, S, G, B, O, Dm: md.D.map((k) => k * 1000 * routeLen / 21097.5), prof: md.buckets.map((b) => b.F), raw: field, maxEnd, lastStart };
+  return { N, T, S, G, B, O, Dm: md.D.map((k) => R.kmToD(k)), prof: md.buckets.map((b) => b.F), raw: field, maxEnd, lastStart };
 }
 // distance along the course of runner i at clock t; state 0 waiting, 1 running, 2 finished
 function runnerDist(i, t) {
@@ -869,30 +879,12 @@ function sampleGrid(x, z) {
 const HEAT_FULL = 190;      // the busiest 36 m of road holds ~160 runners in the model
 
 async function computeStats() {
-  const N = F.N, o = {}, best = new Map();
-  let slice = performance.now();
-  for (let t = 300; t <= 4800; t += 30) {
-    if (performance.now() - slice > 7) { await new Promise((r) => setTimeout(r, 0)); slice = performance.now(); }
-    grid.fill(0);                                  // each time step is synchronous, so sharing the grid with the frame loop is safe
-    for (let i = 0; i < N; i++) { if (runnerXZ(i, t, o) !== 1) continue; const c = cellOf(o.x, o.z); if (c >= 0) grid[c]++; }
-    for (let k = 0; k < R.n; k += 3) {
-      const c = cellOf(R.x[k], R.z[k]); if (c < 0) continue;
-      const s = sampleGrid(R.x[k], R.z[k]);
-      const b = best.get(c); if (!b || s > b[0]) best.set(c, [s, t, k]);
-    }
-  }
-  const cand = [...best.values()].filter((b) => b[2] * R.step > 1400).sort((a, b) => b[0] - a[0]);
-  const hot = [];
-  for (const c of cand) {
-    const x = R.x[c[2]], z = R.z[c[2]];
-    if (hot.every((h) => Math.hypot(h.x - x, h.z - z) > 450)) hot.push({ x, z, n: c[0], t: c[1], d: c[2] * R.step });
-    if (hot.length >= 3) break;
-  }
-  const leadKm = runnerDist(0, F.lastStart)[0] / R.len * 21.0975;
+  const N = F.N;
+  const leadKm = R.dToKm(runnerDist(0, F.lastStart)[0]);
   let winHome = Infinity; for (let i = 0; i < N; i++) winHome = Math.min(winHome, F.S[i] + F.T[i]);
-  const ten = 10000 * R.len / 21097.5; let not10 = 0;
+  const ten = R.kmToD(10); let not10 = 0;
   for (let i = 0; i < N; i++) { const [d, st] = runnerDist(i, winHome); if (st === 0 || (st === 1 && d < ten)) not10++; }
-  return { hot, leadKm, not10 };
+  return { leadKm, not10 };
 }
 
 /* ── labels ───────────────────────────────────────────────────────────── */
@@ -951,7 +943,7 @@ let navActive = '';
 function updateNav(id) {
   if (id === navActive) return;
   navActive = id;
-  userYawGoal = 0; userPitchGoal = 0;                // each chapter starts from its own framing
+  userYawGoal = 0; userPitchGoal = 0; userZoomGoal = 1;   // each chapter starts from its own framing
   for (const [cid, b] of navBtns) {
     b.classList.toggle('on', cid === id);
     if (cid === id) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
@@ -961,7 +953,8 @@ function updateNav(id) {
 
 const camPos = new THREE.Vector3(), camTgt = new THREE.Vector3(), wantPos = new THREE.Vector3(), wantTgt = new THREE.Vector3();
 let simT = 2100, runnersOp = 0, heatOn = 0, furnitureOn = 0;
-let userYaw = 0, userPitch = 0, userYawGoal = 0, userPitchGoal = 0;
+let userYaw = 0, userPitch = 0, userYawGoal = 0, userPitchGoal = 0, userZoom = 1, userZoomGoal = 1;
+const ZOOM_MIN = 0.22, ZOOM_MAX = 2.2;
 let exPlaying = false;
 const rp = { i: -1, el: 0, playing: true, speed: 1 };          // replay of a selected runner
 const SPEEDS = [0.5, 1, 2, 4];
@@ -978,7 +971,7 @@ function follow(d, back = 420, up = 300, side = 140) {
 }
 function orbitAround(x, z, ang, dist, up) { wantTgt.set(x, 0, z); wantPos.set(x + Math.cos(ang) * dist, up, z + Math.sin(ang) * dist); }
 
-let STATS = null, stopEls = [], lmLabels = [], hotLabels = [], meLabel = null;
+let STATS = null, stopEls = [], lmLabels = [], hotLabels = [], poiEls = [], meLabel = null;
 let introStart = -1;
 const introEase = (now, dur) => { if (REDUCED || introStart < 0) return 1; const k = clamp((now - introStart) / dur, 0, 1); return 1 - Math.pow(1 - k, 4); };
 function chapterState(ch, now, dt) {
@@ -997,7 +990,7 @@ function chapterState(ch, now, dt) {
       reveal = d + 2;
       if (q <= 0) overview(0.2, 0.85); else if (q >= 1) overview(0.2, 0.9); else follow(d);
       runnersOp = 0; furnitureOn = 1; showLm = true;
-      const km = d / R.len * 21.0975;
+      const km = R.dToKm(d);
       if (q > 0) { clock = true; pill = `${fmtDec(km)} km`; }
       stopEls.forEach((el) => el.classList.toggle('on', +el.dataset.km <= km + 0.05));
       lmLabels.forEach((L) => { L.on = L.km <= km + 0.3; });
@@ -1011,14 +1004,16 @@ function chapterState(ch, now, dt) {
       simT = lerp(F.lastStart, F.maxEnd + 60, p);
       overview(0.15 + p * 0.5, 0.8 + 0.08 * Math.sin(p * Math.PI));
       runnersOp = 1; clock = true; break;
-    case 'pressure': {
-      heatOn = 1; runnersOp = 0.6; clock = true; showHot = true;
-      const hs = STATS ? STATS.hot : [];
-      if (hs.length) {
-        const k = Math.min(hs.length - 1, Math.floor(p * hs.length * 0.999)), h = hs[k], lp = (p * hs.length) % 1;
-        simT = h.t - 240 + lp * 480;
-        orbitAround(h.x, h.z, -0.7 + k * 1.1 + lp * 0.5, 460, 400);
+    case 'poi': {                                   // a tour of the points of interest, one per stretch of scroll
+      runnersOp = 1; clock = true; showHot = true;
+      const ps = routeData.poi || [];
+      if (ps.length) {
+        const k = Math.min(ps.length - 1, Math.floor(p * ps.length * 0.999)), q = ps[k], lp = (p * ps.length) % 1;
+        // show the field around the time the middle of the pack passes the first time
+        simT = (q.win ? q.win[0] + 1500 : 700 + q.km[0] * 340) + lp * 300;
+        orbitAround(q.x, q.z, -0.7 + k * 0.9 + lp * 0.4, q.kind === 'icon' ? 380 : 440, q.kind === 'icon' ? 300 : 360);
         hotLabels.forEach((L, j) => { L.on = j === k; });
+        poiEls.forEach((el, j) => el.classList.toggle('on', j === k));
       } else { overview(0.2, 0.7); simT = 1800; }
       break;
     }
@@ -1084,6 +1079,7 @@ async function main() {
   for (const l of route.lm) {
     const L = addLabel(l.x, (l.h || 25) + 10, l.z); L.km = l.km; L.name = l.name; lmLabels.push(L);
   }
+  for (const q of route.poi || []) hotLabels.push(addLabel(q.x, q.kind === 'icon' ? 60 : 34, q.z, `hot poi ${q.kind}`));
   buildNav();
   applyLang();
   onResize();
@@ -1097,9 +1093,6 @@ async function main() {
   document.body.classList.add('ready');
   setTimeout(async () => {
     STATS = await computeStats();
-    for (const h of STATS.hot) hotLabels.push(addLabel(h.x, 30, h.z, 'hot'));
-    const two = twoWay();
-    if (two) { STATS.hot.push({ x: two.x, z: two.z, t: two.win[0] + 900 }); hotLabels.push(addLabel(two.x, 30, two.z, 'hot')); }
     applyLang();
   }, 60);
 }
@@ -1122,7 +1115,6 @@ function countStats() {
   const tick = (now) => { const k = clamp((now - t0 - 300) / 1500, 0, 1); setStats(1 - Math.pow(1 - k, 4)); if (k < 1) requestAnimationFrame(tick); };
   tick(t0);
 }
-const twoWay = () => (routeData.over || []).filter((z) => z.two).sort((a, b) => (b.a[1] - b.a[0]) - (a.a[1] - a.a[0]))[0];
 function nearestLandmark(x, z) {
   let best = null, bd = 380;
   for (const l of routeData.lm) { const d = Math.hypot(l.x - x, l.z - z); if (d < bd) { bd = d; best = l.name; } }
@@ -1173,19 +1165,33 @@ function applyLang() {
   for (let i = 0; i < N; i++) if (fd.club[i] >= 0) cnt.set(fd.club[i], (cnt.get(fd.club[i]) || 0) + 1);
   const top = [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5), mx = top.length ? top[0][1] : 1;
   $('#clubBars').innerHTML = top.map(([c, n], k) => `<div class="bar"><span>${escapeHtml(fd.clubs[c])}</span><em>${fmtInt(n)}</em><i style="width:${(n / mx * 100).toFixed(1)}%;--k:${k}"></i></div>`).join('');
-  // busy spots
-  if (STATS) {
-    const parts = STATS.hot.filter((h) => h.d != null).map((h) => T('busyPart', { km: fmtDec(h.d / R.len * 21.0975), near: nearestLandmark(h.x, h.z), t: clockStr(h.t) }));
-    const z = twoWay();
-    $('#hotText').innerHTML = `<p>${T('busy', { parts: parts.join(', ') })}</p>` + (z ? `<p>${T('two', { from: clockStr(z.win[0]), a: `${fmtDec(z.a[0])}–${fmtDec(z.a[1])}`, b: `${fmtDec(z.b[0])}–${fmtDec(z.b[1])}`, dur: durWords(z.win[1] - z.win[0]) })}</p>` : '');
-    hotLabels.forEach((L, j) => {
-      const h = STATS.hot[j];
-      L.t.innerHTML = h && h.d != null ? `${T('lblBusy')}<small>km ${fmtDec(h.d / R.len * 21.0975)}</small>` : `${T('lblTwo')}<small>km ${z ? fmtDec(z.a[0]) : ''} ⇄ ${z ? fmtDec(z.b[1]) : ''}</small>`;
-    });
-  }
+  // points of interest: city icons, the title sponsor, and cheering spots where the field passes more than once
+  const ps = routeData.poi || [];
+  const kmList = (ks) => { const f = ks.map((k) => fmtDec(k)); return f.length < 2 ? f[0] : `${f.slice(0, -1).join(', ')} ${T('and')} ${f[f.length - 1]}`; };
+  const head = { icon: T('poiIcons'), sponsor: T('poiSponsor'), cheer: T('poiCheer') };
+  let html = '', lastKind = '';
+  ps.forEach((q, j) => {
+    if (q.kind !== lastKind) { html += `<li class="poihead">${head[q.kind]}</li>`; lastKind = q.kind; }
+    const name = TEXT[LANG][`poi_${q.key}`] ? T(`poi_${q.key}`) : (q.street || '');
+    const detail = q.kind === 'cheer'
+      ? (q.win ? T('poiOutback', { a: fmtDec(q.km[0]), b: fmtDec(q.km[1]), from: clockStr(q.win[0]), dur: durWords(q.win[1] - q.win[0]) }) : T('poiTimes', { n: q.km.length, km: kmList(q.km) }))
+      : `km ${kmList(q.km)}`;
+    html += `<li class="poi ${q.kind}" data-j="${j}"><i></i><span><b>${name}</b><em>${detail}</em></span></li>`;
+    const L = hotLabels[j];
+    if (L) L.t.innerHTML = `${q.kind === 'cheer' ? (q.street || name) : name}<small>km ${kmList(q.km)}</small>`;
+  });
+  $('#poiList').innerHTML = html;
+  poiEls = [...$('#poiList').querySelectorAll('li.poi')];
+  poiEls.forEach((el) => el.addEventListener('click', () => goPoi(+el.dataset.j)));
   drawDistChart(); drawPaceChart(fd.model);
   $('#exTime').max = Math.ceil(F.maxEnd + 120);
   if (rp.i >= 0) fillRace();
+}
+function goPoi(j) {               // scroll so the tour stands on point j
+  const sec = sections.find((x) => x.dataset.ch === 'poi'), n = (routeData.poi || []).length;
+  if (!sec || !n) return;
+  const top = sec.getBoundingClientRect().top + scrollY;
+  scrollTo({ top: top + (j + 0.5) / n * sec.offsetHeight - innerHeight * 0.5, behavior: REDUCED ? 'auto' : 'smooth' });
 }
 function escapeHtml(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
@@ -1257,10 +1263,12 @@ function loop(now) {
   // camera: the chapter's framing, then the user's own rotation and tilt
   const ku = 1 - Math.exp(-dt * 4);
   if (dragging) { userYaw = userYawGoal; userPitch = userPitchGoal; } else { userYaw += (userYawGoal - userYaw) * ku; userPitch += (userPitchGoal - userPitch) * ku; }
+  userZoom *= Math.pow(userZoomGoal / userZoom, 1 - Math.exp(-dt * 8));
   _off.subVectors(wantPos, wantTgt);
   _sph.setFromVector3(_off);
   _sph.theta += userYaw;
   _sph.phi = clamp(_sph.phi + userPitch, 0.12, 1.42);
+  _sph.radius = Math.max(60, _sph.radius * userZoom);
   _off.setFromSpherical(_sph).add(wantTgt);
   const tight = ch.id === 'course' || (ch.id === 'find' && rp.i >= 0) || dragging;
   const k = firstFrame ? 1 : 1 - Math.exp(-dt * (tight ? 7 : 2.4));
@@ -1334,7 +1342,7 @@ function loop(now) {
     runnerXZ(rp.i, simT, _r);
     marker.visible = true; marker.position.set(_r.x, 0, _r.z); marker.scale.setScalar(clamp(dist / 700, 0.6, 2.5));
     meLabel.on = true; meLabel.p.set(_r.x, 32 * marker.scale.x, _r.z);
-    const kmNow = clamp(_r.d, 0, R.len) / R.len * 21.0975, done = rp.el >= F.T[rp.i];
+    const kmNow = R.dToKm(clamp(_r.d, 0, R.len)), done = rp.el >= F.T[rp.i];
     const kmTxt = fmtDec(rp.el <= 0 ? 0 : done ? 21.1 : kmNow);
     const pin = T('pin', { bib: F.raw.bib[rp.i], km: kmTxt, up: fmtInt(up), down: fmtInt(down) });
     if (pin !== ui.pin) {
@@ -1384,7 +1392,30 @@ $$('.lang button').forEach((b) => b.addEventListener('click', () => {
 $('#exTime').addEventListener('input', (e) => { exPlaying = false; $('#exPlay').innerHTML = ICON_PLAY; simT = +e.target.value; });
 $('#exPlay').addEventListener('click', () => { exPlaying = !exPlaying; $('#exPlay').innerHTML = exPlaying ? ICON_PAUSE : ICON_PLAY; });
 $('#brand').addEventListener('click', () => scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }));
-$('#exReset').addEventListener('click', () => { userYawGoal = 0; userPitchGoal = 0; });
+$('#exReset').addEventListener('click', () => { userYawGoal = 0; userPitchGoal = 0; userZoomGoal = 1; });
+
+// zoom: buttons, Ctrl/⌘ + wheel or trackpad pinch (plain scrolling keeps moving through the story), two-finger pinch on touch
+const zoomBy = (f) => { userZoomGoal = clamp(userZoomGoal * f, ZOOM_MIN, ZOOM_MAX); };
+$('#zoomIn').addEventListener('click', () => zoomBy(1 / 1.45));
+$('#zoomOut').addEventListener('click', () => zoomBy(1.45));
+cv.addEventListener('wheel', (e) => {
+  if (!e.ctrlKey && !e.metaKey) return;
+  e.preventDefault();
+  zoomBy(Math.exp(e.deltaY * 0.01));
+}, { passive: false });
+const touches = new Map(); let pinch0 = 0;
+cv.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') touches.set(e.pointerId, [e.clientX, e.clientY]); });
+addEventListener('pointermove', (e) => {
+  if (!touches.has(e.pointerId)) return;
+  touches.set(e.pointerId, [e.clientX, e.clientY]);
+  if (touches.size === 2) {
+    const [a, b] = [...touches.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+    if (pinch0) zoomBy(pinch0 / d);
+    pinch0 = d; dragging = false;                  // a pinch is not a rotation
+  }
+});
+const endTouch = (e) => { touches.delete(e.pointerId); if (touches.size < 2) pinch0 = 0; };
+addEventListener('pointerup', endTouch); addEventListener('pointercancel', endTouch);
 
 // your race
 function fillRace() {

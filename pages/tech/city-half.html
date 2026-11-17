@@ -222,7 +222,32 @@
     }
     #nogl { display: none; position: fixed; inset: 0; z-index: 60; align-items: center; justify-content: center; text-align: center; padding: 24px; background: var(--paper); color: var(--dim); }
 
+
+    /* zoom */
+    .zoom { position: fixed; right: 22px; bottom: 22px; z-index: 12; display: flex; flex-direction: column; background: #fff; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,.14); overflow: hidden; opacity: 0; transition: opacity .4s; pointer-events: none; }
+    body.ready .zoom { opacity: 1; pointer-events: auto; }
+    .zoom button { width: 36px; height: 36px; border: none; background: #fff; color: var(--blue); font: 700 20px/1 'Open Sans', sans-serif; cursor: pointer; }
+    .zoom button + button { border-top: 1px solid var(--line); }
+    .zoom button:hover { background: var(--paper); }
+
+    /* points of interest */
+    .poilist { list-style: none; margin-top: 8px; max-height: calc(70vh - 150px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+    .poilist .poihead { font: 700 11px/1 'Open Sans', sans-serif; text-transform: uppercase; letter-spacing: .06em; color: var(--brown); padding: 12px 0 6px; }
+    .poilist .poihead:first-child { padding-top: 2px; }
+    .poilist li.poi { display: flex; gap: 10px; align-items: flex-start; padding: 7px 8px; margin: 0 -8px; border-radius: 3px; cursor: pointer; transition: background .25s; }
+    .poilist li.poi:hover { background: var(--paper); }
+    .poilist li.poi.on { background: rgba(13,0,196,.07); }
+    .poilist li.poi i { flex: none; width: 11px; height: 11px; border-radius: 50%; margin-top: 4px; background: var(--blue); }
+    .poilist li.poi.sponsor i { background: #111; }
+    .poilist li.poi.cheer i { background: var(--sweater); border: 2px solid var(--brown); }
+    .poilist li.poi b { display: block; font-size: .86rem; font-weight: 700; color: #111; }
+    .poilist li.poi em { display: block; font-style: normal; font-size: .78rem; color: var(--dim); }
+    .poilist li.poi.on b { color: var(--blue); }
+    .lbl.poi.sponsor .t { background: #111; color: #fff; }
+    .lbl.poi.cheer .t { background: var(--sweater); color: #2a2018; }
+    .lbl.poi.cheer .t small { color: #5f4a3a; }
     @media (max-width: 860px) {
+      .zoom { right: 14px; top: 62px; bottom: auto; }
       .topbar { padding: 12px 14px; }
       .topbar::before { content: ''; position: absolute; inset: 0 0 -18px; z-index: -1; background: linear-gradient(rgba(243,238,230,.92), rgba(243,238,230,.7) 55%, rgba(243,238,230,0)); }
       .chnav { top: auto; bottom: 0; left: 0; right: 0; transform: none; flex-direction: row; justify-content: flex-start; gap: 6px; overflow-x: auto; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(rgba(243,238,230,0), rgba(243,238,230,.96) 40%); scrollbar-width: none; }
@@ -271,6 +296,11 @@
 
   <nav class="chnav" id="chnav" aria-label="Kapitler"></nav>
 
+  <div class="zoom" role="group" aria-label="Zoom">
+    <button type="button" id="zoomIn" aria-label="Zoom ind / Zoom in" title="Zoom ind (eller Ctrl/⌘ + scroll)">+</button>
+    <button type="button" id="zoomOut" aria-label="Zoom ud / Zoom out" title="Zoom ud">−</button>
+  </div>
+
   <main>
     <section class="hero" data-ch="hero">
       <div class="hero-inner">
@@ -309,10 +339,10 @@
       </div></div>
     </section>
 
-    <section class="ch tall" data-ch="pressure">
-      <div class="card right"><h2 data-t="busy.h"></h2><div class="body">
-        <p data-t="busy.p"></p>
-        <div id="hotText"></div>
+    <section class="ch tall" data-ch="poi">
+      <div class="card right"><h2 data-t="poi.h"></h2><div class="body">
+        <p data-t="poi.p"></p>
+        <ul class="poilist" id="poiList"></ul>
       </div></div>
     </section>
 
@@ -395,6 +425,6 @@
     <p data-t="footer"></p>
   </footer>
 
-  <script type="module" src="city-half/app.js?v=9"></script>
+  <script type="module" src="city-half/app.js?v=11"></script>
 </body>
 </html>
