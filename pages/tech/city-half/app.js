@@ -199,7 +199,7 @@ sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.2;
 sun.shadow.camera.near = 10; sun.shadow.camera.far = 7000;
 scene.add(sun, sun.target);
 
-const DATA_VERSION = 12;           // bump with every data change so browsers refetch
+const DATA_VERSION = 13;           // bump with every data change so browsers refetch
 async function getJSON(p) {
   const r = await fetch(new URL(p + '?v=' + DATA_VERSION, import.meta.url));
   if (!r.ok) throw new Error(p + ' ' + r.status);
@@ -1254,7 +1254,7 @@ function escapeHtml(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&am
 
 /* finish-time distribution: spikes just before the round times */
 function drawDistChart() {
-  const svg = $('#distChart'); const W = 380, H = 200, L = 34, Rr = 10, Tp = 10, Bm = 24, FS = 10, DIM = '#5d5d66';
+  const svg = $('#distChart'); const W = 380, H = 200, L = 34, Rr = 10, Tp = 26, Bm = 24, FS = 10, DIM = '#5d5d66';   // headroom above the bars for the red labels
   const t0 = 3600, t1 = 12600, bins = new Array((t1 - t0) / 60).fill(0);
   for (let i = 0; i < F.N; i++) { const k = Math.floor((F.T[i] - t0) / 60); if (k >= 0 && k < bins.length) bins[k]++; }
   const mx = Math.max(...bins), targets = [5400, 6300, 7200, 8100, 9000, 9900], RED = '#d62828';
@@ -1269,7 +1269,7 @@ function drawDistChart() {
   // the round times in red: the peaks sit just left of each line
   for (const g of targets) {
     const x = X(g).toFixed(1), lab = `${Math.floor(g / 3600)}:${String((g / 60) % 60).padStart(2, '0')}`;
-    s += `<line x1="${x}" x2="${x}" y1="${Tp + 10}" y2="${H - Bm}" stroke="${RED}" stroke-width="1.2"/><text x="${x}" y="${Tp + 7}" fill="${RED}" font-size="9" font-weight="700" text-anchor="middle">${lab}</text>`;
+    s += `<line x1="${x}" x2="${x}" y1="15" y2="${H - Bm}" stroke="${RED}" stroke-width="1.2"/><text x="${x}" y="11" fill="${RED}" font-size="9" font-weight="700" text-anchor="middle">${lab}</text>`;
   }
   for (let t = t0; t <= t1; t += 1800) s += `<text x="${X(t)}" y="${H - 7}" fill="${t === 7200 ? PAL.blue : DIM}" font-size="${FS}" font-weight="${t === 7200 ? 700 : 400}" text-anchor="${t === t1 ? 'end' : t === t0 ? 'start' : 'middle'}">${Math.floor(t / 3600)}:${String((t / 60) % 60).padStart(2, '0')}</text>`;
   svg.innerHTML = s;
@@ -1416,8 +1416,6 @@ function loop(now) {
     if (!rpDragging) $('#rpPos').value = Math.round(clamp((rp.el + 60) / (F.T[rp.i] + 300), 0, 1) * 1000);
   } else { marker.visible = false; if (meLabel) meLabel.on = false; }
 
-  $('#clock').classList.toggle('on', st.clock);
-  if (st.clock) { const tx = st.pill || (LANG === 'da' ? 'kl. ' : '') + clockStr(simT); if (tx !== ui.clock) { ui.clock = tx; $('#clock').textContent = tx; } }
   $('#replayBar').classList.toggle('on', tracking);
   $('#explore').classList.toggle('on', ch.id === 'close');
   if (ch.id === 'close') $('#exClock').textContent = clockStr(simT);
