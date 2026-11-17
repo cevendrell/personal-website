@@ -87,7 +87,7 @@ const TEXT = {
     'dist.h': 'Ruset mod sub-2',
     'dist.p1': 'Sluttiderne følger ikke en pæn klokkekurve. Lige før de runde tider topper søjlerne, og lige efter falder de: folk presser på for at nå under målet.',
     'dist.p2': (v) => `<strong>${v.a} løbere</strong> kom i mål i de to minutter før 2:00:00, og kun ${v.b} i de to minutter efter. Ved 1:30 er det ${v.c} lige under og ${v.d} lige over.`,
-    distAxis: 'løbere pr. minut', distTarget: 'to minutter før en rund tid',
+    distAxis: 'løbere pr. minut', distTarget: 'runde sluttider',
     'pace.h': 'Tempoet',
     'pace.p': (v) => `Mediantempo på hver del af ruten, efter sluttid. Alle taber fart efter 15 km, men <strong>${v.kick} %</strong> sætter tempoet op på den sidste kilometer.`,
     paceAxis: 'min/km, hurtigst øverst',
@@ -137,7 +137,7 @@ const TEXT = {
     'dist.h': 'The sub-2 rush',
     'dist.p1': "Finish times don't follow a neat bell curve. The bars peak just before the round times and drop just after: people push to get under their target.",
     'dist.p2': (v) => `<strong>${v.a} runners</strong> finished in the two minutes before 2:00:00, and only ${v.b} in the two minutes after. At 1:30 it's ${v.c} just under and ${v.d} just over.`,
-    distAxis: 'runners per minute', distTarget: 'two minutes before a round time',
+    distAxis: 'runners per minute', distTarget: 'round finish times',
     'pace.h': 'Pacing',
     'pace.p': (v) => `Median pace on each part of the course, by finish time. Everyone slows after 15 km, but <strong>${v.kick}%</strong> speed up again for the last kilometre.`,
     paceAxis: 'min/km, fastest at the top',
@@ -199,7 +199,7 @@ sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.2;
 sun.shadow.camera.near = 10; sun.shadow.camera.far = 7000;
 scene.add(sun, sun.target);
 
-const DATA_VERSION = 11;           // bump with every data change so browsers refetch
+const DATA_VERSION = 12;           // bump with every data change so browsers refetch
 async function getJSON(p) {
   const r = await fetch(new URL(p + '?v=' + DATA_VERSION, import.meta.url));
   if (!r.ok) throw new Error(p + ' ' + r.status);
@@ -307,8 +307,49 @@ function buildGround(city) {
   add(polyGeometry(city.water, u, 0.2), lambert(PAL.water, -3));
   add(ribbonGeometry(city.rivers, u, 7, 0.2), lambert(PAL.water, -3));
   add(polyGeometry(city.pier, u, 0.25), lambert(PAL.pier, -3));
+  if (city.railArea) add(polyGeometry(city.railArea, u, 0.12), lambert('#d3cbbd', -2));          // gravel of the railway land
   const widths = [13, 9, 6.5, 2.6];
+  // a thin darker kerb under the main streets, so they read as streets and not as paint
+  for (let k = 2; k >= 0; k--) add(ribbonGeometry(city.roads[k], u, widths[k] + 1.1, 0.28 + (3 - k) * 0.02), lambert('#d6ccbb', -4 - (3 - k)));
   for (let k = 3; k >= 0; k--) add(ribbonGeometry(city.roads[k], u, widths[k], 0.3 + (3 - k) * 0.02), lambert(PAL.road[k], -4 - (3 - k)));
+  // railways: ballast bed, wooden sleepers and two steel rails at standard gauge, as one textured strip
+  const track = trackTexture();
+  const tmat = (c) => withFade(new THREE.MeshLambertMaterial({ map: track, color: C(c), polygonOffset: true, polygonOffsetFactor: -9, polygonOffsetUnits: -9 }));
+  if (city.rail && city.rail.length) add(trackGeometry(city.rail, u, 3.4, 0.42), tmat('#ffffff'));
+  if (city.lrail && city.lrail.length) add(trackGeometry(city.lrail, u, 3.4, 0.43), tmat('#eef0e6'));
+}
+function trackTexture() {
+  // one 2.4 m tile along the track (four sleepers); across: 3.4 m of ballast with rails 1.435 m apart
+  const t = canvasTex(64, 128, (g, w, h) => {
+    g.fillStyle = '#9a9086'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 260; i++) { g.fillStyle = i % 2 ? 'rgba(60,50,40,.18)' : 'rgba(255,255,255,.14)'; g.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
+    for (let k = 0; k < 4; k++) { g.fillStyle = '#6e5a48'; g.fillRect(w * 0.12, k * h / 4 + 6, w * 0.76, h / 4 * 0.42); }   // sleepers
+    const gauge = 1.435 / 3.4 * w / 2;
+    for (const sx of [w / 2 - gauge, w / 2 + gauge]) { g.fillStyle = '#5a5d62'; g.fillRect(sx - 2.5, 0, 5, h); g.fillStyle = '#e4e6e8'; g.fillRect(sx - 1.2, 0, 2.4, h); }   // rails
+  });
+  t.wrapS = THREE.ClampToEdgeWrapping;
+  return t;
+}
+function trackGeometry(lines, unit, width, y) {      // a strip along each line with UVs: u across, v in 2.4 m tiles along
+  const pos = [], uv = [];
+  for (const f of lines) {
+    let run = 0;
+    for (let i = 0; i + 3 < f.length; i += 2) {
+      const ax = f[i] * unit, az = f[i + 1] * unit, bx = f[i + 2] * unit, bz = f[i + 3] * unit;
+      const dx = bx - ax, dz = bz - az, L = Math.hypot(dx, dz) || 1;
+      const nx = -dz / L * width / 2, nz = dx / L * width / 2;
+      const v0 = run / 2.4, v1 = (run + L) / 2.4; run += L;
+      const A = [ax + nx, az + nz, 0, v0], B = [ax - nx, az - nz, 1, v0], Cc = [bx + nx, bz + nz, 0, v1], D = [bx - nx, bz - nz, 1, v1];
+      for (const [p, q2, r] of [[A, D, Cc], [A, B, D]]) {
+        // keep the front face up whichever way the line runs
+        const up = (q2[1] - p[1]) * (r[0] - p[0]) - (q2[0] - p[0]) * (r[1] - p[1]) >= 0;
+        for (const v of up ? [p, q2, r] : [p, r, q2]) { pos.push(v[0], y, v[1]); uv.push(v[2], v[3]); }
+      }
+    }
+  }
+  const g = flatGeo(pos);
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  return g;
 }
 
 /* ── buildings: walls, flat / gabled / pyramid / dome roofs ───────────── */
@@ -416,6 +457,20 @@ function buildTrees(city) {
   }
   inst.castShadow = true; inst.receiveShadow = true;
   scene.add(inst);
+  // the city's own street trees (mapped one by one in OSM): smaller, rounder crowns
+  const st = city.stTrees || [], m2 = st.length / 2;
+  if (!m2) return;
+  const si = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), withFade(new THREE.MeshLambertMaterial({ flatShading: true }), true), m2);
+  si.customDepthMaterial = growDepth();
+  for (let i = 0; i < m2; i++) {
+    const r = 2.2 + hash(i * 17 + 3) * 1.8;
+    p.set(st[i * 2] * u, r * 1.45, st[i * 2 + 1] * u); s.set(r, r * 1.1, r);
+    q.setFromAxisAngle(up, hash(i * 19) * 6.28);
+    M.compose(p, q, s); si.setMatrixAt(i, M);
+    si.setColorAt(i, greens[Math.floor(hash(i * 23 + 1) * greens.length)]);
+  }
+  si.castShadow = true; si.receiveShadow = true;
+  scene.add(si);
 }
 /* ── landmarks: hand-built models of the buildings along the course ──── */
 const ringOf = (flat) => { const r = []; for (let i = 0; i < flat.length; i += 2) r.push([flat[i], flat[i + 1]]); return r; };
@@ -659,8 +714,12 @@ async function ribbonTexture() {
 function buildRibbon(tex) {
   const n = R.n;
   const pos = new Float32Array(n * 2 * 3), dist = new Float32Array(n * 2), side = new Float32Array(n * 2), wid = new Float32Array(n * 2);
+  // one constant width, and the sideways direction taken over ~50 m so the band never twists at bends
+  const W = 5.2, S = 6;
   for (let i = 0; i < n; i++) {
-    const nx = -R.hz[i], nz = R.hx[i], w = R.hw[i];
+    const a = Math.max(0, i - S), b = Math.min(n - 1, i + S);
+    let dx = R.x[b] - R.x[a], dz = R.z[b] - R.z[a]; const L = Math.hypot(dx, dz) || 1; dx /= L; dz /= L;
+    const nx = -dz, nz = dx, w = W;
     for (let s = 0; s < 2; s++) {
       const sg = s ? 1 : -1, k = i * 2 + s;
       pos[k * 3] = R.x[i] + nx * w * sg; pos[k * 3 + 1] = 1.6; pos[k * 3 + 2] = R.z[i] + nz * w * sg;
@@ -1168,10 +1227,8 @@ function applyLang() {
   // points of interest: city icons, the title sponsor, and cheering spots where the field passes more than once
   const ps = routeData.poi || [];
   const kmList = (ks) => { const f = ks.map((k) => fmtDec(k)); return f.length < 2 ? f[0] : `${f.slice(0, -1).join(', ')} ${T('and')} ${f[f.length - 1]}`; };
-  const head = { icon: T('poiIcons'), sponsor: T('poiSponsor'), cheer: T('poiCheer') };
-  let html = '', lastKind = '';
-  ps.forEach((q, j) => {
-    if (q.kind !== lastKind) { html += `<li class="poihead">${head[q.kind]}</li>`; lastKind = q.kind; }
+  let html = '';
+  ps.forEach((q, j) => {                            // one list, in race order (sorted in the data)
     const name = TEXT[LANG][`poi_${q.key}`] ? T(`poi_${q.key}`) : (q.street || '');
     const detail = q.kind === 'cheer'
       ? (q.win ? T('poiOutback', { a: fmtDec(q.km[0]), b: fmtDec(q.km[1]), from: clockStr(q.win[0]), dur: durWords(q.win[1] - q.win[0]) }) : T('poiTimes', { n: q.km.length, km: kmList(q.km) }))
@@ -1200,20 +1257,24 @@ function drawDistChart() {
   const svg = $('#distChart'); const W = 380, H = 200, L = 34, Rr = 10, Tp = 10, Bm = 24, FS = 10, DIM = '#5d5d66';
   const t0 = 3600, t1 = 12600, bins = new Array((t1 - t0) / 60).fill(0);
   for (let i = 0; i < F.N; i++) { const k = Math.floor((F.T[i] - t0) / 60); if (k >= 0 && k < bins.length) bins[k]++; }
-  const mx = Math.max(...bins), targets = [5400, 6300, 7200, 8100, 9000, 9900];
+  const mx = Math.max(...bins), targets = [5400, 6300, 7200, 8100, 9000, 9900], RED = '#d62828';
   const X = (t) => L + (t - t0) / (t1 - t0) * (W - L - Rr), Y = (v) => H - Bm - v / mx * (H - Tp - Bm);
   const bw = (W - L - Rr) / bins.length;
   let s = '';
   for (let v = 0; v <= mx; v += 100) s += `<line x1="${L}" x2="${W - Rr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(0,0,0,${v ? .07 : .25})"/><text x="${L - 5}" y="${Y(v) + 3.5}" fill="${DIM}" font-size="${FS}" text-anchor="end">${fmtInt(v)}</text>`;
-  s += `<line x1="${X(7200)}" x2="${X(7200)}" y1="${Tp}" y2="${H - Bm}" stroke="${PAL.blue}" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>`;
   bins.forEach((n, k) => {
-    const t = t0 + k * 60, hot = targets.some((g) => t >= g - 120 && t < g);
-    s += `<rect class="b" style="--k:${k}" x="${(X(t) + 0.15).toFixed(2)}" y="${Y(n).toFixed(1)}" width="${Math.max(0.6, bw - 0.3).toFixed(2)}" height="${(H - Bm - Y(n)).toFixed(1)}" fill="${hot ? PAL.coral : PAL.blue}"/>`;
+    const t = t0 + k * 60;
+    s += `<rect class="b" style="--k:${k}" x="${(X(t) + 0.15).toFixed(2)}" y="${Y(n).toFixed(1)}" width="${Math.max(0.6, bw - 0.3).toFixed(2)}" height="${(H - Bm - Y(n)).toFixed(1)}" fill="${PAL.blue}"/>`;
   });
+  // the round times in red: the peaks sit just left of each line
+  for (const g of targets) {
+    const x = X(g).toFixed(1), lab = `${Math.floor(g / 3600)}:${String((g / 60) % 60).padStart(2, '0')}`;
+    s += `<line x1="${x}" x2="${x}" y1="${Tp + 10}" y2="${H - Bm}" stroke="${RED}" stroke-width="1.2"/><text x="${x}" y="${Tp + 7}" fill="${RED}" font-size="9" font-weight="700" text-anchor="middle">${lab}</text>`;
+  }
   for (let t = t0; t <= t1; t += 1800) s += `<text x="${X(t)}" y="${H - 7}" fill="${t === 7200 ? PAL.blue : DIM}" font-size="${FS}" font-weight="${t === 7200 ? 700 : 400}" text-anchor="${t === t1 ? 'end' : t === t0 ? 'start' : 'middle'}">${Math.floor(t / 3600)}:${String((t / 60) % 60).padStart(2, '0')}</text>`;
   svg.innerHTML = s;
   svg.setAttribute('aria-label', `${T('distAxis')}, 1:00–3:30`);
-  $('#distLegend').innerHTML = `<span><i class="sq" style="background:${PAL.blue}"></i>${T('distAxis')}</span><span><i class="sq" style="background:${PAL.coral}"></i>${T('distTarget')}</span>`;
+  $('#distLegend').innerHTML = `<span><i class="sq" style="background:${PAL.blue}"></i>${T('distAxis')}</span><span><i class="sq" style="background:${RED};width:3px"></i>${T('distTarget')}</span>`;
 }
 function drawPaceChart(md) {
   const svg = $('#paceChart'); const W = 380, H = 190, L = 38, Rr = 18, Tp = 24, Bm = 24, FS = 10;
