@@ -318,44 +318,6 @@
     .archive-note { margin-top: 1.25rem; font-size: 0.8rem; color: var(--mute); }
     @media (max-width: 860px) { .gpt { grid-template-columns: 1fr auto; gap: 0.4rem 1.5rem; } .gpt-desc { grid-column: 1 / -1; grid-row: 2; } .gpt-tag { display: none; } }
 
-    /* ── METHOD: 20-60-20 race, the rule against the loop ── */
-    .rule { border: 1px solid var(--line); border-radius: var(--radius); padding: 2.25rem 2.25rem 1.75rem; }
-    .rule-row + .rule-row { margin-top: 2.1rem; }
-    .rule-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 0.7rem; }
-    .rule-name { font-size: 1.02rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
-    .rule-name small { font-size: 0.86rem; font-weight: 400; color: var(--mute); margin-left: 0.5rem; }
-    .rule-stat { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute); white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .rule-stat b { color: var(--text); font-weight: 700; }
-    .rule-stage { position: relative; }
-    .rule-track { position: relative; height: 44px; border-radius: 8px; background: rgba(20,24,32,0.04); overflow: hidden; }
-    .seg { position: absolute; top: 0; bottom: 0; width: 0; display: flex; align-items: center; overflow: hidden; white-space: nowrap; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; padding-left: 0.6rem; box-shadow: inset -2px 0 0 var(--paper); }
-    .seg--think { background: var(--accent); color: #fff; }
-    .seg--ai { background: var(--lavender); color: var(--navy);
-      background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.38) 0 10px, transparent 10px 22px); background-size: 48px 100%; }
-    .seg--ai.is-on { animation: churn 0.9s linear infinite; }
-    @keyframes churn { to { background-position: 48px 0; } }
-    .seg--review { background: var(--navy); color: #fff; }
-    .seg--nudge { background: var(--accent); padding-left: 0; }
-    .seg--miss { background: rgba(20,24,32,0.1); color: var(--dim); padding-left: 0; justify-content: center; font-size: 0.85rem; }
-    .rule-done { position: absolute; top: 50%; transform: translate(10px, -50%) scale(0.6); opacity: 0; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); transition: opacity 0.3s, transform 0.5s var(--ease); white-space: nowrap; }
-    .rule-done.is-on { opacity: 1; transform: translate(10px, -50%) scale(1); }
-    .rule-playhead { position: absolute; top: -0.6rem; bottom: -0.6rem; left: 0; width: 2px; margin-left: -1px; background: var(--text); opacity: 0.55; pointer-events: none; }
-    .rule-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: 0.82rem; color: var(--dim); align-items: center; }
-    .rule-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 0.45rem; vertical-align: -1px; }
-    .rule-legend .k-think { background: var(--accent); } .rule-legend .k-ai { background: var(--lavender); } .rule-legend .k-review { background: var(--navy); } .rule-legend .k-miss { background: rgba(20,24,32,0.18); }
-    .rule-replay { margin-left: auto; font: inherit; font-size: 0.82rem; font-weight: 700; color: var(--accent); background: none; border: 0; cursor: pointer; display: inline-flex; gap: 0.4rem; align-items: baseline; padding: 0.25rem 0; }
-    .rule-replay span { display: inline-block; transition: transform 0.5s var(--ease); }
-    .rule-replay:hover span { transform: rotate(-200deg); }
-    .rule-verdict { margin-top: 1.5rem; font-size: clamp(1.2rem, 2.2vw, 1.55rem); font-weight: 800; letter-spacing: -0.025em; color: var(--text); opacity: 0; transform: translateY(8px); transition: opacity 0.6s, transform 0.6s var(--ease); }
-    .rule-verdict.is-on { opacity: 1; transform: none; }
-    .rule-verdict span { color: var(--accent); }
-    @media (max-width: 620px) {
-      .rule { padding: 1.5rem 1.1rem 1.25rem; }
-      .rule-head { flex-direction: column; gap: 0.15rem; }
-      .seg { font-size: 0; padding-left: 0; }
-      .rule-replay { margin-left: 0; }
-    }
-
     /* ── ONWARD ── */
     .onward { border-top: 1px solid var(--line); margin-top: 6rem; display: grid; grid-template-columns: 1fr 1fr; }
     .onward a { display: flex; flex-direction: column; gap: 0.35rem; padding: 2rem 0 0; }
@@ -481,47 +443,6 @@
 </section>
 
 <main>
-
-  <!-- ══ METHOD: 20-60-20 ══ -->
-  <section class="band band--paper" id="method" aria-labelledby="methodTitle">
-    <div class="wrap">
-      <header class="sec-head rise">
-        <div>
-          <span class="label">How I build</span>
-          <h2 id="methodTitle">20-60-20</h2>
-        </div>
-        <p>The rule behind everything on this page. 20% think and write a strong prompt. 60% AI does the heavy lifting. 20% review and stay accountable, because your name is on it.</p>
-      </header>
-
-      <div class="rule rise" id="rule" role="img" aria-label="Animation: the 20-60-20 approach finishes with one prompt, while the lazy-prompt loop keeps adding small fixes and is still going when time runs out.">
-        <div class="rule-stage">
-          <div class="rule-row">
-            <div class="rule-head">
-              <span class="rule-name">20-60-20 <small>Brief it once, well</small></span>
-              <span class="rule-stat">Prompts <b data-a-prompts>0</b></span>
-            </div>
-            <div class="rule-track" data-track="a"></div>
-          </div>
-          <div class="rule-row">
-            <div class="rule-head">
-              <span class="rule-name">The loop <small>5% prompt, then add 5%, add 5%…</small></span>
-              <span class="rule-stat">Prompts <b data-b-prompts>0</b></span>
-            </div>
-            <div class="rule-track" data-track="b"></div>
-          </div>
-          <div class="rule-playhead" aria-hidden="true"></div>
-        </div>
-        <div class="rule-legend" aria-hidden="true">
-          <span><i class="k-think"></i>Think + prompt</span>
-          <span><i class="k-ai"></i>AI does the work</span>
-          <span><i class="k-review"></i>Review</span>
-          <span><i class="k-miss"></i>Not quite, try again</span>
-          <button class="rule-replay" type="button" aria-label="Replay the animation"><span aria-hidden="true">↻</span> Replay</button>
-        </div>
-        <p class="rule-verdict">The loop feels fast but is slow. <span>The loop is the enemy.</span></p>
-      </div>
-    </div>
-  </section>
 
   <!-- ══ SHIPPED ══ -->
   <section class="band band--paper" id="shipped" aria-labelledby="shippedTitle">
@@ -870,83 +791,6 @@
     document.querySelectorAll('.nav-links a').forEach(l => l.addEventListener('click', () => document.body.classList.remove('nav-open')));
     document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('nav-open'); });
   }
-</script>
-<!-- ══ 20-60-20 race ══ -->
-<script>
-(function () {
-  const root = document.getElementById('rule');
-  if (!root) return;
-  const DUR = 9000;                       // ms for the playhead to cross
-  const A_END = 0.52;                     // where the 20-60-20 run finishes
-  // Lane A: one good brief, the work, one review
-  const laneA = [
-    { k: 'think',  s: 0,            e: A_END * 0.2, t: 'Think 20%', prompt: true },
-    { k: 'ai',     s: A_END * 0.2,  e: A_END * 0.8, t: 'AI 60%' },
-    { k: 'review', s: A_END * 0.8,  e: A_END,       t: 'Review 20%' }
-  ];
-  // Lane B: tiny prompt → AI → miss, repeated until time runs out
-  const laneB = [];
-  const P = 0.018, W = 0.1, M = 0.026;
-  for (let x = 0; x < 1; x += P + W + M) {
-    laneB.push({ k: 'nudge', s: x, e: x + P, prompt: true });
-    laneB.push({ k: 'ai',    s: x + P, e: Math.min(1, x + P + W), t: '' });
-    if (x + P + W < 1) laneB.push({ k: 'miss', s: x + P + W, e: Math.min(1, x + P + W + M), t: '↺' });
-  }
-  function build(track, lane) {
-    lane.forEach(seg => {
-      const d = document.createElement('div');
-      d.className = 'seg seg--' + seg.k;
-      d.style.left = (seg.s * 100) + '%';
-      d.textContent = seg.t || '';
-      track.appendChild(d);
-      seg.el = d;
-    });
-  }
-  const trackA = root.querySelector('[data-track="a"]');
-  const trackB = root.querySelector('[data-track="b"]');
-  build(trackA, laneA); build(trackB, laneB);
-  const done = document.createElement('span');
-  done.className = 'rule-done'; done.textContent = '✓ Done'; done.style.left = (A_END * 100) + '%';
-  trackA.appendChild(done);
-  const playhead = root.querySelector('.rule-playhead');
-  const verdict = root.querySelector('.rule-verdict');
-  const aCount = root.querySelector('[data-a-prompts]');
-  const bCount = root.querySelector('[data-b-prompts]');
-
-  function render(p) {
-    let a = 0, b = 0;
-    [[laneA, 'a'], [laneB, 'b']].forEach(([lane, id]) => lane.forEach(seg => {
-      const w = Math.max(0, Math.min(p, seg.e) - seg.s);
-      seg.el.style.width = (w * 100) + '%';
-      seg.el.classList.toggle('is-on', seg.k === 'ai' && p > seg.s && p < seg.e);
-      if (seg.prompt && p > seg.s) id === 'a' ? a++ : b++;
-    }));
-    aCount.textContent = a; bCount.textContent = b;
-    done.classList.toggle('is-on', p >= A_END);
-    verdict.classList.toggle('is-on', p >= 0.999);
-    playhead.style.left = (p * 100) + '%';
-    playhead.style.opacity = (p > 0 && p < 1) ? '' : '0';
-  }
-
-  let raf = 0, t0 = 0;
-  function tick(now) {
-    if (!t0) t0 = now;
-    const p = Math.min(1, (now - t0) / DUR);
-    render(p);
-    if (p < 1) raf = requestAnimationFrame(tick);
-  }
-  function play() { cancelAnimationFrame(raf); t0 = 0; render(0); raf = requestAnimationFrame(tick); }
-
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  render(still ? 1 : 0);
-  root.querySelector('.rule-replay').addEventListener('click', () => still ? render(1) : play());
-  if (!still && 'IntersectionObserver' in window) {
-    const io = new IntersectionObserver(es => {
-      if (es[0].isIntersecting) { play(); io.disconnect(); }
-    }, { threshold: 0.45 });
-    io.observe(root);
-  } else render(1);
-})();
 </script>
 <!-- ══ Tetris engine — vanilla JS, no dependencies ══ -->
 <script>
