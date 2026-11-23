@@ -285,8 +285,8 @@
 
     /* Films: full-bleed panels */
     .film { position: relative; z-index: 2; margin: 5rem 0 0; }
-    /* each film keeps its own aspect ratio (--ar); narrower than the screen only when it would be taller than it */
-    .film-frame { position: relative; width: min(100%, calc(84vh * var(--ar, 1.5))); aspect-ratio: var(--ar, 1.5); margin: 0 auto; overflow: hidden; background: #000; }
+    /* each film keeps its own aspect ratio (--ar); all films share one width, narrower than the screen only on very wide windows */
+    .film-frame { position: relative; width: min(100%, 120vh); aspect-ratio: var(--ar, 1.5); margin: 0 auto; overflow: hidden; background: #000; }
     .film-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .film-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none;
       background: linear-gradient(to top, rgba(0,0,0,0.6), transparent 40%), linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 25%); }
@@ -299,7 +299,6 @@
     .film-toggle:hover { background: rgba(255,255,255,0.22); }
     .film-toggle svg { width: 16px; height: 16px; }
     .film--finale { margin-top: 6rem; }
-    .film--finale .film-frame { width: min(100%, calc(92vh * var(--ar, 1.5))); }
     .nl-outro { position: relative; z-index: 2; text-align: center; padding: 3.5rem 1.5rem 4.5rem; color: var(--mute); font-size: 0.9rem; }
     .nl-outro a { color: #b6f5a0; border-bottom: 1px solid rgba(182,245,160,0.35); }
 

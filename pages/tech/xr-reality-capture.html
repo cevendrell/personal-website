@@ -217,14 +217,9 @@
     .scan-plate { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; padding: 1.4rem 1.5rem; }
     .scan-plate h3 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; color: #fff; }
     .scan-plate p { font-size: 0.8rem; color: rgba(255,255,255,0.68); margin-top: 0.15rem; }
-    .scan-open { flex: none; display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.7rem 1.1rem; border-radius: 999px; background: #fff; color: #06262a; font-size: 0.84rem; font-weight: 700; white-space: nowrap; transition: background 0.25s, transform 0.3s var(--ease); }
-    .scan-open:hover { background: var(--page-accent); transform: translateY(-1px); }
     .scan-frame { position: absolute; inset: 0; z-index: 3; display: none; }
     .scan-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
-    .scan-close { position: absolute; top: 0.9rem; right: 0.9rem; z-index: 4; display: none; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; border-radius: 999px; background: rgba(6,14,18,0.78); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.76rem; font-weight: 600; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-    .scan-close:hover { border-color: var(--page-accent); color: var(--page-accent); }
     .scan.is-live .scan-frame { display: block; }
-    .scan.is-live .scan-close { display: inline-flex; }
     .scan.is-live .scan-plate, .scan.is-live::after { display: none; }
     .scans-note { margin-top: 1.25rem; font-size: 0.8rem; color: var(--mute); }
     .scans-note a { color: var(--dim); border-bottom: 1px solid rgba(255,255,255,0.18); }
@@ -413,31 +408,27 @@
           <span class="label">Captures</span>
           <h2 id="capturesTitle">Scans you can explore</h2>
         </div>
-        <p>Photogrammetry and NeRF-based 3D scanning with Luma AI, turning real spaces and objects into interactive 3D scenes. Open one and drag to look around.</p>
+        <p>Photogrammetry and NeRF-based 3D scanning with Luma AI, turning real spaces and objects into interactive 3D scenes. Drag to look around.</p>
       </header>
 
       <div class="scans rise">
-        <article class="scan" data-luma="bfda8f27-2d1f-4cef-8aff-be0c44dd4474">
+        <article class="scan is-live" data-luma="bfda8f27-2d1f-4cef-8aff-be0c44dd4474">
           <img src="../../media/xr/scan-mge.jpg" alt="A Grundfos pump with an MGE motor, installed between blue valves in front of a brick wall" loading="lazy" width="900" height="1199">
           <div class="scan-plate">
             <div><h3>MGE</h3><p>Pump installation · February 2023</p></div>
-            <button class="scan-open" type="button">Explore in 3D</button>
           </div>
           <div class="scan-frame"></div>
-          <button class="scan-close" type="button">Close <span aria-hidden="true">×</span></button>
         </article>
 
-        <article class="scan scan--wide" data-luma="fcf43500-9f5d-42b5-9e43-511529f202ec">
+        <article class="scan scan--wide is-live" data-luma="fcf43500-9f5d-42b5-9e43-511529f202ec">
           <img src="../../media/xr/scan-hillerod.jpg" alt="An outdoor concrete installation with stairs and walkways, seen from above" loading="lazy" width="1400" height="788">
           <div class="scan-plate">
             <div><h3>Hillerød</h3><p>Captured from above · October 2023</p></div>
-            <button class="scan-open" type="button">Explore in 3D</button>
           </div>
           <div class="scan-frame"></div>
-          <button class="scan-close" type="button">Close <span aria-hidden="true">×</span></button>
         </article>
       </div>
-      <p class="scans-note">Each scene loads from Luma when you open it. Prefer a full window? <a href="https://lumalabs.ai/capture/bfda8f27-2d1f-4cef-8aff-be0c44dd4474" target="_blank" rel="noopener">MGE</a> and <a href="https://lumalabs.ai/capture/fcf43500-9f5d-42b5-9e43-511529f202ec" target="_blank" rel="noopener">Hillerød</a> on Luma.</p>
+      <p class="scans-note">Each scene loads from Luma as you scroll to it. Prefer a full window? <a href="https://lumalabs.ai/capture/bfda8f27-2d1f-4cef-8aff-be0c44dd4474" target="_blank" rel="noopener">MGE</a> and <a href="https://lumalabs.ai/capture/fcf43500-9f5d-42b5-9e43-511529f202ec" target="_blank" rel="noopener">Hillerød</a> on Luma.</p>
 
       <nav class="onward" aria-label="More in Tech">
         <a href="ai-projects.html"><small>Next in Tech</small><b>AI Projects <span aria-hidden="true">→</span></b></a>
@@ -518,23 +509,15 @@
     }));
   })();
 
-  // ── Scans: a still until you ask for the 3D scene ──
+  // ── Scans: the 3D scene loads on its own as it scrolls near; the still shows until it arrives ──
   document.querySelectorAll('.scan').forEach(scan => {
-    const holder = scan.querySelector('.scan-frame');
-    const name = scan.querySelector('h3').textContent;
-    scan.querySelector('.scan-open').addEventListener('click', () => {
-      const f = document.createElement('iframe');
-      f.src = 'https://lumalabs.ai/embed/' + scan.dataset.luma + '?mode=sparkles&background=%23000000&color=%23ffffff&showTitle=false&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false';
-      f.title = name + ', interactive 3D capture';
-      f.allowFullscreen = true;
-      holder.appendChild(f);
-      scan.classList.add('is-live');
-    });
-    scan.querySelector('.scan-close').addEventListener('click', () => {
-      holder.textContent = '';
-      scan.classList.remove('is-live');
-      scan.querySelector('.scan-open').focus();
-    });
+    const f = document.createElement('iframe');
+    f.src = 'https://lumalabs.ai/embed/' + scan.dataset.luma + '?mode=sparkles&background=%23000000&color=%23ffffff&showTitle=false&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false';
+    f.title = scan.querySelector('h3').textContent + ', interactive 3D capture';
+    f.loading = 'lazy';
+    f.allowFullscreen = true;
+    f.allow = 'fullscreen; xr-spatial-tracking';
+    scan.querySelector('.scan-frame').appendChild(f);
   });
 
   // ── Hero point cloud: a MAGNA3 sampled to 22,000 points, drawn with plain WebGL ──
