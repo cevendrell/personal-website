@@ -20,11 +20,12 @@
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Press+Start+2P&family=Monoton&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     /* AI Projects
        Violet header that doubles as the table of contents, white working sections,
-       and one dark band for the arcade. Each project keeps the colours of the thing it shows. */
+       and one dark band for the arcade. Every project sits in the same card: an ink panel
+       with a hairline grid, then kind, title, status, lede and a link. Colour stays inside the panels. */
     :root {
       --bg:          #ffffff;
       --paper:       #ffffff;
@@ -169,146 +170,107 @@
       .band--paper + .band--paper .sec-head { padding-top: 4rem; }
     }
 
-    /* ── SHIPPED: two plates, picture above, words below ── */
-    .plates { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem 2.5rem; }
-    .plate { --tone: var(--accent); display: flex; flex-direction: column; scroll-margin-top: 100px; }
-    .plate--layovr { --tone: #05164d; } .plate--ovrhead { --tone: #a4652c; }
-    .pc-visual { position: relative; height: clamp(210px, 21vw, 264px); overflow: hidden; border-radius: var(--radius); }
-    .pc-grid { position: absolute; inset: 0; pointer-events: none; background-size: 32px 32px; }
-    .pc-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-    .pc-visual > svg:not(.ly-mark) { transition: transform 0.8s var(--ease); }
-    .plate:hover .pc-visual > svg:not(.ly-mark) { transform: scale(1.025); }
-    .plate--layovr .pc-visual { background: #011545; }
-    .pc-visual .ly-mark { position: absolute; inset: auto; right: -80px; bottom: -120px; width: 460px; height: 460px; pointer-events: none; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+    /* ── PROJECT CARDS: one system for everything built here.
+       A dark panel on the same ink ground with the same hairline grid, words below.
+       Colour lives inside the panels; the words around them use the page accent only. ── */
+    .plates { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem 2.5rem; }
+    .plate { display: flex; flex-direction: column; scroll-margin-top: 100px; }
+    .pc-visual { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius); background: var(--ink); isolation: isolate; }
+    .pc-visual::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(196,181,253,0.14); pointer-events: none; z-index: 3; }
+    .pc-grid { position: absolute; inset: 0; pointer-events: none; background-size: 32px 32px;
+      background-image: linear-gradient(rgba(196,181,253,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(196,181,253,0.06) 1px, transparent 1px);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 45%, #000 30%, transparent 85%); mask-image: radial-gradient(ellipse at 50% 45%, #000 30%, transparent 85%); }
+    .pc-visual > svg, .pc-visual > img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: transform 0.8s var(--ease); }
+    .pc-visual > img { object-fit: cover; object-position: 52% 48%; }
+    .plate:hover .pc-visual > svg:not(.ly-mark), .plate:hover .pc-visual > img { transform: scale(1.03); }
+    .pc-tag { position: absolute; left: 1rem; top: 0.9rem; z-index: 2; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.62); display: inline-flex; align-items: center; gap: 0.5rem; }
+    .pc-tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--lavender); }
+    /* LayOvr: the app's trip card, with the logo as a quiet watermark */
+    .pc-visual .ly-mark { position: absolute; inset: auto; right: -70px; bottom: -110px; width: 440px; height: 440px; opacity: 0.12; pointer-events: none; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
     .plate--layovr:hover .ly-mark { transform: rotate(-4deg) scale(1.03); }
     @media (max-width: 560px) { .pc-visual .ly-mark { right: -60px; bottom: -80px; width: 300px; height: 300px; } }
-    .plate--ovrhead .pc-visual { background: radial-gradient(ellipse at 50% 100%, #191919 0%, #0c0c0e 70%); }
-    .plate--ovrhead .pc-grid { background-image: linear-gradient(rgba(210,210,220,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(210,210,220,0.06) 1px, transparent 1px); }
-    .plate-body { padding-top: 1.5rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.5rem 1.5rem; align-items: baseline; }
-    .plate-kind { grid-column: 1 / -1; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tone); }
+    /* OvrHead: a week of real tracks from the radar view, faded into the panel */
+    .plate--ovrhead .pc-visual::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(ellipse 75% 85% at 50% 50%, transparent 55%, var(--ink) 100%); }
+    .plate-body { padding-top: 1.5rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto 1fr auto; gap: 0.5rem 1.5rem; align-items: baseline; flex: 1; }
+    .plate-kind { grid-column: 1 / -1; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
     .plate-title { font-size: clamp(1.6rem, 2.6vw, 2.1rem); font-weight: 800; letter-spacing: -0.03em; color: var(--text); line-height: 1.1; }
     .plate-status { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); display: inline-flex; align-items: center; gap: 0.45rem; }
     .plate-status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #e8962e; }
     .plate-status.live::before { background: #1fa971; }
+    .plate-status.lab::before { background: var(--lavender); }
     .plate-lede { grid-column: 1 / -1; font-size: 0.98rem; color: var(--dim); line-height: 1.7; max-width: 46ch; text-wrap: pretty; }
-    .plate-meta { grid-column: 1 / -1; margin-top: 0.4rem; padding-top: 0.9rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; font-size: 0.8rem; color: var(--mute); }
-    .go { font-size: 0.88rem; font-weight: 700; color: var(--tone, var(--accent)); display: inline-flex; gap: 0.4rem; align-items: baseline; white-space: nowrap; }
+    .plate-meta { grid-column: 1 / -1; align-self: end; margin-top: 0.4rem; padding-top: 0.9rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; font-size: 0.8rem; color: var(--mute); }
+    .go { font-size: 0.88rem; font-weight: 700; color: var(--accent); display: inline-flex; gap: 0.4rem; align-items: baseline; white-space: nowrap; }
     .go span { display: inline-block; transition: transform 0.35s var(--ease); }
     a:hover .go span { transform: translate(3px, -3px); }
     a:hover .go.in span { transform: translateX(5px); }
-    @media (max-width: 780px) { .plates { grid-template-columns: 1fr; } }
+    @media (max-width: 780px) { .plates { grid-template-columns: 1fr; gap: 3rem; } }
 
-    /* ── EXPERIMENTS: wide feature rows, picture and words trading sides ── */
-    .features { display: flex; flex-direction: column; gap: 4.5rem; }
-    .feature { --tone: var(--accent); display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 3.5rem; align-items: center; scroll-margin-top: 100px; }
-    .feature--bike { --tone: #cf4519; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
-    .feature--bike .feature-visual { order: 2; }
-    .feature--pump { --tone: #0a6bb5; }
-    .feature-visual { position: relative; aspect-ratio: 3 / 2; overflow: hidden; border-radius: var(--radius); }
-    .feature-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: transform 0.8s var(--ease); }
-    .feature:hover .feature-visual svg { transform: scale(1.025); }
-    .bikefit-grid { position: absolute; inset: 0; pointer-events: none; background-size: 32px 32px; }
-    .feature--pump .feature-visual { background: linear-gradient(140deg, #0b2a4a 0%, #11497b 65%, #1a5e96 100%); }
-    .feature--pump .bikefit-grid { background-image: linear-gradient(rgba(156,198,236,0.13) 1px, transparent 1px), linear-gradient(90deg, rgba(156,198,236,0.13) 1px, transparent 1px); }
-    .feature--bike .feature-visual { background-color: #141518; background-image: radial-gradient(ellipse at 75% 25%, rgba(232,85,42,0.22), transparent 60%), linear-gradient(27deg, #121315 5px, transparent 5px), linear-gradient(207deg, #121315 5px, transparent 5px), linear-gradient(27deg, #1f2125 5px, transparent 5px), linear-gradient(207deg, #1f2125 5px, transparent 5px), linear-gradient(90deg, #18191c 10px, transparent 10px), linear-gradient(#1a1b1e 25%, #17181b 25%, #17181b 50%, transparent 50%, transparent 75%, #222428 75%, #222428); background-size: 100% 100%, 20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px; background-position: 0 0, 0 5px, 10px 0, 0 10px, 10px 5px, 0 0, 0 0; }
-    .feature--bike .bikefit-grid { background-image: linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px); }
-    .feature-copy { display: flex; flex-direction: column; gap: 0.9rem; align-items: flex-start; }
-    .feature-kind { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tone); }
-    .feature-title { font-size: clamp(1.6rem, 2.6vw, 2.1rem); font-weight: 800; letter-spacing: -0.03em; color: var(--text); line-height: 1.12; text-wrap: balance; }
-    .feature-lede { font-size: 0.98rem; color: var(--dim); line-height: 1.75; max-width: 44ch; text-wrap: pretty; }
-    .feature-copy .go { margin-top: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid color-mix(in srgb, var(--tone) 35%, transparent); transition: border-color 0.25s; }
-    .feature:hover .go { border-bottom-color: var(--tone); }
-    @media (max-width: 860px) {
-      .feature, .feature--bike { grid-template-columns: 1fr; gap: 1.5rem; }
-      .feature--bike .feature-visual { order: 0; }
-      .features { gap: 3.5rem; }
-    }
-
-    /* ── ARCADE: two cabinets on a synthwave floor. Grid Race leans Miami neon, Tetris leans 8-bit pixel ── */
-    .arcade-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1.6rem; align-items: stretch; }
-
-    .cab { position: relative; display: flex; flex-direction: column; gap: 0.9rem; padding: 1rem; background: #0a0614; }
-    .cab-marquee { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; padding: 0.2rem 0.2rem 0; }
-    .cab-sub { font-family: 'Press Start 2P', monospace; font-size: 0.5rem; letter-spacing: 0.06em; color: #8c7ab8; text-transform: uppercase; }
-    .cab-screen { position: relative; aspect-ratio: 3 / 2; display: flex; align-items: center; justify-content: center; gap: 0.9rem;
-      background: #05010d; overflow: hidden; }
-    .cab-screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 3;
-      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.28) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.55) 100%); }
+    /* ── ARCADE: the same panels, on the page's one dark band. The games keep their own colours on screen ── */
+    .arcade-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 2.5rem; align-items: stretch; scroll-margin-top: 100px; }
+    .cab { position: relative; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+    .cab-marquee { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; order: 2; }
+    .cab-title { font-size: clamp(1.6rem, 2.6vw, 2.1rem); font-weight: 800; letter-spacing: -0.03em; color: #fff; line-height: 1.1; }
+    .cab-sub { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); display: inline-flex; align-items: center; gap: 0.45rem; }
+    .cab-sub::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--lavender); }
+    .cab-screen { position: relative; aspect-ratio: 16 / 10; display: flex; align-items: center; justify-content: center; gap: 0.9rem; background: #05010d; overflow: hidden; border-radius: var(--radius); box-shadow: inset 0 0 0 1px rgba(196,181,253,0.18); order: 1; }
+    .cab-screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 3; border-radius: inherit; background: radial-gradient(ellipse at center, transparent 62%, rgba(0,0,0,0.45) 100%); box-shadow: inset 0 0 0 1px rgba(196,181,253,0.18); }
     .cab-screen canvas { display: block; }
-    .cab-overlay { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.9rem; padding: 1.25rem; text-align: center; background: rgba(5,1,13,0.84); transition: opacity 0.3s; }
+    .cab-hud, .cab-keys, .cab-controls { order: 3; }
+    .cab-overlay { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.9rem; padding: 1.25rem; text-align: center; background: rgba(13,8,32,0.86); transition: opacity 0.3s; }
     .cab-overlay.hidden { opacity: 0; pointer-events: none; }
-    .ov-sub { color: #cdbcf5; font-size: 0.82rem; line-height: 1.6; max-width: 36ch; }
-    .cab-btn { font-family: 'Press Start 2P', monospace; font-size: 0.6rem; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; padding: 0.85rem 1.1rem; border: none; transition: transform 0.15s, filter 0.15s; }
+    .ov-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: #fff; }
+    .ov-sub { color: var(--dim); font-size: 0.88rem; line-height: 1.6; max-width: 38ch; }
+    .cab-btn { font: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; padding: 0.7rem 1.3rem; border: none; border-radius: 999px; background: var(--accent); color: #fff; transition: transform 0.15s, filter 0.15s, background 0.15s; }
     .cab-btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
     .cab-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-    .cab-overlay .cab-btn { animation: blink 1.2s ease-in-out infinite; }
-    .cab-overlay .cab-btn:hover { animation: none; }
-    @keyframes blink { 50% { opacity: 0.45; } }
-    .cab-hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
-    .hud-cell { display: flex; flex-direction: column; gap: 0.45rem; padding: 0.6rem 0.65rem; min-width: 0; }
-    .hud-lbl { font-family: 'Press Start 2P', monospace; font-size: 0.45rem; letter-spacing: 0.06em; text-transform: uppercase; color: #8c7ab8; }
-    .hud-val { font-family: 'Press Start 2P', monospace; font-size: 0.82rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .hud-val small { font-size: 0.5rem; color: #8c7ab8; }
+    .cab-hud { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .hud-cell { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.7rem 0.75rem 0.7rem 0; min-width: 0; }
+    .cab-hud .hud-cell + .hud-cell { padding-left: 0.75rem; border-left: 1px solid var(--line); }
+    .hud-lbl { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); }
+    .hud-val { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; color: #fff; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hud-val small { font-size: 0.72rem; font-weight: 500; color: var(--mute); }
     .cab-controls { margin-top: auto; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
     .cab-seg { display: inline-flex; gap: 0.35rem; }
-    .cab-seg button, .cab-chip, .tetris-controls button { font-family: 'Press Start 2P', monospace; font-size: 0.5rem; cursor: pointer; padding: 0.65rem 0.7rem; background: transparent; color: #cdbcf5; transition: background 0.15s, color 0.15s; }
+    .cab-seg button, .cab-chip, .tetris-controls button { font: inherit; font-size: 0.78rem; font-weight: 600; cursor: pointer; padding: 0.5rem 0.85rem; background: transparent; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+    .cab-seg button:hover, .cab-chip:hover, .tetris-controls button:hover { color: #fff; border-color: rgba(196,181,253,0.4); }
+    .cab-seg button.active { background: var(--lavender); border-color: var(--lavender); color: var(--ink); }
     .cab-chip { display: inline-flex; align-items: center; gap: 0.5rem; user-select: none; }
-    .cab-chip input { appearance: none; -webkit-appearance: none; width: 10px; height: 10px; margin: 0; border: 1px solid currentColor; cursor: pointer; }
-    .cab-chip input:checked { background: currentColor; }
-
-    /* Grid Race: Miami neon */
-    .cab--race { border: 1px solid #00e5ff; border-radius: 16px; box-shadow: 0 0 0 1px rgba(0,229,255,0.25), 0 0 26px -4px rgba(0,229,255,0.55), inset 0 0 22px -10px rgba(0,229,255,0.6); }
-    .cab--race .cab-title { font-family: 'Monoton', 'Inter', sans-serif; font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 400; letter-spacing: 0.04em; color: #ff8fd0;
-      text-shadow: 0 0 6px #ff2e97, 0 0 18px #ff2e97, 0 0 34px rgba(255,46,151,0.6); line-height: 1.1; }
-    .cab--race .cab-screen { border-radius: 10px; border: 1px solid rgba(0,229,255,0.35); }
-    .cab--race #evoCanvas { width: 100%; height: auto; }
-    .cab--race .ov-title { font-family: 'Monoton', sans-serif; font-size: 1.8rem; color: #ff8fd0; text-shadow: 0 0 8px #ff2e97, 0 0 22px #ff2e97; }
-    .cab--race .cab-btn { background: linear-gradient(90deg, #ff2e97, #b14cff); color: #fff; border-radius: 999px; box-shadow: 0 0 18px -2px rgba(255,46,151,0.8); }
-    .cab--race .hud-cell { border: 1px solid rgba(0,229,255,0.3); border-radius: 8px; background: rgba(0,229,255,0.04); }
-    .cab--race .hud-val { color: #7df4ff; text-shadow: 0 0 8px rgba(0,229,255,0.7); }
-    .cab--race .cab-seg button, .cab--race .cab-chip { border: 1px solid rgba(0,229,255,0.4); border-radius: 999px; color: #7df4ff; }
-    .cab--race .cab-seg button.active { background: #00e5ff; color: #0d0221; box-shadow: 0 0 12px rgba(0,229,255,0.7); }
-    .cab--race .cab-reset { margin-left: auto; padding: 0.65rem 0.9rem; font-size: 0.5rem; background: transparent; color: #ff8fd0; border: 1px solid rgba(255,46,151,0.6); border-radius: 999px; box-shadow: none; }
-    .evo-leader-row { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
-    .evo-leader { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'Press Start 2P', monospace; font-size: 0.55rem; color: #fff; }
-    .evo-leader .swatch { width: 12px; height: 12px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.4); }
-
-    /* Tetris: 8-bit pixel */
-    .cab--blocks { border: 4px solid #ffe14d; border-radius: 0; box-shadow: 0 0 0 4px #0a0614, 0 0 0 8px #ff2e97, 8px 8px 0 8px #0a0614; image-rendering: pixelated; }
-    .cab--blocks .cab-title { font-family: 'Press Start 2P', monospace; font-size: clamp(1rem, 1.8vw, 1.35rem); color: #ffe14d; text-shadow: 3px 3px 0 #ff2e97, 6px 6px 0 #3d7bff; line-height: 1.3; }
-    .cab--blocks .cab-screen { border: 4px solid #1d1240; }
-    .cab--blocks #tetris { height: 100%; width: auto; image-rendering: pixelated; }
+    .cab-chip input { appearance: none; -webkit-appearance: none; width: 10px; height: 10px; margin: 0; border: 1px solid currentColor; border-radius: 2px; cursor: pointer; }
+    .cab-chip input:checked { background: var(--lavender); border-color: var(--lavender); }
+    .cab-reset, .cab-pause { margin-left: auto; background: transparent; color: var(--lavender); border: 1px solid rgba(196,181,253,0.4); padding: 0.5rem 1rem; font-size: 0.78rem; }
+    .cab-reset:hover, .cab-pause:hover { background: rgba(196,181,253,0.1); }
+    .evo-leader-row { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-left: 0 !important; border-left: 0 !important; }
+    .evo-leader { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .evo-leader .swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    #evoCanvas { width: 100%; height: auto; }
+    #tetris { height: 100%; width: auto; image-rendering: pixelated; }
     .tx-side { align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: 1.1rem; width: 6.5rem; z-index: 2; }
     .tx-side .hud-cell { padding: 0; }
-    .tx-side .hud-val { color: #ffe14d; }
-    #tetrisNext { display: block; width: 72px; height: 72px; image-rendering: pixelated; }
-    .cab--blocks .ov-title { font-family: 'Press Start 2P', monospace; font-size: 1.1rem; color: #ffe14d; text-shadow: 3px 3px 0 #ff2e97; line-height: 1.4; }
-    .cab--blocks .cab-btn { background: #ffe14d; color: #0d0221; box-shadow: 4px 4px 0 #ff2e97; }
-    .cab--blocks .cab-btn:active { transform: translate(4px,4px); box-shadow: none; }
-    .cab-keys { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-family: 'Press Start 2P', monospace; font-size: 0.45rem; line-height: 1.6; color: #8c7ab8; text-transform: uppercase; padding: 0.4rem 0.2rem; }
-    .cab-keys b { color: #3dff8b; font-weight: 400; }
-    .cab--blocks .cab-pause { padding: 0.65rem 0.9rem; font-size: 0.5rem; background: transparent; color: #ffe14d; border: 2px solid #ffe14d; box-shadow: 3px 3px 0 #ff2e97; }
+    #tetrisNext { display: block; width: 64px; height: 64px; image-rendering: pixelated; }
+    .cab-keys { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; font-size: 0.76rem; color: var(--mute); }
+    .cab-keys b { color: var(--text); font-weight: 600; }
     .tetris-controls { display: none; gap: 0.4rem; flex: 1 1 100%; }
-    .tetris-controls button { flex: 1 1 0; height: 48px; font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: #ffe14d; border: 2px solid #ffe14d; box-shadow: 3px 3px 0 #ff2e97; }
-    .tetris-controls button:active { background: #ffe14d; color: #0d0221; box-shadow: none; transform: translate(3px,3px); }
-    @media (hover: none), (max-width: 860px) { .tetris-controls { display: flex; } }
+    .tetris-controls button { flex: 1 1 0; height: 46px; font-size: 1.1rem; color: #fff; border-radius: 10px; }
+    .tetris-controls button:active { background: var(--lavender); color: var(--ink); }
+    @media (hover: none), (max-width: 860px) { .tetris-controls { display: flex; } .cab-keys { display: none; } }
     @media (max-width: 860px) {
-      .arcade-grid { grid-template-columns: minmax(0, 1fr); gap: 2.2rem; }
-      .cab--blocks { margin: 0 8px 8px 0; }
+      .arcade-grid { grid-template-columns: minmax(0, 1fr); gap: 3rem; }
       .cab--blocks .cab-screen { aspect-ratio: auto; height: min(68vh, 460px); }
     }
     @media (max-width: 520px) {
       .cab-hud { grid-template-columns: repeat(2, 1fr); }
-      .tx-side { width: 4.6rem; gap: 0.8rem; }
-      .hud-val { font-size: 0.7rem; }
-      #tetrisNext { width: 56px; height: 56px; }
+      .cab-hud .hud-cell:nth-child(3) { padding-left: 0; border-left: 0; }
+      .cab-hud .hud-cell:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .cab--blocks .cab-screen { height: min(60vh, 380px); gap: 0.6rem; }
+      .tx-side { width: 3.8rem; gap: 0.8rem; }
+      .tx-side .hud-val { font-size: 0.95rem; }
+      #tetrisNext { width: 48px; height: 48px; }
     }
-    @media (prefers-reduced-motion: reduce) { .cab-overlay .cab-btn { animation: none; } }
-    .band--ink .arcade-grid { scroll-margin-top: 100px; }
-    .cab { min-width: 0; }
 
     /* ── ARCHIVE: a plain list ── */
-    .gpts { list-style: none; border-top: 1px solid var(--line); --tone: #0b7d62; }
+    .gpts { list-style: none; border-top: 1px solid var(--line); --tone: var(--accent); }
     .gpts li { border-bottom: 1px solid var(--line); }
     .gpt { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) 6rem auto; gap: 2rem; align-items: baseline; padding: 1.35rem 0; }
     .gpt-name { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.015em; color: var(--text); transition: color 0.2s; }
@@ -458,6 +420,8 @@
       <div class="plates">
         <a class="plate plate--layovr rise" id="layovr" href="https://cevenlabs.com/layovr/" target="_blank" rel="noopener">
           <div class="pc-visual" aria-hidden="true">
+            <div class="pc-grid"></div>
+            <span class="pc-tag">CPH → JFK</span>
             <!-- LayOvr logo, traced to a vector so it stays sharp at any size; sits behind the trip card -->
             <svg class="ly-mark" viewBox="0 0 512 512" aria-hidden="true"><path d="M264.1 134.5L272.5 134.3L283.5 137.3L289.8 141.5L290.5 143.5L289.7 146.5L267.5 178.5L206.3 272.5L187.2 302.5L179.4 317.5L180.5 318.0L208.5 303.8L256.5 277.7L282.5 261.6L303.5 245.8L303.7 246.5L292.9 258.5L263.7 287.5L227.5 322.7L190.1 360.5L183.5 365.9L174.5 370.0L165.5 371.4L156.5 370.8L147.5 367.8L138.5 361.8L133.3 356.5L127.1 346.5L124.1 338.5L122.6 327.5L123.2 318.5L125.3 309.5L130.3 297.5L135.1 288.5L177.1 221.5L210.2 171.5L222.8 156.5L229.5 150.2L236.5 145.0L249.5 138.1L258.5 135.3ZM368.4 176.5L371.5 177.1L372.8 179.5L372.8 182.5L370.6 188.5L363.8 197.5L353.1 207.5L358.9 240.5L359.1 244.5L357.5 247.3L354.5 249.6L353.5 249.7L352.1 248.5L338.5 220.7L319.3 236.5L317.8 247.5L315.5 249.9L313.5 249.5L310.6 240.5L309.5 239.0L298.5 236.5L297.4 235.5L297.7 233.5L300.5 231.6L307.5 230.8L326.6 210.5L327.5 208.5L299.5 192.8L298.2 191.5L298.6 189.5L301.5 187.2L304.5 186.5L329.5 191.8L342.5 193.7L358.5 180.3L364.5 177.2ZM279.8 282.5L285.5 282.2L292.5 283.1L303.5 286.3L318.5 293.1L333.5 302.3L343.9 311.5L386.9 356.5L389.6 359.5L391.1 362.5L390.9 364.5L388.5 366.9L384.5 367.8L358.5 367.9L329.5 367.7L322.5 366.7L311.5 362.7L298.5 353.9L263.5 322.3L254.5 316.0L247.3 312.5L269.5 289.3L275.5 284.2Z" fill="#ffffff"/></svg>
             <svg viewBox="0 0 480 210" preserveAspectRatio="xMinYMid meet" xmlns="http://www.w3.org/2000/svg">
@@ -489,33 +453,9 @@
 
         <a class="plate plate--ovrhead rise" id="ovrhead" href="https://cevenlabs.com/ovrhead/" target="_blank" rel="noopener">
           <div class="pc-visual" aria-hidden="true">
-            <div class="pc-grid"></div>
-            <svg viewBox="0 0 480 210" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-              <!-- A house in Aarhus with a small antenna on the roof, listening to the planes overhead -->
-              <g transform="translate(0 -10)">
-              <path d="M40 184.5 H440" stroke="#aab2c8" stroke-width="1" opacity="0.4"/>
-              <g fill="none" stroke="#eef1f8" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
-                <path d="M207 184 V146 H273 V184" fill="#191919"/>
-                <path d="M199 148 L240 114 L281 148"/>
-                <path d="M231 184 V164 H249 V184"/>
-                <path d="M258 129 V100 M253 108 H263 M255 116 H261"/>
-              </g>
-              <rect x="255" y="155" width="11" height="9" rx="1" fill="#d2955c" opacity="0.85"/>
-              <circle cx="258" cy="98" r="2.6" fill="#d2955c"/>
-              <g fill="none" stroke="#d2955c" stroke-width="1.5" stroke-linecap="round">
-                <path opacity="1" d="M245.9 91 A14 14 0 0 1 270.1 91"/>
-                <path opacity="0.7" d="M233.8 84 A28 28 0 0 1 282.2 84"/>
-                <path opacity="0.4" d="M219.9 76 A44 44 0 0 1 296.1 76"/>
-              </g>
-              <g fill="#d2955c">
-                <g transform="translate(150 66) rotate(-8)"><path d="M-18 0 H-64" stroke="#d2955c" stroke-width="1" stroke-dasharray="2 4" opacity="0.5"/><path d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z"/></g>
-                <g transform="translate(356 60) rotate(192)"><path d="M-18 0 H-60" stroke="#d2955c" stroke-width="1" stroke-dasharray="2 4" opacity="0.5"/><path d="M8 0 L-5 -1.6 L-8 -7 L-10.5 -7 L-8.5 -1.6 L-13 -1.3 L-14.5 -4 L-16 -4 L-15.2 0 L-16 4 L-14.5 4 L-13 1.3 L-8.5 1.6 L-10.5 7 L-8 7 L-5 1.6 Z"/></g>
-              </g>
-              <g font-family="Inter, sans-serif" font-size="9" letter-spacing="0.12em" fill="#aab2c8">
-                <text x="138" y="48">FL320</text><text x="240" y="202" text-anchor="middle">AARHUS</text>
-              </g>
-              </g>
-            </svg>
+            <!-- One week of tracks over Aarhus, from OvrHead's Week radar -->
+            <img src="../../media/tech/ovrhead-week.jpg" alt="" width="1495" height="812" loading="lazy" decoding="async">
+            <span class="pc-tag">One week over Aarhus</span>
           </div>
           <div class="plate-body">
             <span class="plate-kind">Air traffic</span>
@@ -540,11 +480,12 @@
         <p>Built to understand an idea by making it move. Everything runs in the browser.</p>
       </header>
 
-      <div class="features">
-        <a class="feature feature--pump rise" id="pump" href="pump-simulator.html" target="_blank" rel="noopener">
-          <div class="feature-visual" aria-hidden="true">
-              <div class="bikefit-grid"></div>
-              <svg class="bikefit-fallback" viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="display:block">
+      <div class="plates">
+        <a class="plate plate--pump rise" id="pump" href="pump-simulator.html" target="_blank" rel="noopener">
+          <div class="pc-visual" aria-hidden="true">
+              <div class="pc-grid"></div>
+              <span class="pc-tag">Five pumps</span>
+              <svg viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
                 <g fill="rgba(255,255,255,0.07)" stroke="#cfe3f6" stroke-width="1.6" stroke-linejoin="round">
                   <!-- ALPHA2 -->
                   <path d="M46 206 V262 M58 206 V262" stroke="#9cc6ec" stroke-width="1" fill="none" stroke-dasharray="2 3"/>
@@ -588,18 +529,20 @@
                 </g>
               </svg>
           </div>
-          <div class="feature-copy">
-            <span class="feature-kind">Grundfos</span>
-            <h3 class="feature-title">Grundfos Pump Simulator</h3>
-            <p class="feature-lede">Five Grundfos pumps, from a 3 W home circulator to a 37 kW multistage pump, built from Grundfos CAD models and run on their published curves. Change the settings, open the taps, take them apart.</p>
-            <span class="go">Open the simulator <span aria-hidden="true">↗</span></span>
+          <div class="plate-body">
+            <span class="plate-kind">Grundfos</span>
+            <h3 class="plate-title">Grundfos Pump Simulator</h3>
+            <span class="plate-status lab">Experiment</span>
+            <p class="plate-lede">Five Grundfos pumps, from a 3 W home circulator to a 37 kW multistage pump, built from Grundfos CAD models and run on their published curves. Change the settings, open the taps, take them apart.</p>
+            <p class="plate-meta"><span>ALPHA2 · MAGNA3 · SCALA2 · CR · DDA</span><span class="go">Open the simulator <span aria-hidden="true">↗</span></span></p>
           </div>
         </a>
 
-        <a class="feature feature--bike rise" id="bike" href="/ai-projects/bike-fit.html">
-          <div class="feature-visual" aria-hidden="true">
-              <div class="bikefit-grid"></div>
-              <svg class="bikefit-fallback" viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="display:block">
+        <a class="plate plate--bike rise" id="bike" href="/ai-projects/bike-fit.html">
+          <div class="pc-visual" aria-hidden="true">
+              <div class="pc-grid"></div>
+              <span class="pc-tag">87 frames</span>
+              <svg viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
                 <!-- wheels: deep carbon rims with an orange decal -->
                 <g fill="none">
                   <circle cx="140" cy="214" r="58" stroke="#2a2c31" stroke-width="5"/>
@@ -638,11 +581,12 @@
                 </g>
               </svg>
           </div>
-          <div class="feature-copy">
-            <span class="feature-kind">Cycling</span>
-            <h3 class="feature-title">Bike Fit Studio</h3>
-            <p class="feature-lede">Enter your measurements, pick one of 87 frames and watch a rider pedal it, with knee, hip and torso angles measured as they move.</p>
-            <span class="go in">Open the studio <span aria-hidden="true">→</span></span>
+          <div class="plate-body">
+            <span class="plate-kind">Cycling</span>
+            <h3 class="plate-title">Bike Fit Studio</h3>
+            <span class="plate-status lab">Experiment</span>
+            <p class="plate-lede">Enter your measurements, pick one of 87 frames and watch a rider pedal it, with knee, hip and torso angles measured as they move.</p>
+            <p class="plate-meta"><span>Knee · Hip · Torso angles</span><span class="go in">Open the studio <span aria-hidden="true">→</span></span></p>
           </div>
         </a>
       </div>
